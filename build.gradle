@@ -1,0 +1,139 @@
+plugins {
+	id 'java'
+	// id 'war'
+	id 'org.springframework.boot' version '3.5.0'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'checkstyle' // ✅ Checkstyle 플러그인 추가
+}
+
+group = 'com.kdt'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+
+	// https://mvnrepository.com/ 참조
+
+	// JSP 사용시 (선택1)
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper' // JSP 지원
+    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:2.0.0'
+    runtimeOnly 'org.glassfish.web:jakarta.servlet.jsp.jstl:2.0.0'
+    // compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+    
+    
+    // html 사용시 (선택2)
+    // implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' 
+	//
+
+	// Spring MVC 웹 개발을 위한 기본 스타터 (Spring MVC + Tomcat 내장)
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// 내장 톰캣 서버 (Spring Boot 웹 어플리케이션 실행용)
+	// providedRuntime 대신 implementation 으로 변경해 톰캣 내장 실행
+	// implementation 'org.springframework.boot:spring-boot-starter-tomcat' // spring-boot-starter-web 에 포함되어있음
+	
+	
+	// SOAP 웹 서비스 개발을 위한 스타터 (Simple Object Access Protocol의 약자로, 웹 서비스 통신 방식 중 하나)
+	implementation 'org.springframework.boot:spring-boot-starter-web-services'
+	
+	// MySQL 데이터베이스와 연결하기 위한 JDBC 드라이버 (실행 시점에만 필요)
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	
+
+	
+	// 테스트용 Spring Boot 스타터 (JUnit, Mockito, Spring Test 등 포함)
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	
+	// 테스트 실행 시 JUnit 플랫폼 실행기
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	
+	// MyBatis와 Spring Boot 통합 스타터 (MyBatis ORM 지원)
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+	
+	// MySQL Connector/J (MySQL DB용 JDBC 드라이버)
+	// runtimeOnly와 중복되므로 보통 하나만 사용
+	implementation 'mysql:mysql-connector-java:8.0.33'
+	
+	// 롬복(Lombok) 라이브러리 - 코드 자동 생성(게터/세터 등)
+	implementation 'org.projectlombok:lombok'
+	
+	// 롬복 어노테이션 프로세서 (컴파일 시 코드 생성용)
+	annotationProcessor 'org.projectlombok:lombok'
+	
+	// P6Spy - SQL 로그를 보기 쉽게 콘솔 출력해주는 라이브러리, 개발 편의성 향상용
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
+
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// === React 빌드 + 복사 자동화 태스크 추가 ===
+
+// clean 시 static 디렉토리도 지우기 (깨끗한 상태로 빌드)
+tasks.named('clean') {
+	doFirst {
+		delete 'src/main/resources/static'
+	}
+}
+
+
+// 1) npm install 실행 (필요 시)
+tasks.register('npmInstall', Exec) {
+	workingDir = file('src/main/frontend') // React 프로젝트 위치에 맞게 수정
+	//commandLine 'npm', 'install'
+	//environment "PATH", System.getenv("PATH")
+	commandLine 'C:\\Program Files\\nodejs\\npm.cmd', 'install' // 경로 직접 선언
+}
+
+// 2) npm run build 실행 (의존성으로 npmInstall 포함)
+tasks.register('npmRunBuild', Exec) {
+	dependsOn 'npmInstall'
+	workingDir = file('src/main/frontend')
+	//commandLine 'npm', 'run', 'build'
+	commandLine 'C:\\Program Files\\nodejs\\npm.cmd', 'run', 'build' // 경로 직접 선언
+}
+
+// 3) React 빌드 결과물을 Spring Boot 정적 리소스 폴더로 복사
+tasks.register('copyReactBuild', Copy) {
+	dependsOn 'npmRunBuild'
+	from('src/main/frontend/build')
+	into('src/main/resources/static')
+}
+
+// 4) processResources 전에 copyReactBuild가 실행되도록 연결
+tasks.named('processResources') {
+	dependsOn 'copyReactBuild'
+}
+
+
+checkstyle {
+	toolVersion = '10.12.2'
+	configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+	 ignoreFailures = true // 코드스타일 맞지 않아도 진행, false : 코드스타일준수
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required = false
+        html.required = true
+    }
+}
+// 일반 JAR 생성 막기.
+jar {
+    enabled = false
+}
+
+// bootJar만 생성
+bootJar {
+    archiveFileName.set('kdt-team1.jar')  //
+}

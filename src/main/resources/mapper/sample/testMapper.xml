@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdt.mapper.sample">
+
+
+  <!-- 
+	일반 타입사용
+   -->
+
+  <select id="getAllUsers" resultType="STRING">
+  
+  	/* com.kdt.mapper.sample.getAllUsers */
+  	
+    SELECT *
+	FROM KDT_CUST_INFO_BASC tt 
+  </select>
+  
+  
+	<!-- 
+		## 프로퍼티스에 미 선언시
+	 -->
+   <select id="getAllUsersMap" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+  
+  	/* com.kdt.mapper.sample.getAllUsersMap */
+  	
+    SELECT *
+	FROM tb_test tt 
+  </select>
+
+
+
+	<!-- 
+		## 프로퍼티스에 cmmnMap 선언하여 CmmnMap 인식시킴
+		mybatis.type-aliases-package=com.kdt.KDT_PJT.cmmn.map
+	 -->
+   <select id="getAllUsersCmmnMap" parameterType="CmmnMap" resultType="CmmnMap">
+  
+  	/* com.kdt.mapper.sample.getAllUsersCmmnMap */
+  	
+    SELECT *
+	FROM tb_test tt 
+  </select>
+  
+</mapper>

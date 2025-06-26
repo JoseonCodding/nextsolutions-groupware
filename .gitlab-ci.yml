@@ -1,0 +1,72 @@
+before_script:
+  - Remove-Item Env:\CI_SERVER_TLS_CA_FILE -ErrorAction SilentlyContinue
+  - $OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)  # 한글 깨짐 방지
+  - $env:Path += ";C:\\Program Files\\nodejs"
+  - $env:Path += ";$env:APPDATA\\npm"
+  ##- node -v
+  ##- npm -v
+
+stages:
+  - lint     # (선택) 코드 스타일 검사 단계
+  - build
+  - deploy
+
+variables:
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
+  NODE_ENV: production
+
+lint-job:
+  stage: lint
+  script:
+    - echo "BackEnd CodeStyle Check"
+    - ./gradlew checkstyleMain checkstyleTest --no-daemon
+    ##- echo "Frontend ESLint Check"
+    ##- cd src/main/frontend
+    ##- npm ci
+    ##- npx eslint . --ext .js,.jsx,.ts,.tsx
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: always
+
+build-job:
+  stage: build
+  needs:
+    - lint-job    # lint-job 성공해야 build-job 실행됨
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "develop"'
+      when: on_success  ## on_success 성공시에, always 항상
+  script:
+    - echo "BackEnd + FrontEnd Build Start"
+    - git clean -fdx
+    - npm install -g rimraf
+    - npx rimraf src/main/frontend/node_modules
+    - .\gradlew clean build -x test --no-daemon ## 백그라운드작업으로 인한 job 종료불가 현상 방지
+    - if (!(Test-Path "build\\libs\\kdt-team2.jar")) { throw "JAR NOT Created" }
+    - echo "Build Complete"
+  artifacts:
+    paths:
+      - build/libs/kdt-team2.jar
+    expire_in: 1 week
+
+deploy-job:
+  stage: deploy
+  needs:
+    - build-job   # build-job 성공해야 deploy-job 실행됨
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"' ## master 브렌치
+      when: on_success  ## on_success 성공시에, always 항상
+  script:
+    - echo "Deploying ....."
+    - |
+      $targetDir = "C:\\Pack_CICD\\kdt9_team2\\GitLab-Runner\\deploy"
+      if (!(Test-Path $targetDir)) {
+          New-Item -ItemType Directory -Path $targetDir -Force
+      }
+      if (!(Test-Path "build\\libs\\kdt-team2.jar")) {
+        throw "JAR file not found. Deployment aborted."
+      }
+      ### Copy-Item -Path "build\\libs\\kdt-team2.jar" -Destination "$targetDir\\kdt-team2_$(Get-Date -Format 'yyyyMMddHHmmss').jar"
+      Copy-Item -Path "build\\libs\\kdt-team2.jar" -Destination "$targetDir\\kdt-team2.jar" -Force
+      Write-Host "Deploy Complete: $targetDir"
+  environment:
+    name: production
