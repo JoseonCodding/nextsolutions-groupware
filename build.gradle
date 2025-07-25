@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	// id 'war'
+	id 'war'                 // 안정적 jsp배포를위함 'war' 플러그인 추가
 	id 'org.springframework.boot' version '3.5.0'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'checkstyle' // ✅ Checkstyle 플러그인 추가
@@ -16,38 +16,39 @@ java {
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+    
+    // 인증서 에러로 인해 lib다운 에러발생시 추가할것 -- 배포환경에서 사용금지
+    gradlePluginPortal() 
+    maven {
+        url = uri("http://some-insecure-repo-url")
+        allowInsecureProtocol = true
+    }
 }
-
 dependencies {
 
 	// https://mvnrepository.com/ 참조
 
-	// JSP 사용시 (선택1)
+	//=============== JSP 사용시 주석해제 (선택1) =====================================//
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper' // JSP 지원
     implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:2.0.0'
     runtimeOnly 'org.glassfish.web:jakarta.servlet.jsp.jstl:2.0.0'
-    // compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
-    
-    
-    // html 사용시 (선택2)
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+    //=============== JSP 사용시 주석해제 (선택1) =====================================//
+  
+    //=============== html 사용시 주석해제 =====================================//
     // implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' 
-	//
+	//=============== html 사용시 주석해제 =====================================//
 
 	// Spring MVC 웹 개발을 위한 기본 스타터 (Spring MVC + Tomcat 내장)
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	// 내장 톰캣 서버 (Spring Boot 웹 어플리케이션 실행용)
-	// providedRuntime 대신 implementation 으로 변경해 톰캣 내장 실행
-	// implementation 'org.springframework.boot:spring-boot-starter-tomcat' // spring-boot-starter-web 에 포함되어있음
-	
 	
 	// SOAP 웹 서비스 개발을 위한 스타터 (Simple Object Access Protocol의 약자로, 웹 서비스 통신 방식 중 하나)
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'
 	
 	// MySQL 데이터베이스와 연결하기 위한 JDBC 드라이버 (실행 시점에만 필요)
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	
-
 	
 	// 테스트용 Spring Boot 스타터 (JUnit, Mockito, Spring Test 등 포함)
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -70,6 +71,13 @@ dependencies {
 	
 	// P6Spy - SQL 로그를 보기 쉽게 콘솔 출력해주는 라이브러리, 개발 편의성 향상용
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
+	
+	// 페이징헬퍼
+	implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:1.4.7'
+	
+	// Spring Boot Security
+	// implementation 'org.springframework.boot:spring-boot-starter-security'
+	
 
 }
 
@@ -78,7 +86,7 @@ tasks.named('test') {
 }
 
 // === React 빌드 + 복사 자동화 태스크 추가 ===
-
+/*
 // clean 시 static 디렉토리도 지우기 (깨끗한 상태로 빌드)
 tasks.named('clean') {
 	doFirst {
@@ -114,7 +122,7 @@ tasks.register('copyReactBuild', Copy) {
 tasks.named('processResources') {
 	dependsOn 'copyReactBuild'
 }
-
+*/
 
 checkstyle {
 	toolVersion = '10.12.2'
@@ -129,11 +137,25 @@ tasks.withType(Checkstyle) {
     }
 }
 // 일반 JAR 생성 막기.
-jar {
+/*jar {
     enabled = false
-}
+}*/
 
 // bootJar만 생성
 bootJar {
-    archiveFileName.set('kdt-team1.jar')  //
+
+	enabled = false          // bootJar 비활성화
+    /*archiveFileName.set('kdtpjt.jar')  //
+    
+        // ✅ webapp 폴더 포함시키기
+    from('src/main/webapp') {
+        into('BOOT-INF/classes/META-INF/resources') // JSP 접근 가능하게 포함
+    }*/
+    
+}
+
+// war 패키징을 위함
+bootWar {
+    enabled = true           		 // bootWar 활성화 (기본값은 true)
+    archiveFileName.set('ROOT.war')  // ROOT로 지정해야 컨텍스트패스가 '/'로 됩니다. (권장)
 }
