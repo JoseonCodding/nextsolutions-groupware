@@ -3,7 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import About from "./About"; // 새 페이지 컴포넌트
-import axios from "axios";
+
+// API 임포트
+import { fetchHello, fetchCurrentTime, registerUser } from "./services/sampleService";
 
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -35,17 +37,10 @@ function Home() {
   ];
 
   useEffect(() => {
-    axios.get('http://localhost:8080/sample/api/test')
-        .then((res) => {
-          setHello(res.data);
-        })
-        .catch((err) => {
-          setError(err.message);
-        });
 
 
   const fetchTime = () => {
-    axios.get('http://localhost:8080/sample/api/getTime')
+    fetchCurrentTime()
       .then((response) => {
         setCurrentTime(response.data);
       })
@@ -74,7 +69,7 @@ function Home() {
     };
 
     try {
-      const res = await axios.post("http://localhost:8080/sample/api/register", data);
+      const res = await registerUser(data);
       alert("등록 성공: " + res.data.message);
     } catch (err) {
       alert("등록 실패");
@@ -87,14 +82,14 @@ function Home() {
       <h2>GSITM 부트캠프 입소를 환영합니다. : {hello}</h2>
 
       {/* ✅ 사용자 정보 입력 영역 */}
-      <h3>사용자 등록</h3>
+      <h3>서버에 데이터보내기</h3>
       <input placeholder="이름" value={name} onChange={e => setName(e.target.value)} />
       <br />
       <input placeholder="이메일" value={email} onChange={e => setEmail(e.target.value)} />
       <br />
       <input placeholder="나이" type="number" value={age} onChange={e => setAge(e.target.value)} />
       <br />
-      <button onClick={handleRegister}>서버에 등록하기</button>
+      <button onClick={handleRegister}>전송</button>
 
       <br /><br />
 
