@@ -9,6 +9,9 @@
   <a href="/schedule/calendar" class="nav-link d-flex align-items-center mb-3 px-3 text-dark w-100" style="font-size:1.1rem;">
     <i class="bi bi-calendar me-2"></i> 일정관리
   </a>
+  <a href="/approval/approvalMain" class="nav-link d-flex align-items-center mb-3 px-3 text-dark w-100" style="font-size:1.1rem;">
+    <i class="bi bi-clipboard-check me-2"></i> ★전자결재
+  </a>
   <a href="#" class="nav-link d-flex align-items-center mb-3 px-3 text-dark w-100" style="font-size:1.1rem;">
     <i class="bi bi-gear me-2"></i> 설정
   </a>
