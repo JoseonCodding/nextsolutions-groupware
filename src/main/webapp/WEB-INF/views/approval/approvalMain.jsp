@@ -8,7 +8,7 @@
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 </head>
 <body>
-	<h1>★전자결재 메인 (CKEditor 5 사용) 수정1</h1>
+	<h1>★전자결재 메인 (CKEditor 5 사용) 수정2</h1>
     <form action="SaveContentServlet" method="POST">
         <input type="text" name="title" placeholder="제목을 입력하세요" required>
         <textarea id="editor" name="content"></textarea>
