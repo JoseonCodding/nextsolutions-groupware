@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>프로젝트 등록</title>
+<style>
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	margin: 50px;
+	background-color: #f5f7fa;
+	color: #333;
+}
+
+h1 {
+	color: #4a4a4a;
+	text-align: center;
+	margin-bottom: 40px;
+}
+
+table {
+	width: 60%;
+	margin: 0 auto;
+	border-collapse: collapse;
+	background-color: #ffffff;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+th, td {
+	padding: 16px 20px;
+	text-align: left;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+th {
+	width: 30%;
+	background-color: #f0f0f0;
+	font-weight: bold;
+	color: #333;
+}
+
+tr:last-child td {
+	border-bottom: none;
+}
+
+button {
+	display: block;
+	margin: 40px auto 0;
+	padding: 12px 24px;
+	background-color: #4a90e2;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+button:hover {
+	background-color: #357abd;
+}
+
+button.save-btn {
+	background-color: #28a745;
+}
+
+button.save-btn:hover {
+	background-color: #218838;
+}
+</style>
+</head>
+<body>
+	<h1>프로젝트 등록</h1>
+
+	<form action="/pjtMng/savePjtProc" method="post">
+	<table>
+
+		<tr>
+			<th>프로젝트명</th>
+			<td><input type="text" name="pjtNm" required/></td>
+		</tr>
+<!-- 		<tr>
+			<th>상태</th>
+			<td><input type="text" name="pjtSttsCd" /></td>
+		</tr> -->
+		<tr>
+			<th>담당자</th>
+			<td><input type="text" name="empNm" /></td>
+		</tr>
+		<tr>
+			<th>시작일</th>
+			<td><input type="date" name="pjtBgngDt" /></td>
+		</tr>
+		<tr>
+			<th>종료일</th>
+			<td><input type="date" name="pjtEndDt" /></td>
+		</tr>
+
+	</table>
+
+	<button type="submit" class="save-btn">프로젝트 저장</button>
+	</form>
+
+	<button onclick="history.back()">← 목록으로 돌아가기</button>
+</body>
+</html>

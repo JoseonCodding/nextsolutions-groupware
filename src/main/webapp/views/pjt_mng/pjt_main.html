@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>프로젝트 목록</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; }
+    table { width: 100%; border-collapse: collapse; background-color: white; margin-top: 20px; }
+    th, td { padding: 12px; border-bottom: 1px solid #ccc; text-align: left; }
+    th { background-color: #eee; }
+    tr:hover { background-color: #f5f5f5; }
+    .button { padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; }
+    .btn-view { background-color: #4CAF50; color: white; }
+    .btn-edit { background-color: #2196F3; color: white; }
+    .btn-delete { background-color: #f44336; color: white; }
+    .btn-add { background-color: #673ab7; color: white; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+<h1>프로젝트 목록</h1>
+
+<button class="button btn-add" onclick="location.href='project_add.html'">＋ 새 프로젝트 추가</button>
+
+<table>
+  <thead>
+    <tr>
+      <th>프로젝트 ID</th>
+      <th>프로젝트명</th>
+      <th>상태</th>
+      <th>담당자</th>
+      <th>생성일</th>
+      <th>작업</th>
+    </tr>
+  </thead>
+  <tbody>
+<tr th:each="pjt : ${pjtList}">
+  <td th:text="${pjt['PJT_SN']}">PJT001</td>
+  <td th:text="${pjt['PJT_NM']}">통합 관리 시스템</td>
+  <td th:text="${pjt['PJT_STTS_CD']}">진행중</td>
+  <td th:text="${pjt['EMP_NM']}">홍길동</td>
+  <td th:text="${#dates.format(pjt['FRST_REG_DT'], 'yyyy-MM-dd')}">2025-08-01</td>
+  <td>
+  
+	<button class="button btn-view"
+	        th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
+	  보기
+	</button>
+	
+    <button class="button btn-edit"
+            th:onclick="'location.href=\'project_edit.html?id=' + ${pjt['PJT_SN']} + '\''">
+      편집
+    </button>
+    <button class="button btn-delete"
+            th:onclick="'deleteProject(\'' + ${pjt['PJT_SN']} + '\')'">
+      삭제
+    </button>
+  </td>
+</tr>
+  </tbody>
+</table>
+
+<button
+  class="button btn-add"
+  style="position: fixed; bottom: 20px; right: 20px; padding: 14px 20px; font-size: 18px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border-radius: 50%;"
+  title="새 프로젝트 등록"
+  onclick="location.href='/pjtMng/getSavePjtForm'">
+  ＋
+</button>
+
+
+<script>
+  function deleteProject(id) {
+    if (confirm(`${id} 삭제할까요?`)) {
+      alert(`삭제 처리 중: ${id}`);
+      // fetch로 삭제 요청 날리게 해도 됨
+    }
+  }
+</script>
+
+</body>
+</html>
