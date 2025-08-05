@@ -62,11 +62,11 @@
 	  ) VALUES (
 	    #{PJT_NM},
 	    #{EMP_NM},
-	    '1',
-	    '1',
+	    #{PJT_BGNG_DT},
+	    #{PJT_END_DT},
 	    '01',             <!-- 상태 기본값 예: '01' = 진행중 -->
 	   	'SYSTEM',
-	    '10'
+	    #{FRST_REG_DT}
 	  )
 	</insert>
   

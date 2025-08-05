@@ -1,6 +1,8 @@
 package com.kdt.KDT_PJT.pjt_mng.ctl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -85,6 +87,13 @@ public class ProjectMngController {
 		params.put("EMP_NM", empNm);
 		params.put("PJT_BGNG_DT", pjtBgngDt);
 		params.put("PJT_END_DT", pjtEndDt);
+		
+		LocalDateTime now = LocalDateTime.now(); // 현재 시간 가져오기
+		String formatted = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")); // 14자리 문자열로 포맷
+
+		log.info("현재시간 (formatted): " + formatted);
+		params.put("FRST_REG_DT", formatted); // DB에 저장할 값
+
 		
 		
 		projcetMngService.savePjtProc(params);
