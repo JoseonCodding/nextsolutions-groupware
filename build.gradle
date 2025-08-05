@@ -30,15 +30,15 @@ dependencies {
 	// https://mvnrepository.com/ 참조
 
 	//=============== JSP 사용시 주석해제 (선택1) =====================================//
-    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper' // JSP 지원
-    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:2.0.0'
-    runtimeOnly 'org.glassfish.web:jakarta.servlet.jsp.jstl:2.0.0'
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
-    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+//    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper' // JSP 지원
+//    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:2.0.0'
+//    runtimeOnly 'org.glassfish.web:jakarta.servlet.jsp.jstl:2.0.0'
+//    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+//    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
     //=============== JSP 사용시 주석해제 (선택1) =====================================//
   
     //=============== html 사용시 주석해제 =====================================//
-    // implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' 
+     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' 
 	//=============== html 사용시 주석해제 =====================================//
 
 	// Spring MVC 웹 개발을 위한 기본 스타터 (Spring MVC + Tomcat 내장)

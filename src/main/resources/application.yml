@@ -39,19 +39,20 @@ spring:
     url: jdbc:mysql://${my.datasource.host}:${my.datasource.port}/${my.datasource.dbname}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
 
 #  JSP 사용시 주석해제
-  mvc:
-    view:
-      prefix: /WEB-INF/views/  # JSP 파일이 위치한 디렉토리
-      suffix: .jsp  # 뷰 파일 확장자
-      encoding: UTF-8  # 뷰 인코딩 설정
+#  mvc:
+#    view:
+#      prefix: /WEB-INF/views/  # JSP 파일이 위치한 디렉토리
+#      suffix: .jsp  # 뷰 파일 확장자
+#      encoding: UTF-8  # 뷰 인코딩 설정
 
 # HTML사용시 주석해제    
-#  thymeleaf:
+  thymeleaf:
 #    prefix: classpath:/templates/
-#    suffix: .html
-#    #suffix: .mustache
-#    encoding: UTF-8
-#    mode: HTML
+    prefix: /views/
+    suffix: .html
+    #suffix: .mustache
+    encoding: UTF-8
+    mode: HTML
 
   servlet:
     multipart:

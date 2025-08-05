@@ -5,59 +5,36 @@
 
 <mapper namespace="com.kdt.mapper.login">
 
- <!-- 
-      ## 프로퍼티스에 cmmnMap 선언하여 CmmnMap 인식시킴
-      mybatis.type-aliases-package=com.kdt.KDT_PJT.cmmn.map
-    -->
- <insert id="saveProc" parameterType="CmmnMap">
-     /* 
-      Query ID : com.kdt.mapper."com.kdt.mapper.login".saveProc 
-      Description : 
-      resultType : CmmnMap
-      작성자 : 
-      작성일 : 
-     */
-     
-    INSERT INTO employee  
-    (
-        employeeId
-        , password
-    ) 
-    VALUES 
-    (
-        #{employeeId}
-        , #{password}
-    )
- </insert>
- 
- <select id="getUserList" resultType="CmmnMap">
-  
-  	/* 
-  	 Query ID : com.kdt.mapper.login.getUserList
-  	 Description : KDT_CUST_INFO_BSC 모든 정보를 출력한다
-  	 resultType : CmmnMap
-  	 작성자 : 김동현/팀장
-  	 작성일 : 2025.08.04
-  	*/
-  	
-	SELECT * 
-	FROM employee
-  </select>
-  
-   <update id="updateUser" parameterType="CmmnMap">
-  	/* 
-  	 Query ID : com.kdt.mapper.login.updateUser 
-  	 Description : 회원정보를 수정한다.
-  	 resultType : com.kdt.KDT_PJT.sample.dto.SampleDTO
-  	 작성자 : 김동현/팀장
-  	 작성일 : 2025.08.04
-  	*/
-  	
-    UPDATE employee
-    SET
-    password = #{col2}
-    WHERE emp_seq = #{col1}
-  </update>
+    <!-- 다음 사원번호(emp_seq) 구하기 -->
+    <select id="getNextEmpSeq" resultType="int">
+        SELECT COALESCE(MAX(emp_seq), 0) + 1
+        FROM employee
+    </select>
 
-  
+    <!-- 회원 저장 -->
+    <insert id="saveProc" parameterType="CmmnMap">
+        INSERT INTO employee (emp_seq, employeeId, password)
+        VALUES (#{emp_seq}, #{employeeId}, #{password})
+    </insert>
+
+    <!-- 회원 목록 -->
+    <select id="getUserList" resultType="CmmnMap">
+        SELECT * FROM employee
+    </select>
+
+    <!-- 회원 정보 수정 -->
+    <update id="updateUser" parameterType="CmmnMap">
+        UPDATE employee
+        SET password = #{col2}
+        WHERE emp_seq = #{col1}
+    </update>
+
+    <!-- 로그인 검증 -->
+    <select id="getUserByIdAndPassword" parameterType="CmmnMap" resultType="CmmnMap">
+        SELECT *
+        FROM employee
+        WHERE employeeId = #{employeeId}
+          AND password = #{password}
+    </select>
+
 </mapper>
