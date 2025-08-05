@@ -65,21 +65,21 @@ public class SampleReactCtl {
 	* @return
 	* Description 	 :
 	 */
-	@PostMapping("/api/save")
-	public ResponseEntity<Map<String, String>> saveUser(@RequestBody CmmnMap params) {
-		
-		log.info("saveUser Called >>>>>>>>> ");
-		
-	    System.out.println("이름: " + params.getString("name"));
-	    System.out.println("이메일: " + params.getString("email"));
-	    System.out.println("나이: " + params.getString("age"));
-	    
-	    // 서비스호출 : 저장
-	    // sampleService.saveProc();
-	    
-	    
-	    return ResponseEntity.ok(Map.of("message", "ok"));
-	}
+//	@PostMapping("/api/save")
+//	public ResponseEntity<Map<String, String>> saveUser(@RequestBody CmmnMap params) {
+//		
+//		log.info("saveUser Called >>>>>>>>> ");
+//		
+//	    System.out.println("이름: " + params.getString("name"));
+//	    System.out.println("이메일: " + params.getString("email"));
+//	    System.out.println("나이: " + params.getString("age"));
+//	    
+//	    // 서비스호출 : 저장
+//	    // sampleService.saveProc();
+//	    
+//	    
+//	    return ResponseEntity.ok(Map.of("message", "ok"));
+//	}
 	
 
 

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdt.mapper.login">
+
+ <!-- 
+      ## 프로퍼티스에 cmmnMap 선언하여 CmmnMap 인식시킴
+      mybatis.type-aliases-package=com.kdt.KDT_PJT.cmmn.map
+    -->
+ <insert id="saveProc" parameterType="CmmnMap">
+     /* 
+      Query ID : com.kdt.mapper."com.kdt.mapper.login".saveProc 
+      Description : 
+      resultType : CmmnMap
+      작성자 : 
+      작성일 : 
+     */
+     
+    INSERT INTO employee  
+    (
+        employeeId
+        , password
+    ) 
+    VALUES 
+    (
+        #{employeeId}
+        , #{password}
+    )
+ </insert>
+ 
+ <select id="getUserList" resultType="CmmnMap">
+  
+  	/* 
+  	 Query ID : com.kdt.mapper.login.getUserList
+  	 Description : KDT_CUST_INFO_BSC 모든 정보를 출력한다
+  	 resultType : CmmnMap
+  	 작성자 : 김동현/팀장
+  	 작성일 : 2025.08.04
+  	*/
+  	
+	SELECT * 
+	FROM employee
+  </select>
+  
+   <update id="updateUser" parameterType="CmmnMap">
+  	/* 
+  	 Query ID : com.kdt.mapper.login.updateUser 
+  	 Description : 회원정보를 수정한다.
+  	 resultType : com.kdt.KDT_PJT.sample.dto.SampleDTO
+  	 작성자 : 김동현/팀장
+  	 작성일 : 2025.08.04
+  	*/
+  	
+    UPDATE employee
+    SET
+    password = #{col2}
+    WHERE emp_seq = #{col1}
+  </update>
+
+  
+</mapper>
