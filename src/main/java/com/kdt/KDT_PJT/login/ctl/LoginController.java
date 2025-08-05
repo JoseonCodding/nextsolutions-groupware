@@ -2,7 +2,7 @@ package com.kdt.KDT_PJT.login.ctl;
 
 import java.util.List;
 import java.util.Map;
-import com.kdt.KDT_PJT.sample.ctl.ApprovalController;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
