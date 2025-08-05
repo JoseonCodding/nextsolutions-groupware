@@ -34,6 +34,14 @@ public class LoginService {
         cmmnDao.update(queryId, params);
     }
 
+    /** 회원 활성/비활성 토글 */
+    public void toggleActive(int empSeq) {
+        String queryId = "com.kdt.mapper.login.toggleActive";
+        CmmnMap params = new CmmnMap();
+        params.put("emp_seq", empSeq);
+        cmmnDao.update(queryId, params);
+    }
+
     /** 로그인 검증 */
     public boolean loginCheck(String employeeId, String password) {
         String queryId = "com.kdt.mapper.login.getUserByIdAndPassword";

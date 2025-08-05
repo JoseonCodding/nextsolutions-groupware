@@ -28,7 +28,7 @@ public class LoginController {
         boolean success = loginService.loginCheck(employeeId, password);
 
         if (success) {
-            return "redirect:/";
+            return "redirect:/employee/list";
         } else {
             model.addAttribute("errorMsg", "아이디 또는 비밀번호가 올바르지 않습니다.");
             return "login";
@@ -50,7 +50,15 @@ public class LoginController {
         params.put("employeeId", employeeId);
         params.put("password", password);
 
-        loginService.saveProc(params); // emp_seq 자동 생성 후 저장
+        loginService.saveProc(params);
         return "redirect:/login";
     }
+
+    /** 사원 목록 페이지 */
+    @GetMapping("/login/employeeList")
+    public String employeeList(Model model) {
+        model.addAttribute("employees", loginService.getUserList());
+        return "employeeList";
+    }
+
 }
