@@ -14,7 +14,7 @@ public class ApprovalDTO {
 	public String toString() {
 		return "ApprovalDTO [docId=" + docId + ", docType=" + docType + ", title=" + title + ", content=" + content
 				+ ", department=" + department + ", creatorId=" + creatorId + ", status=" + status + ", writer="
-				+ writer + ", createdAt=" + createdAt + "]";
+				+ writer + ", createdAt=" + createdAt + "]" + "\n";
 	}
 	
 }

@@ -20,12 +20,11 @@ public class ApprovalMainController {
     
     @RequestMapping("/main")
     public String approvalMain(Model model) {
-    	// 1. approvalMapper.selectAll()으로 DB 데이터 읽기
+
     	model.addAttribute("approvalData", approvalMapper.selectAll());
-    	// 2. 뷰 이름 반환
-    	
+
     	System.out.println(approvalMapper.selectAll());
-    	
+
     	return "approval/approvalMain";
     }
 	
