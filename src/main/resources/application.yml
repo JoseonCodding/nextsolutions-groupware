@@ -34,24 +34,26 @@ spring:
 # DB 연결 URL (host, port, dbname 변수를 이용해 구성)
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL JDBC 드라이버 클래스
-    password: '1234'  # DB 비밀번호
+    password: 1234  # DB 비밀번호
     username: team2_user  # DB 사용자명
-    url: jdbc:mysql://${my.datasource.host}:${my.datasource.port}/${my.datasource.dbname}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    #url: jdbc:mysql://localhost:3306/onop_db?characterEncoding=utf-8
+    url: jdbc:mysql://citek707.iptime.org:32933/team2_db?characterEncoding=utf-8
 
 #  JSP 사용시 주석해제
-  mvc:
-    view:
-      prefix: /WEB-INF/views/  # JSP 파일이 위치한 디렉토리
-      suffix: .jsp  # 뷰 파일 확장자
-      encoding: UTF-8  # 뷰 인코딩 설정
+#  mvc:
+#    view:
+#      prefix: /WEB-INF/views/  # JSP 파일이 위치한 디렉토리
+#      suffix: .jsp  # 뷰 파일 확장자
+#      encoding: UTF-8  # 뷰 인코딩 설정
 
 # HTML사용시 주석해제    
-#  thymeleaf:
-#    prefix: classpath:/templates/
-#    suffix: .html
-#    #suffix: .mustache
-#    encoding: UTF-8
-#    mode: HTML
+  thymeleaf:
+    #prefix: classpath:/templates/
+    prefix: /views/
+    suffix: .html
+    #suffix: .mustache
+    encoding: UTF-8
+    mode: HTML
 
   servlet:
     multipart:
