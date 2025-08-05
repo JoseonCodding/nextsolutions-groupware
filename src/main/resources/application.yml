@@ -7,7 +7,7 @@ my:
 
 server:
   address: 0.0.0.0  # 외부에서도 접근 가능하게 설정
-  port: '80'  # 서버 포트 번호
+  port: '8080'  # 서버 포트 번호
   servlet:
     context-path: ''  # 루트 경로로 애플리케이션 실행
 
@@ -66,7 +66,7 @@ spring:
 
 
 mybatis:
-#  mapper-locations: classpath:/mapper/**/*.xml  # Mapper XML 파일 위치
-#  type-aliases-package: com.kdt.KDT_PJT.cmmn.map  # Alias 등록할 패키지 (예: CmmnMap)
+  mapper-locations: classpath:/mapper/**/*.xml  # Mapper XML 파일 위치
+  type-aliases-package: com.kdt.KDT_PJT.cmmn.map  # Alias 등록할 패키지 (예: CmmnMap)
   configuration:
     map-underscore-to-camel-case: 'true'  # DB 컬럼명과 Java camelCase 자동 매핑
