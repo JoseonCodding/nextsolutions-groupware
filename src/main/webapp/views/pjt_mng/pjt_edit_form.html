@@ -120,9 +120,9 @@
         <th>상태</th>
         <td>
           <select name="PJT_STTS_CD">
-			<option value="01" th:selected="${pjt.PJT_STTS_CD == '01'}">진행중</option>
-			<option value="02" th:selected="${pjt.PJT_STTS_CD == '02'}">완료</option>
-			<option value="03" th:selected="${pjt.PJT_STTS_CD == '03'}">보류</option>
+            <option value="01" ${pjt.PJT_STTS_CD == '01' ? 'selected' : ''}>진행중</option>
+            <option value="02" ${pjt.PJT_STTS_CD == '02' ? 'selected' : ''}>완료</option>
+            <option value="03" ${pjt.PJT_STTS_CD == '03' ? 'selected' : ''}>보류</option>
           </select>
         </td>
       </tr>

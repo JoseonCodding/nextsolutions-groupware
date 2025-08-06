@@ -3,19 +3,64 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.kdt.KDT_PJT.login.mapper.LoginMapper">
+<mapper namespace="com.kdt.mapper.login">
 
-    <!-- 로그인: 아이디 + 비밀번호로 사용자 조회 -->
+    <!-- 다음 사원번호(emp_seq) 구하기 -->
+    <select id="getNextEmpSeq" resultType="int">
+        SELECT COALESCE(MAX(emp_seq), 0) + 1
+        FROM employee
+    </select>
+
+    <!-- 신규 사원 저장 -->
+    <insert id="saveProc" parameterType="CmmnMap">
+        INSERT INTO employee (
+            emp_seq,
+            employeeId,
+            password,
+            active
+        ) VALUES (
+            #{emp_seq},
+            #{employeeId},
+            #{password},
+            1  <!-- 기본 활성화 -->
+        )
+    </insert>
+
+    <!-- 로그인: 아이디+비밀번호로 사용자 조회 -->
     <select id="getUserByIdAndPassword" parameterType="CmmnMap" resultType="CmmnMap">
         SELECT emp_seq,
                employeeId,
                password,
-               active,
-               emp_nm
+               active
         FROM employee
         WHERE employeeId = #{employeeId}
           AND password = #{password}
     </select>
+
+    <!-- 사원 목록 조회 -->
+    <select id="getUserList" resultType="CmmnMap">
+        SELECT emp_seq,
+               employeeId,
+               password,
+               active
+        FROM employee
+        ORDER BY emp_seq DESC
+    </select>
+
+    <!-- 사원 정보 수정 -->
+    <update id="updateUser" parameterType="CmmnMap">
+        UPDATE employee
+        SET employeeId = #{employeeId},
+            password = #{password}
+        WHERE emp_seq = #{emp_seq}
+    </update>
+
+    <!-- 사원 활성화/비활성화 토글 -->
+    <update id="toggleActive" parameterType="CmmnMap">
+        UPDATE employee
+        SET active = CASE WHEN active = 1 THEN 0 ELSE 1 END
+        WHERE emp_seq = #{emp_seq}
+    </update>
 
 </mapper>
 

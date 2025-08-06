@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>사원 정보 상세</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f5f6fa;
+            padding: 30px;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 800px;
+            margin: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-spacing: 0;
+        }
+        table td {
+            padding: 10px;
+            vertical-align: middle;
+        }
+        input, select {
+            padding: 8px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .save-btn {
+            background: #4a90e2;
+            color: #fff;
+            padding: 10px 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            float: right;
+        }
+        .save-btn:hover {
+            background: #357ab8;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>사원 정보 상세</h2>
+    <form th:action="@{/employee/save}" method="post">
+        <table>
+            <tr>
+                <td>사번</td>
+                <td><input type="text" name="emp_seq" readonly></td>
+                <td>이름</td>
+                <td><input type="text" name="name"></td>
+            </tr>
+            <tr>
+                <td>휴대폰 번호</td>
+                <td><input type="text" name="phone"></td>
+                <td>생년월일</td>
+                <td><input type="date" name="birth"></td>
+            </tr>
+            <tr>
+                <td>입사일</td>
+                <td><input type="date" name="hire_date"></td>
+                <td>퇴사일</td>
+                <td><input type="date" name="resign_date"></td>
+            </tr>
+            <tr>
+                <td>부서명</td>
+                <td><input type="text" name="dept_name"></td>
+                <td>직위</td>
+                <td><input type="text" name="position"></td>
+            </tr>
+            <tr>
+                <td>권한</td>
+                <td colspan="3">
+                    <select name="role">
+                        <option value="1">권한 1</option>
+                        <option value="2">권한 2</option>
+                        <option value="3">권한 3</option>
+                        <option value="4">권한 4</option>
+                        <option value="5">권한 5</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>사진 업로드</td>
+                <td colspan="3"><input type="file" name="photo"></td>
+            </tr>
+            <tr>
+                <td>비밀번호 변경</td>
+                <td colspan="3"><input type="password" name="new_password"></td>
+            </tr>
+        </table>
+        <button type="submit" class="save-btn">저장</button>
+    </form>
+</div>
+</body>
+</html>
