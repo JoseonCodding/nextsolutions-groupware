@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>★전자 결재 메인</title>
+    <link rel="stylesheet" href="/css/approvalStyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 상단 네비게이션 바 (Topbar) -->
+    <header class="topbar">
+        <div class="logo">NEXTSOLUTIONS</div>
+        <nav class="menu">
+            <a>일정관리</a>
+            <a>근태관리</a>
+            <a>프로젝트</a>
+            <a>전자결제</a>
+            <a>게시판 관리</a>
+            <a>문서관리</a>
+            <a>사원관리</a>
+            <a class="logout">로그아웃</a>
+	        <span class="help-icon" title="도움말">
+	            <i class="fa-solid fa-circle-question fa-2xl"></i>
+	        </span>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="board-header">
+            <h1>결재 관리</h1>
+        </div>
+
+		<!-- 필터 -->
+		<div class="filter-bar">
+		    <form method="get" action="/approval/main">
+		        <select name="type" class="custom-select">
+		            <option value="">결재 종류</option>
+		            <option value="프로젝트">프로젝트</option>
+		            <option value="근태">근태</option>
+		            <option value="공지사항">공지사항</option>
+		        </select>
+		        <select name="status" class="custom-select">
+		            <option value="">결재 상태</option>
+		            <option value="대기">대기</option>
+		            <option value="진행중">진행중</option>
+		            <option value="완료">완료</option>
+		            <option value="반려">반려</option>
+		        </select>
+		        <button type="submit" class="btn-filter">필터 적용</button>
+		    </form>
+		</div>
+
+        <!-- 게시판 -->
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:200px;">기안일</th>
+                    <th style="width:100px;">결재 종류</th>
+                    <th >제목</th>
+                    <th style="width:100px;">부서</th>
+                    <th style="width:100px;">작성자</th>
+                    <th style="width:100px;">결재 상태</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="dto : ${approvalData}">
+                	<td th:text="${#dates.format(dto.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
+            		<td th:text="${dto.docType}"></td>
+				    <td th:text="${dto.title}" class="title"></td>
+				    <td th:text="${dto.department}"></td>
+				    <td th:text="${dto.writer}"></td>
+				    <td th:text="${dto.status}"></td>
+				</tr>
+            </tbody>
+        </table>
+        
+        <!-- 페이지네이션 -->
+		<nav class="pagination">
+		  <a th:if="${page > 1}" th:href="@{/approval/main(page=${page-5 > 1 ? page-5 : 1})}" class="prev">&#x2039; Previous</a>
+		  <a th:if="${startPage > 1}" th:href="@{/approval/main(page=1)}"
+		     th:text="1" th:classappend="${page == 1} ? 'active'"></a>
+		  <span th:if="${startPage > 2}" class="ellipsis">...</span>
+		  <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
+		    <a th:href="@{/approval/main(page=${i})}"
+		       th:text="${i}" th:classappend="${i == page} ? 'active'"></a>
+		  </span>
+		  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
+		  <a th:if="${endPage < totalPages}" th:href="@{/approval/main(page=${totalPages})}"
+		     th:text="${totalPages}" th:classappend="${page == totalPages} ? 'active'"></a>
+		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages})}">Next &#x203A;</a>
+		</nav>
+
+		
+    </main>
+
+</body>
+</html>
