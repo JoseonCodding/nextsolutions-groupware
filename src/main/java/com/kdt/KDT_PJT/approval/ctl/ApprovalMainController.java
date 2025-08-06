@@ -24,9 +24,9 @@ public class ApprovalMainController {
     
     @RequestMapping("/main")
     public String approvalMain(
-			Model model, // 데이터 보관용 (컨트롤러>모델>뷰)
-						 @RequestParam(value = "page", defaultValue = "1") int page, // 페이지네이션용 파라미터 (page:페이지 번호, size:페이지당 게시글 수)
-						 @RequestParam(value = "size", defaultValue = "10") int size) {
+						Model model, // 데이터 보관용 (컨트롤러>모델>뷰)
+						@RequestParam(name = "page", defaultValue = "1") int page, // 페이지네이션용 파라미터 (page:페이지 번호, size:페이지당 게시글 수)
+						@RequestParam(name = "size", defaultValue = "10") int size) {
     	
     	int offset = (page - 1) * size;	// 페이지 마다 표시되는 게시글의 시작점 (ex.1페이지:0~9번, 2페이지:10~19번...)
     	int totalCount = approvalMapper.countAll();	// 게시글 DB 전체 개수
@@ -50,10 +50,6 @@ public class ApprovalMainController {
     	model.addAttribute("size", size);
     	model.addAttribute("startPage", startPage);
     	model.addAttribute("endPage", endPage);
-    	
-    	System.out.println("	★게시글 DB 전체 개수 : " + totalCount);
-    	System.out.println("	★전체 페이지 수 : " + totalPages);
-    	System.out.println("	★현재 페이지 게시글 DB 정보 : " + approvalData);
     	
     	return "approval/approvalMain";
     }
