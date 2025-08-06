@@ -41,20 +41,16 @@ public interface ApprovalMapper {
 							@Param("status") String status);
 	
 	// 데이터베이스 전체 행 개수
-	@Select(
-			"<script> "
+	@Select("<script> "
 			+ "SELECT COUNT(*) FROM Approval_TEST "
 			
 			+ " <where> "
-			
-			+ " <if test='type != null and type != \"\"'> "
-			+ " docType = #{type} "
-			+ " </if> "
-			
-			+ " <if test='status != null and status != \"\"'> "
-			+ " AND status = #{status} "
-			+ " </if> "
-			
+			+ 	" <if test='type != null and type != \"\"'> "
+			+ 		" docType = #{type} "
+			+ 	" </if> "
+			+ 	" <if test='status != null and status != \"\"'> "
+			+ 		" AND status = #{status} "
+			+ 	" </if> "
 			+ " </where> "
 			+ " </script>"
 			)

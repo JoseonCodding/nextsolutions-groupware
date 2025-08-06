@@ -40,6 +40,9 @@ public class ApprovalMainController {
     	    startPage = Math.max(1, endPage - blockSize + 1);
     	}
     	
+    	// 필터에 해당하는 게시글이 없는 경우 endPage=0이 되는 상황 방지
+    	if (totalPages == 0) {endPage = 1;}
+    	
     	List<ApprovalDTO> approvalData = approvalMapper.pageData(offset, size,type, status); // 현재 페이지 게시글 DB 정보 (offset부터 size까지)
     	
     	model.addAttribute("approvalData", approvalData);
