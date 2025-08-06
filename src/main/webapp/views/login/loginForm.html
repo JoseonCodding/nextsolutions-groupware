@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>넥스트 솔루션즈 - 로그인</title>
+<style>
+    body { font-family: 'Noto Sans KR', sans-serif; background-color: #f5f6fa; margin: 0; padding: 0; }
+    .login-container { width: 100%; max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    h1 { text-align: center; margin-bottom: 30px; color: #2c3e50; }
+    label { display: block; margin: 10px 0 5px; font-weight: bold; }
+    input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 15px; }
+    button { width: 100%; padding: 12px; background-color: #4a90e2; border: none; border-radius: 4px; color: white; font-size: 16px; cursor: pointer; }
+    button:hover { background-color: #357abd; }
+    .error-msg { color: red; font-size: 14px; text-align: center; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="login-container">
+    <h1>넥스트 솔루션즈</h1>
+
+    <div th:if="${param.error}" class="error-msg">
+        아이디 또는 비밀번호가 맞지 않습니다. 다시 확인 주세요.
+    </div>
+
+    <form action="/login/process" method="post">
+        <label for="employeeId">아이디</label>
+        <input type="text" id="employeeId" name="employeeId" placeholder="아이디" required>
+
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" name="password" placeholder="비밀번호" required>
+
+        <button type="submit">로그인</button>
+    </form>
+</div>
+</body>
+</html>

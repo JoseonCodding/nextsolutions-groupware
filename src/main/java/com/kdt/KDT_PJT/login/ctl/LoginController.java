@@ -1,64 +1,42 @@
 package com.kdt.KDT_PJT.login.ctl;
 
-import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
-import com.kdt.KDT_PJT.login.svc.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
+import com.kdt.KDT_PJT.login.svc.LoginService;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
+@RequestMapping("/login")
 public class LoginController {
 
     @Autowired
     private LoginService loginService;
 
-    /** 로그인 페이지 */
-    @GetMapping("/login")
+    @GetMapping
     public String loginPage() {
-        return "login";
+        return "login/loginForm";
     }
 
-    /** 로그인 처리 */
-    @PostMapping("/login")
+    @PostMapping("/process")
     public String loginProcess(@RequestParam("employeeId") String employeeId,
                                @RequestParam("password") String password,
-                               Model model) {
+                               HttpSession session) {
+        CmmnMap user = loginService.login(employeeId, password);
 
-        boolean success = loginService.loginCheck(employeeId, password);
-
-        if (success) {
+        if (user != null) {
+            session.setAttribute("loginUser", user);
             return "redirect:/employee/list";
         } else {
-            model.addAttribute("errorMsg", "아이디 또는 비밀번호가 올바르지 않습니다.");
-            return "login";
+            return "redirect:/login?error=true";
         }
     }
 
-    /** 회원가입 페이지 */
-    @GetMapping("/join")
-    public String joinPage() {
-        return "join";
-    }
-
-    /** 회원가입 처리 */
-    @PostMapping("/join")
-    public String joinProcess(@RequestParam("employeeId") String employeeId,
-                              @RequestParam("password") String password) {
-
-        CmmnMap params = new CmmnMap();
-        params.put("employeeId", employeeId);
-        params.put("password", password);
-
-        loginService.saveProc(params);
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
         return "redirect:/login";
     }
-
-    /** 사원 목록 페이지 */
-    @GetMapping("/login/employeeList")
-    public String employeeList(Model model) {
-        model.addAttribute("employees", loginService.getUserList());
-        return "employeeList";
-    }
-
 }
+
