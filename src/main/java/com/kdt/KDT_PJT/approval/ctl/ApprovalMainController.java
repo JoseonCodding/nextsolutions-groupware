@@ -10,17 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 
+import jakarta.annotation.Resource;
+
 @Controller
 @RequestMapping("/approval")
 public class ApprovalMainController {
 	
-	// 생성자 주입 방식 컨트롤러 (@Autowired 생략)
-    private final ApprovalMapper approvalMapper;
-    
-    // 생성자에서 주입받기
-    public ApprovalMainController(ApprovalMapper approvalMapper) {
-    	this.approvalMapper = approvalMapper;
-    }
+	@Resource
+    ApprovalMapper approvalMapper;
     
     @RequestMapping("/main")
     public String approvalMain(

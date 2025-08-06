@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 
+
 @Mapper
 public interface ApprovalMapper {
 	

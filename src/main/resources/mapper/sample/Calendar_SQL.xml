@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Calendar">
+    <select id="getAllEvents" parameterType="CmmnMap" resultType="CmmnMap">
+	    SELECT 
+	        EVT_SN
+	        , CALENDAR_ID
+	        , EVT_TITLE
+	        , EVT_CN
+	        , EVT_BGNG_DT
+	        , EVT_END_DT
+	        , IS_ALL_DAY
+	        , EVT_CATEGORY
+	        , EVT_LOCATION
+	        , EVT_ATND_LST
+	        , EVT_STCD
+	        , VISIBLE_YN
+	        , EDITABLE_YN
+	        , IS_PRIVATE
+	        , TEXT_COLOR
+	        , BG_COLOR
+	        , PIC_MBL_TELNO
+	    FROM 
+	        TB_CALENDAR_EVENTS
+	    WHERE 
+	        CALENDAR_ID = 'company'
+	        OR (CALENDAR_ID = 'personal'  )
+	        OR (CALENDAR_ID = 'team'  )
+<!-- 	        OR (CALENDAR_ID = 'personal' AND PIC_MBL_TELNO = #{userPhoneNumber}) -->
+<!-- 	        OR (CALENDAR_ID = 'team' AND EVT_ATND_LST = #{userTdeptNm}) -->
+	</select>
+
+    <insert id="createEvent" parameterType="CmmnMap">
+	    INSERT INTO TB_CALENDAR_EVENTS (
+	        EVT_SN
+	        , PIC_MBL_TELNO
+	        , CALENDAR_ID
+	        , EVT_TITLE
+	        , EVT_LOCATION
+	        , EVT_BGNG_DT
+	        , EVT_END_DT
+	        , IS_ALL_DAY
+	        , EVT_CATEGORY
+	        , EVT_STCD
+	        , IS_PRIVATE
+	        , WRTER_NM
+	        , WRT_DT
+	        , EVT_ATND_LST
+	    ) VALUES (
+	        #{EVT_SN}
+	        , #{PIC_MBL_TELNO}
+	        , #{CALENDAR_ID}
+	        , #{EVT_TITLE}
+	        , #{EVT_LOCATION}
+	        , #{EVT_BGNG_DT}
+	        , #{EVT_END_DT}
+	        , #{IS_ALL_DAY}
+	        , #{EVT_CATEGORY}
+	        , #{EVT_STCD}
+	        , #{IS_PRIVATE}
+	        , #{WRTER_NM}
+	        , NOW()
+	        , #{EVT_ATND_LST}
+	    )
+	</insert>
+
+    <update id="updateEvent" parameterType="CmmnMap">
+        UPDATE TB_CALENDAR_EVENTS
+        SET 
+            CALENDAR_ID = #{CALENDAR_ID}
+            , EVT_TITLE = #{EVT_TITLE}
+            , EVT_CN = #{EVT_CN}
+            , EVT_BGNG_DT = #{EVT_BGNG_DT}
+            , EVT_END_DT = #{EVT_END_DT}
+            , IS_ALL_DAY = #{IS_ALL_DAY}
+            , EVT_CATEGORY = #{EVT_CATEGORY}
+            , EVT_LOCATION = #{EVT_LOCATION}
+        	, EVT_ATND_LST = #{EVT_ATND_LST}
+			, EVT_STCD = #{EVT_STCD}
+            , IS_PRIVATE = #{IS_PRIVATE}
+        WHERE 
+            EVT_SN = #{EVT_SN}
+    </update>
+    
+    <delete id="deleteEvent" parameterType="CmmnMap">
+        DELETE FROM TB_CALENDAR_EVENTS 
+        WHERE 1=1 
+        AND EVT_SN = #{EVT_SN}
+    </delete>
+    
+</mapper>
