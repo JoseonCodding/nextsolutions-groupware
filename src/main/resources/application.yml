@@ -47,11 +47,7 @@ spring:
 
 # HTML사용시 주석해제    
   thymeleaf:
-<<<<<<< HEAD
 #    prefix: classpath:/templates/
-=======
- #   prefix: classpath:/templates/
->>>>>>> refs/heads/feat_근태
     prefix: /views/
     suffix: .html
     #suffix: .mustache
