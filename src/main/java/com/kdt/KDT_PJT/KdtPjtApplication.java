@@ -8,7 +8,7 @@ public class KdtPjtApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(KdtPjtApplication.class, args);
-		////
+
 	}
 
 }
