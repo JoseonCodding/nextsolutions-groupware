@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.pjt_mng.svc.ProjcetMngService;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/pjtMng")
 public class ProjectMngController {
@@ -29,13 +31,14 @@ public class ProjectMngController {
 	// log 사용을 위함
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
-
+	//1. 프로젝트 목록 화면 호출 
 	@GetMapping("/getPjtList")
 	public String getPjtList(Model model) {
 		
+		//프로젝트 리스트를 서비스에서 가져옴
 		log.info("getPjtList Called >>> ");
 		
-		
+		//모델에 프로젝트 리스트를 담아서 뷰로 전달 
 		List<CmmnMap> pjtList = projcetMngService.getPjtList();
 		
 		model.addAttribute("pjtList", pjtList);
@@ -44,7 +47,7 @@ public class ProjectMngController {
 	}
 	
 	
-	
+	//2. 프로젝트 상세보기 페이지 호출 
 	@GetMapping("/pjtDetail")
 	public String getPjtDetail(@RequestParam("pjtSn") String pjtSn, Model model) {
 	    log.info("getPjtDetail Called >>> " + pjtSn);
@@ -57,13 +60,65 @@ public class ProjectMngController {
 
 
 	@GetMapping("/getSavePjtForm")
-	public String getSavePjtForm(Model model) {
+	public String getSavePjtForm(HttpSession session, Model model) {
 		
-		
-		return "pjt_mng/pjt_reg_form";
+	    Object loginUser = session.getAttribute("loginUser");
+	    boolean isAdmin = true;  // 임시로 항상 true로 설정 !!
+	    
 
-	}	
+	    // 이후 사용자 관리자가 세팅해주면 교체하기 (주석풀기)
+	    // loginUser 객체가 null이 아니고, UserVO 타입일 경우
+//	    if (loginUser != null && loginUser instanceof com.kdt.KDT_PJT.sample.vo.UserVO) {
+//	        com.kdt.KDT_PJT.sample.vo.UserVO user = (com.kdt.KDT_PJT.sample.vo.UserVO) loginUser;
+//
+//	        // 실제 UserVO에 getRole() 또는 getGrade(), getAuth() 등 확인 필요
+//	        isAdmin = "관리자".equals(user.getRole());  // 💡 필드명이 getRole()이 아니면 맞게 바꿔야 해
+//	    }
+
+	    // isAdmin 값을 모델에 넣음
+	    model.addAttribute("isAdmin", isAdmin);
+
+	    // 화면 이동
+	    return "pjt_mng/pjt_reg_form";
+	}
+
+	@GetMapping("/pjtEditForm")
+	public String getPjtEditForm(@RequestParam("pjtSn") String pjtSn, Model model) {
+	    log.info("getPjtEditForm Called >>> " + pjtSn);
+	    
+	    CmmnMap pjtDetail = projcetMngService.getPjtDetail(pjtSn);  // 기존 상세조회 사용
+	    model.addAttribute("pjt", pjtDetail);
+
+	    return "pjt_mng/pjt_edit_form"; // views/pjt_mng/pjt_edit_form.html
+	}
 	
+	@PostMapping("/updatePjtProc")
+	public String updatePjtProc(
+	        @RequestParam("pjtSn") String pjtSn,
+	        @RequestParam("pjtNm") String pjtNm,
+	        @RequestParam(value = "empNm", required = false) String empNm,
+	        @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
+	        @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt
+	) {
+	    log.info("updatePjtProc Called >>> " + pjtSn);
+
+	    CmmnMap params = new CmmnMap();
+	    params.put("PJT_SN", pjtSn);
+	    params.put("PJT_NM", pjtNm);
+	    params.put("EMP_NM", empNm);
+	    params.put("PJT_BGNG_DT", pjtBgngDt);
+	    params.put("PJT_END_DT", pjtEndDt);
+
+	    // 마지막 수정일시 업데이트
+	    LocalDateTime now = LocalDateTime.now();
+	    String formatted = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+	    params.put("LAST_MDFCN_DT", formatted);
+	    params.put("LAST_MDFR_ID", "SYSTEM"); // 임시로 SYSTEM. 나중에 세션 사용자 ID로 대체 가능
+
+	    projcetMngService.updatePjtProc(params);  // service에서 update 메서드 필요!
+
+	    return "redirect:/pjtMng/getPjtList";
+	}
 
 	@PostMapping("/savePjtProc")
 	public String savePjtProc(
@@ -72,7 +127,9 @@ public class ProjectMngController {
 		    @RequestParam(value = "empNm", required = false) String empNm,
 		    @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
 		    @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt
-			) {
+			)	{
+		
+		
 		
 		log.info("savePjtProc Called >>> ");
 		

@@ -30,6 +30,12 @@ public class ProjcetMngService {
 		cmmnDao.insert("com.kdt.mapper.pjt_mng.savePjtProc", params);
 		
 	}
+
+
+	public void updatePjtProc(CmmnMap params) {
+	    cmmnDao.update("com.kdt.mapper.pjt_mng.updatePjtProc", params);
+		
+	}
     
 
 }

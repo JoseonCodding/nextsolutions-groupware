@@ -29,6 +29,7 @@
 		, PJT_BGNG_DT
 		, PJT_END_DT
 		FROM team2_db.TB_PJT_BASC
+        ORDER BY PJT_SN ASC  
 
   </select>
   

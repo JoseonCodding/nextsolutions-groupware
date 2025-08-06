@@ -78,7 +78,8 @@ dependencies {
 	// Spring Boot Security
 	// implementation 'org.springframework.boot:spring-boot-starter-security'
 	
-
+	// devtools
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
 tasks.named('test') {
