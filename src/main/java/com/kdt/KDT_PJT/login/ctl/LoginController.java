@@ -3,10 +3,8 @@ package com.kdt.KDT_PJT.login.ctl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
+import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.login.svc.LoginService;
-import com.kdt.KDT_PJT.login.dto.UserDTO;
-
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -18,20 +16,20 @@ public class LoginController {
 
     @GetMapping
     public String loginPage() {
-        return "login/loginForm"; // loginForm.html
+        return "login/loginForm";
     }
 
-    @PostMapping
-    public String login(@RequestParam String empNo,
-                        @RequestParam String password,
-                        HttpSession session) {
-        UserDTO loginUser = loginService.login(empNo, password);
+    @PostMapping("/process")
+    public String loginProcess(@RequestParam("employeeId") String employeeId,
+                               @RequestParam("password") String password,
+                               HttpSession session) {
+        CmmnMap user = loginService.login(employeeId, password);
 
-        if (loginUser != null) {
-            session.setAttribute("loginUser", loginUser);
-            return "redirect:/employee/list"; // 로그인 성공 시 사원 목록 페이지 이동
+        if (user != null) {
+            session.setAttribute("loginUser", user);
+            return "redirect:/employee/list";
         } else {
-            return "redirect:/login?error=true"; // 로그인 실패
+            return "redirect:/login?error=true";
         }
     }
 
@@ -41,3 +39,4 @@ public class LoginController {
         return "redirect:/login";
     }
 }
+
