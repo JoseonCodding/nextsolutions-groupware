@@ -53,6 +53,10 @@ public class ApprovalMainController {
     	model.addAttribute("startPage", startPage);
     	model.addAttribute("endPage", endPage);
     	
+    	// 필터 선택값 유지용
+    	model.addAttribute("type", type);
+    	model.addAttribute("status", status);
+    	
     	return "approval/approvalMain";
     }
 	

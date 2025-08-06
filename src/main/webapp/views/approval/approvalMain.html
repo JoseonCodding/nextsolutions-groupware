@@ -32,24 +32,26 @@
 
 		<!-- 필터 -->
 		<!-- 
-		미구현 : 	1.필터 적용 후, 필터영역 고정안됨 -> 파라미터값 받아서 항상 표시되도록 구현 예정
+		미구현 : 	1.필터 리셋(취소) 버튼 필요
 				2.페이지네이션 시, 파라미터의 필터값 못받고 노필터 상태로 페이지바뀜
 		 -->
 		<div class="filter-bar">
 		    <form method="get" action="/approval/main">
-		        <select name="type" class="custom-select">
-		            <option value="">결재 종류</option>
-		            <option value="프로젝트">프로젝트</option>
-		            <option value="근태">근태</option>
-		            <option value="공지사항">공지사항</option>
-		        </select>
-		        <select name="status" class="custom-select">
-		            <option value="">결재 상태</option>
-		            <option value="대기">대기</option>
-		            <option value="진행중">진행중</option>
-		            <option value="완료">완료</option>
-		            <option value="반려">반려</option>
-		        </select>
+				<select name="type" class="custom-select">
+				    <option value="" th:selected="${type == null or type == ''}">결재 종류</option>
+				    <option value="프로젝트" th:selected="${type == '프로젝트'}">프로젝트</option>
+				    <option value="근태" th:selected="${type == '근태'}">근태</option>
+				    <option value="공지사항" th:selected="${type == '공지사항'}">공지사항</option>
+				</select>
+
+				<select name="status" class="custom-select">
+				    <option value="" th:selected="${status == null or status == ''}">결재 상태</option>
+				    <option value="대기" th:selected="${status == '대기'}">대기</option>
+				    <option value="진행중" th:selected="${status == '진행중'}">진행중</option>
+				    <option value="완료" th:selected="${status == '완료'}">완료</option>
+				    <option value="반려" th:selected="${status == '반려'}">반려</option>
+				</select>
+
 		        <button type="submit" class="btn-filter">필터 적용</button>
 		    </form>
 		</div>
@@ -91,21 +93,21 @@
 		  <a th:if="${page > 1}" th:href="@{/approval/main(page=${page-5 > 1 ? page-5 : 1})}" class="prev">&#x2039; Previous</a>
 		
 		  <!-- 첫 페이지 -->
-		  <span th:if="${startPage > 1 and page == 1}" class="page-number active disabled" th:text="1"></span>
+		  <span th:if="${startPage > 1 and page == 1}" class="page-number now-page disabled" th:text="1"></span>
 		  <a th:if="${startPage > 1 and page != 1}" th:href="@{/approval/main(page=1)}" th:text="1" class="page-number"></a>
 		
 		  <span th:if="${startPage > 2}" class="ellipsis">...</span>
 		
 		  <!-- 페이지 숫자들 -->
 		  <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
-		    <span th:if="${i == page}" class="page-number active disabled" th:text="${i}"></span>
+		    <span th:if="${i == page}" class="page-number now-page disabled" th:text="${i}"></span>
 		    <a th:if="${i != page}" th:href="@{/approval/main(page=${i})}" th:text="${i}" class="page-number"></a>
 		  </span>
 		
 		  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
 		
 		  <!-- 마지막 페이지 -->
-		  <span th:if="${endPage < totalPages and page == totalPages}" class="page-number active disabled" th:text="${totalPages}"></span>
+		  <span th:if="${endPage < totalPages and page == totalPages}" class="page-number now-page disabled" th:text="${totalPages}"></span>
 		  <a th:if="${endPage < totalPages and page != totalPages}" th:href="@{/approval/main(page=${totalPages})}" th:text="${totalPages}" class="page-number"></a>
 		
 		  <!-- Next 버튼 -->
