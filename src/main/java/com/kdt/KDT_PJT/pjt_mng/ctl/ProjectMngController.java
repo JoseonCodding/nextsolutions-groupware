@@ -92,13 +92,21 @@ public class ProjectMngController {
 	    return "pjt_mng/pjt_edit_form"; // views/pjt_mng/pjt_edit_form.html
 	}
 	
+	@GetMapping("/editForm")
+	public String getEditForm(@RequestParam("pjtSn") String pjtSn, Model model) {
+	    CmmnMap pjt = projcetMngService.getPjtDetail(pjtSn); // 기존과 동일하게 가져오기
+	    model.addAttribute("pjt", pjt);
+	    return "pjt_mng/pjt_edit_form";  // HTML 또는 JSP 파일 이름
+	}
+
 	@PostMapping("/updatePjtProc")
 	public String updatePjtProc(
 	        @RequestParam("pjtSn") String pjtSn,
 	        @RequestParam("pjtNm") String pjtNm,
 	        @RequestParam(value = "empNm", required = false) String empNm,
 	        @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
-	        @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt
+	        @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
+	        @RequestParam(value = "PJT_STTS_CD", required = false) String pjtSttsCd
 	) {
 	    log.info("updatePjtProc Called >>> " + pjtSn);
 
@@ -108,17 +116,19 @@ public class ProjectMngController {
 	    params.put("EMP_NM", empNm);
 	    params.put("PJT_BGNG_DT", pjtBgngDt);
 	    params.put("PJT_END_DT", pjtEndDt);
+	    params.put("PJT_STTS_CD", pjtSttsCd); // ✅ 상태코드 추가
 
 	    // 마지막 수정일시 업데이트
 	    LocalDateTime now = LocalDateTime.now();
 	    String formatted = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
 	    params.put("LAST_MDFCN_DT", formatted);
-	    params.put("LAST_MDFR_ID", "SYSTEM"); // 임시로 SYSTEM. 나중에 세션 사용자 ID로 대체 가능
+	    params.put("LAST_MDFR_ID", "SYSTEM"); // 나중에 세션 사용자로 대체 가능
 
-	    projcetMngService.updatePjtProc(params);  // service에서 update 메서드 필요!
+	    projcetMngService.updatePjtProc(params);
 
 	    return "redirect:/pjtMng/getPjtList";
 	}
+
 
 	@PostMapping("/savePjtProc")
 	public String savePjtProc(
