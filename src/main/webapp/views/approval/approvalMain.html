@@ -34,7 +34,6 @@
 		<!-- 
 		미구현 : 	1.필터 적용 후, 필터영역 고정안됨 -> 파라미터값 받아서 항상 표시되도록 구현 예정
 				2.페이지네이션 시, 파라미터의 필터값 못받고 노필터 상태로 페이지바뀜
-				3.필터값에 해당하는 글이 없는 경우, '필터값에 해당하는 게시글이 없습니다.' 표시 예정
 		 -->
 		<div class="filter-bar">
 		    <form method="get" action="/approval/main">
@@ -88,20 +87,30 @@
         
         <!-- 페이지네이션 -->
 		<nav class="pagination">
+		  <!-- Previous 버튼 -->
 		  <a th:if="${page > 1}" th:href="@{/approval/main(page=${page-5 > 1 ? page-5 : 1})}" class="prev">&#x2039; Previous</a>
-		  <a th:if="${startPage > 1}" th:href="@{/approval/main(page=1)}"
-		     th:text="1" th:classappend="${page == 1} ? 'active'"></a>
+		
+		  <!-- 첫 페이지 -->
+		  <span th:if="${startPage > 1 and page == 1}" class="page-number active disabled" th:text="1"></span>
+		  <a th:if="${startPage > 1 and page != 1}" th:href="@{/approval/main(page=1)}" th:text="1" class="page-number"></a>
+		
 		  <span th:if="${startPage > 2}" class="ellipsis">...</span>
+		
+		  <!-- 페이지 숫자들 -->
 		  <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
-		    <a th:href="@{/approval/main(page=${i})}"
-		       th:text="${i}" th:classappend="${i == page} ? 'active'"></a>
+		    <span th:if="${i == page}" class="page-number active disabled" th:text="${i}"></span>
+		    <a th:if="${i != page}" th:href="@{/approval/main(page=${i})}" th:text="${i}" class="page-number"></a>
 		  </span>
+		
 		  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
-		  <a th:if="${endPage < totalPages}" th:href="@{/approval/main(page=${totalPages})}"
-		     th:text="${totalPages}" th:classappend="${page == totalPages} ? 'active'"></a>
+		
+		  <!-- 마지막 페이지 -->
+		  <span th:if="${endPage < totalPages and page == totalPages}" class="page-number active disabled" th:text="${totalPages}"></span>
+		  <a th:if="${endPage < totalPages and page != totalPages}" th:href="@{/approval/main(page=${totalPages})}" th:text="${totalPages}" class="page-number"></a>
+		
+		  <!-- Next 버튼 -->
 		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages})}">Next &#x203A;</a>
 		</nav>
-
 		
     </main>
 

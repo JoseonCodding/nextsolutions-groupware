@@ -183,15 +183,15 @@ tbody tr:hover {
 }
 
 .list-empty {
-	background: #fff8e1;
-    color: #ed6c02;
-    font-weight: bold;
+    background: #e3f2fd;
+    color: #1565c0;
+    font-weight: 500;
     font-size: 1.05em;
     text-align: center;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid #ffe082;
-    border-top: 2px solid #ffe082;
-    padding: 30px 0;
+    border-bottom: 2px solid #bbdefb;
+    border-top: 2px solid #bbdefb;
+    letter-spacing: 0.3px;
+    padding: 26px 0;
 }
 
 /* 페이지네이션 */
@@ -216,20 +216,6 @@ tbody tr:hover {
   transition: background 0.2s;
 }
 
-.pagination a.active {
-  background: #4269f5;
-  color: #fff;
-  font-weight: bold;
-  cursor: default;
-}
-
-.pagination a.disabled {
-  background: #ddd;
-  color: #bbb;
-  pointer-events: none;
-  cursor: not-allowed;
-}
-
 .pagination a:hover:not(.active):not(.disabled) {
   background: #d0e3ff;
 }
@@ -241,4 +227,15 @@ tbody tr:hover {
   padding: 5px 8px;
   font-weight: bold;
   pointer-events: none;
+}
+
+.pagination .page-number.active,
+.pagination .page-number.disabled {
+    background: #4269f5;
+    color: #fff !important;
+    font-weight: bold;
+    cursor: default;
+    pointer-events: none;
+    user-select: none;
+    text-decoration: none;
 }
