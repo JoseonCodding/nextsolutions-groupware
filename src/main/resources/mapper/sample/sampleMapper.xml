@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdt.mapper.sample">
+
+
+  <select id="getUserList" resultType="com.kdt.KDT_PJT.sample.dto.SampleDTO">
+  
+  	/* 
+  	 Query ID : com.kdt.mapper.sample.getUserList 
+  	 Description : KDT_CUST_INFO_BSC 모든 정보를 출력한다
+  	 resultType : com.kdt.KDT_PJT.sample.dto.SampleDTO
+  	 작성자 : 이의찬/대리
+  	 작성일 : 2025.07.01
+  	*/
+  	
+	SELECT * 
+	FROM KDT_CUST_INFO_BSC 
+	ORDER BY FRST_REG_DT DESC
+  </select>
+  
+  
+	<!-- 
+		## 프로퍼티스에 미 선언시
+	 -->
+   <select id="getAllUsersMap" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+  
+  	/* 
+  	 Query ID : com.kdt.mapper.sample.getAllUsersMap 
+  	 Description : KDT_CUST_INFO_BSC 모든 정보를 출력한다
+  	 resultType : com.kdt.KDT_PJT.cmmn.map.CmmnMap
+  	 작성자 : 이의찬/대리
+  	 작성일 : 2025.07.01
+  	*/
+  	
+    SELECT *
+	FROM tb_test tt 
+  </select>
+
+
+
+	<!-- 
+		## 프로퍼티스에 cmmnMap 선언하여 CmmnMap 인식시킴
+		mybatis.type-aliases-package=com.kdt.KDT_PJT.cmmn.map
+	 -->
+   <select id="getAllUsersCmmnMap" parameterType="CmmnMap" resultType="CmmnMap">
+  
+  	/* com.kdt.mapper.sample.getAllUsersCmmnMap */
+  	
+    SELECT *
+	FROM tb_test tt 
+  </select>
+  
+   <insert id="saveProc" parameterType="com.kdt.KDT_PJT.sample.dto.SampleDTO">
+  	/* 
+  	 Query ID : com.kdt.mapper.sample.saveProc 
+  	 Description : 회원정보를 저장한다.
+  	 resultType : com.kdt.KDT_PJT.sample.dto.SampleDTO
+  	 작성자 : 이의찬/대리
+  	 작성일 : 2025.07.01
+  	*/
+  	
+    INSERT INTO KDT_CUST_INFO_BSC 
+    (
+        KORN_FLNM, 
+        MBL_TELNO, 
+        EML_ADDR, 
+        FRST_REG_DT, 
+        FRST_RGTR_SN, 
+        LAST_CHG_DT, 
+        LAST_MDFR_ID
+    ) 
+    VALUES 
+    (
+        #{kornFlnm}, 
+        #{mblTelno}, 
+        #{emlAddr}, 
+        DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'), 
+        '0000', 
+        DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'), 
+        '0000'
+    )
+  </insert>
+  
+  <update id="updateProc" parameterType="com.kdt.KDT_PJT.sample.dto.SampleDTO">
+  	/* 
+  	 Query ID : com.kdt.mapper.sample.updateProc 
+  	 Description : 회원정보를 수정한다.
+  	 resultType : com.kdt.KDT_PJT.sample.dto.SampleDTO
+  	 작성자 : 이의찬/대리
+  	 작성일 : 2025.07.01
+  	*/
+  	
+    UPDATE KDT_CUST_INFO_BSC
+    SET
+    KORN_FLNM = #{kornFlnm},
+    MBL_TELNO = #{mblTelno},
+    EML_ADDR = #{emlAddr}
+    WHERE CUST_SN = #{custSn}
+  </update>
+
+  <delete id="deleteProc" parameterType="com.kdt.KDT_PJT.sample.dto.SampleDTO">
+  	/* 
+  	 Query ID : com.kdt.mapper.sample.deleteProc 
+  	 Description : 회원정보를 삭제한다.
+  	 resultType : com.kdt.KDT_PJT.sample.dto.SampleDTO
+  	 작성자 : 이의찬/대리
+  	 작성일 : 2025.07.01
+  	*/
+    DELETE FROM KDT_CUST_INFO_BSC
+    WHERE CUST_SN = #{custSn}
+  </delete>
+  
+  
+</mapper>
