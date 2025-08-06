@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 상세보기</title>
+</head>
+<body>
+<div th:insert="board/parts/header :: header"></div>
+<div th:insert="board/parts/boardNav :: boardNav"></div>
+
+<h2 th:text="${post.title}">제목</h2>
+<p><strong>작성자 ID:</strong> <span th:text="${post.authorId}">1</span></p>
+<p><strong>작성일:</strong> <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">2025-08-05</span></p>
+<p><strong>조회수:</strong> <span th:text="${post.viewCount}">0</span></p>
+<p><strong>추천수:</strong> <span th:text="${post.likeCount}">0</span></p>
+
+<hr>
+<div>
+    <p th:text="${post.content}">게시글 내용</p>
+</div>
+<!-- 댓글 목록 -->
+<h3>댓글 목록</h3>
+
+<ul th:if="${#lists.isEmpty(comments)}">
+    <li>아직 댓글이 없습니다.</li>
+</ul>
+
+<ul th:each="c : ${comments}">
+    <li>
+        <p th:text="${c.content}">댓글 내용</p>
+        <small th:text="'작성자 ID: ' + ${c.authorId}"></small>
+        <small th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
+    </li>
+</ul>
+
+<!-- 댓글작성 폼 -->
+<h3>댓글 작성</h3>
+
+<form th:action="@{/board/comment/save}" method="post">
+    <input type="hidden" name="postId" th:value="${post.id}" />
+    <textarea name="content" placeholder="댓글을 입력하세요" required style="width: 100%; height: 80px;"></textarea>
+    <br>
+    <button type="submit">전송</button>
+</form>
+
+
+<a th:href="@{/board}">목록으로</a>
+</body>
+</html>

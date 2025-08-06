@@ -34,9 +34,15 @@ spring:
 # DB 연결 URL (host, port, dbname 변수를 이용해 구성)
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL JDBC 드라이버 클래스
+<<<<<<< HEAD
     password: 1234  # DB 비밀번호
     username: team2_user  # DB 사용자명
     url: jdbc:mysql://citek707.iptime.org:32933/team2_db?characterEncoding=utf-8
+=======
+    password: '20221210'  # DB 비밀번호
+    username: root  # DB 사용자명
+    url: jdbc:mysql://localhost:3306/board_db?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=utf8
+>>>>>>> refs/remotes/origin/백지원
 
 #  JSP 사용시 주석해제
 #  mvc:
