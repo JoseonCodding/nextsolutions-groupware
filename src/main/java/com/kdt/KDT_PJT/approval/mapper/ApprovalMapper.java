@@ -11,14 +11,11 @@ import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 @Mapper
 public interface ApprovalMapper {
 	
-	// 데이터베이스 값 불러오기
-	@Select("SELECT * FROM Approval_TEST ORDER BY createdAt DESC")	// 테이블에서 모든 값을 등록일자 기준 내림차순으로 받아옴
-	List<ApprovalDTO> selectAllDesc();
-	
-	
-	// 페이지네이션
-	@Select("SELECT * FROM Approval_TEST ORDER BY createdAt DESC LIMIT #{offset}, #{size}") // offset:시작위치, size:페이지당 글수 (계산은 컨트롤러에서)
-	List<ApprovalDTO> selectPage(@Param("offset") int offset, @Param("size") int size);
+	// 현재 페이지에 들어가는 데이터 베이스 조회
+	@Select("SELECT * FROM Approval_TEST ORDER BY createdAt DESC LIMIT #{offset}, #{size}")
+											// 테이블에서 등록일자 기준 내림차순, offset값 부터 size값 까지 받아옴
+											// offset:페이지 마다 표시되는 게시글의 시작점, size:페이지당 글수 (계산은 컨트롤러에서)
+	List<ApprovalDTO> pageData(@Param("offset") int offset, @Param("size") int size);
 	
 	// 데이터베이스 전체 행 개수
 	@Select("SELECT COUNT(*) FROM Approval_TEST")

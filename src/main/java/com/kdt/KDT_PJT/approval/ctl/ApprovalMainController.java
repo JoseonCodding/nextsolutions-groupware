@@ -1,11 +1,14 @@
 package com.kdt.KDT_PJT.approval.ctl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
+import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 
 @Controller
 @RequestMapping("/approval")
@@ -22,17 +25,26 @@ public class ApprovalMainController {
     @RequestMapping("/main")
     public String approvalMain(
 			Model model, // 데이터 보관용 (컨트롤러>모델>뷰)
-						 @RequestParam(value = "page", defaultValue = "1") int page, // 페이지네이션용 파라미터 (페이지 번호, 사이즈)
+						 @RequestParam(value = "page", defaultValue = "1") int page, // 페이지네이션용 파라미터 (page:페이지 번호, size:페이지당 게시글 수)
 						 @RequestParam(value = "size", defaultValue = "10") int size) {
     	
-    	// 데이터베이스 값 모델에 집어넣기
-    	model.addAttribute("approvalData", approvalMapper.selectAllDesc());
-
-    	System.out.println("	★게시글 DB 모든 내용" + approvalMapper.selectAllDesc());	// 게시글 DB Console 확인용
+    	int offset = (page - 1) * size;	// 페이지 마다 표시되는 게시글의 시작점 (ex.1페이지:0~9번, 2페이지:10~19번...)
+    	int totalCount = approvalMapper.countAll();	// 게시글 DB 전체 개수
+    	int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
     	
-    	// 페이지네이션	
-    	System.out.println("	★게시글 DB 전체 개수 : " + approvalMapper.countAll());
+    	System.out.println("	★게시글 DB 전체 개수 : " + totalCount);
+    	System.out.println("	★전체 페이지 수 : " + totalPages);
+    	
+    	List<ApprovalDTO> approvalData = approvalMapper.pageData(offset, size); // 현재 페이지 게시글 DB 정보
 
+    	System.out.println("	★현재 페이지 게시글 DB 정보 : " + approvalData);
+    	
+    	model.addAttribute("approvalData", approvalData);
+    	model.addAttribute("page", page);
+    	model.addAttribute("totalPages", totalPages);
+    	model.addAttribute("size", size);	
+    	
+    	
     	return "approval/approvalMain";
     }
 	

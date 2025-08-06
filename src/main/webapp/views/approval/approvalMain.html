@@ -13,7 +13,7 @@
         <nav class="menu">
             <a >일정관리</a>
             <a >근태관리</a>
-            <a >프로젝트</a>ㅇ
+            <a >프로젝트</a>
             <a >전자결제</a>
             <a >게시판 관리</a>
             <a >문서관리</a>
@@ -64,7 +64,7 @@
             </thead>
             <tbody>
                 <tr th:each="dto : ${approvalData}">
-                	<td th:text="${#dates.format(dto.createdAt, 'yyyy년 M월 d일 H시 m분')}"></td>
+                	<td th:text="${#dates.format(dto.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
             		<td th:text="${dto.docType}"></td>
 				    <td th:text="${dto.title}" class="title"></td>
 				    <td th:text="${dto.department}"></td>
@@ -75,25 +75,16 @@
         </table>
         
         <!-- 페이지네이션 -->
-<!--           <div class="pagination">
-            <a th:if="${page > 1}" th:href="@{/approval(page=${page-1})}">Previous</a>
-            <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                <a th:href="@{/approval(page=${i})}"
-                   th:text="${i}" th:classappend="${i == page} ? 'current'"></a>
-            </span>
-            <a th:if="${page < totalPages}" th:href="@{/approval(page=${page+1})}">Next</a>
-        </div> -->
-        
-        <!-- 페이지네이션 (가짜) -->
 		<nav class="pagination">
-		  <a href="#" class="prev disabled">&lt;</a>
-		  <a href="#" class="active">1</a>
-		  <a href="#">2</a>
-		  <a href="#">3</a>
-		  <span>...</span>
-		  <a href="#">10</a>
-		  <a href="#" class="next">&gt;</a>
+		  <a th:if="${page > 1}" th:href="@{/approval/main(page=${page-1},size=${size})}" class="prev">&lt; Previous</a>
+		  <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+		    <a th:href="@{/approval/main(page=${i},size=${size})}"
+		       th:text="${i}" th:classappend="${i == page} ? 'active'"></a>
+		  </span>
+		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+1},size=${size})}">Next &gt;</a>
 		</nav>
+		
     </main>
+
 </body>
 </html>
