@@ -2,6 +2,7 @@ package com.kdt.KDT_PJT.approval.ctl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,17 +11,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 
+import jakarta.annotation.Resource;
+
 @Controller
 @RequestMapping("/approval")
 public class ApprovalMainController {
 	
 	// 생성자 주입 방식 컨트롤러 (@Autowired 생략)
-    private final ApprovalMapper approvalMapper;
+	@Resource
+    ApprovalMapper approvalMapper;
     
-    // 생성자에서 주입받기
-    public ApprovalMainController(ApprovalMapper approvalMapper) {
-    	this.approvalMapper = approvalMapper;
-    }
+//    // 생성자에서 주입받기
+//    public ApprovalMainController(ApprovalMapper approvalMapper) {
+//    	this.approvalMapper = approvalMapper;
+//    }
     
     @RequestMapping("/main")
     public String approvalMain(
