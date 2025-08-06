@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>프로젝트 목록</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; }
+    table { width: 100%; border-collapse: collapse; background-color: white; margin-top: 20px; }
+    th, td { padding: 12px; border-bottom: 1px solid #ccc; text-align: left; }
+    th { background-color: #eee; }
+    tr:hover { background-color: #f5f5f5; }
+    .button { padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; }
+    .btn-view { background-color: #4CAF50; color: white; }
+    .btn-edit { background-color: #2196F3; color: white; }
+    .btn-delete { background-color: #f44336; color: white; }
+    .btn-add { background-color: #673ab7; color: white; margin-top: 20px; }
+  </style>
+</head>
+<body>
+<!-- ✅ 네비게이션 바 -->
+<div style="display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 24px; background-color: #f4f6f8; border-bottom: 1px solid #ddd;">
+
+  <!-- 왼쪽: 로고 + 메뉴 -->
+  <div style="display: flex; align-items: center; gap: 32px;">
+    <!-- 로고 -->
+    <div style="font-size: 18px; font-weight: bold; color: #1a237e;">
+      NEXTSOLUTIONS
+    </div>
+
+    <!-- 메뉴 -->
+    <div style="display: flex; gap: 20px; font-size: 14px;">
+      <a href="#" style="text-decoration: none; color: #333;">일정관리</a>
+      <a href="#" style="text-decoration: none; color: #333;">근태관리</a>
+      <a href="#" style="text-decoration: none; color: #333;">프로젝트</a>
+      <a href="#" style="text-decoration: none; color: #333;">전자결재</a>
+      <a href="#" style="text-decoration: none; color: #333;">게시판 관리</a>
+      <a href="#" style="text-decoration: none; color: #333;">문서관리</a>
+      <a href="#" style="text-decoration: none; color: #333;">사원관리</a>
+    </div>
+  </div>
+
+  <!-- 오른쪽: 로그아웃 -->
+  <div>
+    <button style="background-color: #2962ff; color: white; border: none;
+                   padding: 8px 16px; border-radius: 4px; cursor: pointer;"
+            onclick="location.href='/logout'">로그아웃</button>
+  </div>
+</div>
+
+<h1>프로젝트 관리</h1>
+
+</div>
+<!-- ✅ 카드 나열형 스타일 (5개 + 색상 버전) -->
+<div style="display: flex; gap: 16px; margin-top: 20px;">
+
+  <!-- 총 프로젝트 수 -->
+  <div style="
+    flex: 1;
+    background: #e3f2fd;  /* 연하늘 */
+    border: 1px solid #90caf9;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="font-size: 14px; color: #0d47a1;">총 프로젝트 수</div>
+    <div style="font-size: 22px; font-weight: bold; color: #0d47a1;" th:text="${pjtList.size()}">0</div>
+  </div>
+
+  <!-- 내 참여 프로젝트 -->
+  <div style="
+    flex: 1;
+    background: #f3e5f5;  /* 연보라 */
+    border: 1px solid #ce93d8;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="font-size: 14px; color: #6a1b9a;">내 참여 프로젝트</div>
+    <div style="font-size: 22px; font-weight: bold; color: #6a1b9a;" th:text="${myProjectCount}">0</div>
+  </div>
+
+  <!-- 진행중 -->
+  <div style="
+    flex: 1;
+    background: #fff8e1;  /* 연노랑 */
+    border: 1px solid #ffe082;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="font-size: 14px; color: #f57f17;">진행중</div>
+    <div style="font-size: 22px; font-weight: bold; color: #f57f17;" th:text="${inProgressCount}">0</div>
+  </div>
+
+  <!-- 완료 -->
+  <div style="
+    flex: 1;
+    background: #e8f5e9;  /* 연녹색 */
+    border: 1px solid #81c784;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="font-size: 14px; color: #1b5e20;">완료</div>
+    <div style="font-size: 22px; font-weight: bold; color: #1b5e20;" th:text="${completedCount}">0</div>
+  </div>
+
+  <!-- 지연 -->
+  <div style="
+    flex: 1;
+    background: #ffebee;  /* 연분홍 */
+    border: 1px solid #ef9a9a;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="font-size: 14px; color: #b71c1c;">대기</div>
+    <div style="font-size: 22px; font-weight: bold; color: #b71c1c;" th:text="${delayedCount}">0</div>
+  </div>
+
+</div>
+<!-- ✅ 드롭다운 + 등록 버튼 수평 정렬 + 스타일 통일 -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+
+  <!-- 왼쪽: 드롭다운 -->
+  <div>
+    <select style="
+      height: 40px;
+      width: 160px;
+      font-size: 14px;
+      padding: 0 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      outline: none;
+      cursor: pointer;
+    " name="sortType" onchange="onSortChange(this)">
+      <option selected disabled>정렬</option>
+      <option value="team">팀명</option>
+      <option value="writer">작성자명</option>
+      <option value="project">프로젝트명</option>
+    </select>
+  </div>
+
+  <!-- 오른쪽: 등록 버튼 -->
+  <div>
+    <button
+      onclick="location.href='/pjtMng/getSavePjtForm'"
+      style="
+        height: 40px;
+        width: 160px;
+        font-size: 14px;
+        background-color: #2962ff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      ">
+      프로젝트 등록
+    </button>
+  </div>
+
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>순번</th>
+      <th>프로젝트명</th>
+      <th>담당자</th>
+      <th>진행상태</th>
+      <th>시작일</th>
+      <th>마감일</th>
+      <th>진행상태</th>
+      <th>완료율</th>
+      <th>비고</th>
+    
+      
+    </tr>
+  </thead>
+  <tbody>
+<tr th:each="pjt : ${pjtList}">               <!-- 프로젝트명 -->
+  <td th:text="${pjt['PJT_STTS_CD']}"></td>   <!-- 담당자 -->
+  <td th:text="${pjt['PJT_NM']}"></td>        <!--  -->
+  <td th:text="${pjt['EMP_NM']}"></td>
+  <td th:text="${pjt['PJT_STTS_CD']}"></td>
+  <td th:text="${pjt['PJT_BGNG_DT']}"></td>
+  <td th:text="${pjt['PJT_END_DT']}"></td>  
+  <td th:text="${pjt['PJT_STTS_CD']}"></td>
+  <td th:text="${pjt['PJT_STTS_CD']}"></td>
+  
+  <td>
+	<button class="button btn-view"
+	        th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
+	  상세보기
+	</button>
+	
+    <button class="button btn-edit"
+            th:onclick="'location.href=\'project_edit.html?id=' + ${pjt['PJT_SN']} + '\''">
+      변경
+    </button>
+    <button class="button btn-delete"
+            th:onclick="'deleteProject(\'' + ${pjt['PJT_SN']} + '\')'">
+      삭제
+    </button>
+  </td>
+</tr>
+  </tbody>
+</table>
+
+
+
+<script>
+  function deleteProject(id) {
+    if (confirm(`${id} 삭제할까요?`)) {
+      alert(`삭제 처리 중: ${id}`);
+      // fetch로 삭제 요청 날리게 해도 됨
+    }
+  }
+</script>
+
+</body>
+</html>

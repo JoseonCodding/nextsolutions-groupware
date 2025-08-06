@@ -11,13 +11,13 @@
     <header class="topbar">
         <div class="logo">NEXTSOLUTIONS</div>
         <nav class="menu">
-            <a >일정관리</a>
-            <a >근태관리</a>
-            <a >프로젝트</a>
-            <a >전자결제</a>
-            <a >게시판 관리</a>
-            <a >문서관리</a>
-            <a >사원관리</a>
+            <a>일정관리</a>
+            <a>근태관리</a>
+            <a>프로젝트</a>
+            <a>전자결제</a>
+            <a>게시판 관리</a>
+            <a>문서관리</a>
+            <a>사원관리</a>
             <a class="logout">로그아웃</a>
 	        <span class="help-icon" title="도움말">
 	            <i class="fa-solid fa-circle-question fa-2xl"></i>
@@ -32,7 +32,7 @@
 
 		<!-- 필터 -->
 		<div class="filter-bar">
-		    <form>
+		    <form method="get" action="/approval/main">
 		        <select name="type" class="custom-select">
 		            <option value="">결재 종류</option>
 		            <option value="프로젝트">프로젝트</option>
@@ -76,13 +76,20 @@
         
         <!-- 페이지네이션 -->
 		<nav class="pagination">
-		  <a th:if="${page > 1}" th:href="@{/approval/main(page=${page-1},size=${size})}" class="prev">&lt; Previous</a>
-		  <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-		    <a th:href="@{/approval/main(page=${i},size=${size})}"
+		  <a th:if="${page > 1}" th:href="@{/approval/main(page=${page-5 > 1 ? page-5 : 1})}" class="prev">&#x2039; Previous</a>
+		  <a th:if="${startPage > 1}" th:href="@{/approval/main(page=1)}"
+		     th:text="1" th:classappend="${page == 1} ? 'active'"></a>
+		  <span th:if="${startPage > 2}" class="ellipsis">...</span>
+		  <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
+		    <a th:href="@{/approval/main(page=${i})}"
 		       th:text="${i}" th:classappend="${i == page} ? 'active'"></a>
 		  </span>
-		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+1},size=${size})}">Next &gt;</a>
+		  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
+		  <a th:if="${endPage < totalPages}" th:href="@{/approval/main(page=${totalPages})}"
+		     th:text="${totalPages}" th:classappend="${page == totalPages} ? 'active'"></a>
+		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages})}">Next &#x203A;</a>
 		</nav>
+
 		
     </main>
 

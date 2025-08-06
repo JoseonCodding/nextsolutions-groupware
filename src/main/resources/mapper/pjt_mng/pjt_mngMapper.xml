@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdt.mapper.pjt_mng">
+
+
+  <select id="getPjtList" resultType="CmmnMap">
+  
+  	/* 
+  	 Query ID : com.kdt.mapper.pjt_mng.getPjtList
+  	 Description : 
+  	 resultType : CmmnMap
+  	 작성자 : 
+  	 작성일 : 
+  	*/
+		SELECT PJT_SN
+		, PJT_NM
+		, PJT_STTS_CD
+		, EMP_SEQ
+		, EMP_NM
+		, USE_YN
+		, FRST_RGTR_ID
+		, FRST_REG_DT
+		, LAST_MDFR_ID
+		, LAST_MDFCN_DT
+		, ATCH_FILE_SN
+		, PJT_BGNG_DT
+		, PJT_END_DT
+		FROM team2_db.TB_PJT_BASC
+        ORDER BY PJT_SN ASC  
+
+  </select>
+  
+	<select id="getPjtDetail" parameterType="String" resultType="CmmnMap">
+	    SELECT PJT_SN,
+	           PJT_NM,
+	           PJT_STTS_CD,
+	           EMP_SEQ,
+	           EMP_NM,
+	           USE_YN,
+	           FRST_RGTR_ID,
+	           FRST_REG_DT,
+	           LAST_MDFR_ID,
+	           LAST_MDFCN_DT,
+	           ATCH_FILE_SN,
+	           PJT_BGNG_DT,
+	           PJT_END_DT
+	      FROM team2_db.TB_PJT_BASC
+	     WHERE PJT_SN = #{pjtSn}
+	</select>
+  
+	  <insert id="savePjtProc" parameterType="CmmnMap">
+	  INSERT INTO TB_PJT_BASC (
+	    PJT_NM,
+	    EMP_NM,
+	    PJT_BGNG_DT,
+	    PJT_END_DT,
+	    PJT_STTS_CD,
+	    FRST_RGTR_ID,
+	    FRST_REG_DT
+	  ) VALUES (
+	    #{PJT_NM},
+	    #{EMP_NM},
+	    #{PJT_BGNG_DT},
+	    #{PJT_END_DT},
+	    '01',             <!-- 상태 기본값 예: '01' = 진행중 -->
+	   	'SYSTEM',
+	    #{FRST_REG_DT}
+	  )
+	</insert>
+  
+</mapper>

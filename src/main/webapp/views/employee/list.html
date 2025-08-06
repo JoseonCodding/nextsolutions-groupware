@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>사원 관리</title>
+<style>
+    body { font-family: 'Noto Sans KR', sans-serif; background-color: #f5f6fa; margin: 0; padding: 20px; }
+    h1 { color: #2c3e50; text-align: center; margin-bottom: 20px; }
+    table { border-collapse: collapse; width: 100%; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    th, td { padding: 12px; text-align: center; border-bottom: 1px solid #ddd; }
+    th { background-color: #4a90e2; color: white; }
+    tr:hover { background-color: #f0f8ff; }
+    .status-active { color: #28a745; font-weight: bold; }
+    .status-inactive { color: #dc3545; font-weight: bold; }
+    .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+    .btn-active { background: #28a745; color: white; }
+    .btn-active:hover { background: #218838; }
+    .btn-inactive { background: #dc3545; color: white; }
+    .btn-inactive:hover { background: #c82333; }
+    .btn-edit { background: #ff9800; color: white; padding: 6px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; text-decoration: none; }
+	.btn-edit:hover { background: #e68900; }
+</style>
+</head>
+<body>
+<h1>사원 관리</h1>
+
+<a href="/employee/register" style="display:inline-block;margin-bottom:10px;padding:8px 12px;background:#4a90e2;color:white;border-radius:4px;text-decoration:none;">사원 등록</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>사번</th>
+            <th>아이디</th>
+            <th>비밀번호</th>
+            <th>상태</th>
+            <th>이름</th>
+            <th>작업</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="emp : ${employees}">
+            <td th:text="${emp.emp_seq}"></td>
+            <td th:text="${emp.employeeId}"></td>
+            <td th:text="${emp.password}"></td>
+            <td class="status"
+                th:classappend="${emp.active == 1} ? 'status-active' : 'status-inactive'"
+                th:text="${emp.active == 1 ? '활성' : '비활성'}"></td>
+            <td th:text="${emp.emp_nm}"></td>
+            <td>
+                <button th:if="${emp.active == 1}" class="btn btn-inactive" th:attr="data-emp=${emp.emp_seq}">비활성화</button>
+                <button th:if="${emp.active != 1}" class="btn btn-active" th:attr="data-emp=${emp.emp_seq}">활성화</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+document.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", function() {
+        const empSeq = this.dataset.emp;
+        const row = this.closest("tr");
+        const statusCell = row.querySelector(".status");
+
+        fetch("/employee/toggle", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `emp_seq=${empSeq}`
+        }).then(res => res.text())
+          .then(data => {
+              if (data === "OK") {
+                  // 상태 즉시 변경
+                  if (statusCell.textContent.trim() === "활성") {
+                      statusCell.textContent = "비활성";
+                      statusCell.classList.remove("status-active");
+                      statusCell.classList.add("status-inactive");
+                      this.textContent = "활성화";
+                      this.classList.remove("btn-inactive");
+                      this.classList.add("btn-active");
+                  } else {
+                      statusCell.textContent = "활성";
+                      statusCell.classList.remove("status-inactive");
+                      statusCell.classList.add("status-active");
+                      this.textContent = "비활성화";
+                      this.classList.remove("btn-active");
+                      this.classList.add("btn-inactive");
+                  }
+              }
+          });
+    });
+});
+</script>
+</body>
+</html>
+

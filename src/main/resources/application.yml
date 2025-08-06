@@ -38,6 +38,7 @@ spring:
     username: team2_user  # DB 사용자명
     url: jdbc:mysql://citek707.iptime.org:32933/team2_db?characterEncoding=utf-8
 
+
 #  JSP 사용시 주석해제
 #  mvc:
 #    view:
@@ -47,8 +48,11 @@ spring:
 
 # HTML사용시 주석해제    
   thymeleaf:
+#    prefix: classpath:/templates/
     prefix: /views/
     suffix: .html
+    #suffix: .mustache
+
     encoding: UTF-8
     mode: HTML
 
