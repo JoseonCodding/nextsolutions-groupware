@@ -11,4 +11,6 @@ public class HomeController {
 		System.out.println("Home 진입");
 		return "index";
 	}
+	
+	
 }
