@@ -22,6 +22,18 @@ public interface LeaveMapper {
 			+ "where employeeId = #{employeeId} and leave_type = #{leave_type} ")
 	int getAnnualLeaveCnt(LeaveDTO dto);
 	
+	//관리자용 연차 조회
+	@Select("select t1.*, ifnull(use_cnt,0) as used from "
+			+ "(select employeeId, count(*) as total from annual_leave "
+			+ "where leave_type = '발생' "
+			+ "group by employeeId ) t1 "
+			+ "left outer join "
+			+ "(select employeeId, count(*) use_cnt from annual_leave "
+			+ "where leave_type = '사용' "
+			+ "group by employeeId) t2 "
+			+ "on t1.employeeId = t2.employeeId; ")
+	LeaveDTO mngLeaveList(); 
+	
 	//user_id 기준으로 특정 사용자의 연차 정보(leave_type, leave_hours)를 조회
 	@Select("SELECT leave_type, leave_hours " +
             "FROM annual_leave " +

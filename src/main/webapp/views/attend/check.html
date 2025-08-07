@@ -1,17 +1,7 @@
-<!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org" lang="ko"
-xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-<head>
-<meta charset="UTF-8">
+
 <title>근태 관리</title>
 
-</head>
-<body>
-<h1>근태 관리</h1>
-<a href="attend">근태 관리</a>
-<a href="attend/leave">연차 관리</a>
-<a href="attend/attendList">출퇴근 변경 이력</a>
-<a href="attend/leave/leaveListMng">연차 관리(관리자 화면)</a>
+<th:block th:replace="@{attend/layout/tap}"/>
 
 <form method="post" th:action="@{/attend/in}">
     <button type="submit">출근</button>
@@ -20,5 +10,7 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
     <button type="submit">퇴근</button>
 </form>
 <div th:replace="attend/attendCalender"></div>
+
+<a th:href="@{/attend/attendTimeInsert}" >출퇴근 기록 수정 신청</a>
 </body>
 </html>

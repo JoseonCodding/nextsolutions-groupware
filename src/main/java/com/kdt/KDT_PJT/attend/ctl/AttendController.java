@@ -13,8 +13,6 @@ import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
 
 
-
-
 @Controller
 @RequestMapping("/attend")
 public class AttendController {
@@ -25,12 +23,16 @@ public class AttendController {
 
     @GetMapping
     String showAttendancePage(Model model) {
+    	
+    	
     	List<AttendDTO> attendList = service.getAttendData(); 
     	
     	System.out.println("showAttendancePage:"+attendList);
         model.addAttribute("mainData", attendList);
         
-        return "attend/check";
+        model.addAttribute("mainUrl", "attend/check");
+        return "home";
+        
     }
 
     //출근 시간 기록
@@ -54,10 +56,17 @@ public class AttendController {
     public String attendPage1(Model model) {
         List<AttendDTO> attendList = service.getAttendData(); 
         model.addAttribute("mainData", attendList);
-        return "attend/attendList"; 
+        model.addAttribute("mainUrl", "attend/attendList");
+        return "home"; 
     }
     
-    
+    //출퇴근 기록 수정 신청 
+    @GetMapping("/attendTimeInsert")
+    String attendTimeInsert(Model model) {
+    	System.out.println("attendTimeInsert 작동하나");
+        model.addAttribute("mainUrl", "attend/attendTimeInsert");
+        return "home";
+    }
     
   
     

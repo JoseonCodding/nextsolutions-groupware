@@ -1,23 +1,17 @@
-<!-- 연차 관리 사용자용 -->
-<form action="" method="">
+<!-- 연차 관리 관리자용 -->
+<form action="" method="post">
 	<table border="">
 		<tr>
 			<td>이름</td>
 			<td>총 연차</td>
 			<td>사용 연차</td>
 			<td>잔여 연차</td>
-			<td>수정자</td>
-			<td>수정일</td>
-			<td>사유</td>
 		</tr>
-		<tr th:each=" ld : ${listData}">
-		    <td th:text="${ld.empNm}"/>
-		    <td th:text="${ld.total}"/>
-		    <td th:text="${ld.use}"/>
-		    <td th:text="${ld.getRest}"/>
-		    <td />
-		    <td />
-		    <td />
+		<tr th:each=" ldm : ${listMngData}">
+		    <td th:text="${ldm.empNm}"/>
+		    <td th:text="${ldm.total}"/>
+		    <td th:text="${ldm.used}"/>
+		    <td th:text="${ldm.getRest}"/>
 		</tr>
 	</table>
 </form>
