@@ -14,7 +14,7 @@
             <a>일정관리</a>
             <a>근태관리</a>
             <a>프로젝트</a>
-            <a>전자결제</a>
+            <a href="/approval/main">전자결재</a>
             <a>게시판 관리</a>
             <a>문서관리</a>
             <a>사원관리</a>
@@ -94,28 +94,28 @@
         <!-- 페이지네이션 -->
 		<nav class="pagination">
 		  <!-- Previous 버튼 -->
-		  <a th:if="${page > 1}" th:href="@{/approval/main(page=${page-5 > 1 ? page-5 : 1})}" class="prev">&#x2039; Previous</a>
+		  <a th:if="${page > 1}" th:href="@{/approval/main(page=${page-5 > 1 ? page-5 : 1}, type=${type}, status=${status})}" class="prev">&#x2039; Previous</a>
 		
 		  <!-- 첫 페이지 -->
 		  <span th:if="${startPage > 1 and page == 1}" class="page-number now-page disabled" th:text="1"></span>
-		  <a th:if="${startPage > 1 and page != 1}" th:href="@{/approval/main(page=1)}" th:text="1" class="page-number"></a>
+		  <a th:if="${startPage > 1 and page != 1}" th:href="@{/approval/main(page=1, type=${type}, status=${status})}" th:text="1" class="page-number"></a>
 		
 		  <span th:if="${startPage > 2}" class="ellipsis">...</span>
 		
 		  <!-- 페이지 숫자들 -->
 		  <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
 		    <span th:if="${i == page}" class="page-number now-page disabled" th:text="${i}"></span>
-		    <a th:if="${i != page}" th:href="@{/approval/main(page=${i})}" th:text="${i}" class="page-number"></a>
+		    <a th:if="${i != page}" th:href="@{/approval/main(page=${i}, type=${type}, status=${status})}" th:text="${i}" class="page-number"></a>
 		  </span>
 		
 		  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
 		
 		  <!-- 마지막 페이지 -->
 		  <span th:if="${endPage < totalPages and page == totalPages}" class="page-number now-page disabled" th:text="${totalPages}"></span>
-		  <a th:if="${endPage < totalPages and page != totalPages}" th:href="@{/approval/main(page=${totalPages})}" th:text="${totalPages}" class="page-number"></a>
+		  <a th:if="${endPage < totalPages and page != totalPages}" th:href="@{/approval/main(page=${totalPages}, type=${type}, status=${status})}" th:text="${totalPages}" class="page-number"></a>
 		
 		  <!-- Next 버튼 -->
-		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages})}">Next &#x203A;</a>
+		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages}, type=${type}, status=${status})}">Next &#x203A;</a>
 		</nav>
 		
     </main>
