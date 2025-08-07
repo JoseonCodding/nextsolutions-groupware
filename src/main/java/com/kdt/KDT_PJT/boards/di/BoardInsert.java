@@ -2,9 +2,9 @@ package com.kdt.KDT_PJT.boards.di;
 
 import org.springframework.stereotype.Component;
 
-import com.kdt.KDT_PJT.boards.dto.BoardDTO;
+import com.kdt.KDT_PJT.boards.model.BoardDTO;
 import com.kdt.KDT_PJT.boards.mapper.BoardMapper;
-import com.kdt.KDT_PJT.boards.dto.*;
+import com.kdt.KDT_PJT.boards.model.*;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;

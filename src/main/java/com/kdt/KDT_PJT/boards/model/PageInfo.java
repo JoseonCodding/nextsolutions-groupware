@@ -1,4 +1,4 @@
-package com.kdt.KDT_PJT.boards.dto;
+package com.kdt.KDT_PJT.boards.model;
 
 import lombok.Data;
 

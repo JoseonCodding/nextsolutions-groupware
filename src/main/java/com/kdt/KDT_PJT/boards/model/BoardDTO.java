@@ -1,4 +1,4 @@
-package com.kdt.KDT_PJT.boards.dto;
+package com.kdt.KDT_PJT.boards.model;
 
 import java.util.Date;
 
@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardDTO {
 
+	///글쓰기, 글 목록, 글 수정 등
     private Integer id;        // 게시글 ID
     private Integer boardId;   // 게시판 ID (자유게시판, 공지사항 등 구분)
     private String authorId;   // 작성자 ID (employeeId 기준)

@@ -1,7 +1,7 @@
 package com.kdt.KDT_PJT.boards.di;
 
-import com.kdt.KDT_PJT.boards.dto.PageInfo;
-import com.kdt.KDT_PJT.boards.dto.BoardDTO;
+import com.kdt.KDT_PJT.boards.model.PageInfo;
+import com.kdt.KDT_PJT.boards.model.BoardDTO;
 
 import jakarta.servlet.http.HttpServletRequest;
 

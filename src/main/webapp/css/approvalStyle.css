@@ -9,10 +9,6 @@ body {
     background: #f7f8fa;
 }
 
-.container {
-    display: flex;
-    min-height: 100vh;
-}
 
 /* 상단 네이게이션바 */
 .topbar {
