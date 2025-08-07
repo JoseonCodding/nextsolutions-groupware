@@ -1,12 +1,12 @@
-package com.kdt.KDT_PJT.di;
+package com.kdt.KDT_PJT.attend.di;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.kdt.KDT_PJT.model.AttendDTO;
-import com.kdt.KDT_PJT.model.AttendMapper;
+import com.kdt.KDT_PJT.attend.model.AttendDTO;
+import com.kdt.KDT_PJT.attend.model.AttendMapper;
 
 import jakarta.annotation.Resource;
 

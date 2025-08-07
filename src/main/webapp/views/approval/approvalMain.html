@@ -3,28 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>★전자 결재 메인</title>
-    <link rel="stylesheet" href="/css/approvalStyle.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
 </head>
 <body>
-    <!-- 상단 네비게이션 바 (Topbar) -->
-    <header class="topbar">
-        <div class="logo">NEXTSOLUTIONS</div>
-        <nav class="menu">
-            <a>일정관리</a>
-            <a>근태관리</a>
-            <a>프로젝트</a>
-            <a>전자결제</a>
-            <a>게시판 관리</a>
-            <a>문서관리</a>
-            <a>사원관리</a>
-            <a class="logout">로그아웃</a>
-	        <span class="help-icon" title="도움말">
-	            <i class="fa-solid fa-circle-question fa-2xl"></i>
-	        </span>
-        </nav>
-    </header>
-
+    
+	<nav th:replace="@{/layout/navigation}"></nav>
     <main class="main-content">
         <div class="board-header">
             <h1>결재 관리</h1>
@@ -33,20 +16,27 @@
 		<!-- 필터 -->
 		<div class="filter-bar">
 		    <form method="get" action="/approval/main">
-		        <select name="type" class="custom-select">
-		            <option value="">결재 종류</option>
-		            <option value="프로젝트">프로젝트</option>
-		            <option value="근태">근태</option>
-		            <option value="공지사항">공지사항</option>
-		        </select>
-		        <select name="status" class="custom-select">
-		            <option value="">결재 상태</option>
-		            <option value="대기">대기</option>
-		            <option value="진행중">진행중</option>
-		            <option value="완료">완료</option>
-		            <option value="반려">반려</option>
-		        </select>
-		        <button type="submit" class="btn-filter">필터 적용</button>
+				<select name="type" class="filter-selector">
+				    <option value="" th:selected="${type == null or type == ''}">결재 종류</option>
+				    <option value="프로젝트" th:selected="${type == '프로젝트'}">프로젝트</option>
+				    <option value="근태" th:selected="${type == '근태'}">근태</option>
+				    <option value="공지사항" th:selected="${type == '공지사항'}">공지사항</option>
+				</select>
+
+				<select name="status" class="filter-selector">
+				    <option value="" th:selected="${status == null or status == ''}">결재 상태</option>
+				    <option value="대기" th:selected="${status == '대기'}">대기</option>
+				    <option value="진행중" th:selected="${status == '진행중'}">진행중</option>
+				    <option value="완료" th:selected="${status == '완료'}">완료</option>
+				    <option value="반려" th:selected="${status == '반려'}">반려</option>
+				</select>
+
+			    <button type="submit" class="filter-btn">
+			      <i class="fa fa-search"></i> 조회
+			    </button>
+			    <a href="/approval/main" class="filter-btn">
+			      <i class="fa fa-rotate-left"></i> 초기화
+			    </a>
 		    </form>
 		</div>
 
@@ -62,7 +52,13 @@
                     <th style="width:100px;">결재 상태</th>
                 </tr>
             </thead>
+            
             <tbody>
+            
+            	<tr th:if="${#lists.isEmpty(approvalData)}">
+            		<td colspan="6" class="list-empty">필터 조건에 해당하는 게시글이 없습니다.</td>
+            	</tr>
+            	
                 <tr th:each="dto : ${approvalData}">
                 	<td th:text="${#dates.format(dto.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
             		<td th:text="${dto.docType}"></td>
@@ -76,20 +72,30 @@
         
         <!-- 페이지네이션 -->
 		<nav class="pagination">
-		  <a th:if="${page > 1}" th:href="@{/approval/main(page=${page-5 > 1 ? page-5 : 1})}" class="prev">&#x2039; Previous</a>
-		  <a th:if="${startPage > 1}" th:href="@{/approval/main(page=1)}"
-		     th:text="1" th:classappend="${page == 1} ? 'active'"></a>
+		  <!-- Previous 버튼 -->
+		  <a th:if="${page > 1}" th:href="@{/approval/main(page=${page-5 > 1 ? page-5 : 1}, type=${type}, status=${status})}" class="prev">&#x2039; Previous</a>
+		
+		  <!-- 첫 페이지 -->
+		  <span th:if="${startPage > 1 and page == 1}" class="page-number now-page disabled" th:text="1"></span>
+		  <a th:if="${startPage > 1 and page != 1}" th:href="@{/approval/main(page=1, type=${type}, status=${status})}" th:text="1" class="page-number"></a>
+		
 		  <span th:if="${startPage > 2}" class="ellipsis">...</span>
+		
+		  <!-- 페이지 숫자들 -->
 		  <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
-		    <a th:href="@{/approval/main(page=${i})}"
-		       th:text="${i}" th:classappend="${i == page} ? 'active'"></a>
+		    <span th:if="${i == page}" class="page-number now-page disabled" th:text="${i}"></span>
+		    <a th:if="${i != page}" th:href="@{/approval/main(page=${i}, type=${type}, status=${status})}" th:text="${i}" class="page-number"></a>
 		  </span>
+		
 		  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
-		  <a th:if="${endPage < totalPages}" th:href="@{/approval/main(page=${totalPages})}"
-		     th:text="${totalPages}" th:classappend="${page == totalPages} ? 'active'"></a>
-		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages})}">Next &#x203A;</a>
+		
+		  <!-- 마지막 페이지 -->
+		  <span th:if="${endPage < totalPages and page == totalPages}" class="page-number now-page disabled" th:text="${totalPages}"></span>
+		  <a th:if="${endPage < totalPages and page != totalPages}" th:href="@{/approval/main(page=${totalPages}, type=${type}, status=${status})}" th:text="${totalPages}" class="page-number"></a>
+		
+		  <!-- Next 버튼 -->
+		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages}, type=${type}, status=${status})}">Next &#x203A;</a>
 		</nav>
-
 		
     </main>
 

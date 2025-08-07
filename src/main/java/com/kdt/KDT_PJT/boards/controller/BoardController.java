@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.kdt.KDT_PJT.boards.mapper.BoardMapper;
 import com.kdt.KDT_PJT.boards.model.BoardDTO;
 import com.kdt.KDT_PJT.boards.model.BoardInfoDTO;
-import com.kdt.KDT_PJT.boards.mapper.BoardMapper;
 
-import jakarta.annotation.Resource;
 
 @Controller
 @RequestMapping("/board")
@@ -28,7 +27,9 @@ public class BoardController {
 	@GetMapping
     public String list(Model model) {
 		List<BoardDTO> boards = boardMapper.list();
+
         model.addAttribute("boards", boards);
+
         return "board/board_list";
     }
 	

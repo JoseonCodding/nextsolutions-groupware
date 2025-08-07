@@ -1,4 +1,4 @@
-package com.kdt.KDT_PJT.controller;
+package com.kdt.KDT_PJT.attend.ctl;
 
 import java.util.List;
 
@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.kdt.KDT_PJT.di.Attendance;
-import com.kdt.KDT_PJT.model.AttendDTO;
+import com.kdt.KDT_PJT.attend.di.Attendance;
+import com.kdt.KDT_PJT.attend.model.AttendDTO;
+
 
 
 

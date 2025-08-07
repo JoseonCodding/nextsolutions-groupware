@@ -1,4 +1,4 @@
-package com.kdt.KDT_PJT.model;
+package com.kdt.KDT_PJT.attend.model;
 
 import java.util.List;
 

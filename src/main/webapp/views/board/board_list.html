@@ -3,27 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>게시판 목록</title>
-    <link rel="stylesheet" href="/css/boardStyle.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 <body>
-    <!-- 상단 네비게이션 바 (Topbar) -->
-    <header class="topbar">
-        <div class="logo">NEXTSOLUTIONS</div>
-        <nav class="menu">
-            <a>일정관리</a>
-            <a>근태관리</a>
-            <a>프로젝트</a>
-            <a>전자결제</a>
-            <a>게시판 관리</a>
-            <a>문서관리</a>
-            <a>사원관리</a>
-            <a class="logout">로그아웃</a>
-	        <span class="help-icon" title="도움말">
-	            <i class="fa-solid fa-circle-question fa-2xl"></i>
-	        </span>
-        </nav>
-    </header>
+<nav th:replace="@{/layout/navigation}"></nav>
 
 <div class="container">
     <div class="board-controls" style="display: flex; justify-content: space-between; margin: 20px 0;">
@@ -68,6 +51,7 @@
             <td style="padding: 10px; text-align: center;" th:text="'작성자 ID: ' + ${b.authorId}">작성자</td>
             <td style="padding: 10px; text-align: center;" 
             	th:text="${b.regDate != null ? #dates.format(b.regDate, 'yyyy-MM-dd') : '작성일 없음'}"></td>
+
             <td style="padding: 10px; text-align: center;" th:text="${b.viewCnt}">0</td>
             <td style="padding: 10px; text-align: center;" th:text="${b.likeCnt}">0</td>
         </tr>

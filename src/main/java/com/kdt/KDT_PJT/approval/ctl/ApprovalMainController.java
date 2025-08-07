@@ -23,10 +23,12 @@ public class ApprovalMainController {
     public String approvalMain(
 						Model model, // 데이터 보관용 (컨트롤러>모델>뷰)
 						@RequestParam(name = "page", defaultValue = "1") int page, // 페이지네이션용 파라미터 (page:페이지 번호, size:페이지당 게시글 수)
-						@RequestParam(name = "size", defaultValue = "10") int size) {
+						@RequestParam(name = "size", defaultValue = "10") int size,
+						@RequestParam(name = "type", required = false) String type,
+						@RequestParam(name = "status", required = false) String status) {
     	
     	int offset = (page - 1) * size;	// 페이지 마다 표시되는 게시글의 시작점 (ex.1페이지:0~9번, 2페이지:10~19번...)
-    	int totalCount = approvalMapper.countAll();	// 게시글 DB 전체 개수
+    	int totalCount = approvalMapper.countAll(type, status);	// 게시글 DB 전체 개수
     	int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
     	int blockSize = 5;	// 페이지네이션에 나타낼 페이지 개수
     	int startPage, endPage;
@@ -38,7 +40,10 @@ public class ApprovalMainController {
     	    startPage = Math.max(1, endPage - blockSize + 1);
     	}
     	
-    	List<ApprovalDTO> approvalData = approvalMapper.pageData(offset, size); // 현재 페이지 게시글 DB 정보 (offset부터 size까지)
+    	// 필터에 해당하는 게시글이 없는 경우 endPage=0이 되는 상황 방지
+    	if (totalPages == 0) {endPage = 1;}
+    	
+    	List<ApprovalDTO> approvalData = approvalMapper.pageData(offset, size,type, status); // 현재 페이지 게시글 DB 정보 (offset부터 size까지)
     	
     	model.addAttribute("approvalData", approvalData);
     	
@@ -47,6 +52,9 @@ public class ApprovalMainController {
     	model.addAttribute("size", size);
     	model.addAttribute("startPage", startPage);
     	model.addAttribute("endPage", endPage);
+    	
+    	model.addAttribute("type", type);
+    	model.addAttribute("status", status);
     	
     	return "approval/approvalMain";
     }
