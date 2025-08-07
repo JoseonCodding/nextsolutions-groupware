@@ -64,8 +64,11 @@ public class ProjectMngController {
 	    // 💾 View에 리스트 전달
 	    model.addAttribute("pjtList", pjtList);
 
+	    //
+	    model.addAttribute("mainUrl", "pjt_mng/pjt_main");
+	    
 	    // 💡 pjt_mng 폴더 안의 pjt_main.html (또는 .jsp)로 이동
-	    return "pjt_mng/pjt_main";
+	    return "home";
 	}
 
 	
