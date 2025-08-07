@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>공지사항 글쓰기</title>
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+    }
+    .form-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .form-actions button {
+      padding: 8px 16px;
+      border: none;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    .form-actions a {
+      padding: 8px 16px;
+      border: 1px solid #ccc;
+      text-decoration: none;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 네비게이션 바 -->
+<nav th:replace="@{/layout/navigation}"></nav>
+
+<!-- 자유게시판 상단 탭 -->
+<div class="board-nav" style="background-color:#f7f9fc; padding:10px 20px; border-bottom:1px solid #dcdcdc;">
+  <ul style="list-style:none; display:flex; padding:0; margin:0;">
+    <li th:classappend="${activeBoard} == 'notice' ? 'active'" style="margin-right:30px;">
+      <a href="/board/notice" style="text-decoration:none; font-weight:bold; color:#000; border-bottom:2px solid #2c3e50;">공지사항</a>
+    </li>
+    <li th:classappend="${activeBoard} == 'free' ? 'active'" style="margin-right:30px;">
+      <a href="/board/free" style="text-decoration:none; font-weight:bold; color:#666;">자유게시판</a>
+    </li>
+  </ul>
+</div>
+
+<!-- 작성 폼 -->
+<div class="container">
+  <h2>공지사항 글쓰기</h2>
+
+  <form th:action="@{/board/notice/save}" th:object="${boardDTO}" method="post">
+    <!-- 제목 -->
+    <div class="form-group">
+      <label for="title">제목</label>
+      <input type="text" id="title" th:field="*{title}" placeholder="제목을 입력하세요" required />
+    </div>
+
+    <!-- 내용 -->
+    <div class="form-group">
+      <label for="content">내용</label>
+      <textarea id="content" th:field="*{content}" rows="10" placeholder="내용을 입력하세요" required></textarea>
+    </div>
+
+    <!-- 버튼 -->
+    <div class="form-actions">
+      <button type="submit">등록</button>
+      <a th:href="@{/board/notice}">취소</a>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>
