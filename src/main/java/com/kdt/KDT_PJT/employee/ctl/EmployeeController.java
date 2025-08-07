@@ -4,15 +4,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
+import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
+import com.kdt.KDT_PJT.employee.mapper.EmployeeMapper;
 import com.kdt.KDT_PJT.employee.svc.EmployeeService;
+
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
+    
+    @Autowired
+    private EmployeeMapper employeeMapper;
 
     /** 사원 목록 페이지 */
     @GetMapping("/employee/list")
@@ -50,6 +58,23 @@ public class EmployeeController {
         employeeService.insertEmployee(params);
         return "redirect:/employee/list";
     }
-    
 
+    /** 사원 수정 폼 */
+    @GetMapping("/employee/edit")
+    public String editEmployee(Model model, EmployeeDto dto) {
+    	
+    	EmployeeDto res = employeeMapper.getDetail(dto);
+        model.addAttribute("employee", res);
+        System.out.println("/employee/edit : "+res);
+        return "employee/edit";  // templates/employee/edit.html
+    }
+
+    /** 사원 수정 처리 */
+    @PostMapping("/employee/update")
+    public String updateEmployee(EmployeeDto dto) {
+    	employeeMapper.update(dto);
+
+        return "redirect:/employee/list";
+    }
 }
+
