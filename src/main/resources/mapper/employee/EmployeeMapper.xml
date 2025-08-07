@@ -39,6 +39,35 @@
         )
     </insert>
     
+    <select id="getEmployeeBySeq" parameterType="int" resultType="CmmnMap">
+    SELECT * FROM employee WHERE emp_seq = #{empSeq}
+	</select>
+    
+    <update id="updateEmployee" parameterType="CmmnMap">
+    UPDATE employee
+    SET 
+        employeeId = #{employeeId},
+        password = #{password},
+        emp_nm = #{emp_nm},
+        active = #{active}
+    WHERE emp_seq = #{emp_seq}
+	</update>
+    
+    <select id="getDetail" parameterType="employeeDto" resultType="employeeDto">
+        SELECT * FROM employee where emp_seq= #{empSeq}
+    </select>
+    
+    
+    <update id="update" parameterType="employeeDto">
+    UPDATE employee
+    SET 
+        employeeId = #{employeeId},
+        password = #{password},
+        emp_nm = #{empNm},
+        active = #{active}
+    WHERE emp_seq = #{empSeq}
+	</update>
+    
 
 </mapper>
 
