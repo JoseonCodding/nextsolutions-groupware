@@ -22,6 +22,15 @@
 
 <h1>프로젝트 관리</h1>
 
+<!-- ✅ 등록 버튼: 카드 위 오른쪽 -->
+<div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+  <button onclick="location.href='/pjtMng/getSavePjtForm'"
+          style="height: 40px; background-color: #2962ff; color: white; border: none;
+                 border-radius: 6px; padding: 0 20px; cursor: pointer;">
+    프로젝트 등록
+  </button>
+</div>
+
 <!-- ✅ 카드 나열형 스타일 (5개 + 색상 버전) -->
 <div style="display: flex; gap: 16px; margin-top: 20px;">
 
@@ -34,7 +43,7 @@
     padding: 16px;
     text-align: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-    <div style="font-size: 14px; color: #0d47a1;">총 프로젝트 수</div>
+    <div style="font-size: 14px; color: #0d47a1;">총 프로젝트 </div>
     <div style="font-size: 22px; font-weight: bold; color: #0d47a1;" th:text="${pjtList.size()}">0</div>
   </div>
 
@@ -60,7 +69,7 @@
     padding: 16px;
     text-align: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-    <div style="font-size: 14px; color: #f57f17;">진행중</div>
+    <div style="font-size: 14px; color: #f57f17;">진행중인 프로젝트</div>
     <div style="font-size: 22px; font-weight: bold; color: #f57f17;" th:text="${inProgressCount}">0</div>
   </div>
 
@@ -73,11 +82,11 @@
     padding: 16px;
     text-align: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-    <div style="font-size: 14px; color: #1b5e20;">완료</div>
+    <div style="font-size: 14px; color: #1b5e20;">완료된 프로젝트 </div>
     <div style="font-size: 22px; font-weight: bold; color: #1b5e20;" th:text="${completedCount}">0</div>
   </div>
 
-  <!-- 지연 -->
+  <!-- 대기 -->
   <div style="
     flex: 1;
     background: #ffebee;  /* 연분홍 */
@@ -86,14 +95,13 @@
     padding: 16px;
     text-align: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-    <div style="font-size: 14px; color: #b71c1c;">대기</div>
+    <div style="font-size: 14px; color: #b71c1c;">대기중인 프로젝트</div>
     <div style="font-size: 22px; font-weight: bold; color: #b71c1c;" th:text="${delayedCount}">0</div>
   </div>
 
 </div>
 <!-- ✅ 드롭다운 + 등록 버튼 수평 정렬 + 스타일 통일 -->
 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-
   <!-- 왼쪽: 드롭다운 -->
   <div>
     <select style="
@@ -113,24 +121,15 @@
       <option value="project">프로젝트명</option>
     </select>
   </div>
-
-  <!-- 오른쪽: 등록 버튼 -->
-  <div>
-    <button
-      onclick="location.href='/pjtMng/getSavePjtForm'"
-      style="
-        height: 40px;
-        width: 160px;
-        font-size: 14px;
-        background-color: #2962ff;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-      ">
-      프로젝트 등록
-    </button>
-  </div>
+  
+  <!-- 검색 form -->
+<form  method="get" style="margin-top: 20px; display: flex; gap: 12px;">
+  <input type="text" name="keyword" placeholder="프로젝트명, 담당자 검색" class="form-control" 
+         style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;" />
+  <button type="submit" class="button" style="background-color: #2962ff; color: white;">
+    검색
+  </button>
+</form>
 
 </div>
 
@@ -145,43 +144,40 @@
       <th>마감일</th>
       <th>진행상태</th>
       <th>완료율</th>
-      <th>비고</th>
-    
+      <th>비고</th>    
       
     </tr>
   </thead>
   <tbody>
-<tr th:each="pjt : ${pjtList}">               <!-- 프로젝트명 -->
-  <td th:text="${pjt['PJT_STTS_CD']}"></td>   <!-- 담당자 -->
-  <td th:text="${pjt['PJT_NM']}"></td>        <!--  -->
-  <td th:text="${pjt['EMP_NM']}"></td>
-  <td th:text="${pjt['PJT_STTS_CD']}"></td>
-  <td th:text="${pjt['PJT_BGNG_DT']}"></td>
-  <td th:text="${pjt['PJT_END_DT']}"></td>  
-  <td th:text="${pjt['PJT_STTS_CD']}"></td>
-  <td th:text="${pjt['PJT_STTS_CD']}"></td>
-  
+<tr th:each="pjt, stat : ${pjtList}">
+  <td th:text="${stat.index + 1}">1</td> <!-- 순번 -->
+  <td th:text="${pjt['PJT_NM']}">프로젝트명</td>
+  <td th:text="${pjt['EMP_NM']}">담당자</td>
+  <td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>
+  <td th:text="${pjt['PJT_BGNG_DT']}">시작일</td>
+  <td th:text="${pjt['PJT_END_DT']}">마감일</td>
+  <td th:text="${pjt['PJT_STTS_CD']}">진행상태(중복)</td>
+  <td>50%</td> <!-- 예시로 완료율 넣음, 계산하려면 백엔드 로직 필요 -->
   <td>
-	<button class="button btn-view"
-	        th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
-	  상세보기
-	</button>
-	
+    <button class="button btn-view"
+            th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
+      상세보기
+    </button>
+
     <button class="button btn-edit"
-            th:onclick="'location.href=\'project_edit.html?id=' + ${pjt['PJT_SN']} + '\''">
+            th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''">
       변경
     </button>
+
     <button class="button btn-delete"
             th:onclick="'deleteProject(\'' + ${pjt['PJT_SN']} + '\')'">
       삭제
     </button>
   </td>
 </tr>
+
   </tbody>
 </table>
-
-
-
 <script>
   function deleteProject(id) {
     if (confirm(`${id} 삭제할까요?`)) {
