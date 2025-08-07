@@ -1,5 +1,7 @@
 package com.kdt.KDT_PJT.attend.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -10,25 +12,39 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LeaveDTO {
 
-	int leave_id ; 
-    Date leave_date;                 
-    //leave_hours 
-    String reason, leave_type, employeeId, empNm;
-    int total, used;
-    
-    LocalDateTime created_at, updated_at;
-
-	public LeaveDTO(String employeeId, Date leave_date) {
-		super();
-		this.employeeId = employeeId;
-		this.leave_date = leave_date;
-	}
+	Integer leaveId ; 
 	
+	boolean useChk;
+    
+    //leave_hours 
+    String createReason,usedReason, leaveType, employeeId, empNm;
+    Integer total, used;
+    
+    Date createdDate, usedDate,approvalDate;
+    
+    String stateType; 
+//	approval_id int AUTO_INCREMENT PRIMARY KEY,
+//  approval_type VARCHAR(50),  -- 기안 종류(연차, 근태, 프로젝트, 게시판)
+//  employeeId INT NOT NULL,                      -- FK
+//  approval_date DATE NOT NULL,  -- 상신일    
+//  state_type ENUM('대기',대기중, '승인', 반려) NOT NULL,  -- 대기 or 승인
+//  title VARCHAR(50),
+//  content VARCHAR(500),
 
-	//잔여 연차
+	
 	public int getRest() {
 		return total - used;
 	}
-    
+	
+	public void setUsedDateStr(String ttt) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			usedDate = sdf.parse(ttt);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
     
 }
