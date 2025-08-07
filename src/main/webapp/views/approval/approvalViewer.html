@@ -15,19 +15,19 @@
 		<table border="">
 			<tr>
 				<td>작성자</td>
-				<td th:text="${viewData.writer}"></td>
+				<td th:text="${viewData == null ? '-' : viewData.writer}"></td>
 			</tr>
 			<tr>
 				<td>부서</td>
-				<td th:text="${viewData.department}"></td>
+				<td th:text="${viewData == null ? '-' : viewData.department}"></td>
 			</tr>
 			<tr>
 				<td>기안일</td>
-				<td th:text="${#dates.format(viewData.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
+				<td th:text="${viewData == null ? '-' : #dates.format(viewData.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
 			</tr>
 			<tr>
 				<td>문서번호</td>
-				<td th:text="${viewData.docId}"></td>
+				<td th:text="${viewData == null ? '-' : viewData.docId}"></td>
 			</tr>
 	  </table>
 	
@@ -44,25 +44,31 @@
 		<table border="">
 			<tr>
 				<td>결재 종류</td>
-				<td th:text="${viewData.docType}"></td>
+				<td th:text="${viewData == null ? '-' : viewData.docType}"></td>
 			</tr>
 			<tr>
 				<td>제목</td>
-				<td th:text="${viewData.title}"></td>
+				<td th:text="${viewData == null ? '-' : viewData.title}"></td>
 			</tr>
 		</table>
 	</div>
 
 	<!-- 뷰어 영역 : innerHTML로 렌더링 예정 -->
-	<div style="border:1px solid; margin-top: 20px; background-color: aqua;" th:text="${viewData.content}">
+	<div style="border:1px solid; margin-top: 20px; background-color: aqua;" th:text="${viewData == null ? '-' : viewData.content}">
 	</div>
 	
 	<!-- 수정, 삭제 버튼 영역 -->
-	<button>수정</button>
+	<th:block th:if="${viewData != null}">
+		<a>
+			<button>수정</button>
+		</a>
+	</th:block>
 	
-	<a th:href="@{/approval/delete(docId=${viewData.docId})}">
-		<button>삭제</button>
-	</a>
+	<th:block th:if="${viewData != null}">
+		<a th:href="@{/approval/delete(docId=${viewData == null ? '-' : viewData.docId})}">
+			<button>삭제</button>
+		</a>
+	</th:block>
 
 </body>
 </html>

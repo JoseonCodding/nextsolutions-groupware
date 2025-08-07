@@ -88,6 +88,7 @@ public class ApprovalController {
         @RequestParam(name = "type", required = false) String type,
         @RequestParam(name = "status", required = false) String status
     ) {
+    	
         approvalMapper.deleteById(docId);
 
         return String.format("redirect:/approval/main?page=%d&type=%s&status=%s", page, type == null ? "" : type, status == null ? "" : status);
