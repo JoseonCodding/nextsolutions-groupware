@@ -9,9 +9,11 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface LeaveMapper {
 
-	@Select("select * from annual_leave ")
-	LeaveDTO allLeaveList(); 
+	//annual_leave 테이블에서 가져오기
+	@Select("select * from annual_leave where employeeId = '20250001';")
+	List<LeaveDTO> annualLeave(); 
 	
+	//employee 테이블에서 가져오기
 	@Select("SELECT * FROM employee  where employeeId = '20250001' ")
 	LeaveDTO name(); 
 	

@@ -11,7 +11,7 @@ import com.kdt.KDT_PJT.attend.di.AnnualLeave;
 import com.kdt.KDT_PJT.attend.model.LeaveDTO;
 
 @Controller
-@RequestMapping("/attend/leave")
+@RequestMapping("/attend/{service}")
 public class LeaveController {
 
 	@Autowired

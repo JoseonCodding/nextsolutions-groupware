@@ -12,7 +12,6 @@ public class LeaveDTO {
 
 	int leave_id ; 
     Date leave_date;                 
-    //leave_type 
     //leave_hours 
     String reason, leave_type, employeeId, empNm;
     int total, use;
