@@ -73,7 +73,6 @@ public class ApprovalController {
     
     	model.addAttribute("viewData", viewData);
 
-    	// 삭제 버튼에 주입할 파라미터 Model에 저장
     	model.addAttribute("page", page);
     	model.addAttribute("type", type);
     	model.addAttribute("status", status);
@@ -84,17 +83,14 @@ public class ApprovalController {
 
     @RequestMapping("/delete")
     public String approvalDelete (
+    					RedirectAttributes redirectAttributes,
 				        @RequestParam("docId") String docId,
 				        @RequestParam(name = "page", defaultValue = "1") int page,
 				        @RequestParam(name = "type", required = false) String type,
-				        @RequestParam(name = "status", required = false) String status,
-				        RedirectAttributes redirectAttributes) {
+				        @RequestParam(name = "status", required = false) String status) {
     	
         approvalMapper.deleteById(docId);
         
-        // 한글 파라미터 주입으로 생기는 에러 처리
-        // RedirectAttributes : "리다이렉트" 시, 파라미터/메시지 데이터를 안전하게 전달하는 용도
-        //						자동 URL 인코딩(한글/특수문자 깨짐 방지): addAttribute로 넘긴 값은 자동으로 인코딩되어 URL에 붙음.
         redirectAttributes.addAttribute("page", page);
         redirectAttributes.addAttribute("type", type == null ? "" : type);
         redirectAttributes.addAttribute("status", status == null ? "" : status);
