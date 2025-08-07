@@ -56,6 +56,13 @@
 	<!-- 뷰어 영역 : innerHTML로 렌더링 예정 -->
 	<div style="border:1px solid; margin-top: 20px; background-color: aqua;" th:text="${viewData.content}">
 	</div>
+	
+	<!-- 수정, 삭제 버튼 영역 -->
+	<button>수정</button>
+	
+	<a th:href="@{/approval/delete(docId=${viewData.docId})}">
+		<button>삭제</button>
+	</a>
 
 </body>
 </html>

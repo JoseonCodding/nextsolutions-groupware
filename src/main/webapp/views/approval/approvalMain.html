@@ -60,7 +60,7 @@
                 	<td th:text="${#dates.format(dto.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
             		<td th:text="${dto.docType}"></td>
 				    <td class="title">
-				    	<a th:href="@{/approval/viewer(docId=${dto.docId})}" th:text="${dto.title}"></a>
+				    	<a th:href="@{/approval/viewer(page=${page}, type=${type}, status=${status}, docId=${dto.docId})}" th:text="${dto.title}"></a>
 				    </td>
 				    <td th:text="${dto.department}"></td>
 				    <td th:text="${dto.writer}"></td>

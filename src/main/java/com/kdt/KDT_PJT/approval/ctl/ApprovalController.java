@@ -63,15 +63,36 @@ public class ApprovalController {
     @RequestMapping("/viewer")
     public String approvalViewer(
 			    		Model model,
-			    		@RequestParam(name = "docId") String docId) {
+			    		@RequestParam("docId") String docId) {
     	
     	ApprovalDTO viewData = approvalMapper.selectById(docId);
+    
     	
     	model.addAttribute("viewData", viewData);
     	
     	model.addAttribute("mainUrl", "approval/approvalViewer");
     	return "home";
     }
+    
+	/*
+	 * -해결해야하는 문제 : 글 삭제 후, 뒤로 2번 이동한 뒤, 삭제했던 게시글을 클릭하면 ->
+	 * approvalMapper.selectById(docId)은 null값임 -> 뷰어에서 viewData 값을 읽지 못함 -> 500 에러 발생
+	 * -해결 방안 : 1.컨트롤러에서 예외 처리 2.404, 500 등의 공통 에러페이지 처리
+	 */
+
+    @RequestMapping("/delete")
+    public String approvalDelete (
+        @RequestParam("docId") String docId,
+        @RequestParam(name = "page", defaultValue = "1") int page,
+        @RequestParam(name = "size", defaultValue = "10") int size,
+        @RequestParam(name = "type", required = false) String type,
+        @RequestParam(name = "status", required = false) String status
+    ) {
+        approvalMapper.deleteById(docId);
+
+        return String.format("redirect:/approval/main?page=%d&type=%s&status=%s", page, type == null ? "" : type, status == null ? "" : status);
+    }
+
 	
 
 }
