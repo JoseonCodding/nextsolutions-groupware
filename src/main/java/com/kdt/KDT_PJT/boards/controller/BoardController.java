@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.kdt.KDT_PJT.boards.mapper.BoardMapper;
+import com.kdt.KDT_PJT.boards.mapper.CommentMapper;
 import com.kdt.KDT_PJT.boards.model.BoardDTO;
 import com.kdt.KDT_PJT.boards.model.BoardInfoDTO;
+import com.kdt.KDT_PJT.boards.model.CommentDTO;
 
 
 @Controller
@@ -23,6 +25,8 @@ public class BoardController {
 
     @Autowired
     BoardMapper boardMapper;
+    @Autowired
+    CommentMapper commentMapper;
 
  // 🔷 공지사항 목록
     @GetMapping("/notice")
@@ -33,7 +37,7 @@ public class BoardController {
         return "board/notice_list";
     }
 
-    // 🔷 자유게시판 목록
+    // 자유게시판 목록
     @GetMapping("/free")
     public String freeBoardList(
         @RequestParam(name = "sort", required = false) String sort,
@@ -48,15 +52,7 @@ public class BoardController {
         return "board/free_list";
     }
 
-
-    // 🔷 공지사항 글쓰기 폼 (읽기전용이면 생략 가능)
-    @GetMapping("/notice/write")
-    public String writeNoticeForm(Model model) {
-        model.addAttribute("boardDTO", new BoardDTO());
-        return "board/notice_writeform";  // 🔹 별도 뷰
-    }
-
-    // 🔷 자유게시판 글쓰기 폼
+    // 자유게시판 글쓰기 폼
     @GetMapping("/free/write")
     public String writeFreeForm(Model model) {
         model.addAttribute("boardDTO", new BoardDTO());
@@ -64,7 +60,7 @@ public class BoardController {
         return "board/free_writeform"; // 이 파일 이름
     }
 
-    // 🔷 자유게시판 저장
+    // 자유게시판 저장
     @PostMapping("/free/save")
     public String saveFreePost(@ModelAttribute BoardDTO dto) {
         Integer boardId = boardMapper.findBoardIdByType("free");
@@ -78,19 +74,24 @@ public class BoardController {
         boardMapper.insert(dto);
         return "redirect:/board/free";
     }
-
-    // 🔷 공지사항 저장 (관리자일 경우)
-    @PostMapping("/notice/save")
-    public String saveNoticePost(@ModelAttribute BoardDTO dto) {
-        Integer boardId = boardMapper.findBoardIdByType("notice");
-        dto.setBoardId(boardId);
-
-        dto.setRegDate(new Date());
-        dto.setViewCnt(0);
-        dto.setLikeCnt(0);
-        dto.setDeleted(false);
-
-        boardMapper.insert(dto);
-        return "redirect:/board/notice";
+    
+ // 자유게시판 상세보기
+    @GetMapping("/free/detail")
+    public String freeDetail(@RequestParam("id") int id, Model model) {
+        BoardDTO board = boardMapper.detail(id);
+        List<CommentDTO> comments = commentMapper.selectByPostId((long) id);
+        model.addAttribute("board", board);
+        model.addAttribute("comments", comments);
+        model.addAttribute("activeBoard", "free");
+        return "board/free_detail";
     }
+    
+ // 댓글 저장
+    @PostMapping("/free/comment")
+    public String saveComment(@ModelAttribute CommentDTO comment) {
+        commentMapper.insert(comment);
+        return "redirect:/board/free/detail?id=" + comment.getPostId();
+    }
+
+
 }

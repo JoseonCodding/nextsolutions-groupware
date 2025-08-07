@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>자유게시판 상세보기</title>
+</head>
+<body>
+<nav th:replace="@{/layout/navigation}"></nav>
+
+    <div class="container">
+        <h2 th:text="${board.title}">게시글 제목</h2>
+        <div class="board-meta">
+            <span>작성자: <strong th:text="${board.authorId}">author</strong></span>
+            <span>등록일: <strong th:text="${#dates.format(board.regDate, 'yyyy-MM-dd HH:mm')}">2025-08-07 16:00</strong></span>
+            <span>조회: <strong th:text="${board.viewCnt}">0</strong></span>
+            <span>좋아요: <strong th:text="${board.likeCnt}">0</strong></span>
+        </div>
+        <hr />
+        <div class="board-content" th:utext="${board.content}">
+            게시글 내용이 여기에 표시됩니다.
+        </div>
+        <hr />
+        
+        <div class="board-actions">
+            <a th:href="@{/board/free}" class="btn">목록으로</a>
+            <a th:href="@{'/board/free/modify'(id=${board.id})}" class="btn">수정</a>
+            <a th:href="@{'/board/free/delete'(id=${board.id})}" 
+               th:onclick="|return confirm('정말 삭제하시겠습니까?');|"
+               class="btn btn-danger">삭제</a>
+        </div>
+    </div>
+</body>
+</html>
