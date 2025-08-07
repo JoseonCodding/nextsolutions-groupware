@@ -14,13 +14,13 @@ import jakarta.annotation.Resource;
 
 @Controller
 @RequestMapping("/approval")
-public class ApprovalMainController {
+public class ApprovalController {
 	
 	@Resource
-    ApprovalMapper approvalMapper;
+	ApprovalMapper approvalMapper;
     
-    @RequestMapping("/main")
-    public String approvalMain(
+	@RequestMapping("/main")
+	public String approvalMain(
 						Model model, // 데이터 보관용 (컨트롤러>모델>뷰)
 						@RequestParam(name = "page", defaultValue = "1") int page, // 페이지네이션용 파라미터 (page:페이지 번호, size:페이지당 게시글 수)
 						@RequestParam(name = "size", defaultValue = "10") int size,
@@ -57,6 +57,12 @@ public class ApprovalMainController {
     	model.addAttribute("status", status);
     	
     	return "approval/approvalMain";
+    }
+	
+    @RequestMapping("/viewer")
+    public String approvalViewer() {
+
+    	return "approval/approvalViewer";
     }
 	
 
