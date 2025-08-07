@@ -1,4 +1,21 @@
-<a th:href="@{/attend}">근태관리</a>
-<a th:href="@{/schedule}">일정관리</a>
-<a th:href="@{/}">프로젝트관리</a>
-<a th:href="@{/}">게시판</a>
+<link rel="stylesheet" href="/css/approvalStyle.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+<!-- 상단 네비게이션 바 (Topbar) -->
+    <header class="topbar">
+        <div class="logo">NEXTSOLUTIONS</div>
+        <nav class="menu">
+            <a th:href="@{/schedule}">일정관리</a>
+			<a th:href="@{/attend}">근태관리</a>
+			<a th:href="@{/pjtMng/getPjtList}">프로젝트관리</a>
+            <a th:href="@{/approval/main}">전자결재</a>
+            <a th:href="@{/board}">게시판</a>
+            <a>문서관리</a>
+            <a>사원관리</a>
+            <a class="logout">로그아웃</a>
+	        <span class="help-icon" title="도움말">
+	            <i class="fa-solid fa-circle-question fa-2xl"></i>
+	        </span>
+        </nav>
+    </header>
