@@ -7,7 +7,7 @@
 
 
 <!-- 프로젝트 관리 Mapper -->
-<mapper namespace="com.kdt.mapper.pjt_mng">
+<mapper namespace="com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper">
 
 
 
@@ -110,5 +110,36 @@
     FROM team2_db.TB_PJT_BASC
     ORDER BY PJT_SN ASC
   </select>
+  
+  <!-- ✅ 신규: 정렬 + 검색 + 페이징 -->
+<select id="searchProjectPagedList" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+  SELECT *
+  FROM team2_db.TB_PJT_BASC
+  <where>
+    <if test="keyword != null and keyword != ''">
+      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR EMP_NM LIKE CONCAT('%', #{keyword}, '%'))
+    </if>
+  </where>
+  ORDER BY
+    <choose>
+      <when test="sortType == 'EMP_NM'"> EMP_NM </when>
+      <when test="sortType == 'PJT_BGNG_DT'"> PJT_BGNG_DT </when>
+      <otherwise> PJT_NM </otherwise>
+    </choose>
+  ${order}
+  LIMIT #{offset}, #{pageSize}
+</select>
+
+<!-- ✅ 신규: 페이징용 총 개수 -->
+<select id="countProjectList" resultType="int">
+  SELECT COUNT(*)
+  FROM team2_db.TB_PJT_BASC
+  <where>
+    <if test="keyword != null and keyword != ''">
+      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR EMP_NM LIKE CONCAT('%', #{keyword}, '%'))
+    </if>
+  </where>
+</select>
+  
 
 </mapper>

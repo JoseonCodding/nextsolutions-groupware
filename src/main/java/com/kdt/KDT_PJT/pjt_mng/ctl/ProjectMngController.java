@@ -66,6 +66,9 @@ public class ProjectMngController {
 
 	    // 💡 pjt_mng 폴더 안의 pjt_main.html (또는 .jsp)로 이동
 	    return "pjt_mng/pjt_main";
+	    
+	    
+	   
 	}
 
 	
