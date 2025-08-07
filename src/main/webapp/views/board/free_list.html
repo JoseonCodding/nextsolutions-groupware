@@ -53,7 +53,7 @@
         <div class="sort">
             <select name="sort" th:onchange="|location.href='?sort=' + this.value|">
                 <option value="" th:selected="${sort == null}">정렬</option>
-                <option value="viewCount" th:selected="${sort=='viewCount'}">조회순</option>
+                <option value="viewCount" th:selected="${sort=='viewCount'}">최신순</option>
                 <option value="likeCount" th:selected="${sort=='likeCount'}">추천순</option>
             </select>
         </div>
