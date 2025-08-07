@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
@@ -63,35 +64,42 @@ public class ApprovalController {
     @RequestMapping("/viewer")
     public String approvalViewer(
 			    		Model model,
-			    		@RequestParam("docId") String docId) {
+			    		@RequestParam("docId") String docId,
+			            @RequestParam(name = "page", defaultValue = "1") int page,
+			            @RequestParam(name = "type", required = false) String type,
+			            @RequestParam(name = "status", required = false) String status) {
     	
     	ApprovalDTO viewData = approvalMapper.selectById(docId);
     
-    	
     	model.addAttribute("viewData", viewData);
+
+    	// 삭제 버튼에 주입할 파라미터 Model에 저장
+    	model.addAttribute("page", page);
+    	model.addAttribute("type", type);
+    	model.addAttribute("status", status);
     	
     	model.addAttribute("mainUrl", "approval/approvalViewer");
     	return "home";
     }
-    
-	/*
-	 * -해결해야하는 문제 : 글 삭제 후, 뒤로 2번 이동한 뒤, 삭제했던 게시글을 클릭하면 ->
-	 * approvalMapper.selectById(docId)은 null값임 -> 뷰어에서 viewData 값을 읽지 못함 -> 500 에러 발생
-	 * -해결 방안 : 1.컨트롤러에서 예외 처리 2.404, 500 등의 공통 에러페이지 처리
-	 */
 
     @RequestMapping("/delete")
     public String approvalDelete (
-        @RequestParam("docId") String docId,
-        @RequestParam(name = "page", defaultValue = "1") int page,
-        @RequestParam(name = "size", defaultValue = "10") int size,
-        @RequestParam(name = "type", required = false) String type,
-        @RequestParam(name = "status", required = false) String status
-    ) {
+				        @RequestParam("docId") String docId,
+				        @RequestParam(name = "page", defaultValue = "1") int page,
+				        @RequestParam(name = "type", required = false) String type,
+				        @RequestParam(name = "status", required = false) String status,
+				        RedirectAttributes redirectAttributes) {
     	
         approvalMapper.deleteById(docId);
+        
+        // 한글 파라미터 주입으로 생기는 에러 처리
+        // RedirectAttributes : "리다이렉트" 시, 파라미터/메시지 데이터를 안전하게 전달하는 용도
+        //						자동 URL 인코딩(한글/특수문자 깨짐 방지): addAttribute로 넘긴 값은 자동으로 인코딩되어 URL에 붙음.
+        redirectAttributes.addAttribute("page", page);
+        redirectAttributes.addAttribute("type", type == null ? "" : type);
+        redirectAttributes.addAttribute("status", status == null ? "" : status);
 
-        return String.format("redirect:/approval/main?page=%d&type=%s&status=%s", page, type == null ? "" : type, status == null ? "" : status);
+        return "redirect:/approval/main";
     }
 
 	

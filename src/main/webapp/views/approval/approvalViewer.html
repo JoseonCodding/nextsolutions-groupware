@@ -65,7 +65,7 @@
 	</th:block>
 	
 	<th:block th:if="${viewData != null}">
-		<a th:href="@{/approval/delete(docId=${viewData == null ? '-' : viewData.docId})}">
+		<a th:href="@{/approval/delete(page=${page}, type=${type}, status=${status}, docId=${viewData.docId})}">
 			<button>삭제</button>
 		</a>
 	</th:block>
