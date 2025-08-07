@@ -6,8 +6,6 @@
     
 </head>
 <body>
-    
-	<nav th:replace="@{/layout/navigation}"></nav>
 
 	<h1>★전자 결재 뷰어</h1>
 
@@ -15,10 +13,22 @@
 	
 		<!-- 작성자, 부서, 기안일, 문서번호 영역 -->
 		<table border="">
-			<tr><td>작성자</td><td>김성학</td></tr>
-			<tr><td>부서</td><td>테니스부</td></tr>
-			<tr><td>기안일</td><td>2025-08-07</td></tr>
-			<tr><td>문서번호</td><td>001</td></tr>
+			<tr>
+				<td>작성자</td>
+				<td th:text="${viewData.writer}"></td>
+			</tr>
+			<tr>
+				<td>부서</td>
+				<td th:text="${viewData.department}"></td>
+			</tr>
+			<tr>
+				<td>기안일</td>
+				<td th:text="${#dates.format(viewData.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
+			</tr>
+			<tr>
+				<td>문서번호</td>
+				<td th:text="${viewData.docId}"></td>
+			</tr>
 	  </table>
 	
 		<!-- 결재선 영역 -->
@@ -33,27 +43,18 @@
 	<div style="margin-top: 20px;">
 		<table border="">
 			<tr>
-				<td>제목</td>
-				<td>테니스부와 축구부의 야구배틀</td>
+				<td>결재 종류</td>
+				<td th:text="${viewData.docType}"></td>
 			</tr>
 			<tr>
-				<td>여기 뭐 달지?</td>
-				<td>생각하자 생각하자</td>
+				<td>제목</td>
+				<td th:text="${viewData.title}"></td>
 			</tr>
 		</table>
 	</div>
 
 	<!-- 뷰어 영역 : innerHTML로 렌더링 예정 -->
-	<div style="border:1px solid; margin-top: 20px;">
-	  <h2>오늘의 회의록</h2>
-	  <p><strong>발제자:</strong> 홍길동</p>
-	  <p><em>이 문서는 프리웨어 에디터에서 작성되었습니다.</em></p>
-	  <ul>
-	    <li>프로젝트 일정 논의</li>
-	    <li>예산 검토</li>
-	    <li>다음 미팅 일정 조율</li>
-	  </ul>
-	  <p style="color:blue;">문의사항은 언제든 연락 주세요.</p>
+	<div style="border:1px solid; margin-top: 20px; background-color: aqua;" th:text="${viewData.content}">
 	</div>
 
 </body>

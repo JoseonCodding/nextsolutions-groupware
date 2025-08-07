@@ -61,7 +61,13 @@ public class ApprovalController {
     }
 	
     @RequestMapping("/viewer")
-    public String approvalViewer(Model model) {
+    public String approvalViewer(
+			    		Model model,
+			    		@RequestParam(name = "docId") String docId) {
+    	
+    	ApprovalDTO viewData = approvalMapper.selectById(docId);
+    	
+    	model.addAttribute("viewData", viewData);
     	
     	model.addAttribute("mainUrl", "approval/approvalViewer");
     	return "home";

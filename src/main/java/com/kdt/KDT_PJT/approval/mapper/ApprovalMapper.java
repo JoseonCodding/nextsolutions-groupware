@@ -58,4 +58,7 @@ public interface ApprovalMapper {
 			@Param("type") String type,
 			@Param("status") String status);
 	
+	@Select("SELECT * FROM Approval_TEST WHERE docId = #{docId}")
+	ApprovalDTO selectById(@Param("docId") String docId);
+	
 }
