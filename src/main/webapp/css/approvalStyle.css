@@ -9,10 +9,6 @@ body {
     background: #f7f8fa;
 }
 
-.container {
-    display: flex;
-    min-height: 100vh;
-}
 
 /* 상단 네이게이션바 */
 .topbar {
@@ -68,6 +64,7 @@ body {
 }
 
 
+<<<<<<< HEAD
 
 /* 메인 컨텐츠 */
 .main-content {
@@ -259,3 +256,5 @@ tbody tr:hover {
     user-select: none;
     text-decoration: none;
 }
+=======
+>>>>>>> refs/remotes/origin/jiwon
