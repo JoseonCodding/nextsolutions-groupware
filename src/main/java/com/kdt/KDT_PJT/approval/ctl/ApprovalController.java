@@ -56,13 +56,15 @@ public class ApprovalController {
     	model.addAttribute("type", type);
     	model.addAttribute("status", status);
     	
-    	return "approval/approvalMain";
+    	model.addAttribute("mainUrl", "approval/approvalMain");
+    	return "home";
     }
 	
     @RequestMapping("/viewer")
-    public String approvalViewer() {
-
-    	return "approval/approvalViewer";
+    public String approvalViewer(Model model) {
+    	
+    	model.addAttribute("mainUrl", "approval/approvalViewer");
+    	return "home";
     }
 	
 
