@@ -32,19 +32,18 @@
 
 		<!-- 필터 -->
 		<!-- 
-		미구현 : 	1.필터 리셋(취소) 버튼 필요
-				2.페이지네이션 시, 파라미터의 필터값 못받고 노필터 상태로 페이지바뀜
+		미구현 : 	1.페이지네이션 시, 파라미터의 필터값 못받고 노필터 상태로 페이지바뀜
 		 -->
 		<div class="filter-bar">
 		    <form method="get" action="/approval/main">
-				<select name="type" class="custom-select">
+				<select name="type" class="filter-selector">
 				    <option value="" th:selected="${type == null or type == ''}">결재 종류</option>
 				    <option value="프로젝트" th:selected="${type == '프로젝트'}">프로젝트</option>
 				    <option value="근태" th:selected="${type == '근태'}">근태</option>
 				    <option value="공지사항" th:selected="${type == '공지사항'}">공지사항</option>
 				</select>
 
-				<select name="status" class="custom-select">
+				<select name="status" class="filter-selector">
 				    <option value="" th:selected="${status == null or status == ''}">결재 상태</option>
 				    <option value="대기" th:selected="${status == '대기'}">대기</option>
 				    <option value="진행중" th:selected="${status == '진행중'}">진행중</option>
@@ -52,7 +51,12 @@
 				    <option value="반려" th:selected="${status == '반려'}">반려</option>
 				</select>
 
-		        <button type="submit" class="btn-filter">필터 적용</button>
+			    <button type="submit" class="filter-btn">
+			      <i class="fa fa-search"></i> 조회
+			    </button>
+			    <a href="/approval/main" class="filter-btn">
+			      <i class="fa fa-rotate-left"></i> 초기화
+			    </a>
 		    </form>
 		</div>
 
