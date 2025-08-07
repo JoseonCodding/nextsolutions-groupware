@@ -31,9 +31,6 @@
         </div>
 
 		<!-- 필터 -->
-		<!-- 
-		미구현 : 	1.페이지네이션 시, 파라미터의 필터값 못받고 노필터 상태로 페이지바뀜
-		 -->
 		<div class="filter-bar">
 		    <form method="get" action="/approval/main">
 				<select name="type" class="filter-selector">
@@ -75,7 +72,6 @@
             
             <tbody>
             
-            	<!-- 필터에 해당하는 게시글이 없는 경우, 안내 문구 출력 -->
             	<tr th:if="${#lists.isEmpty(approvalData)}">
             		<td colspan="6" class="list-empty">필터 조건에 해당하는 게시글이 없습니다.</td>
             	</tr>
