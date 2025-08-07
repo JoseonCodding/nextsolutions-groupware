@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.*;
 
-import com.kdt.KDT_PJT.boards.model.Board;
 import com.kdt.KDT_PJT.boards.model.BoardDTO;
 import com.kdt.KDT_PJT.boards.model.BoardInfoDTO;
 
@@ -36,22 +35,4 @@ public interface BoardMapper {
     @Delete("DELETE FROM board_post WHERE post_id=#{id}")
     int delete(int id);
 
-    // ✅ 게시글 목록 (정제된 Board 엔티티로 조회)
-    @Select("""
-        SELECT 
-            post_id AS postId,
-            board_id AS boardId,
-            author_id AS authorId,
-            title,
-            content,
-            created_at AS createdAt,
-            updated_at AS updatedAt,
-            view_count AS viewCount,
-            like_count AS likeCount,
-            is_deleted AS isDeleted
-        FROM board_post
-        WHERE is_deleted = FALSE
-        ORDER BY created_at DESC
-    """)
-    List<Board> findAll(); // ← 이게 화면에 뿌리는 용도
 }
