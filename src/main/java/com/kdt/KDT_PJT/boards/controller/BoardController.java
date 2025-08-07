@@ -34,7 +34,9 @@ public class BoardController {
         List<BoardDTO> boards = boardMapper.selectNoticePosts();
         model.addAttribute("boards", boards);
         model.addAttribute("activeBoard", "notice");
-        return "board/notice_list";
+        //
+        model.addAttribute("mainUrl", "board/notice_list");
+        return "home";
     }
 
     // 자유게시판 목록

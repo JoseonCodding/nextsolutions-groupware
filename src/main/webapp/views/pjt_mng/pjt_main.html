@@ -17,8 +17,6 @@
   </style>
 </head>
 <body>
-<!-- ✅ 네비게이션 바 -->
-<nav th:replace="@{/layout/navigation}"></nav>
 
 <h1>프로젝트 관리</h1>
 
@@ -169,23 +167,10 @@
       변경
     </button>
 
-    <button class="button btn-delete"
-            th:onclick="'deleteProject(\'' + ${pjt['PJT_SN']} + '\')'">
-      삭제
-    </button>
   </td>
 </tr>
 
   </tbody>
 </table>
-<script>
-  function deleteProject(id) {
-    if (confirm(`${id} 삭제할까요?`)) {
-      alert(`삭제 처리 중: ${id}`);
-      // fetch로 삭제 요청 날리게 해도 됨
-    }
-  }
-</script>
-
 </body>
 </html>

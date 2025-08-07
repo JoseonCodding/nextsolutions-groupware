@@ -57,4 +57,5 @@ public interface ApprovalMapper {
 	int countAll(
 			@Param("type") String type,
 			@Param("status") String status);
+	
 }
