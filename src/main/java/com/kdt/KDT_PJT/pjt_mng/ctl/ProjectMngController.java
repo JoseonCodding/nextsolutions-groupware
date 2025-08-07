@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,35 +16,45 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.pjt_mng.svc.ProjcetMngService;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/pjtMng")
+@RequiredArgsConstructor
 public class ProjectMngController {
 	
 	@Autowired
-	ProjcetMngService projcetMngService;
+	ProjcetMngService projectMngService;
 	
 	// log 사용을 위함
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
+	
 	//1. 프로젝트 목록 화면 호출 
 	@GetMapping("/getPjtList")
-	public String getPjtList(Model model) {
+	public String getPjtList(@RequestParam(name = "keyword", required = false) String keyword, Model model) {
 		
 		//프로젝트 리스트를 서비스에서 가져옴
-		log.info("getPjtList Called >>> ");
+	    log.info("getPjtList Called >>> keyword=" + keyword);
 		
 		//모델에 프로젝트 리스트를 담아서 뷰로 전달 
-		List<CmmnMap> pjtList = projcetMngService.getPjtList();
-		
-		model.addAttribute("pjtList", pjtList);
-		
-		return "pjt_mng/pjt_main";
+	    List<CmmnMap> pjtList;
+
+	    if (keyword != null && !keyword.isEmpty()) {
+	        pjtList = projectMngService.searchProjectMngList(keyword);  // ✅ 인스턴스 사용
+	    } else {
+	        pjtList = projectMngService.getPjtList();    // ✅ 인스턴스 사용
+	    }
+
+	    model.addAttribute("pjtList", pjtList);
+	    
+	    return "pjt_mng/pjt_main";
 	}
 	
 	
@@ -52,13 +63,24 @@ public class ProjectMngController {
 	public String getPjtDetail(@RequestParam("pjtSn") String pjtSn, Model model) {
 	    log.info("getPjtDetail Called >>> " + pjtSn);
 	    
-	    CmmnMap pjtDetail = projcetMngService.getPjtDetail(pjtSn);
+	    CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
 	    model.addAttribute("pjt", pjtDetail);
 
 	    return "pjt_mng/pjt_detail";
 	}
 
 
+	
+	
+	@GetMapping("/list")
+	public String showProjectList(@RequestParam(required = false) String keyword, Model model) {
+		List<CmmnMap> result = projectMngService.searchProjectMngList(keyword);    // 검색어 넘기기
+	    model.addAttribute("pjtList", result);
+	    
+	    return "pjt_mng/pjt_main";    
+	}
+	
+	
 	@GetMapping("/getSavePjtForm")
 	public String getSavePjtForm(HttpSession session, Model model) {
 		
@@ -82,23 +104,33 @@ public class ProjectMngController {
 	    return "pjt_mng/pjt_reg_form";
 	}
 
+	
 	@GetMapping("/pjtEditForm")
 	public String getPjtEditForm(@RequestParam("pjtSn") String pjtSn, Model model) {
 	    log.info("getPjtEditForm Called >>> " + pjtSn);
 	    
-	    CmmnMap pjtDetail = projcetMngService.getPjtDetail(pjtSn);  // 기존 상세조회 사용
+	    CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);  // 기존 상세조회 사용
 	    model.addAttribute("pjt", pjtDetail);
 
 	    return "pjt_mng/pjt_edit_form"; // views/pjt_mng/pjt_edit_form.html
 	}
+	
+	
 	
 	@PostMapping("/updatePjtProc")
 	public String updatePjtProc(
 	        @RequestParam("pjtSn") String pjtSn,
 	        @RequestParam("pjtNm") String pjtNm,
 	        @RequestParam(value = "empNm", required = false) String empNm,
-	        @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
-	        @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt
+	        @RequestParam(value = "pjtBgngDt", required = false) 
+	        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
+	        @RequestParam(value = "pjtEndDt", required = false) 
+	        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
+	        @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd,
+	        @RequestParam(value = "CONTENT", required = false) String content,
+	        @RequestParam(value = "approvers", required = false) String approvers,
+	        @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile
+
 	) {
 	    log.info("updatePjtProc Called >>> " + pjtSn);
 
@@ -108,6 +140,11 @@ public class ProjectMngController {
 	    params.put("EMP_NM", empNm);
 	    params.put("PJT_BGNG_DT", pjtBgngDt);
 	    params.put("PJT_END_DT", pjtEndDt);
+	    params.put("PJT_STTS_CD", pjtSttsCd);
+	    params.put("CONTENT", content);
+	    params.put("APPROVERS", approvers);
+
+
 
 	    // 마지막 수정일시 업데이트
 	    LocalDateTime now = LocalDateTime.now();
@@ -115,20 +152,22 @@ public class ProjectMngController {
 	    params.put("LAST_MDFCN_DT", formatted);
 	    params.put("LAST_MDFR_ID", "SYSTEM"); // 임시로 SYSTEM. 나중에 세션 사용자 ID로 대체 가능
 
-	    projcetMngService.updatePjtProc(params);  // service에서 update 메서드 필요!
+	    projectMngService.updatePjtProc(params);  // service에서 update 메서드 필요!
 
 	    return "redirect:/pjtMng/getPjtList";
 	}
 
+	
 	@PostMapping("/savePjtProc")
 	public String savePjtProc(
-			Model model
-			,@RequestParam("pjtNm") String pjtNm,
-		    @RequestParam(value = "empNm", required = false) String empNm,
-		    @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
-		    @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt
-			)	{
-		
+	    Model model,
+	    @RequestParam("pjtNm") String pjtNm,
+	    @RequestParam(value = "empNm", required = false) String empNm,
+	    @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
+	    @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
+	    @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd   // ✅ 추가된 부분
+	) {
+
 		
 		
 		log.info("savePjtProc Called >>> ");
@@ -144,6 +183,8 @@ public class ProjectMngController {
 		params.put("EMP_NM", empNm);
 		params.put("PJT_BGNG_DT", pjtBgngDt);
 		params.put("PJT_END_DT", pjtEndDt);
+		params.put("PJT_STTS_CD", pjtSttsCd);
+
 		
 		LocalDateTime now = LocalDateTime.now(); // 현재 시간 가져오기
 		String formatted = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")); // 14자리 문자열로 포맷
@@ -153,7 +194,7 @@ public class ProjectMngController {
 
 		
 		
-		projcetMngService.savePjtProc(params);
+		projectMngService.savePjtProc(params);
 		
 		
 		return "redirect:/pjtMng/getPjtList";

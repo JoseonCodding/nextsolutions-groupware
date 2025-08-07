@@ -37,5 +37,8 @@ public class ProjcetMngService {
 		
 	}
     
+	public List<CmmnMap> searchProjectMngList(String keyword) {
+	    return cmmnDao.selectList("com.kdt.mapper.pjt_mng.searchProjectMngList", keyword);
+	}
 
 }
