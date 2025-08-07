@@ -36,27 +36,36 @@ public class ProjectMngController {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	
-	//1. 프로젝트 목록 화면 호출 
+	
+	// ✅ 프로젝트 목록 화면 조회 (검색어 유무에 따라 분기)
 	@GetMapping("/getPjtList")
-	public String getPjtList(@RequestParam(name = "keyword", required = false) String keyword, Model model) {
-		
-		//프로젝트 리스트를 서비스에서 가져옴
-	    log.info("getPjtList Called >>> keyword=" + keyword);
-		
-		//모델에 프로젝트 리스트를 담아서 뷰로 전달 
+	public String getPjtList(
+	        @RequestParam(required = false, name = "keyword") String keyword, Model model) {
+
+	    // 🔍 검색어 로그 확인 (디버깅용)
+	   System.out.println("getPjtList Called >>> keyword = " + keyword);
+
+	    // 🗂 프로젝트 리스트 선언
 	    List<CmmnMap> pjtList;
 
+	    // 🔎 keyword가 있으면 → 검색 조건으로 조회
 	    if (keyword != null && !keyword.isEmpty()) {
-	        pjtList = projectMngService.searchProjectMngList(keyword);  // ✅ 인스턴스 사용
-	    } else {
-	        pjtList = projectMngService.getPjtList();    // ✅ 인스턴스 사용
+	        pjtList = projectMngService.searchProjectMngList(keyword);
+	        log.info("🔍 검색 결과 개수: " + pjtList.size());
+	    } 
+	    // 🔁 keyword 없으면 → 전체 리스트 조회
+	    else {
+	        pjtList = projectMngService.getPjtList();
+	        log.info("📄 전체 목록 개수: " + pjtList.size());
 	    }
 
+	    // 💾 View에 리스트 전달
 	    model.addAttribute("pjtList", pjtList);
-	    
+
+	    // 💡 pjt_mng 폴더 안의 pjt_main.html (또는 .jsp)로 이동
 	    return "pjt_mng/pjt_main";
 	}
-	
+
 	
 	//2. 프로젝트 상세보기 페이지 호출 
 	@GetMapping("/pjtDetail")

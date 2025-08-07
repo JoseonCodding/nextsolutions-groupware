@@ -157,3 +157,4 @@ bootWar {
     enabled = true           		 // bootWar 활성화 (기본값은 true)
     archiveFileName.set('ROOT.war')  // ROOT로 지정해야 컨텍스트패스가 '/'로 됩니다. (권장)
 }
+
