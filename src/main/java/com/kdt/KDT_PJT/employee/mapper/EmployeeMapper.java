@@ -1,6 +1,8 @@
 package com.kdt.KDT_PJT.employee.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
@@ -12,8 +14,8 @@ public interface EmployeeMapper {
     void toggleActive(CmmnMap params);
     void insertEmployee(CmmnMap params);
     CmmnMap getEmployeeBySeq(int empSeq);
+    EmployeeDto getEmployeeDetail(int empSeq);
     void updateEmployee(CmmnMap params);
     EmployeeDto getDetail(EmployeeDto dto);
-    int update(EmployeeDto dto);
-    
+    int update(EmployeeDto dto);    
 }

@@ -28,6 +28,10 @@ public class EmployeeService {
     public CmmnMap getEmployeeBySeq(int empSeq) {
         return employeeMapper.getEmployeeBySeq(empSeq);
     }
+    
+    public EmployeeDto getEmployeeDetail(int empSeq) {   	
+        return employeeMapper.getEmployeeDetail(empSeq);
+    }
 
     public void updateEmployee(CmmnMap params) {
         employeeMapper.updateEmployee(params);
