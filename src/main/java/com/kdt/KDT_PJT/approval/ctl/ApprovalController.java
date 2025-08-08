@@ -4,17 +4,30 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 
 import jakarta.annotation.Resource;
 
+
 @Controller
 @RequestMapping("/approval")
 public class ApprovalController {
+	
+	// 콘텐츠 영역 상단 헤더용
+	@ModelAttribute("navUrl")
+	public String navUrl() {
+		
+		return "approval/approvalNav";
+	}
 	
 	@Resource
 	ApprovalMapper approvalMapper;
@@ -22,11 +35,11 @@ public class ApprovalController {
 	@RequestMapping("/main")
 	public String approvalMain(
 						Model model, // 데이터 보관용 (컨트롤러>모델>뷰)
-						@RequestParam(name = "page", defaultValue = "1") int page, // 페이지네이션용 파라미터 (page:페이지 번호, size:페이지당 게시글 수)
-						@RequestParam(name = "size", defaultValue = "10") int size,
+						@RequestParam(name = "page", defaultValue = "1") int page, // 현재 페이지 번호
 						@RequestParam(name = "type", required = false) String type,
 						@RequestParam(name = "status", required = false) String status) {
     	
+		int size = 10;	// 페이지 당 표시될 게시글 개수
     	int offset = (page - 1) * size;	// 페이지 마다 표시되는 게시글의 시작점 (ex.1페이지:0~9번, 2페이지:10~19번...)
     	int totalCount = approvalMapper.countAll(type, status);	// 게시글 DB 전체 개수
     	int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
@@ -57,15 +70,89 @@ public class ApprovalController {
     	model.addAttribute("status", status);
     	
     	model.addAttribute("mainUrl", "approval/approvalMain");
-    	return "home";
+    	return "navTap";
     }
 	
     @RequestMapping("/viewer")
-    public String approvalViewer(Model model) {
+    public String approvalViewer(
+			    		Model model,
+			    		@RequestParam("docId") String docId,
+			            @RequestParam(name = "page", defaultValue = "1") int page,
+			            @RequestParam(name = "type", required = false) String type,
+			            @RequestParam(name = "status", required = false) String status) {
+    	
+    	ApprovalDTO viewData = approvalMapper.viewById(docId);
+    
+    	model.addAttribute("viewData", viewData);
+
+    	model.addAttribute("page", page);
+    	model.addAttribute("type", type);
+    	model.addAttribute("status", status);
     	
     	model.addAttribute("mainUrl", "approval/approvalViewer");
-    	return "home";
+    	return "navTap";
     }
-	
+
+    @RequestMapping("/delete")
+    public String approvalDelete (
+    					RedirectAttributes redirectAttributes,
+				        @RequestParam("docId") String docId,
+				        @RequestParam(name = "page", defaultValue = "1") int page,
+				        @RequestParam(name = "type", required = false) String type,
+				        @RequestParam(name = "status", required = false) String status) {
+    	
+        approvalMapper.deleteById(docId);
+        
+        int totalCount = approvalMapper.countAll(type, status);	// 게시글 DB 전체 개수 (필터기능 반영됨)
+        int size = 10;	// 페이지 당 표시될 게시글 수
+        int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
+        
+        int deletePage = page > totalPages ? totalPages : page; // 현재 페이지가 마지막 페이지보다 크면 마지막 페이지로 이동
+        if (totalPages == 0) {deletePage = 1;}	// 필터에 해당하는 게시글이 없는 경우 endPage=0이 되는 상황 방지
+        
+        redirectAttributes.addAttribute("page", deletePage);
+        redirectAttributes.addAttribute("type", type == null ? "" : type);
+        redirectAttributes.addAttribute("status", status == null ? "" : status);
+
+        return "redirect:/approval/main";
+    }
+    
+    @GetMapping("/edit")
+    public String approvalEditForm(
+    					Model model,
+				        @RequestParam("docId") String docId,
+				        @RequestParam(name = "page", defaultValue = "1") int page,
+				        @RequestParam(name = "type", required = false) String type,
+				        @RequestParam(name = "status", required = false) String status) {
+    	
+    	ApprovalDTO editData = approvalMapper.viewById(docId);
+    	
+    	model.addAttribute("editData", editData);
+    	
+    	model.addAttribute("page", page);
+    	model.addAttribute("type", type);
+    	model.addAttribute("status", status);
+    	
+    	model.addAttribute("mainUrl", "approval/approvalEditForm");
+    	return "navTap";
+    }
+    
+    @PostMapping("/edit")
+    public String approvalEditProc(
+    				RedirectAttributes redirectAttributes,
+					@ModelAttribute ApprovalDTO editData,
+					@RequestParam(name = "page", defaultValue = "1") int page,
+					@RequestParam(name = "type", required = false) String type,
+					@RequestParam(name = "status", required = false) String status) {
+    	
+    	approvalMapper.updateById(editData);
+        
+    	redirectAttributes.addAttribute("docId", editData.getDocId());
+        redirectAttributes.addAttribute("page", page);
+        redirectAttributes.addAttribute("type", type);
+        redirectAttributes.addAttribute("status", status);
+        
+        return "redirect:/approval/viewer";	// 파라미터가 쿼리스트링에 자동으로 붙음
+    }
 
 }

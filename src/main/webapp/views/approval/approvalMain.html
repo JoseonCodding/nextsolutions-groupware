@@ -6,9 +6,6 @@
     
 </head>
 <body>
-    
-    <main class="main-content">
-		<h1>전자 결재</h1>
 
 		<!-- 필터 -->
 		<div class="filter-bar">
@@ -60,7 +57,7 @@
                 	<td th:text="${#dates.format(dto.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
             		<td th:text="${dto.docType}"></td>
 				    <td class="title">
-				    	<a th:href="@{/approval/viewer(docId=${dto.docId})}" th:text="${dto.title}"></a>
+				    	<a th:href="@{/approval/viewer(docId=${dto.docId}, page=${page}, type=${type}, status=${status})}" th:text="${dto.title}"></a>
 				    </td>
 				    <td th:text="${dto.department}"></td>
 				    <td th:text="${dto.writer}"></td>
@@ -95,8 +92,6 @@
 		  <!-- Next 버튼 -->
 		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages}, type=${type}, status=${status})}">Next &#x203A;</a>
 		</nav>
-		
-    </main>
 
 </body>
 </html>
