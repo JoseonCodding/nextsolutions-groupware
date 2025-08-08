@@ -21,7 +21,7 @@ public class Attendance {
     	System.out.println("recordCheckIn 되고있냐아");
     	AttendDTO attend = new AttendDTO();
     	
-        attend.setUserId("test_user"); // 로그인 미구현
+        attend.setEmployeeId("test_user"); // 로그인 미구현
         attend.setCheckInTime(LocalDateTime.now());
 
         mapper.insertAttendance(attend);
@@ -32,7 +32,7 @@ public class Attendance {
     	System.out.println("recordCheckOut :퇴근");
     	AttendDTO attend = new AttendDTO();
     	
-        attend.setUserId("test_user"); // 로그인 미구현
+        attend.setEmployeeId("test_user"); // 로그인 미구현
         attend.setCheckOutTime(LocalDateTime.now());
 
         mapper.updateAttendance(attend);
