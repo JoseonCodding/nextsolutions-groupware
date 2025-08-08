@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
+import com.kdt.KDT_PJT.attend.model.LeaveDTO;
 
 
 @Mapper
@@ -64,5 +65,12 @@ public interface ApprovalMapper {
 	
 	@Delete("DELETE FROM Approval_TEST WHERE docId = #{docId}")
 	int deleteById(@Param("docId") String docId);
+	
+	// <TEST> 테스트용 근태 정보 받아오기
+	@Select("SELECT * FROM annual_leave")
+	List<LeaveDTO> selectLeaveAll();
+	
+	@Select("SELECT * FROM annual_leave WHERE leave_id = #{leaveId}")
+	LeaveDTO selectLeaveById(int leaveId);
 	
 }

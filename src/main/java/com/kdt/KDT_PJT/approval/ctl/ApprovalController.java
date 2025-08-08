@@ -1,16 +1,17 @@
 package com.kdt.KDT_PJT.approval.ctl;
 
-import java.net.URLEncoder;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
+import com.kdt.KDT_PJT.attend.model.LeaveDTO;
 
 import jakarta.annotation.Resource;
 
@@ -18,17 +19,24 @@ import jakarta.annotation.Resource;
 @RequestMapping("/approval")
 public class ApprovalController {
 	
+	// 콘텐츠 영역 상단 헤더용
+	@ModelAttribute("navUrl")
+	public String navUrl() {
+		
+		return "approval/approvalNav";
+	}
+	
 	@Resource
 	ApprovalMapper approvalMapper;
     
 	@RequestMapping("/main")
 	public String approvalMain(
 						Model model, // 데이터 보관용 (컨트롤러>모델>뷰)
-						@RequestParam(name = "page", defaultValue = "1") int page, // 페이지네이션용 파라미터 (page:페이지 번호, size:페이지당 게시글 수)
-						@RequestParam(name = "size", defaultValue = "10") int size,
+						@RequestParam(name = "page", defaultValue = "1") int page, // 현재 페이지 번호
 						@RequestParam(name = "type", required = false) String type,
 						@RequestParam(name = "status", required = false) String status) {
     	
+		int size = 10;	// 페이지 당 표시될 게시글 개수
     	int offset = (page - 1) * size;	// 페이지 마다 표시되는 게시글의 시작점 (ex.1페이지:0~9번, 2페이지:10~19번...)
     	int totalCount = approvalMapper.countAll(type, status);	// 게시글 DB 전체 개수
     	int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
@@ -45,6 +53,11 @@ public class ApprovalController {
     	// 필터에 해당하는 게시글이 없는 경우 endPage=0이 되는 상황 방지
     	if (totalPages == 0) {endPage = 1;}
     	
+    	// <TEST> 테스트용 근태 정보 보내기
+    	List<LeaveDTO> leaveData = approvalMapper.selectLeaveAll();
+    	model.addAttribute("leaveData", leaveData);
+    	
+    	
     	List<ApprovalDTO> approvalData = approvalMapper.pageData(offset, size,type, status); // 현재 페이지 게시글 DB 정보 (offset부터 size까지)
     	
     	model.addAttribute("approvalData", approvalData);
@@ -59,27 +72,32 @@ public class ApprovalController {
     	model.addAttribute("status", status);
     	
     	model.addAttribute("mainUrl", "approval/approvalMain");
-    	return "home";
+    	return "navTap";
     }
 	
     @RequestMapping("/viewer")
     public String approvalViewer(
 			    		Model model,
-			    		@RequestParam("docId") String docId,
+			    		//@RequestParam("docId") String docId,
+			    		@RequestParam("leave_id") int leaveId, // <TEST> 근태 정보 받아오기 테스트용
 			            @RequestParam(name = "page", defaultValue = "1") int page,
 			            @RequestParam(name = "type", required = false) String type,
 			            @RequestParam(name = "status", required = false) String status) {
     	
-    	ApprovalDTO viewData = approvalMapper.selectById(docId);
+    	//ApprovalDTO viewData = approvalMapper.selectById(docId);
+    	
+    	// <TEST> 테스트용 근태 정보 보내기
+    	LeaveDTO leaveData = approvalMapper.selectLeaveById(leaveId);
+    	model.addAttribute("leaveData", leaveData);
     
-    	model.addAttribute("viewData", viewData);
+    	//model.addAttribute("viewData", viewData);
 
     	model.addAttribute("page", page);
     	model.addAttribute("type", type);
     	model.addAttribute("status", status);
     	
     	model.addAttribute("mainUrl", "approval/approvalViewer");
-    	return "home";
+    	return "navTap";
     }
 
     @RequestMapping("/delete")
@@ -92,19 +110,19 @@ public class ApprovalController {
     	
         approvalMapper.deleteById(docId);
         
-        redirectAttributes.addAttribute("page", page);
+        // 버그 수정 (ex.글 11개 일때, 11번째 글을 지우면, 1페이지가 아닌, 2페이지로 이동 -> 게시글이 없습니다 출력되는 현상)
+        // 해결 : 삭제 후, 마지막 페이지 다시 계산하고 파라미터에 페이지 재할당
+        int totalCount = approvalMapper.countAll(type, status);	// 게시글 DB 전체 개수 (필터기능 반영됨)
+        int size = 10;	// 페이지 당 표시될 게시글 수
+        int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
+        
+        int deletePage = page > totalPages ? totalPages : page; // 현재 페이지가 마지막 페이지보다 크면 마지막 페이지로 이동
+        if (totalPages == 0) {deletePage = 1;}	// 
+        
+        
+        redirectAttributes.addAttribute("page", deletePage);
         redirectAttributes.addAttribute("type", type == null ? "" : type);
         redirectAttributes.addAttribute("status", status == null ? "" : status);
-        
-    	
-//        // 한글 인코딩 에러 처리하는 방법 (쌤 자문 - URLEncoder 사용 - 지난 수업때 함) 
-//    	try {
-//			String ttt= URLEncoder.encode("서필규님 왜그래", "utf-8");
-//			System.out.println("메인이지:"+ttt);
-//		} catch (UnsupportedEncodingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
     	
 
         return "redirect:/approval/main";

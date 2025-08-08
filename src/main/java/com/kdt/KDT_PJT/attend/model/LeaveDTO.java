@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LeaveDTO {
 
-	int leave_id ; 
+	int leaveId ; 
     Date leave_date;                 
     //leave_hours 
-    String reason, leave_type, employeeId, empNm;
+    String reason, leaveType, employeeId, empNm;
     int total, used;
     
     LocalDateTime created_at, updated_at;
@@ -30,5 +30,7 @@ public class LeaveDTO {
 		return total - used;
 	}
     
-    
+	// <TEST> 필규 작성 - 전자결재에서 데이터 끌어오기 위해서 필요
+	String createReason, stateType, usedReason;
+	Date createDate, usedDate;
 }

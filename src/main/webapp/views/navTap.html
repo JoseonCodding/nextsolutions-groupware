@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Home</title>
+</head>
+<style>
+*{
+	margin:0;
+	padding:0;
+}
+.wrapper{
+	width:1200px;
+	margin: 0 auto;
+	background-color: #ff0; /*영역 확인용*/
+}
+</style>
+<body>
+
+<div class="wrapper">
+	<th:block th:replace="@{/layout/header}"/> 
+	<th:block th:replace="@{${navUrl}}"/> 
+	<th:block th:replace="@{${mainUrl}}" />
+	<th:block th:replace="@{/layout/footer}"/> 
+ </div>
+</body>
+</html>

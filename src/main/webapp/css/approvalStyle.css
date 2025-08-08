@@ -56,10 +56,6 @@
 
 
 /* 메인 컨텐츠 */
-.main-content {
-    flex: 1;
-    padding: 36px 48px 30px 48px;
-}
 
 h1 {
     font-size: 2em;
