@@ -4,7 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -13,6 +16,7 @@ import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 
 import jakarta.annotation.Resource;
+
 
 @Controller
 @RequestMapping("/approval")
@@ -77,7 +81,7 @@ public class ApprovalController {
 			            @RequestParam(name = "type", required = false) String type,
 			            @RequestParam(name = "status", required = false) String status) {
     	
-    	ApprovalDTO viewData = approvalMapper.selectById(docId);
+    	ApprovalDTO viewData = approvalMapper.viewById(docId);
     
     	model.addAttribute("viewData", viewData);
 
@@ -99,24 +103,57 @@ public class ApprovalController {
     	
         approvalMapper.deleteById(docId);
         
-        // 버그 수정 (ex.글 11개 일때, 11번째 글을 지우면, 1페이지가 아닌, 2페이지로 이동 -> 게시글이 없습니다 출력되는 현상)
-        // 해결 : 삭제 후, 마지막 페이지 다시 계산하고 파라미터에 페이지 재할당
         int totalCount = approvalMapper.countAll(type, status);	// 게시글 DB 전체 개수 (필터기능 반영됨)
         int size = 10;	// 페이지 당 표시될 게시글 수
         int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
         
         int deletePage = page > totalPages ? totalPages : page; // 현재 페이지가 마지막 페이지보다 크면 마지막 페이지로 이동
-        if (totalPages == 0) {deletePage = 1;}	// 
-        
+        if (totalPages == 0) {deletePage = 1;}	// 필터에 해당하는 게시글이 없는 경우 endPage=0이 되는 상황 방지
         
         redirectAttributes.addAttribute("page", deletePage);
         redirectAttributes.addAttribute("type", type == null ? "" : type);
         redirectAttributes.addAttribute("status", status == null ? "" : status);
-    	
 
         return "redirect:/approval/main";
     }
-
-	
+    
+    // 수정 폼 (GET)
+    @GetMapping("/edit")
+    public String approvalEditForm(
+    					Model model,
+				        @RequestParam("docId") String docId,
+				        @RequestParam(name = "page", defaultValue = "1") int page,
+				        @RequestParam(name = "type", required = false) String type,
+				        @RequestParam(name = "status", required = false) String status) {
+    	
+    	ApprovalDTO editData = approvalMapper.viewById(docId);
+    	
+    	model.addAttribute("editData", editData);
+    	
+    	model.addAttribute("page", page);
+    	model.addAttribute("type", type);
+    	model.addAttribute("status", status);
+    	
+    	model.addAttribute("mainUrl", "approval/approvalEditForm");
+    	return "navTap";
+    }
+    
+    // 수정 처리 (POST)
+    @PostMapping("/edit")
+    public String approvalEditProc(
+    				RedirectAttributes redirectAttributes,
+					@ModelAttribute ApprovalDTO editData,
+					@RequestParam(name = "page", defaultValue = "1") int page,
+					@RequestParam(name = "type", required = false) String type,
+					@RequestParam(name = "status", required = false) String status) {
+    	
+    	approvalMapper.updateById(editData);
+        
+        redirectAttributes.addAttribute("page", page);
+        redirectAttributes.addAttribute("type", type);
+        redirectAttributes.addAttribute("status", status);
+        
+        return "redirect:/approval/main";
+    }
 
 }

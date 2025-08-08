@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>★전자 결재 문서 수정</title>
+</head>
+<body>
+    <form method="post" th:action="@{/approval/edit}" th:object="${editData}">
+        <input type="hidden" th:field="*{docId}" />
+        <table>
+            <tr>
+                <td>작성자</td>
+                <td th:text="*{writer}"></td>
+            </tr>
+            <tr>
+                <td>부서</td>
+                <td th:text="*{department}"></td>
+            </tr>
+            <tr>
+                <td>결재 종류</td>
+                <td>
+                    <select th:field="*{docType}">
+                        <option value="프로젝트" th:selected="*{docType == '프로젝트'}">프로젝트</option>
+                        <option value="근태" th:selected="*{docType == '근태'}">근태</option>
+                        <option value="공지사항" th:selected="*{docType == '공지사항'}">공지사항</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>제목</td>
+                <td><input type="text" th:field="*{title}" /></td>
+            </tr>
+            <tr>
+                <td>내용</td>
+                <td><textarea th:field="*{content}" rows="10" cols="50"></textarea></td>
+            </tr>
+        </table>
+        <button type="submit">저장</button>
+        <a th:href="@{'/approval/viewer'(docId=${editData.docId}, page=${page}, type=${type}, status=${status})}">
+            <button type="button">취소</button>
+        </a>
+    </form>
+</body>
+</html>

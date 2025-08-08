@@ -57,13 +57,13 @@
 	
 	<!-- 수정, 삭제 버튼 영역 -->
 	<th:block th:if="${viewData != null}">
-		<a>
+		<a th:href="@{/approval/edit(docId=${viewData.docId} , page=${page}, type=${type}, status=${status})}">
 			<button>수정</button>
 		</a>
 	</th:block>
 	
 	<th:block th:if="${viewData != null}">
-		<a th:href="@{/approval/delete(page=${page}, type=${type}, status=${status}, docId=${viewData.docId})}"
+		<a th:href="@{/approval/delete(docId=${viewData.docId}, page=${page}, type=${type}, status=${status})}"
 			onclick="return confirm('삭제하면 복원할 수 없습니다.\n정말로 삭제하시겠습니까?');">
 			<button>삭제</button>
 		</a>
