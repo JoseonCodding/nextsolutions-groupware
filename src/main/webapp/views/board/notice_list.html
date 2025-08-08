@@ -64,10 +64,10 @@
             <button type="submit" style="padding: 5px 10px; margin-left: 5px;">🔍</button>
         </form>
 
-        <!-- 글쓰기 버튼 -->
+        <!-- 글쓰기 버튼 
         <a th:href="@{/board/notice/write}" style="padding: 5px 10px; margin-left: 10px; background: #007bff; color: #fff; border-radius: 4px; text-decoration: none;">
             글쓰기
-        </a>
+        </a> -->
     </div>
 
     <!-- 게시글 테이블 -->
@@ -86,9 +86,9 @@
         <tr th:each="b, stat : ${boards}">
             <td style="padding: 10px; text-align: center;" th:text="${stat.count}">1</td>
             <td style="padding: 10px;">
-                <a th:href="@{/board/notice/view(id=${b.id})}" th:text="${b.title}">제목</a>
+                <a th:href="@{/board/notice/view(id=${b.postId})}" th:text="${b.title}">제목</a>
             </td>
-            <td style="padding: 10px; text-align: center;" th:text="${b.authorId}">작성자</td>
+            <td style="padding: 10px; text-align: center;" th:text="${b.employeeId}">작성자</td>
             <td style="padding: 10px; text-align: center;" 
                 th:text="${b.regDate != null ? #dates.format(b.regDate, 'yyyy-MM-dd') : '작성일 없음'}">2025-01-01</td>
             <td style="padding: 10px; text-align: center;" th:text="${b.viewCnt}">0</td>
