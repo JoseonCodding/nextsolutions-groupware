@@ -7,14 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class HomeController {
 
-	
 	@RequestMapping("/")
 	String Home(Model mm) {
 		System.out.println("Home 진입");
 		mm.addAttribute("mainUrl", "testtt/asdf");
-		return "home";
+		return "login/loginForm";
 	}
-	
-	
-	
+
 }

@@ -47,6 +47,7 @@
 </head>
 <body>
 <h1>사원 관리</h1>
+<th:block th:replace="@{employee/layout/empTap}"/>
 <div class="top-buttons">
     <a href="/employee/register">사원 등록</a>
     <button id="editSelected">선택된 사원 수정</button>
@@ -73,7 +74,7 @@
             <td class="status"
                 th:classappend="${emp.active == 1} ? 'status-active' : 'status-inactive'"
                 th:text="${emp.active == 1 ? '활성' : '비활성'}"></td>
-            <td th:text="${emp.emp_nm}"></td>
+            <td th:text="${emp.emp_nm != null ? emp.emp_nm : ''}"></td>
             <td>
                 <button th:if="${emp.active == 1}" class="btn btn-inactive" th:attr="data-emp=${emp.emp_seq}">비활성화</button>
                 <button th:if="${emp.active != 1}" class="btn btn-active" th:attr="data-emp=${emp.emp_seq}">활성화</button>
