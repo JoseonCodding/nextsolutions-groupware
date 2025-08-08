@@ -8,9 +8,9 @@ import lombok.Data;
 public class CommentDTO {
 	Long commentId;
     Long postId;
-    String authorId;
+    String employeeId;
     Long parentCommentId;
     String content;
     LocalDateTime createdAt;
-    Boolean isDeleted;
+    //Boolean isDeleted;
 }

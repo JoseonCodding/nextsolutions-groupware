@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 public class BoardDTO {
 
 	///글쓰기, 글 목록, 글 수정 등
-    Integer id;        // 게시글 ID
+    Integer postId;        // 게시글 ID
     Integer boardId;   // 게시판 ID (자유게시판, 공지사항 등 구분)
-    String authorId;   // 작성자 ID (employeeId 기준)
+    String employeeId;   // 작성자 ID (employeeId 기준)
     String title;      // 제목
     String content;    // 내용
     Date regDate;      // 작성일
@@ -30,9 +30,9 @@ public class BoardDTO {
 
 
     // 생성자 (테스트/간편 생성용)
-    public BoardDTO(String title, String authorId, String content, String pw) {
+    public BoardDTO(String title, String employeeId, String content, String pw) {
         this.title = title;
-        this.authorId = authorId;
+        this.employeeId = employeeId;
         this.content = content;
     }
 }

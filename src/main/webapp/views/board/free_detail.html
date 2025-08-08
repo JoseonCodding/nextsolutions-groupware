@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <title>자유게시판 상세보기</title>
 </head>
+<style>
+  .like-btn { border:1px solid #ddd; border-radius:9999px; padding:.3rem .7rem; background:#fff; }
+  .like-btn.liked { color:#e11d48; border-color:#e11d48; }
+  .like-count { margin-left:.25rem; font-weight:600; }
+</style>
 <body>
 
     <div class="container">
         <h2 th:text="${board.title}">게시글 제목</h2>
         <div class="board-meta">
-            <span>작성자: <strong th:text="${board.authorId}">author</strong></span>
+            <span>작성자: <strong th:text="${board.employeeId}">employeeId</strong></span>
             <p><strong>작성일:</strong>
             <span th:text="${board.regDate != null ? #dates.format(board.regDate, 'yyyy-MM-dd HH:mm') 
       					   : '작성일 정보 없음'}">2025-08-05</span></p>
@@ -22,18 +27,39 @@
         </div>
         <hr />
         
+    	<!-- 좋아요 토글 -->
+    	<div class="like-toggle">
+  			<form th:action="@{/board/free/like/toggle}" method="post">
+    			<input type="hidden" name="postId" th:value="${board.postId}" />
+
+    			<button type="submit"
+            		class="like-btn"
+            		th:classappend="${likedByMe} ? ' liked' : ''">
+      			<span th:text="${likedByMe} ? '♥' : '♡'">♡</span>
+      			<span th:text="${likedByMe} ? '좋아요' : '좋아요'">좋아요</span>
+    			</button>
+
+    			<span class="like-count" th:text="${likeCount}">0</span>
+  			</form>
+		</div>
+  
         <!-- 댓글 목록 -->
     	<div class="comments-section">
         <h3>댓글 (<span th:text="${comments.size()}">0</span>)</h3>
         <ul>
             <li th:each="c : ${comments}">
             <form action="/board/commentDelete">
-            		<input name="commentId" th:value="${c.commentId}" type="hidden"/> 
-            		<input name="postId" th:value="${c.postId}" type="hidden"/> 
-                <p><input name="authorId" th:value="${c.authorId}" readonly="readonly"/> : <span th:text="${c.content}"></span> </p>
+            	<input name="commentId" th:value="${c.commentId}" type="hidden"/> 
+            	<input name="postId" th:value="${c.postId}" type="hidden"/> 
+                <p><input name="employeeId" th:value="${c.employeeId}" readonly="readonly"/> : <span th:text="${c.content}"></span> </p>
                 <small th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm')}">2025-08-07 09:49</small>
                 <input type="submit" value="삭제"/>
              </form>
+             <form action="/board/commentReply" method="get" style="display:inline">
+      			<input type="hidden" name="parentCommentId" th:value="${c.commentId}"/>
+      			<input type="hidden" name="postId" th:value="${c.postId}"/>
+      			<button type="submit">답글</button>
+    		</form>
             </li>
         </ul>
     	</div>
@@ -41,18 +67,17 @@
     	<!-- 댓글 입력폼 -->
     	<div class="comment-form">
        		<form th:action="@{/board/free/comment/save}" method="post">
-            	<input type="hidden" name="postId" th:value="${board.id}" />
+            	<input type="hidden" name="postId" th:value="${board.postId}" />
             	<input type="hidden" name="parentCommentId" value="" />
            		<textarea name="content" rows="3" placeholder="댓글을 입력하세요" required></textarea>
             	<button type="submit">등록</button>
        	 	</form>
     	</div>
-        
-        
+    	
         <div class="board-actions">
             <a th:href="@{/board/free}" class="btn">목록으로</a>
-            <a th:href="@{'/board/free/modify'(id=${board.id})}" class="btn">수정</a>
-            <a th:href="@{'/board/free/delete'(id=${board.id})}" 
+            <a th:href="@{'/board/free/modify'(postId=${board.postId})}" class="btn">수정</a>
+            <a th:href="@{'/board/free/delete'(postId=${board.postId})}" 
                th:onclick="|return confirm('게시글을 삭제하시겠습니까?');|"
                class="btn btn-danger">삭제</a>
         </div>

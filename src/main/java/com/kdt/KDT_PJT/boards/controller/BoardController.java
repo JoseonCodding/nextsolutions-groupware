@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,12 +13,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.kdt.KDT_PJT.boards.mapper.BoardLikeMapper;
 import com.kdt.KDT_PJT.boards.mapper.BoardMapper;
 import com.kdt.KDT_PJT.boards.mapper.CommentMapper;
 import com.kdt.KDT_PJT.boards.model.BoardDTO;
-import com.kdt.KDT_PJT.boards.model.BoardInfoDTO;
+import com.kdt.KDT_PJT.boards.model.BoardLikeDTO;
 import com.kdt.KDT_PJT.boards.model.CommentDTO;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
+import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -30,6 +33,8 @@ public class BoardController {
     BoardMapper boardMapper;
     @Autowired
     CommentMapper commentMapper;
+    @Autowired
+    BoardLikeMapper likeMapper;
 
     // 공지사항 목록
     @GetMapping("/notice")
@@ -64,15 +69,21 @@ public class BoardController {
     public String writeFreeForm(Model model) {
         model.addAttribute("boardDTO", new BoardDTO());
         model.addAttribute("activeBoard", "free");
-        return "board/free_writeform"; // 이 파일 이름
+        
+        model.addAttribute("mainUrl", "board/free_writeform");
+        return "home"; // 이 파일 이름
     }
 
     // 자유게시판 저장
     @PostMapping("/free/save")
-    public String saveFreePost(@ModelAttribute BoardDTO dto) {
+    public String saveFreePost(@ModelAttribute BoardDTO dto, HttpSession session) {
+    	
+    	EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+
+    	
         Integer boardId = boardMapper.findBoardIdByType("free");
         dto.setBoardId(boardId);
-
+        dto.setEmployeeId(loginUser.getEmployeeId());
         dto.setRegDate(new Date());
         dto.setViewCnt(0);
         dto.setLikeCnt(0);
@@ -84,42 +95,54 @@ public class BoardController {
     
     // 자유게시판 상세보기
     @GetMapping("/free/detail")
-    public String freeDetail(@RequestParam("id") int id, Model model) {
+    public String freeDetail(@RequestParam("id") int id, Model model, HttpSession session) {
         BoardDTO board = boardMapper.detail(id);
+        
+        // EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+    	// loginUser = new EmployeeDto();
+    	// loginUser.setEmployeeId("20250002");
+        
+        CmmnMap loginUser = (CmmnMap) session.getAttribute("loginUser");
+ 
+
+        
         List<CommentDTO> comments = commentMapper.selectCommentsByPostId((long) id);
+        List<BoardLikeDTO> likes = likeMapper.selectLikesByPostId((long)id);
+        
+        // final String me = loginUser != null ? loginUser.getEmployeeId() : null;
+        
+        final String me = loginUser != null ? loginUser.getString("employeeId") : null;
+        boolean likedByMe = likes.stream()
+        	    .anyMatch(l -> me != null && me.equals(l.getEmployeeId()));
+        
+        int likeCount = likes.size();
+        
         model.addAttribute("board", board);
         model.addAttribute("comments", comments);
+        model.addAttribute("likes", likes);
+        model.addAttribute("likeCount", likeCount);
+        model.addAttribute("likedByMe", likedByMe);
         model.addAttribute("activeBoard", "free");
-        return "board/free_detail";
+        
+        model.addAttribute("mainUrl", "board/free_detail");
+        return "home";
     }
     
     // 댓글 저장 처리
     @PostMapping("/free/comment/save")
     public String saveComment(
-            @RequestParam("postId") Long postId,
-            @RequestParam(value = "parentCommentId", required = false) Long parentId,
-            @RequestParam("content") String content,
+    		CommentDTO dto,
             HttpSession session) {
 
         // 1. 세션에서 로그인 사용자 정보 꺼내기
-        CmmnMap loginUser = (CmmnMap) session.getAttribute("loginUser");
-        // Map 구조에 따라 꺼내는 키가 다를 수 있는데, 보통 "employeeId" 로 저장되어 있습니다.
-        String authorId = loginUser.getString("employeeId");
-
-        CommentDTO dto = new CommentDTO();
-        dto.setPostId(postId);
-        dto.setAuthorId(authorId);
+    	EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+    	
+    	
+    	dto.setEmployeeId(loginUser.getEmployeeId());
         
-        // 0이거나 음수면 null로 치환
-        if (parentId != null && parentId > 0) {
-            dto.setParentCommentId(parentId);
-        } else {
-            dto.setParentCommentId(null);
-        }
-        dto.setContent(content);
-
+        
         commentMapper.insertComment(dto);
-        return "redirect:/board/free/detail?id=" + postId;
+        return "redirect:/board/free/detail?id=" + dto.getPostId();
     }
     
     //댓글삭제
@@ -129,5 +152,32 @@ public class BoardController {
         
         return "redirect:/board/free/detail?id=" + dto.getPostId();
     }
+    
+    //좋아요 저장
+    @PostMapping("/free/like/toggle")
+    public String toggleLike( BoardLikeDTO dto, HttpSession session) {
+        EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+        
+        loginUser = new EmployeeDto();
+    	loginUser.setEmployeeId("20250002");
+    	
+        dto.setEmployeeId(loginUser.getEmployeeId());
+        
+        if (likeMapper.exists(dto)) {
+        	// 이미 내가 좋아요를 누른 상태라면
+            likeMapper.delete(dto);         // 좋아요 기록(행) 삭제
+            boardMapper.decrementLikeCnt(dto);
+        } else {
+            try {
+                
+            	likeMapper.insert(dto);
+            } catch (DuplicateKeyException ignore) {
+                // 동시 클릭 등으로 UNIQUE 충돌나면 무시
+            }
+        }
+        return "redirect:/board/free/detail?id=" + dto.getPostId();
+    }
+    
+    
 
 }

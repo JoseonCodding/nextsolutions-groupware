@@ -1,6 +1,8 @@
 package com.kdt.KDT_PJT.boards.mapper;
 
 import com.kdt.KDT_PJT.boards.model.BoardDTO;
+import com.kdt.KDT_PJT.boards.model.BoardLikeDTO;
+
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -12,21 +14,7 @@ public interface BoardMapper {
     @Select("SELECT board_id FROM board_board WHERE board_type = #{boardType}")
     Integer findBoardIdByType(@Param("boardType") String boardType);
 
-
-    // 2) 공통 결과 매핑 정의 (첫 번째 메서드에만 id 지정)
-    @Results(id = "PostResultMap", value = {
-        @Result(property = "id",        column = "post_id"),
-        @Result(property = "boardId",   column = "board_id"),
-        @Result(property = "authorId",  column = "author_id"),
-        @Result(property = "title",     column = "title"),
-        @Result(property = "content",   column = "content"),
-        @Result(property = "regDate",   column = "created_at"),
-        @Result(property = "updDate",   column = "updated_at"),
-        @Result(property = "viewCnt",   column = "view_count"),
-        @Result(property = "likeCnt",   column = "like_count"),
-        @Result(property = "isDeleted", column = "is_deleted")
-    })
-
+    
     // 3) 공지사항 게시글 목록 조회
     @Select("""
         SELECT p.*
@@ -40,7 +28,7 @@ public interface BoardMapper {
 
 
     // 4) 자유게시판 게시글 목록 조회
-    @ResultMap("PostResultMap")
+   
     @Select("""
         SELECT p.*
           FROM board_post p
@@ -53,7 +41,7 @@ public interface BoardMapper {
 
 
     // 5) 게시글 상세 조회 (삭제된 글은 조회 불가)
-    @ResultMap("PostResultMap")
+    
     @Select("""
         SELECT *
           FROM board_post
@@ -66,11 +54,11 @@ public interface BoardMapper {
     // 6) 게시글 등록 (AUTO_INCREMENT 키 가져오기)
     @Insert("""
     	    INSERT INTO board_post
-    	      (board_id, author_id, title, content, created_at, view_count, like_count, is_deleted)
+    	      (board_id, employee_id, title, content, created_at, view_count, like_count, is_deleted)
     	    VALUES
-    	      (#{boardId}, #{authorId}, #{title}, #{content}, NOW(), 0, 0, FALSE)
+    	      (#{boardId}, #{employeeId}, #{title}, #{content}, NOW(), 0, 0, FALSE)
     	""")
-    	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "post_id")
+    	@Options(useGeneratedKeys = true, keyProperty = "postId", keyColumn = "post_id")
     	int insert(BoardDTO dto);
 
     
@@ -103,4 +91,11 @@ public interface BoardMapper {
            AND p.is_deleted = false
     """)
     int totalCnt();
+    
+    // 좋아요 증감형
+    @Update("UPDATE board_post SET like_cnt = like_cnt + 1 WHERE post_id = #{postId}")
+    int incrementLikeCnt(BoardLikeDTO dto);
+
+    @Update("UPDATE board_post SET like_cnt = CASE WHEN like_cnt > 0 THEN like_cnt - 1 ELSE 0 END WHERE post_id = #{postId}")
+    int decrementLikeCnt(BoardLikeDTO dto);
 }
