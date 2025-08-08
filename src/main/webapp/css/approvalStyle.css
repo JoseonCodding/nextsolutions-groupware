@@ -56,10 +56,6 @@
 
 
 /* 메인 컨텐츠 */
-.main-content {
-    flex: 1;
-    padding: 36px 48px 30px 48px;
-}
 
 h1 {
     font-size: 2em;
@@ -92,9 +88,6 @@ h1 {
 .btn-primary:hover {
     background: #283593;
     color: #ffc107;
-}
-a.btn {
-    display: inline-block;
 }
 
 /* 게시판 필터 */

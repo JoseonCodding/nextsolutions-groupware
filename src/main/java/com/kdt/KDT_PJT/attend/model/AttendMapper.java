@@ -7,16 +7,24 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
+
 @Mapper
 public interface AttendMapper {
 
-	@Insert("INSERT INTO attendance (user_id, check_in_time) VALUES (#{userId}, #{checkInTime})")
+	//출근 시간 기록
+	@Insert("INSERT INTO attendance (employeeId, check_in_time) VALUES (#{employeeId}, #{checkInTime})")
     void insertAttendance(AttendDTO attendance);
-	
-	@Update("UPDATE attendance SET check_out_time = #{checkOutTime} WHERE user_id = #{userId} AND DATE(check_in_time) = CURDATE()")
+
+	//퇴근 시간 기록
+	@Update("UPDATE attendance SET check_out_time = #{checkOutTime} WHERE employeeId = #{employeeId} AND DATE(check_in_time) = CURDATE()")
 	void updateAttendance(AttendDTO attendance);
 	
+	//
 	@Select("select * from attendance")
 	List<AttendDTO> sellectAttendList();
 	
+	//
+	@Select("select * from employee where employeeId = #{employeeId} and emp_nm = #{emp_nm}")
+	String empName(EmployeeDto empDto);
 }

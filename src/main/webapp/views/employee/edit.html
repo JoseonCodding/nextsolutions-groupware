@@ -59,7 +59,7 @@
     <h2>사원 정보 수정</h2>
     
     <form action="/employee/update" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="emp_seq" th:value="${empSeq}" />
+        <input type="hidden" name="empSeq" th:value="${employee.empSeq}" />
 
         <table>
             <tr>
@@ -76,13 +76,13 @@
             </tr>
             <tr>
                 <td>입사일</td>
-                <td><input type="date" name="hire_date" th:value="${employee.hireDate}"></td>
+                <td><input type="date" name="hireDate" th:value="${employee.hireDate}"></td>
                 <td>퇴사일</td>
-                <td><input type="date" name="resign_date" th:value="${employee.resignDate}"></td>
+                <td><input type="date" name="resignDate" th:value="${employee.resignDate}"></td>
             </tr>
             <tr>
                 <td>부서명</td>
-                <td><input type="text" name="dept_name" th:value="${employee.deptName}"></td>
+                <td><input type="text" name="deptName" th:value="${employee.deptName}"></td>
                 <td>직위</td>
                 <td><input type="text" name="position" th:value="${employee.position}"></td>
             </tr>

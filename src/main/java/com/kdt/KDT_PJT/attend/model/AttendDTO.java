@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class AttendDTO {
 
 	private Long id;
-	private String userId, service;
+	private String employeeId, service;
 	private LocalDateTime checkInTime, checkOutTime;
 	 
 	public String getWorkDate() {

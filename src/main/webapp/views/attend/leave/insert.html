@@ -6,19 +6,28 @@
 </head>
 <body>
 
-<form action="" method="" >
+[[${restData}]]
+<form action="" method="post" >
 	<table border="">
 		<tr align="center">
-			<td>연차 사용 신청<a th:href="@{/attend/leave}">닫힘</a></td>
+			<td>연차 사용 신청<a th:href="@{/attend/leaveList}">닫힘</a></td>
+			
+			<tr th:each="dto, vv:${restData}">
+			<td>
+				<input type="checkbox" th:name="|arr[${vv.index}].useChk|" value="true"/>
+				<span th:text="${dto.createReason}"/> 
+				<input type="text" th:name="|arr[${vv.index}].leaveId|" th:value="${dto.leaveId}"/>
+				<input type="date" th:name="|arr[${vv.index}].usedDateStr|" value="2025-08-07" />
+				</td>
+			</tr>
 			
 		</tr>
 		<tr colspan="2">
-			<td>제목
-			<textarea name="" id="" cols="30" rows="1"></textarea></td>
+			<td>연차사유
+			<textarea name="reason" id="" cols="30" rows="1">차선생이 괴롭혀</textarea></td>
 		</tr>
-		<tr colspan="2">
-			<td><textarea name="" id="" cols="40" rows="20"></textarea></td>
-		</tr>
+		
+
 		<tr colspan="2" align="right">
 			<td><input type="submit" value="결재 신청"/></td>
 		</tr>

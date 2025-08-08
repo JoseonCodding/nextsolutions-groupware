@@ -7,8 +7,10 @@ import org.springframework.stereotype.Component;
 
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
 import com.kdt.KDT_PJT.attend.model.AttendMapper;
+import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpSession;
 
 @Component
 public class Attendance {
@@ -16,25 +18,32 @@ public class Attendance {
 	@Resource	
 	AttendMapper mapper;
 
-    public void recordCheckIn() {
-    	
+	//출근 시간 기록
+    public void recordCheckIn(HttpSession session) {
+    	//세션에서 loginUser 꺼내기
+    	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
+        //loginUser.getEmpNm(); // 이름 가져오기
+
     	System.out.println("recordCheckIn 되고있냐아");
     	AttendDTO attend = new AttendDTO();
     	
-        attend.setUserId("test_user"); // 로그인 미구현
+        //attend.setEmployeeId("test_user"); // 로그인 미구현
         attend.setCheckInTime(LocalDateTime.now());
-
+        attend.setEmployeeId(loginUser.getEmployeeId());  
         mapper.insertAttendance(attend);
     }
     
-    public void recordCheckOut() {
+    //퇴근 시간 기록
+    public void recordCheckOut(HttpSession session) {
+    	
+    	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
+
     	
     	System.out.println("recordCheckOut :퇴근");
     	AttendDTO attend = new AttendDTO();
     	
-        attend.setUserId("test_user"); // 로그인 미구현
         attend.setCheckOutTime(LocalDateTime.now());
-
+        attend.setEmployeeId(loginUser.getEmployeeId());
         mapper.updateAttendance(attend);
     }
     

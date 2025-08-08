@@ -6,48 +6,57 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
 
+import jakarta.servlet.http.HttpSession;
+
 
 @Controller
 @RequestMapping("/attend")
 public class AttendController {
 
+	@ModelAttribute("navUrl")
+	String navUrl() {
+		return "attend/nav";
+	}
+	
 	@Autowired
     Attendance service;
 
 
     @GetMapping
-    String showAttendancePage(Model model) {
+    String showAttendancePage(HttpSession session, Model model) {
     	
     	
     	List<AttendDTO> attendList = service.getAttendData(); 
     	
     	System.out.println("showAttendancePage:"+attendList);
+    	
         model.addAttribute("mainData", attendList);
         
         model.addAttribute("mainUrl", "attend/check");
-        return "home";
+        return "navTap";
         
     }
 
     //출근 시간 기록
     @PostMapping("/in")
-    String checkIn() {
+    String checkIn(HttpSession session) {
     	System.out.println("checkIn 작동하나");
-        service.recordCheckIn();
+        service.recordCheckIn(session);
         return "redirect:/attend";
     }
     
     //퇴근 시간 기록
     @PostMapping("/out")
-    String checkOut() {
+    String checkOut(HttpSession session) {
     	System.out.println("checkOut 작동");
-        service.recordCheckOut();
+        service.recordCheckOut(session);
         return "redirect:/attend";
     }
     
@@ -57,7 +66,7 @@ public class AttendController {
         List<AttendDTO> attendList = service.getAttendData(); 
         model.addAttribute("mainData", attendList);
         model.addAttribute("mainUrl", "attend/attendList");
-        return "home"; 
+        return "navTap"; 
     }
     
     //출퇴근 기록 수정 신청 
@@ -65,7 +74,7 @@ public class AttendController {
     String attendTimeInsert(Model model) {
     	System.out.println("attendTimeInsert 작동하나");
         model.addAttribute("mainUrl", "attend/attendTimeInsert");
-        return "home";
+        return "navTap";
     }
     
   
