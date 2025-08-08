@@ -28,7 +28,7 @@
             </tr>
             <tr>
                 <td>제목</td>
-                <td><input type="text" th:field="*{title}" /></td>
+                <td><input type="text" th:field="*{title}" placeholder="제목 (공백 입력 불가)" pattern=".*\S.*" required /></td>
             </tr>
             <tr>
                 <td>내용</td>
