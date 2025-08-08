@@ -8,14 +8,13 @@
     <!-- 로그인: 아이디 + 비밀번호로 사용자 조회 -->
     <select id="getUserByIdAndPassword" parameterType="CmmnMap" resultType="CmmnMap">
         SELECT emp_seq,
-               employeeId,
+               employeeId AS employeeId,  -- alias 맞추기
                password,
                active,
-               emp_nm
+               emp_nm AS empNm             -- alias 맞추기
         FROM employee
         WHERE employeeId = #{employeeId}
           AND password = #{password}
     </select>
 
 </mapper>
-
