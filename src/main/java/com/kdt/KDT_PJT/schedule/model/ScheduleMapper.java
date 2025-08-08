@@ -8,8 +8,9 @@ import org.apache.ibatis.annotations.Mapper;
 public interface ScheduleMapper {
 
 	@Insert("insert into schedule "+
-			"(title, content, create_at) values "+
-			"(#{title}, #{content},  now() )"
+			"(title, content, cate, start_date, end_date, created_at) values "+
+			"(#{title}, #{content}, #{cate}, #{startDate}, #{endDate} ,now() ) "
 			)
 	int insert(ScheduleDTO dto); 
+	
 }
