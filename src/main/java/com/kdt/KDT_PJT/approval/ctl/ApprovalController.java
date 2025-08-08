@@ -123,7 +123,10 @@ public class ApprovalController {
         redirectAttributes.addAttribute("page", deletePage);
         redirectAttributes.addAttribute("type", type == null ? "" : type);
         redirectAttributes.addAttribute("status", status == null ? "" : status);
+<<<<<<< pilgyu
     	
+=======
+>>>>>>> ad2ecd1 20250808_0917 작업시작
 
         return "redirect:/approval/main";
     }
