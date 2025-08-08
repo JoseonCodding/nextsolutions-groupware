@@ -93,7 +93,7 @@ input, select {
 
 	<form method="post" action="/pjtMng/updatePjtProc" enctype="multipart/form-data">
 
-		<input type="hidden" name="pjtSn" value="${pjt.PJT_SN}" />
+		<input type="hidden" name="pjtSn" th:value="${pjt.PJT_SN}" />
 
 		<table>
 			<tr>

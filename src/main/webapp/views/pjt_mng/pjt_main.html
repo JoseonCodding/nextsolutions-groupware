@@ -121,7 +121,7 @@
   </div>
   
   <!-- 검색 form -->
-<form  method="get" style="margin-top: 20px; display: flex; gap: 12px;">
+<form action="/pjtMng/getPjtList"  method="get" style="margin-top: 20px; display: flex; gap: 12px;">
   <input type="text" name="keyword" placeholder="프로젝트명, 담당자 검색" class="form-control" 
          style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;" />
   <button type="submit" class="button" style="background-color: #2962ff; color: white;">
@@ -155,9 +155,11 @@
   <td th:text="${pjt['PJT_BGNG_DT']}">시작일</td>
   <td th:text="${pjt['PJT_END_DT']}">마감일</td>
   <td th:text="${pjt['PJT_STTS_CD']}">진행상태(중복)</td>
-  <td>50%</td> <!-- 예시로 완료율 넣음, 계산하려면 백엔드 로직 필요 -->
+  <td>50%</td>                <!-- 예시로 완료율 넣음, 계산하려면 백엔드 로직 필요 -->
   <td>
-    <button class="button btn-view"
+  
+            
+  <button class="button btn-view"
             th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
       상세보기
     </button>
@@ -169,8 +171,46 @@
 
   </td>
 </tr>
-
   </tbody>
 </table>
+
+
+
+<!-- ✅ 페이징 UI -->
+<nav class="mt-4 text-center" th:if="${pageInfo != null}">
+  <ul class="pagination justify-content-center">
+
+    <!-- 이전 페이지 -->
+    <li class="page-item" th:classappend="${pageInfo.prePage == 0} ? 'disabled'">
+      <a class="page-link"
+         th:href="@{/pjtMng/getPjtList(pageNum=${pageInfo.prePage}, pageSize=${pageInfo.pageSize}, keyword=${keyword})}">
+        Previous
+      </a>
+    </li>
+
+    <!-- 숫자 페이지 -->
+    <li class="page-item"
+        th:each="page : ${#numbers.sequence(pageInfo.navigateFirstPage, pageInfo.navigateLastPage)}"
+        th:classappend="${page == pageInfo.pageNum} ? 'active'">
+      <a class="page-link"
+         th:text="${page}"
+         th:href="@{/pjtMng/getPjtList(pageNum=${page}, pageSize=${pageInfo.pageSize}, keyword=${keyword})}"></a>
+    </li>
+
+    <!-- 다음 페이지 -->
+    <li class="page-item" th:classappend="${pageInfo.nextPage == 0} ? 'disabled'">
+      <a class="page-link"
+         th:href="@{/pjtMng/getPjtList(pageNum=${pageInfo.nextPage}, pageSize=${pageInfo.pageSize}, keyword=${keyword})}">
+        Next
+      </a>
+    </li>
+
+  </ul>
+</nav>
+
+
+
+
+
 </body>
 </html>
