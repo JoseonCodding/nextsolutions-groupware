@@ -102,7 +102,7 @@ document.addEventListener('click', function(e){
               <input name="postId" th:value="${c.postId}" type="hidden" />
               <input type="submit" value="삭제" />
             </form>
-            
+            log.debug("redirect postId={}", dto.getPostId());
             <!-- 답글 숨김 -->
             <form th:id="${'rf-' + c.commentId}"
         th:action="@{/board/commentReply}"

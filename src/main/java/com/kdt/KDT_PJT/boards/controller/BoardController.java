@@ -144,10 +144,8 @@ public class BoardController {
     	EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
     	dto.setEmployeeId(loginUser.getEmployeeId());
     	
-    	
-    	
     	commentMapper.insertComment(dto);
-        return "redirect:/board/free/detail?id=";
+        return "redirect:/board/free/detail?id=" + dto.getPostId();
     }
     
     //댓글삭제
