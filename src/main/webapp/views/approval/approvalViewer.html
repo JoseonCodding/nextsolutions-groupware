@@ -69,6 +69,7 @@
 	<div style="border:1px solid; margin-top: 20px; background-color: aqua;" th:text="${viewData == null ? '-' : viewData.content}">
 	</div>
 	
+<<<<<<< pilgyu
 	<!-- 목록으로(viewData가 있을때) or 처음으로(viewData가 없을때) -->
 	<a th:if="${viewData != null}"
 	   th:href="@{'/approval/main'(docId=${viewData.docId}, page=${page}, type=${type}, status=${status})}">
@@ -80,6 +81,8 @@
 	   처음으로
 	</a>
 	
+=======
+>>>>>>> 60b3710 전자결재문서뷰어 목록으로 되돌아가기 구현 (파라미터받음)
 	<!-- 수정, 삭제 버튼 영역 -->
 	<div th:if="${viewData == null ? '-' : viewData.status =='대기'}">
 		<th:block th:if="${viewData != null}">
