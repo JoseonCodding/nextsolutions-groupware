@@ -2,9 +2,11 @@ package com.kdt.KDT_PJT.approval.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 
@@ -57,5 +59,18 @@ public interface ApprovalMapper {
 	int countAll(
 			@Param("type") String type,
 			@Param("status") String status);
+	
+	@Select("SELECT * FROM Approval_TEST "
+			+ " WHERE docId = #{docId}")
+	ApprovalDTO viewById(@Param("docId") String docId);
+	
+	@Delete("DELETE FROM Approval_TEST "
+			+ " WHERE docId = #{docId}")
+	int deleteById(@Param("docId") String docId);
+	
+	@Update("UPDATE Approval_TEST "
+			+ " SET docType=#{docType}, title=#{title}, content=#{content} "
+			+ " WHERE docId=#{docId}")
+	int updateById(ApprovalDTO dto);
 	
 }

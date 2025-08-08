@@ -1,19 +1,20 @@
 package com.kdt.KDT_PJT.employee.ctl;
 
+import java.text.SimpleDateFormat;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.employee.mapper.EmployeeMapper;
 import com.kdt.KDT_PJT.employee.svc.EmployeeService;
-
-import java.lang.System.Logger;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 public class EmployeeController {
@@ -30,6 +31,7 @@ public class EmployeeController {
         List<CmmnMap> list = employeeService.getUserList();
         model.addAttribute("employees", list);
         model.addAttribute("mainUrl", "employee/list");
+        System.out.println("/employee/list : "+list);
         return "home";
     }
 
@@ -53,11 +55,11 @@ public class EmployeeController {
     @PostMapping("/employee/register")
     public String registerEmployee(@RequestParam("employeeId") String employeeId,
                                    @RequestParam("password") String password,
-                                   @RequestParam("emp_nm") String empNm) {
+                                   @RequestParam("empNm") String empNm) {
         CmmnMap params = new CmmnMap();
         params.put("employeeId", employeeId);
         params.put("password", password);
-        params.put("emp_nm", empNm);
+        params.put("empNm", empNm);
         employeeService.insertEmployee(params);
         return "redirect:/employee/list";
     }
@@ -90,6 +92,7 @@ public class EmployeeController {
     	 System.out.println("퇴사일자"+resignStr);
     	 System.out.println("부서명"+dto.getDeptName());
     	 System.out.println("권한"+dto.getRole());
+    	 System.out.println(dto);
     	 employeeMapper.update(dto);
 
         return "redirect:/employee/list";

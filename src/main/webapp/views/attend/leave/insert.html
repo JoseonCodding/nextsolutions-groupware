@@ -5,11 +5,12 @@
 <title>연차 등록 신청</title>
 </head>
 <body>
+
 [[${restData}]]
 <form action="" method="post" >
 	<table border="">
 		<tr align="center">
-			<td>연차 사용 신청<a th:href="@{/attend/leave}">닫힘</a></td>
+			<td>연차 사용 신청<a th:href="@{/attend/leaveList}">닫힘</a></td>
 			
 			<tr th:each="dto, vv:${restData}">
 			<td>
@@ -26,6 +27,7 @@
 			<textarea name="reason" id="" cols="30" rows="1">차선생이 괴롭혀</textarea></td>
 		</tr>
 		
+
 		<tr colspan="2" align="right">
 			<td><input type="submit" value="결재 신청"/></td>
 		</tr>

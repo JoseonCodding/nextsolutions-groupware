@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
 
+import jakarta.servlet.http.HttpSession;
+
 
 @Controller
 @RequestMapping("/attend")
@@ -26,15 +28,15 @@ public class AttendController {
 	@Autowired
     Attendance service;
 
-	
 
     @GetMapping
-    String showAttendancePage(Model model) {
+    String showAttendancePage(HttpSession session, Model model) {
     	
     	
     	List<AttendDTO> attendList = service.getAttendData(); 
     	
     	System.out.println("showAttendancePage:"+attendList);
+    	
         model.addAttribute("mainData", attendList);
         
         model.addAttribute("mainUrl", "attend/check");
@@ -44,17 +46,17 @@ public class AttendController {
 
     //출근 시간 기록
     @PostMapping("/in")
-    String checkIn() {
+    String checkIn(HttpSession session) {
     	System.out.println("checkIn 작동하나");
-        service.recordCheckIn();
+        service.recordCheckIn(session);
         return "redirect:/attend";
     }
     
     //퇴근 시간 기록
     @PostMapping("/out")
-    String checkOut() {
+    String checkOut(HttpSession session) {
     	System.out.println("checkOut 작동");
-        service.recordCheckOut();
+        service.recordCheckOut(session);
         return "redirect:/attend";
     }
     

@@ -24,12 +24,12 @@ public class ApiController {
 
 	
 	@GetMapping("logInfo")
-	ResponseEntity<?> get(HttpSession sesson) {
+	Object get(HttpSession sesson) {
 		
 		System.out.println("/api/logInfo 진입");
-		//return sesson.getAttribute("loginUser").toString();
+		return sesson.getAttribute("loginUser");
 		
-		return ResponseEntity.ok(sesson.getAttribute("loginUser"));
+		
 	}
 	
     /**

@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired; 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,12 +17,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
-import com.kdt.KDT_PJT.pjt_mng.svc.ProjcetMngService;
+import com.kdt.KDT_PJT.pjt_mng.svc.ProjectMngService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 public class ProjectMngController {
 	
 	@Autowired
-	ProjcetMngService projectMngService;
+	private ProjectMngService projectMngService;
 	
 	// log 사용을 위함
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -42,34 +45,74 @@ public class ProjectMngController {
 	// ✅ 프로젝트 목록 화면 조회 (검색어 유무에 따라 분기)
 	@GetMapping("/getPjtList")
 	public String getPjtList(
-	        @RequestParam(required = false, name = "keyword") String keyword, Model model) {
+	        @RequestParam(required = false, name = "keyword") String keyword
+	        , HttpServletRequest request
+	        , Model model) {
 
 	    // 🔍 검색어 로그 확인 (디버깅용)
 	   System.out.println("getPjtList Called >>> keyword = " + keyword);
-
-	    // 🗂 프로젝트 리스트 선언
-	    List<CmmnMap> pjtList;
-
-	    // 🔎 keyword가 있으면 → 검색 조건으로 조회
-	    if (keyword != null && !keyword.isEmpty()) {
-	        pjtList = projectMngService.searchProjectMngList(keyword);
-	        log.info("🔍 검색 결과 개수: " + pjtList.size());
-	    } 
-	    // 🔁 keyword 없으면 → 전체 리스트 조회
-	    else {
-	        pjtList = projectMngService.getPjtList();
-	        log.info("📄 전체 목록 개수: " + pjtList.size());
-	    }
-
-	    // 💾 View에 리스트 전달
-	    model.addAttribute("pjtList", pjtList);
-
-	    //
+	   
+       // ① 페이지 번호/사이즈 받아오기 (없으면 기본값)
+       int pageNum = 1;
+       int pageSize = 10;
+       
+       try {
+           if (request.getParameter("pageNum") != null) {
+               pageNum = Integer.parseInt(request.getParameter("pageNum"));
+           }
+           if (request.getParameter("pageSize") != null) {
+               pageSize = Integer.parseInt(request.getParameter("pageSize"));
+           }
+       } catch (Exception e) {
+           log.warn("페이지 번호 파싱 실패, 기본값 사용");
+       }
+       
+		//  리스트 가져오기
+       PageInfo<CmmnMap>  list = projectMngService.getProjectList(pageNum, pageSize, keyword);
+       // ③ model에 값 담기
+       
+       if (list == null || list.getList() == null || list.getList().isEmpty()) {
+    	    log.warn("⚠️ 프로젝트 리스트가 비어있거나 null입니다.");
+    	    model.addAttribute("pjtList", List.of());  // 빈 리스트로 넘기기 (NPE 방지)
+    	} else {
+    	    log.info("✅ 프로젝트 리스트 로드 성공. 개수: " + list.getList().size());
+    	    model.addAttribute("pjtList", list.getList());
+    	}
+       
+       model.addAttribute("pjtList", list.getList());   // 현재 페이지 데이터
+       model.addAttribute("pageInfo", list);             // 페이징 정보      
+       
+       
+       
+       
+       
+//	    // 🗂 프로젝트 리스트 선언
+//	    List<CmmnMap> pjtList;
+//
+//	    // 🔎 keyword가 있으면 → 검색 조건으로 조회
+//	    if (keyword != null && !keyword.isEmpty()) {
+//	        pjtList = projectMngService.searchProjectMngList(keyword);
+//	        log.info("🔍 검색 결과 개수: " + pjtList.size());
+//	    } 
+//	    // 🔁 keyword 없으면 → 전체 리스트 조회
+//	    else {
+//	        pjtList = projectMngService.getPjtList();
+//	        log.info("📄 전체 목록 개수: " + pjtList.size());
+//	    }
+//
+//	    // 💾 View에 리스트 전달
+//	    model.addAttribute("pjtList", pjtList);
+//	    model.addAttribute("currentPage", 1);
+//	    model.addAttribute("totalPages", 10); // ✅ 이거 안 넘기면 NPE 뜸
+	   
 	    model.addAttribute("mainUrl", "pjt_mng/pjt_main");
-	    
-	    // 💡 pjt_mng 폴더 안의 pjt_main.html (또는 .jsp)로 이동
 	    return "home";
+
 	}
+
+	
+
+
 
 	
 	//2. 프로젝트 상세보기 페이지 호출 
@@ -80,7 +123,10 @@ public class ProjectMngController {
 	    CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
 	    model.addAttribute("pjt", pjtDetail);
 
-	    return "pjt_mng/pjt_detail";
+	 	    
+	    model.addAttribute("mainUrl", "pjt_mng/pjt_detail");
+	    return "home";
+	    
 	}
 
 	
@@ -89,8 +135,12 @@ public class ProjectMngController {
 		List<CmmnMap> result = projectMngService.searchProjectMngList(keyword);    // 검색어 넘기기
 	    model.addAttribute("pjtList", result);
 	    
-	    return "pjt_mng/pjt_main";    
+	    model.addAttribute("mainUrl", "pjt_mng/pjt_main");
+	    return "home";
+	   
 	}
+	
+	
 	
 	
 	@GetMapping("/getSavePjtForm")
@@ -113,7 +163,9 @@ public class ProjectMngController {
 	    model.addAttribute("isAdmin", isAdmin);
 
 	    // 화면 이동
-	    return "pjt_mng/pjt_reg_form";
+	    model.addAttribute("mainUrl", "pjt_mng/pjt_reg_form");
+	    return "home";
+	    
 	}
 
 	
@@ -124,7 +176,10 @@ public class ProjectMngController {
 	    CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);  // 기존 상세조회 사용
 	    model.addAttribute("pjt", pjtDetail);
 
-	    return "pjt_mng/pjt_edit_form"; // views/pjt_mng/pjt_edit_form.html
+	    
+	    model.addAttribute("mainUrl","pjt_mng/pjt_edit_form");
+	    return "home";
+	    
 	}
 	
 	
@@ -188,23 +243,43 @@ public class ProjectMngController {
 	}
 	
 	
-	@PostMapping("/pjtMng/updatePjtProc")
-	public String updatePjtProc(@ModelAttribute CmmnMap pjtData, RedirectAttributes redirectAttributes) {
-	    log.info("updatePjtProc Called >>> " + pjtData);
-
-	    try {
-	        //실제 DB 업데이트 처리--- 이지만 일단 상세페이지로 넘어가게 만들어 놓음 
-	        return "redirect:/pjtDetail?pjtSn=" + pjtData.get("pjtSn");
-	        
-	     // DB에 수정 처리 -- 나중에 적용해보기 
-	        //projectMngService.updatePjtProc(pjtData);
-
-	    } catch (Exception e) {
-	        // 실패 시 수정 페이지로 다시
-	        redirectAttributes.addFlashAttribute("msg", "수정 실패: " + e.getMessage());
-	        return "redirect:/pjtEditForm?pjtSn=" + pjtData.get("pjtSn");
-	    }
-	}
+//	@PostMapping("/pjtMng/updatePjtProc")
+//	public String updatePjtProc(CmmnMap pjtData
+//								, 
+//								// @RequestParam("pjtSn") int pjtSn,
+//						        @RequestParam("pjtNm") String pjtNm,
+//						        @RequestParam("empNm") String empNm,
+//						        @RequestParam("pjtBgngDt") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
+//						        @RequestParam("pjtEndDt") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
+//						        @RequestParam("pjtSttsCd") String pjtSttsCd,
+//						        @RequestParam("content") String content,
+//						        @RequestParam("approvers") String approvers,
+//						        @RequestParam("uploadFile") MultipartFile uploadFile,
+//						        RedirectAttributes redirectAttributes) {
+//		
+//		
+//	   // log.info("updatePjtProc Called >>> " + pjtData);
+//
+//		 log.info("updatePjtProc Called >>> " + pjtNm);
+//		 log.info("updatePjtProc Called >>> " + empNm);
+//	    
+//	    
+//	    /*
+//	    try {
+//	        //실제 DB 업데이트 처리--- 이지만 일단 상세페이지로 넘어가게 만들어 놓음 
+//	        return "redirect:/pjtDetail?pjtSn=" + pjtData.get("pjtSn");
+//	        
+//	     // DB에 수정 처리 -- 나중에 적용해보기 
+//	        //projectMngService.updatePjtProc(pjtData);
+//
+//	    } catch (Exception e) {
+//	        // 실패 시 수정 페이지로 다시
+//	        redirectAttributes.addFlashAttribute("msg", "수정 실패: " + e.getMessage());
+//	        return "redirect:/pjtEditForm?pjtSn=" + pjtData.get("pjtSn");
+//	    } */
+//		 
+//		 return "";
+//	}
 
 
 
@@ -245,8 +320,7 @@ public class ProjectMngController {
 
 		
 		
-		projectMngService.savePjtProc(params);
-		
+		projectMngService.savePjtProc(params);		
 		
 		return "redirect:/pjtMng/getPjtList";
 

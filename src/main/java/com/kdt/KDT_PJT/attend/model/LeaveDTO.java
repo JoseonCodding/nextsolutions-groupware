@@ -19,7 +19,7 @@ public class LeaveDTO {
     String createReason,usedReason, leaveType, employeeId, empNm;
     Integer total, used;
     
-    Date createdDate, usedDate,approvalDate;
+    Date createdDate, usedDate, approvalDate;
     
     String stateType; 
 //	approval_id int AUTO_INCREMENT PRIMARY KEY,
@@ -44,6 +44,8 @@ public class LeaveDTO {
 			e.printStackTrace();
 		}
 	}
+	
+
 
     
 }
