@@ -1,21 +1,14 @@
 package com.kdt.KDT_PJT.attend.ctl;
 
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 
 import com.kdt.KDT_PJT.attend.model.LeaveDTO;
 import com.kdt.KDT_PJT.attend.model.LeaveMapper;
@@ -26,7 +19,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/attend/{service}")
+@RequestMapping("/attend")
 public class LeaveController {
 	
 	@ModelAttribute("navUrl")
@@ -40,14 +33,14 @@ public class LeaveController {
 	
 	
 	//연차 관리(사용자용)
-    @GetMapping
+    @GetMapping("/leaveList")
     public String leaveList(HttpSession session,Model model) {
     	
     	EmployeeDto me =(EmployeeDto)session.getAttribute("me");
     	
     	// 주석처리요망 -->
-    	me = new EmployeeDto();
-    	me.setEmployeeId("20250001");
+    	//me = new EmployeeDto();
+    	//me.setEmployeeId("20250001");
         System.out.println("연차 관리 페이지");
         
         LeaveDTO dto = mapper.getAnnualLeaveOne(me); 
@@ -56,7 +49,9 @@ public class LeaveController {
         model.addAttribute("mainUrl", "attend/leave/leaveList");
         
         model.addAttribute("listData", dto);
-        return "home"; 
+        
+        
+        return "navTap"; 
     }
     
     //연차 사용 신청(사용자용)
@@ -67,8 +62,8 @@ public class LeaveController {
     	EmployeeDto me =(EmployeeDto)session.getAttribute("me");
     	
     	// 주석처리요망 -->
-    	me = new EmployeeDto();
-    	me.setEmployeeId("20250001");
+    	//me = new EmployeeDto();
+    	//me.setEmployeeId("20250001");
     	//  <--
     	
     	List<LeaveDTO> restData = mapper.annualLeaveRest(me); 
@@ -76,7 +71,7 @@ public class LeaveController {
     	model.addAttribute("restData", restData);
     	
     	model.addAttribute("mainUrl", "attend/leave/insert");
-        return "home"; 
+        return "navTap"; 
     }
  
     //연차 사용 신청(사용자용) 정보 보내기
@@ -88,8 +83,8 @@ public class LeaveController {
     	EmployeeDto me =(EmployeeDto)session.getAttribute("me");
     	
     	// 주석처리요망 -->
-    	me = new EmployeeDto();
-    	me.setEmployeeId("20250001");
+    	//me = new EmployeeDto();
+    	//me.setEmployeeId("20250001");
     	//  <--
     	
     	reqDto.dataCalc();
@@ -100,26 +95,25 @@ public class LeaveController {
 		}
     	
     	
-    	model.addAttribute("mainUrl", "/attend/leave/insert");
-        return "home"; 
+    	model.addAttribute("mainUrl", "attend/leave/leaveList");
+        return "navTap"; 
     }
-    
-    
-    
-    
+
     //연차 관리(관리자용)
     @GetMapping("/leaveListMng")
-    public String leaveListMng(Model model) {
+    public String leaveListMng(HttpSession session, Model model) {
         System.out.println("연차 관리자용");
+        
+        EmployeeDto me =(EmployeeDto)session.getAttribute("me");
+        
         List<LeaveDTO> dto = mapper.mngLeaveList(); 
+        
+    
         System.out.println("/attend/leave/leaveListMng : "+dto);
         
         model.addAttribute("mainUrl", "attend/leave/leaveListMng");
         model.addAttribute("listMngData", dto);
-        return "home"; 
+        return "navTap"; 
     }
-    
-    
-  
-    
+
 }

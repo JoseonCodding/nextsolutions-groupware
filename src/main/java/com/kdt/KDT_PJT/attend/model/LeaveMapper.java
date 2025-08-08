@@ -11,8 +11,8 @@ import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 @Mapper
 public interface LeaveMapper {
 
-	//annual_leave 테이블에서 가져오기
-	@Select("select * from annual_leave where employeeId = '20250001';")
+	//annual_leave (연차) 테이블에서 가져오기
+	@Select("select * from annual_leave where employeeId = #{employeeId};")
 	List<LeaveDTO> annualLeave(); 
 	
 	//annual_leave 테이블에서 사용가능한 연차 가져오기
