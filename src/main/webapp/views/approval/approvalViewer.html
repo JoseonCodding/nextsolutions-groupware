@@ -38,14 +38,14 @@
 		  </tr>
 		  <tr>
 		    <td>
-		    	<span th:text=${viewData.writer}></span>
+		    	<span th:text="${viewData == null ? '-' : viewData.writer}"></span>
 		    </td>
+			<td>
+			  <span th:text="${viewData == null ? '-' : (viewData.docType == '근태' ? '김근태대장' : (viewData.docType == '공지사항' ? '박공지사항' : (viewData.docType == '프로젝트' ? '정프로젝트' : '-')))}"></span>
+			</td>
 		    <td>
-				<span th:if="${viewData.docType == '근태'}">김근태대장</span>
-				<span th:if="${viewData.docType == '공지사항'}">박공지사항</span>
-				<span th:if="${viewData.docType == '프로젝트'}">정프로젝트</span>	
-		    </td>
-		    <td>김대표</td>
+			  <span th:text="${viewData == null ? '-' : '김대표'}"></span>
+			</td>
 		  </tr>
 		</table>
 
@@ -70,7 +70,7 @@
 	</div>
 	
 	<!-- 수정, 삭제 버튼 영역 -->
-	<th:div th:if="${viewData.status =='대기'}">
+	<div th:if="${viewData == null ? '-' : viewData.status =='대기'}">
 		<th:block th:if="${viewData != null}">
 			<a th:href="@{/approval/edit(docId=${viewData.docId} , page=${page}, type=${type}, status=${status})}">
 				<button>수정</button>
@@ -81,6 +81,21 @@
 			<a th:href="@{/approval/delete(docId=${viewData.docId}, page=${page}, type=${type}, status=${status})}"
 				onclick="return confirm('삭제하면 복원할 수 없습니다.\n정말로 삭제하시겠습니까?');">
 				<button>삭제</button>
+			</a>
+		</th:block>
+	</div>
+	
+	<!-- 승인, 반려 버튼 영역 -->
+	<div th:if="${viewData == null ? '-' : viewData.status =='대기'}">
+		<th:block th:if="${viewData != null}">
+			<a>
+				<button>승인</button>
+			</a>
+		</th:block>
+		
+		<th:block th:if="${viewData != null}">
+			<a onclick="return confirm('한 번 반려하면 취소할 수 없습니다.\n정말로 반려하시겠습니까?');">
+				<button>반려</button>
 			</a>
 		</th:block>
 	</div>
