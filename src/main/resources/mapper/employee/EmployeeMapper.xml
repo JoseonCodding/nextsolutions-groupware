@@ -61,9 +61,13 @@
         position = #{position},
         role = #{role},
         hireDate = #{hireDate},
-        resignDate = #
+        resignDate = #{resignDate}
     WHERE emp_seq = #{empSeq}
 	</update>
+	
+	<select id="getEmployeeDetail" parameterType="employeeDto" resultType="employeeDto">
+	 SELECT * FROM employee where emp_seq= #{empSeq}
+	</select>
     
 
 </mapper>

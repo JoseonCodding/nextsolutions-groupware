@@ -98,6 +98,14 @@ public class EmployeeController {
         return "redirect:/employee/list";
     }
     
+    // 직원 상세 페이지
+    @GetMapping("/employee/detail")
+    public String employeeDetail(@RequestParam("empSeq") int empSeq, Model model) {
+        EmployeeDto emp = employeeService.getEmployeeDetail(empSeq);
+        model.addAttribute("employee", emp);
+        return "employee/detail"; // detail.html로 이동
+    }
+    
     
     
 }
