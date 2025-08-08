@@ -1,12 +1,16 @@
 package com.kdt.KDT_PJT.login.ctl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.login.svc.LoginService;
+
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -49,8 +53,9 @@ public class LoginController {
 //    }
 
    
+    
     @PostMapping("/process")
-    public ResponseEntity<?> loginProcess(@RequestParam("employeeId") String employeeId,
+    public String loginProcess(@RequestParam("employeeId") String employeeId,
                                @RequestParam("password") String password,
                                HttpSession session) {
 
@@ -67,10 +72,12 @@ public class LoginController {
        
             session.setAttribute("loginUser", dto);
          
-        	return ResponseEntity.ok(dto);
+        	//return ResponseEntity.ok(dto);
+            return "redirect:/";
         }
         
-        return ResponseEntity.status(401).body("로그인 필요");
+        //return ResponseEntity.status(401).body("로그인 필요");
+        return "redirect:/login";
     }   
     
 //    @GetMapping("/testSession")
