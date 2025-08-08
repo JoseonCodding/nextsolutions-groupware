@@ -72,9 +72,13 @@ public class EmployeeController {
     /** 사원 수정 처리 */
     @PostMapping("/employee/update")
     public String updateEmployee(EmployeeDto dto) {
+    	   	
     	employeeMapper.update(dto);
 
         return "redirect:/employee/list";
     }
+    
+    
+    
 }
 
