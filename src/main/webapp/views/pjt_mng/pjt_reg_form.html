@@ -182,14 +182,8 @@ button.save-btn:hover {
 				<td><input type="text" name="content" /></td>
 			</tr>
 			<tr>
-				<th>결재 워크플로우</th>
-				<td><c:if test="${isAdmin}">
-						<div id="workflow-container"></div>
-						<button type="button" onclick="addApprover()"
-							class="btn-add-approver">+ 결재자 추가</button>
-					</c:if> <c:if test="${!isAdmin}">
-						<span style="color: gray;">※ 워크플로우 설정은 관리자만 가능합니다.</span>
-					</c:if></td>
+				<th>결재자</th>
+				<td><input type="text" name="tbPjtApr" /></td>
 			</tr>
 
 			<tr>
