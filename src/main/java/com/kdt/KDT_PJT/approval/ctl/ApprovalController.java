@@ -11,7 +11,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
-import com.kdt.KDT_PJT.attend.model.LeaveDTO;
 
 import jakarta.annotation.Resource;
 
@@ -53,11 +52,6 @@ public class ApprovalController {
     	// 필터에 해당하는 게시글이 없는 경우 endPage=0이 되는 상황 방지
     	if (totalPages == 0) {endPage = 1;}
     	
-    	// <TEST> 테스트용 근태 정보 보내기
-    	List<LeaveDTO> leaveData = approvalMapper.selectLeaveAll();
-    	model.addAttribute("leaveData", leaveData);
-    	
-    	
     	List<ApprovalDTO> approvalData = approvalMapper.pageData(offset, size,type, status); // 현재 페이지 게시글 DB 정보 (offset부터 size까지)
     	
     	model.addAttribute("approvalData", approvalData);
@@ -78,19 +72,14 @@ public class ApprovalController {
     @RequestMapping("/viewer")
     public String approvalViewer(
 			    		Model model,
-			    		//@RequestParam("docId") String docId,
-			    		@RequestParam("leave_id") int leaveId, // <TEST> 근태 정보 받아오기 테스트용
+			    		@RequestParam("docId") String docId,
 			            @RequestParam(name = "page", defaultValue = "1") int page,
 			            @RequestParam(name = "type", required = false) String type,
 			            @RequestParam(name = "status", required = false) String status) {
     	
-    	//ApprovalDTO viewData = approvalMapper.selectById(docId);
-    	
-    	// <TEST> 테스트용 근태 정보 보내기
-    	LeaveDTO leaveData = approvalMapper.selectLeaveById(leaveId);
-    	model.addAttribute("leaveData", leaveData);
+    	ApprovalDTO viewData = approvalMapper.selectById(docId);
     
-    	//model.addAttribute("viewData", viewData);
+    	model.addAttribute("viewData", viewData);
 
     	model.addAttribute("page", page);
     	model.addAttribute("type", type);
@@ -123,10 +112,7 @@ public class ApprovalController {
         redirectAttributes.addAttribute("page", deletePage);
         redirectAttributes.addAttribute("type", type == null ? "" : type);
         redirectAttributes.addAttribute("status", status == null ? "" : status);
-<<<<<<< pilgyu
     	
-=======
->>>>>>> ad2ecd1 20250808_0917 작업시작
 
         return "redirect:/approval/main";
     }

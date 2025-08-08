@@ -6,47 +6,11 @@
     
 </head>
 <body>
-		<!-- <TEST> 테스트용 근태 정보 받아오기 -->
-		<table border="">
-			<tr>
-				<td>leave_id</td>
-				<td th:text="${leaveData.leaveId}"></td>
-			</tr>
-			<tr>
-				<td>employeeId</td>
-				<td th:text="${leaveData.employeeId}"></td>
-			</tr>
-			<tr>
-				<td>create_date</td>
-				<td th:text="${leaveData.createDate}"></td>
-			</tr>
-			<tr>
-				<td>leave_type</td>
-				<td th:text="${leaveData.leaveType}"></td>
-			</tr>
-			<tr>
-				<td>create_reason</td>
-				<td th:text="${leaveData.createReason}"></td>
-			</tr>
 
-			<tr>
-				<td>used_reason</td>
-				<td th:text="${leaveData.usedReason}"></td>
-			</tr>
-			<tr>
-				<td>state_type</td>
-				<td th:text="${leaveData.stateType}"></td>
-			</tr>
-			<tr>
-				<td>used_date</td>
-				<td th:text="${leaveData.usedDate}"></td>
-			</tr>
-		</table>
-		
 	<div style="display: flex;">
-
+	
 		<!-- 작성자, 부서, 기안일, 문서번호 영역 -->
-<!-- 		<table border="">
+		<table border="">
 			<tr>
 				<td>작성자</td>
 				<td th:text="${viewData == null ? '-' : viewData.writer}"></td>
@@ -63,7 +27,7 @@
 				<td>문서번호</td>
 				<td th:text="${viewData == null ? '-' : viewData.docId}"></td>
 			</tr>
-	  </table> -->
+	  </table>
 	
 		<!-- 결재선 영역 -->
 		<div style="display: flex; gap: 10px;">
@@ -98,12 +62,12 @@
 		</a>
 	</th:block>
 	
-<!-- 	<th:block th:if="${viewData != null}">
+	<th:block th:if="${viewData != null}">
 		<a th:href="@{/approval/delete(page=${page}, type=${type}, status=${status}, docId=${viewData.docId})}"
 			onclick="return confirm('삭제하면 복원할 수 없습니다.\n정말로 삭제하시겠습니까?');">
 			<button>삭제</button>
 		</a>
-	</th:block> -->
+	</th:block>
 
 </body>
 </html>

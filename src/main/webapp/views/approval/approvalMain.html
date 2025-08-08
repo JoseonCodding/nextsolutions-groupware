@@ -33,39 +33,8 @@
 			    </a>
 		    </form>
 		</div>
-		
-		<!-- <TEST> 테스트용 근태 정보 받아오기 -->
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:200px;">leave_id</th>
-                    <th style="width:100px;">employeeId</th>
-                    <th>create_reason</th>
-                    <th style="width:100px;">create_date</th>
-                    <th style="width:100px;">used_date</th>
-                    <th style="width:100px;">state_type</th>
-                </tr>
-            </thead>
-            
-            <tbody>
-            	<tr th:if="${#lists.isEmpty(leaveData)}">
-            		<td colspan="6" class="list-empty">필터 조건에 해당하는 게시글이 없습니다.</td>
-            	</tr>
-            	
-                <tr th:each="dto : ${leaveData}">
-                	<td th:text="${dto.leaveId}"></td>
-            		<td th:text="${dto.employeeId}"></td>
-				    <td class="title">
-				    	<a th:href="@{/approval/viewer(leave_id=${dto.leaveId})}" th:text="${dto.createReason}"></a>
-				    </td>
-				    <td th:text="${dto.createDate}"></td>
-				    <td th:text="${dto.usedDate}"></td>
-				    <td th:text="${dto.stateType}"></td>
-				</tr>
-            </tbody>
-        </table>
 
-<!--         게시판
+        <!-- 게시판 -->
         <table>
             <thead>
                 <tr>
@@ -79,6 +48,7 @@
             </thead>
             
             <tbody>
+            
             	<tr th:if="${#lists.isEmpty(approvalData)}">
             		<td colspan="6" class="list-empty">필터 조건에 해당하는 게시글이 없습니다.</td>
             	</tr>
@@ -94,7 +64,7 @@
 				    <td th:text="${dto.status}"></td>
 				</tr>
             </tbody>
-        </table> -->
+        </table>
         
         <!-- 페이지네이션 -->
 		<nav class="pagination">
