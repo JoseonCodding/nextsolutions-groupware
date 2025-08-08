@@ -38,13 +38,15 @@
 		    <td><b>관리자</b></td>
 		  </tr>
 		  <tr>
-		    <td><b>장준혁</b></td>
-		    <td><b>
+		    <td>
+		    	<span th:text=${viewData.writer}></span>
+		    </td>
+		    <td>
 				<span th:if="${viewData.docType == '근태'}">김근태대장</span>
 				<span th:if="${viewData.docType == '공지사항'}">박공지사항</span>
 				<span th:if="${viewData.docType == '프로젝트'}">정프로젝트</span>	
-		    </b></td>
-		    <td><b>김대표</b></td>
+		    </td>
+		    <td>김대표</td>
 		  </tr>
 		</table>
 
