@@ -24,25 +24,31 @@ public class LeaveController {
         System.out.println("연차 관리 페이지");
         LeaveDTO dto = service.getAnnualLeaveOne(); 
         System.out.println("/attend/leave : "+dto);
+        // 홈에서 뜨는 화면 연결
+        model.addAttribute("mainUrl", "attend/leave/leaveList");
+        
         model.addAttribute("listData", dto);
-        return "attend/leave/leaveList"; 
+        return "home"; 
     }
     
     //연차 사용 신청(사용자용)
     @RequestMapping("/insert")
-    public String insert() {
+    public String insert(Model model) {
     	System.out.println("연차 신청 페이지");
-        return "attend/leave/insert"; 
+    	model.addAttribute("mainUrl", "attend/leave/insert");
+        return "home"; 
     }
     
     //연차 관리(관리자용)
     @GetMapping("/leaveListMng")
     public String leaveListMng(Model model) {
         System.out.println("연차 관리자용");
-        LeaveDTO dto = service.getAnnualLeaveOne(); 
+        LeaveDTO dto = service.mngLeaveList(); 
         System.out.println("/attend/leave/leaveListMng : "+dto);
-        model.addAttribute("listData", dto);
-        return "attend/leave/leaveListMng"; 
+        
+        model.addAttribute("mainUrl", "attend/leave/leaveListMng");
+        model.addAttribute("listMngData", dto);
+        return "home"; 
     }
     
 }

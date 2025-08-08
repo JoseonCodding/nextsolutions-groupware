@@ -12,21 +12,21 @@ import lombok.NoArgsConstructor;
 public class BoardDTO {
 
 	///글쓰기, 글 목록, 글 수정 등
-    private Integer id;        // 게시글 ID
-    private Integer boardId;   // 게시판 ID (자유게시판, 공지사항 등 구분)
-    private String authorId;   // 작성자 ID (employeeId 기준)
-    private String title;      // 제목
-    private String content;    // 내용
-    private String pw;         // 비밀번호 (수정/삭제용)
-    private String upfile;     // 업로드된 실제 파일 이름
-    private Date regDate;      // 작성일
-    private Date updDate;      // 수정일
-    private Integer viewCnt;   // 조회수
-    private Integer likeCnt;   // 좋아요 수
-    private boolean isDeleted; // 삭제 여부
+    Integer id;        // 게시글 ID
+    Integer boardId;   // 게시판 ID (자유게시판, 공지사항 등 구분)
+    String authorId;   // 작성자 ID (employeeId 기준)
+    String title;      // 제목
+    String content;    // 내용
+    String pw;         // 비밀번호 (수정/삭제용)
+    String upfile;     // 업로드된 실제 파일 이름
+    Date regDate;      // 작성일
+    Date updDate;      // 수정일
+    Integer viewCnt;   // 조회수
+    Integer likeCnt;   // 좋아요 수
+    boolean isDeleted; // 삭제 여부
 
     // 업로드용 (사용자 업로드 파일 받아오기)
-    private MultipartFile upFF;
+    MultipartFile upFF;
 
     // 줄바꿈 <br/> 처리용 (뷰에 사용)
     public String getContentBr() {

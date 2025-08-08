@@ -29,7 +29,8 @@ public class EmployeeController {
     public String employeeList(Model model) {
         List<CmmnMap> list = employeeService.getUserList();
         model.addAttribute("employees", list);
-        return "employee/list";
+        model.addAttribute("mainUrl", "employee/list");
+        return "home";
     }
 
     /** 활성/비활성 토글 */

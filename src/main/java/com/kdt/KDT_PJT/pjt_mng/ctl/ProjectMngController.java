@@ -13,10 +13,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.pjt_mng.svc.ProjcetMngService;
@@ -62,8 +64,11 @@ public class ProjectMngController {
 	    // 💾 View에 리스트 전달
 	    model.addAttribute("pjtList", pjtList);
 
+	    //
+	    model.addAttribute("mainUrl", "pjt_mng/pjt_main");
+	    
 	    // 💡 pjt_mng 폴더 안의 pjt_main.html (또는 .jsp)로 이동
-	    return "pjt_mng/pjt_main";
+	    return "home";
 	}
 
 	
@@ -78,8 +83,6 @@ public class ProjectMngController {
 	    return "pjt_mng/pjt_detail";
 	}
 
-
-	
 	
 	@GetMapping("/list")
 	public String showProjectList(@RequestParam(required = false) String keyword, Model model) {
@@ -125,6 +128,24 @@ public class ProjectMngController {
 	}
 	
 	
+	@PostMapping("/pjtEditSave")
+	public String saveEditedProject(@ModelAttribute CmmnMap pjtData, RedirectAttributes redirectAttributes) {
+	    log.info("saveEditedProject Called >>> " + pjtData);
+
+	    try {
+	        projectMngService.updatePjtProc(pjtData); // 수정 저장 처리
+
+	        // ✅ 저장 후 상세 페이지로 리디렉트
+	        String pjtSn = (String) pjtData.get("pjtSn");
+	        return "redirect:/pjtDetail?pjtSn=" + pjtSn; // 상세 페이지 URL로 이동
+
+	    } catch (Exception e) {
+	        redirectAttributes.addFlashAttribute("msg", "수정 중 오류 발생: " + e.getMessage());
+	        return "redirect:/pjtEditForm?pjtSn=" + pjtData.get("pjtSn"); // 다시 수정 폼으로
+	    }
+	}
+
+	
 	
 	@PostMapping("/updatePjtProc")
 	public String updatePjtProc(
@@ -165,6 +186,27 @@ public class ProjectMngController {
 
 	    return "redirect:/pjtMng/getPjtList";
 	}
+	
+	
+	@PostMapping("/pjtMng/updatePjtProc")
+	public String updatePjtProc(@ModelAttribute CmmnMap pjtData, RedirectAttributes redirectAttributes) {
+	    log.info("updatePjtProc Called >>> " + pjtData);
+
+	    try {
+	        //실제 DB 업데이트 처리--- 이지만 일단 상세페이지로 넘어가게 만들어 놓음 
+	        return "redirect:/pjtDetail?pjtSn=" + pjtData.get("pjtSn");
+	        
+	     // DB에 수정 처리 -- 나중에 적용해보기 
+	        //projectMngService.updatePjtProc(pjtData);
+
+	    } catch (Exception e) {
+	        // 실패 시 수정 페이지로 다시
+	        redirectAttributes.addFlashAttribute("msg", "수정 실패: " + e.getMessage());
+	        return "redirect:/pjtEditForm?pjtSn=" + pjtData.get("pjtSn");
+	    }
+	}
+
+
 
 	
 	@PostMapping("/savePjtProc")

@@ -14,7 +14,7 @@ public class LeaveDTO {
     Date leave_date;                 
     //leave_hours 
     String reason, leave_type, employeeId, empNm;
-    int total, use;
+    int total, used;
     
     LocalDateTime created_at, updated_at;
 
@@ -27,7 +27,7 @@ public class LeaveDTO {
 
 	//잔여 연차
 	public int getRest() {
-		return total - use;
+		return total - used;
 	}
     
     

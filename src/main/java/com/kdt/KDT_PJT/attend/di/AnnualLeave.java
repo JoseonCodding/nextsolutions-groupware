@@ -23,25 +23,25 @@ public class AnnualLeave {
 		res.setLeave_type("발생");
 		res.setTotal(mapper.getAnnualLeaveCnt(res));
 		res.setLeave_type("사용");
-		res.setUse(mapper.getAnnualLeaveCnt(res));
+		res.setUsed(mapper.getAnnualLeaveCnt(res));
 		
 		
 		return res;
 	}
 	
-//	public LeaveDTO getAnnualLeaveAll() {
-//		System.out.println("사용자들의 연차 목록 작동");
-//		
-//		LeaveDTO res = mapper.annualLeave();
-//		
-//		res.setLeave_type("발생");
-//		res.setTotal(mapper.getAnnualLeaveCnt(res));
-//		res.setLeave_type("사용");
-//		res.setUse(mapper.getAnnualLeaveCnt(res));
-//		
-//		
-//		return res;
-//	}
+	public LeaveDTO mngLeaveList() {
+		System.out.println("관리자용 연차 목록 작동");
+		
+		LeaveDTO res = mapper.mngLeaveList();
+		
+		res.setLeave_type("발생");
+		res.setTotal(mapper.getAnnualLeaveCnt(res));
+		res.setLeave_type("사용");
+		res.setUsed(mapper.getAnnualLeaveCnt(res));
+		
+		
+		return res;
+	}
 	
 	
 }
