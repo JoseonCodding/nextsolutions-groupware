@@ -19,7 +19,6 @@ import com.kdt.KDT_PJT.boards.mapper.CommentMapper;
 import com.kdt.KDT_PJT.boards.model.BoardDTO;
 import com.kdt.KDT_PJT.boards.model.BoardLikeDTO;
 import com.kdt.KDT_PJT.boards.model.CommentDTO;
-import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 import jakarta.servlet.http.HttpSession;
@@ -98,23 +97,15 @@ public class BoardController {
     public String freeDetail(@RequestParam("id") int id, Model model, HttpSession session) {
         BoardDTO board = boardMapper.detail(id);
         
-        // EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-    	// loginUser = new EmployeeDto();
-    	// loginUser.setEmployeeId("20250002");
-        
-        CmmnMap loginUser = (CmmnMap) session.getAttribute("loginUser");
+        EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
  
-
-        
         List<CommentDTO> comments = commentMapper.selectCommentsByPostId((long) id);
         List<BoardLikeDTO> likes = likeMapper.selectLikesByPostId((long)id);
         
-        // final String me = loginUser != null ? loginUser.getEmployeeId() : null;
-        
-        final String me = loginUser != null ? loginUser.getString("employeeId") : null;
-        boolean likedByMe = likes.stream()
-        	    .anyMatch(l -> me != null && me.equals(l.getEmployeeId()));
-        
+        final String me = loginUser != null ? loginUser.getEmployeeId() : null;
+
+        boolean likedByMe = me != null && likes.stream()
+                .anyMatch(l -> me.equals(l.getEmployeeId()));
         int likeCount = likes.size();
         
         model.addAttribute("board", board);
@@ -137,12 +128,26 @@ public class BoardController {
         // 1. 세션에서 로그인 사용자 정보 꺼내기
     	EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
     	
-    	
     	dto.setEmployeeId(loginUser.getEmployeeId());
         
         
         commentMapper.insertComment(dto);
         return "redirect:/board/free/detail?id=" + dto.getPostId();
+    }
+    
+    // 답글 달기
+    @PostMapping("/commentReply")
+    public String reply(
+    		CommentDTO dto,
+            HttpSession session) {
+
+    	EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+    	dto.setEmployeeId(loginUser.getEmployeeId());
+    	
+    	
+    	
+    	commentMapper.insertComment(dto);
+        return "redirect:/board/free/detail?id=";
     }
     
     //댓글삭제

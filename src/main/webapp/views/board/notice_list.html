@@ -86,7 +86,7 @@
         <tr th:each="b, stat : ${boards}">
             <td style="padding: 10px; text-align: center;" th:text="${stat.count}">1</td>
             <td style="padding: 10px;">
-                <a th:href="@{/board/notice/view(id=${b.id})}" th:text="${b.title}">제목</a>
+                <a th:href="@{/board/notice/view(id=${b.postId})}" th:text="${b.title}">제목</a>
             </td>
             <td style="padding: 10px; text-align: center;" th:text="${b.employeeId}">작성자</td>
             <td style="padding: 10px; text-align: center;" 
