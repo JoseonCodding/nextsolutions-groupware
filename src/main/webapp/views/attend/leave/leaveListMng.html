@@ -1,5 +1,5 @@
-<!-- 연차 관리 사용자용 -->
-<form action="" method="">
+<!-- 연차 관리 관리자용 -->
+<form action="" method="post">
 	<table border="">
 		<tr>
 			<td>이름</td>
@@ -7,12 +7,11 @@
 			<td>사용 연차</td>
 			<td>잔여 연차</td>
 		</tr>
-		<tr th:each=" ld : ${listData}">
-		    <td th:text="${ld.empNm}"></td>
-		    <td th:text="${ld.total}"/>
-		    <td th:text="${ld.used}"/>
-		    <td th:text="${ld.rest}"></td>
+		<tr th:each=" ldm : ${listMngData}">
+		    <td th:text="${ldm.empNm}"/>
+		    <td th:text="${ldm.total}"/>
+		    <td th:text="${ldm.used}"/>
+		    <td th:text="${ldm.getRest}"/>
 		</tr>
 	</table>
 </form>
-
