@@ -1,15 +1,5 @@
 @charset "UTF-8";
 
-/* style.css */
-
-/* 전체 레이아웃 */
-body {
-    font-family: 'Noto Sans KR', Arial, sans-serif;
-    margin: 0;
-    background: #f7f8fa;
-}
-
-
 /* 상단 네이게이션바 */
 .topbar {
     width: 100%;
@@ -64,7 +54,6 @@ body {
 }
 
 
-<<<<<<< HEAD
 
 /* 메인 컨텐츠 */
 .main-content {
@@ -256,5 +245,3 @@ tbody tr:hover {
     user-select: none;
     text-decoration: none;
 }
-=======
->>>>>>> refs/remotes/origin/jiwon

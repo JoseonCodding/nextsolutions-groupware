@@ -10,20 +10,31 @@
 <mapper namespace="com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper">
 
 
-
+<select id="countProjects" resultType="int">
+  SELECT COUNT(*)
+  FROM TB_PJT_BASC
+  <where>
+  
+  
+    <if test="keyword != null and keyword != ''">
+      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR EMP_NM LIKE CONCAT('%', #{keyword}, '%'))
+    </if>
+  </where>
+</select>
 
   <!-- ✅ 프로젝트 수정 쿼리 -->
   <update id="updatePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+  /* com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.updatePjtProc */
     UPDATE TB_PJT_BASC
     SET 
-        PJT_NM = #{pjtNm},              <!-- 프로젝트명 -->
-        EMP_NM = #{empNm},              <!-- 담당자명 -->
-        PJT_BGNG_DT = #{pjtBgngDt},     <!-- 시작일 -->
-        PJT_END_DT = #{pjtEndDt},       <!-- 종료일 -->
-        PJT_STTS_CD = #{pjtSttsCd},     <!-- 상태 코드 -->
-        LAST_MDFCN_DT = #{lastMdfcnDt}, <!-- 최종 수정일 -->
-        LAST_MDFR_ID = #{lastMdfrId}    <!-- 최종 수정자 ID -->
-    WHERE PJT_SN = #{pjtSn}              <!-- 프로젝트 고유번호 조건 -->
+        PJT_NM = #{PJT_NM},              <!-- 프로젝트명 -->
+        EMP_NM = #{EMP_NM},              <!-- 담당자명 -->
+        PJT_BGNG_DT = #{PJT_BGNG_DT},     <!-- 시작일 -->
+        PJT_END_DT = #{PJT_END_DT},       <!-- 종료일 -->
+        PJT_STTS_CD = #{PJT_STTS_CD},     <!-- 상태 코드 -->
+        LAST_MDFCN_DT = #{LAST_MDFCN_DT}, <!-- 최종 수정일 -->
+        LAST_MDFR_ID = #{LAST_MDFR_ID}    <!-- 최종 수정자 ID -->
+    WHERE PJT_SN = #{PJT_SN}              <!-- 프로젝트 고유번호 조건 -->
   </update>
 
   <!-- ✅ 프로젝트 목록 검색 -->
@@ -139,7 +150,23 @@
       (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR EMP_NM LIKE CONCAT('%', #{keyword}, '%'))
     </if>
   </where>
+  ORDER BY PJT_SN DESC
+  LIMIT #{offset}, #{pageSize}
 </select>
-  
+
+
+
+<!-- 프로젝트 목록 중 일부만 가져오기 (페이지네이션용) -->
+  <select id="getProjectList" resultType="map">
+  SELECT *
+  FROM TB_PJT_BASC
+  ORDER BY PJT_SN DESC
+  LIMIT #{limit} OFFSET #{offset}
+</select>
+
+<!-- ✅ 총 프로젝트 수 세기  -->
+	<select id="getProjectCount" resultType="int">
+    SELECT COUNT(*) FROM TB_PJT_BASC
+</select>
 
 </mapper>

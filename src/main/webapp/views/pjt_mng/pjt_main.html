@@ -17,8 +17,6 @@
   </style>
 </head>
 <body>
-<!-- ✅ 네비게이션 바 -->
-<nav th:replace="@{/layout/navigation}"></nav>
 
 <h1>프로젝트 관리</h1>
 
@@ -157,9 +155,11 @@
   <td th:text="${pjt['PJT_BGNG_DT']}">시작일</td>
   <td th:text="${pjt['PJT_END_DT']}">마감일</td>
   <td th:text="${pjt['PJT_STTS_CD']}">진행상태(중복)</td>
-  <td>50%</td> <!-- 예시로 완료율 넣음, 계산하려면 백엔드 로직 필요 -->
+  <td>50%</td>                <!-- 예시로 완료율 넣음, 계산하려면 백엔드 로직 필요 -->
   <td>
-    <button class="button btn-view"
+  
+            
+  <button class="button btn-view"
             th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
       상세보기
     </button>
@@ -171,8 +171,39 @@
 
   </td>
 </tr>
-
   </tbody>
 </table>
+<!-- ✅ 페이지네이션 블럭 시작 -->
+<div class="pagination" style="margin-top: 20px; text-align: center;">
+  <ul class="pagination-list" style="list-style: none; display: inline-flex; gap: 8px; padding: 0;">
+    
+    <li th:if="${currentPage > 1}">
+      <a th:href="@{/pjtMng/pjtList(page=${currentPage - 1}, keyword=${keyword})}"
+         style="padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; text-decoration: none;">
+        Previous
+      </a>
+    </li>
+
+    <li th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+        th:classappend="${pageNum == currentPage} ? 'active'" 
+        style="display: inline;">
+      <a th:href="@{/pjtMng/pjtList(page=${pageNum}, keyword=${keyword})}" 
+         th:text="${pageNum}" 
+         style="padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; text-decoration: none;"></a>
+    </li>
+
+    <li th:if="${currentPage < totalPages}">
+      <a th:href="@{/pjtMng/pjtList(page=${currentPage + 1}, keyword=${keyword})}"
+         style="padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; text-decoration: none;">
+        Next
+      </a>
+    </li>
+
+  </ul>
+</div>
+<!-- ✅ 페이지네이션 블럭 끝 -->
+
+
+
 </body>
 </html>

@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired; 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
-import com.kdt.KDT_PJT.pjt_mng.svc.ProjcetMngService;
+import com.kdt.KDT_PJT.pjt_mng.svc.ProjectMngService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class ProjectMngController {
 	
 	@Autowired
-	ProjcetMngService projectMngService;
+	private ProjectMngService projectMngService;
 	
 	// log 사용을 위함
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -46,6 +46,7 @@ public class ProjectMngController {
 
 	    // 🔍 검색어 로그 확인 (디버깅용)
 	   System.out.println("getPjtList Called >>> keyword = " + keyword);
+	   
 
 	    // 🗂 프로젝트 리스트 선언
 	    List<CmmnMap> pjtList;
@@ -63,13 +64,44 @@ public class ProjectMngController {
 
 	    // 💾 View에 리스트 전달
 	    model.addAttribute("pjtList", pjtList);
-
-	    // 💡 pjt_mng 폴더 안의 pjt_main.html (또는 .jsp)로 이동
-	    return "pjt_mng/pjt_main";
-	    
-	    
+	    model.addAttribute("currentPage", 1);
+	    model.addAttribute("totalPages", 10); // ✅ 이거 안 넘기면 NPE 뜸
 	   
+	    model.addAttribute("mainUrl", "pjt_mng/pjt_main");
+	    return "home";
+
 	}
+	
+	@GetMapping("/pjtMng/pjtList")
+	public String getPjtList(
+	        @RequestParam(defaultValue = "1") int page,   // 현재 페이지 (기본값 1)
+	        @RequestParam(defaultValue = "10") int size,  // 한 페이지당 보여줄 개수 (기본값 10)
+	        @RequestParam(required = false) String keyword,
+	        Model model	) {
+		
+	    int offset = (page - 1) * size;
+
+		
+	    //  리스트 가져오기
+	    // List<Map<String, Object>> list = projectMngService.getProjectList(page, size);
+	    
+	    //  전체 프로젝트 수 가져오기 
+	    //int totalCount = projectMngService.getProjectCount(keyword);
+	    //int totalPages = (int) Math.ceil((double) totalCount / size);
+
+	  
+	    
+	    // ✅ View에 전달할 데이터(모델에 담기)
+	  //  model.addAttribute("projectList", list);       // 프로젝트 목록
+	  //  model.addAttribute("currentPage", page);       // 현재 페이지
+	  //  model.addAttribute("totalPages", totalPages);  // 총 페이지 수
+	 //   model.addAttribute("keyword", keyword); // 검색 유지
+
+
+	    model.addAttribute("mainUrl", "pjt_mng/pjt_list"); // Thymeleaf include용
+	    return "home";
+	}
+
 
 	
 	//2. 프로젝트 상세보기 페이지 호출 
@@ -80,7 +112,10 @@ public class ProjectMngController {
 	    CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
 	    model.addAttribute("pjt", pjtDetail);
 
-	    return "pjt_mng/pjt_detail";
+	 	    
+	    model.addAttribute("mainUrl", "pjt_mng/pjt_detail");
+	    return "home";
+	    
 	}
 
 	
@@ -89,8 +124,12 @@ public class ProjectMngController {
 		List<CmmnMap> result = projectMngService.searchProjectMngList(keyword);    // 검색어 넘기기
 	    model.addAttribute("pjtList", result);
 	    
-	    return "pjt_mng/pjt_main";    
+	    model.addAttribute("mainUrl", "pjt_mng/pjt_main");
+	    return "home";
+	   
 	}
+	
+	
 	
 	
 	@GetMapping("/getSavePjtForm")
@@ -113,7 +152,9 @@ public class ProjectMngController {
 	    model.addAttribute("isAdmin", isAdmin);
 
 	    // 화면 이동
-	    return "pjt_mng/pjt_reg_form";
+	    model.addAttribute("mainUrl", "pjt_mng/pjt_reg_form");
+	    return "home";
+	    
 	}
 
 	
@@ -124,7 +165,10 @@ public class ProjectMngController {
 	    CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);  // 기존 상세조회 사용
 	    model.addAttribute("pjt", pjtDetail);
 
-	    return "pjt_mng/pjt_edit_form"; // views/pjt_mng/pjt_edit_form.html
+	    
+	    model.addAttribute("mainUrl","pjt_mng/pjt_edit_form");
+	    return "home";
+	    
 	}
 	
 	
@@ -188,23 +232,43 @@ public class ProjectMngController {
 	}
 	
 	
-	@PostMapping("/pjtMng/updatePjtProc")
-	public String updatePjtProc(@ModelAttribute CmmnMap pjtData, RedirectAttributes redirectAttributes) {
-	    log.info("updatePjtProc Called >>> " + pjtData);
-
-	    try {
-	        //실제 DB 업데이트 처리--- 이지만 일단 상세페이지로 넘어가게 만들어 놓음 
-	        return "redirect:/pjtDetail?pjtSn=" + pjtData.get("pjtSn");
-	        
-	     // DB에 수정 처리 -- 나중에 적용해보기 
-	        //projectMngService.updatePjtProc(pjtData);
-
-	    } catch (Exception e) {
-	        // 실패 시 수정 페이지로 다시
-	        redirectAttributes.addFlashAttribute("msg", "수정 실패: " + e.getMessage());
-	        return "redirect:/pjtEditForm?pjtSn=" + pjtData.get("pjtSn");
-	    }
-	}
+//	@PostMapping("/pjtMng/updatePjtProc")
+//	public String updatePjtProc(CmmnMap pjtData
+//								, 
+//								// @RequestParam("pjtSn") int pjtSn,
+//						        @RequestParam("pjtNm") String pjtNm,
+//						        @RequestParam("empNm") String empNm,
+//						        @RequestParam("pjtBgngDt") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
+//						        @RequestParam("pjtEndDt") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
+//						        @RequestParam("pjtSttsCd") String pjtSttsCd,
+//						        @RequestParam("content") String content,
+//						        @RequestParam("approvers") String approvers,
+//						        @RequestParam("uploadFile") MultipartFile uploadFile,
+//						        RedirectAttributes redirectAttributes) {
+//		
+//		
+//	   // log.info("updatePjtProc Called >>> " + pjtData);
+//
+//		 log.info("updatePjtProc Called >>> " + pjtNm);
+//		 log.info("updatePjtProc Called >>> " + empNm);
+//	    
+//	    
+//	    /*
+//	    try {
+//	        //실제 DB 업데이트 처리--- 이지만 일단 상세페이지로 넘어가게 만들어 놓음 
+//	        return "redirect:/pjtDetail?pjtSn=" + pjtData.get("pjtSn");
+//	        
+//	     // DB에 수정 처리 -- 나중에 적용해보기 
+//	        //projectMngService.updatePjtProc(pjtData);
+//
+//	    } catch (Exception e) {
+//	        // 실패 시 수정 페이지로 다시
+//	        redirectAttributes.addFlashAttribute("msg", "수정 실패: " + e.getMessage());
+//	        return "redirect:/pjtEditForm?pjtSn=" + pjtData.get("pjtSn");
+//	    } */
+//		 
+//		 return "";
+//	}
 
 
 
@@ -245,8 +309,7 @@ public class ProjectMngController {
 
 		
 		
-		projectMngService.savePjtProc(params);
-		
+		projectMngService.savePjtProc(params);		
 		
 		return "redirect:/pjtMng/getPjtList";
 
