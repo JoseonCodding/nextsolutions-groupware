@@ -38,9 +38,6 @@ public class LeaveController {
     	
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
     	
-    	// 주석처리요망 -->
-    	//me = new EmployeeDto();
-    	//me.setEmployeeId("20250001");
         System.out.println("연차 관리 페이지");
         
         LeaveDTO dto = mapper.getAnnualLeaveOne(loginUser); 
@@ -67,7 +64,6 @@ public class LeaveController {
     	//  <--
     									//잔여연차 가져오기
     	List<LeaveDTO> restData = mapper.annualLeaveRest(loginUser); 
-    	//attend.setEmployeeId(loginUser.getEmployeeId());  
     	
     	model.addAttribute("restData", restData);
     	
@@ -79,15 +75,7 @@ public class LeaveController {
     @PostMapping("/insert") 
     public String insertReg(HttpSession session, Model model, LeaveReqDTO reqDto) {
     	
-    	
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
-    	//loginUser.getEmpNm()
-    	
-    	
-    	// 주석처리요망 -->
-    	//me = new EmployeeDto();
-    	//me.setEmployeeId("20250001");
-    	//  <--
     	
     	//reqDto = requestDto :연차 사용 요청
     	reqDto.dataCalc();
@@ -97,11 +85,9 @@ public class LeaveController {
     		mapper.approvalList(dto); 
 		}
     	
-    	
-    	model.addAttribute("mainUrl", "attend/leave/leaveList");
-        return "navTap"; 
+    	return "redirect:/attend/leaveList";
     }
-
+    
     //연차 관리(관리자용)
     @GetMapping("/leaveListMng")
     public String leaveListMng(HttpSession session, Model model) {
@@ -115,6 +101,7 @@ public class LeaveController {
         System.out.println("/attend/leave/leaveListMng : "+dto);
         
         model.addAttribute("mainUrl", "attend/leave/leaveListMng");
+        
         model.addAttribute("listMngData", dto);
         return "navTap"; 
     }
