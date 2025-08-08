@@ -1,6 +1,9 @@
 package com.kdt.KDT_PJT.cmmn.map;
 
 import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Data;
 
 /**
@@ -22,6 +25,7 @@ public class EmployeeDto {
     // 개인 정보
     private String empNm;      // 직원 이름
     private String phone;      // 연락처
+    @DateTimeFormat(pattern = "yyyy-MM-dd")  // 추가
     private Date birth;        // 생년월일
 
     // 조직 정보
@@ -30,7 +34,9 @@ public class EmployeeDto {
     private String role;       // 권한 (ROLE_ADMIN, ROLE_USER 등)
 
     // 근무 이력
+    @DateTimeFormat(pattern = "yyyy-MM-dd")  // 추가
     private Date hireDate;     // 입사일
+    @DateTimeFormat(pattern = "yyyy-MM-dd")  // 추가
     private Date resignDate;   // 퇴사일
 
 }

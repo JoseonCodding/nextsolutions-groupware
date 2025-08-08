@@ -10,6 +10,8 @@ import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.employee.mapper.EmployeeMapper;
 import com.kdt.KDT_PJT.employee.svc.EmployeeService;
 
+import java.lang.System.Logger;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -72,8 +74,22 @@ public class EmployeeController {
     /** 사원 수정 처리 */
     @PostMapping("/employee/update")
     public String updateEmployee(EmployeeDto dto) {
-    	   	
-    	employeeMapper.update(dto);
+    	
+    	 // 컨트롤러 메서드 안에서 바로 변환
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        String birthStr = dto.getBirth() != null ? sdf.format(dto.getBirth()) : null;
+        String hireStr  = dto.getHireDate() != null ? sdf.format(dto.getHireDate()) : null;
+        String resignStr= dto.getResignDate() != null ? sdf.format(dto.getResignDate()) : null;
+    	
+    	 System.out.println("아이디"+dto.getEmployeeId());
+    	 System.out.println("비번"+dto.getPassword());
+    	 System.out.println("생년월일"+birthStr);
+    	 System.out.println("입사일자"+hireStr);
+    	 System.out.println("퇴사일자"+resignStr);
+    	 System.out.println("부서명"+dto.getDeptName());
+    	 System.out.println("권한"+dto.getRole());
+    	 employeeMapper.update(dto);
 
         return "redirect:/employee/list";
     }
