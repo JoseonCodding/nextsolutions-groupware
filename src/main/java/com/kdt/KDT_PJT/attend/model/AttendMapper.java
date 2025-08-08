@@ -10,10 +10,10 @@ import org.apache.ibatis.annotations.Update;
 @Mapper
 public interface AttendMapper {
 
-	@Insert("INSERT INTO attendance (user_id, check_in_time) VALUES (#{userId}, #{checkInTime})")
+	@Insert("INSERT INTO attendance (employeeId, check_in_time) VALUES (#{employeeId}, #{checkInTime})")
     void insertAttendance(AttendDTO attendance);
 	
-	@Update("UPDATE attendance SET check_out_time = #{checkOutTime} WHERE user_id = #{userId} AND DATE(check_in_time) = CURDATE()")
+	@Update("UPDATE attendance SET check_out_time = #{checkOutTime} WHERE employeeId = #{employeeId} AND DATE(check_in_time) = CURDATE()")
 	void updateAttendance(AttendDTO attendance);
 	
 	@Select("select * from attendance")

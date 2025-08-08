@@ -1,0 +1,12 @@
+<!-- 출퇴근 달력 -->
+
+<form action="">
+<th:block  th:each="dto : ${mainData}">
+	
+	<th:block th:text="${dto.workDate}" />
+
+	<div>출근시간<th:block th:text="${dto.checkInHourMinute}" /></div>
+	<div>퇴근시간<th:block th:text="${dto.checkOutHourMinute}" /></div>
+	
+</th:block>
+</form>

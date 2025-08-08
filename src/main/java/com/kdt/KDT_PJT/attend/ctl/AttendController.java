@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -17,9 +18,15 @@ import com.kdt.KDT_PJT.attend.model.AttendDTO;
 @RequestMapping("/attend")
 public class AttendController {
 
+	@ModelAttribute("navUrl")
+	String navUrl() {
+		return "attend/nav";
+	}
+	
 	@Autowired
     Attendance service;
 
+	
 
     @GetMapping
     String showAttendancePage(Model model) {
@@ -31,7 +38,7 @@ public class AttendController {
         model.addAttribute("mainData", attendList);
         
         model.addAttribute("mainUrl", "attend/check");
-        return "home";
+        return "navTap";
         
     }
 
@@ -57,7 +64,7 @@ public class AttendController {
         List<AttendDTO> attendList = service.getAttendData(); 
         model.addAttribute("mainData", attendList);
         model.addAttribute("mainUrl", "attend/attendList");
-        return "home"; 
+        return "navTap"; 
     }
     
     //출퇴근 기록 수정 신청 
@@ -65,7 +72,7 @@ public class AttendController {
     String attendTimeInsert(Model model) {
     	System.out.println("attendTimeInsert 작동하나");
         model.addAttribute("mainUrl", "attend/attendTimeInsert");
-        return "home";
+        return "navTap";
     }
     
   
