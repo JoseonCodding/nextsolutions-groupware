@@ -1,5 +1,6 @@
 package com.kdt.KDT_PJT.approval.ctl;
 
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -94,6 +95,17 @@ public class ApprovalController {
         redirectAttributes.addAttribute("page", page);
         redirectAttributes.addAttribute("type", type == null ? "" : type);
         redirectAttributes.addAttribute("status", status == null ? "" : status);
+        
+    	
+//        // 한글 인코딩 에러 처리하는 방법 (쌤 자문 - URLEncoder 사용 - 지난 수업때 함) 
+//    	try {
+//			String ttt= URLEncoder.encode("서필규님 왜그래", "utf-8");
+//			System.out.println("메인이지:"+ttt);
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+    	
 
         return "redirect:/approval/main";
     }
