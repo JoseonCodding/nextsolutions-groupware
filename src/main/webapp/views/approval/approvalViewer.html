@@ -69,6 +69,10 @@
 	<div style="border:1px solid; margin-top: 20px; background-color: aqua;" th:text="${viewData == null ? '-' : viewData.content}">
 	</div>
 	
+	<a th:href="@{'/approval/main'(docId=${viewData.docId}, page=${page}, type=${type}, status=${status})}">
+		목록으로
+	</a>
+	
 	<!-- 수정, 삭제 버튼 영역 -->
 	<div th:if="${viewData == null ? '-' : viewData.status =='대기'}">
 		<th:block th:if="${viewData != null}">
