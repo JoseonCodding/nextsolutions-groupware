@@ -69,8 +69,15 @@
 	<div style="border:1px solid; margin-top: 20px; background-color: aqua;" th:text="${viewData == null ? '-' : viewData.content}">
 	</div>
 	
-	<a th:href="@{'/approval/main'(docId=${viewData.docId}, page=${page}, type=${type}, status=${status})}">
-		목록으로
+	<!-- 목록으로(viewData가 있을때) or 처음으로(viewData가 없을때) -->
+	<a th:if="${viewData != null}"
+	   th:href="@{'/approval/main'(docId=${viewData.docId}, page=${page}, type=${type}, status=${status})}">
+	   목록으로
+	</a>
+	
+	<a th:unless="${viewData != null}"
+	   th:href="@{/approval/main}">
+	   처음으로
 	</a>
 	
 	<!-- 수정, 삭제 버튼 영역 -->
@@ -92,7 +99,7 @@
 	<!-- 승인, 반려 버튼 영역 -->
 	<div th:if="${viewData == null ? '-' : viewData.status =='대기'}">
 		<th:block th:if="${viewData != null}">
-			<a>
+			<a onclick="return confirm('한 번 승인하면 취소할 수 없습니다.\n정말로 승인하시겠습니까?');">
 				<button>승인</button>
 			</a>
 		</th:block>
