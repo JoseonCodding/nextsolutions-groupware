@@ -59,7 +59,7 @@
     <h2>사원 정보 수정</h2>
     
     <form action="/employee/update" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="emp_seq" th:value="${empSeq}" />
+        <input type="hidden" name="empSeq" th:value="${employee.empSeq}" />
 
         <table>
             <tr>

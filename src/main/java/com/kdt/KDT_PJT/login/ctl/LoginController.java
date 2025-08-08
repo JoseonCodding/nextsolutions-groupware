@@ -73,11 +73,12 @@ public class LoginController {
             session.setAttribute("loginUser", dto);
          
         	//return ResponseEntity.ok(dto);
-            return "redirect:/";
+            //return "redirect:/rc";
+            return "redirect:/attend";
         }
         
         //return ResponseEntity.status(401).body("로그인 필요");
-        return "redirect:/login";
+        return "redirect:/login?error=true";
     }   
     
 //    @GetMapping("/testSession")

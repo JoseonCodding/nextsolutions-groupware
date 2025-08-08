@@ -1,12 +1,21 @@
 <!-- 출퇴근 달력 -->
 
 <form action="">
-<th:block  th:each="dto : ${mainData}">
-	
-	<th:block th:text="${dto.workDate}" />
 
-	<div>출근시간<th:block th:text="${dto.checkInHourMinute}" /></div>
-	<div>퇴근시간<th:block th:text="${dto.checkOutHourMinute}" /></div>
+<table border="" th:each="dto : ${mainData}">
 	
-</th:block>
+	<tr >
+		<td>날짜</td>
+		<td th:text="${dto.workDate}"></td>
+	</tr>
+	<tr>
+		<td>출근시간</td>
+		<td th:text="${dto.checkInHourMinute}" />
+	</tr>
+	<tr>
+		<td>퇴근시간</td>
+		<td th:text="${dto.checkOutHourMinute}" />
+	</tr>
+</table>
+
 </form>
