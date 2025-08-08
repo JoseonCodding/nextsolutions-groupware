@@ -117,7 +117,6 @@ public class ApprovalController {
         return "redirect:/approval/main";
     }
     
-    // 수정 폼 (GET)
     @GetMapping("/edit")
     public String approvalEditForm(
     					Model model,
@@ -138,7 +137,6 @@ public class ApprovalController {
     	return "navTap";
     }
     
-    // 수정 처리 (POST)
     @PostMapping("/edit")
     public String approvalEditProc(
     				RedirectAttributes redirectAttributes,
@@ -149,11 +147,12 @@ public class ApprovalController {
     	
     	approvalMapper.updateById(editData);
         
+    	redirectAttributes.addAttribute("docId", editData.getDocId());
         redirectAttributes.addAttribute("page", page);
         redirectAttributes.addAttribute("type", type);
         redirectAttributes.addAttribute("status", status);
         
-        return "redirect:/approval/main";
+        return "redirect:/approval/viewer";	// 파라미터가 쿼리스트링에 자동으로 붙음
     }
 
 }

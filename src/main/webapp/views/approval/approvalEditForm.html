@@ -6,7 +6,13 @@
 </head>
 <body>
     <form method="post" th:action="@{/approval/edit}" th:object="${editData}">
+        
+        <!-- post 후 되돌아가기 위해서 파라미터값 보내기 -->
         <input type="hidden" th:field="*{docId}" />
+        <input type="hidden" th:name="page" th:value="${page}" />
+        <input type="hidden" th:name="type" th:value="${type}" />
+        <input type="hidden" th:name="status" th:value="${status}" />
+        
         <table>
             <tr>
                 <td>작성자</td>
@@ -35,7 +41,10 @@
                 <td><textarea th:field="*{content}" rows="10" cols="50"></textarea></td>
             </tr>
         </table>
+        
+        <!-- 저장, 취소 버튼 영역 -->
         <button type="submit">저장</button>
+        
         <a th:href="@{'/approval/viewer'(docId=${editData.docId}, page=${page}, type=${type}, status=${status})}">
             <button type="button">취소</button>
         </a>
