@@ -17,12 +17,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.pjt_mng.svc.ProjectMngService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -42,65 +45,73 @@ public class ProjectMngController {
 	// ✅ 프로젝트 목록 화면 조회 (검색어 유무에 따라 분기)
 	@GetMapping("/getPjtList")
 	public String getPjtList(
-	        @RequestParam(required = false, name = "keyword") String keyword, Model model) {
+	        @RequestParam(required = false, name = "keyword") String keyword
+	        , HttpServletRequest request
+	        , Model model) {
 
 	    // 🔍 검색어 로그 확인 (디버깅용)
 	   System.out.println("getPjtList Called >>> keyword = " + keyword);
 	   
-
-	    // 🗂 프로젝트 리스트 선언
-	    List<CmmnMap> pjtList;
-
-	    // 🔎 keyword가 있으면 → 검색 조건으로 조회
-	    if (keyword != null && !keyword.isEmpty()) {
-	        pjtList = projectMngService.searchProjectMngList(keyword);
-	        log.info("🔍 검색 결과 개수: " + pjtList.size());
-	    } 
-	    // 🔁 keyword 없으면 → 전체 리스트 조회
-	    else {
-	        pjtList = projectMngService.getPjtList();
-	        log.info("📄 전체 목록 개수: " + pjtList.size());
-	    }
-
-	    // 💾 View에 리스트 전달
-	    model.addAttribute("pjtList", pjtList);
-	    model.addAttribute("currentPage", 1);
-	    model.addAttribute("totalPages", 10); // ✅ 이거 안 넘기면 NPE 뜸
+       // ① 페이지 번호/사이즈 받아오기 (없으면 기본값)
+       int pageNum = 1;
+       int pageSize = 10;
+       
+       try {
+           if (request.getParameter("pageNum") != null) {
+               pageNum = Integer.parseInt(request.getParameter("pageNum"));
+           }
+           if (request.getParameter("pageSize") != null) {
+               pageSize = Integer.parseInt(request.getParameter("pageSize"));
+           }
+       } catch (Exception e) {
+           log.warn("페이지 번호 파싱 실패, 기본값 사용");
+       }
+       
+		//  리스트 가져오기
+       PageInfo<CmmnMap>  list = projectMngService.getProjectList(pageNum, pageSize, keyword);
+       // ③ model에 값 담기
+       
+       if (list == null || list.getList() == null || list.getList().isEmpty()) {
+    	    log.warn("⚠️ 프로젝트 리스트가 비어있거나 null입니다.");
+    	    model.addAttribute("pjtList", List.of());  // 빈 리스트로 넘기기 (NPE 방지)
+    	} else {
+    	    log.info("✅ 프로젝트 리스트 로드 성공. 개수: " + list.getList().size());
+    	    model.addAttribute("pjtList", list.getList());
+    	}
+       
+       model.addAttribute("pjtList", list.getList());   // 현재 페이지 데이터
+       model.addAttribute("pageInfo", list);             // 페이징 정보      
+       
+       
+       
+       
+       
+//	    // 🗂 프로젝트 리스트 선언
+//	    List<CmmnMap> pjtList;
+//
+//	    // 🔎 keyword가 있으면 → 검색 조건으로 조회
+//	    if (keyword != null && !keyword.isEmpty()) {
+//	        pjtList = projectMngService.searchProjectMngList(keyword);
+//	        log.info("🔍 검색 결과 개수: " + pjtList.size());
+//	    } 
+//	    // 🔁 keyword 없으면 → 전체 리스트 조회
+//	    else {
+//	        pjtList = projectMngService.getPjtList();
+//	        log.info("📄 전체 목록 개수: " + pjtList.size());
+//	    }
+//
+//	    // 💾 View에 리스트 전달
+//	    model.addAttribute("pjtList", pjtList);
+//	    model.addAttribute("currentPage", 1);
+//	    model.addAttribute("totalPages", 10); // ✅ 이거 안 넘기면 NPE 뜸
 	   
 	    model.addAttribute("mainUrl", "pjt_mng/pjt_main");
 	    return "home";
 
 	}
+
 	
-	@GetMapping("/pjtMng/pjtList")
-	public String getPjtList(
-	        @RequestParam(defaultValue = "1") int page,   // 현재 페이지 (기본값 1)
-	        @RequestParam(defaultValue = "10") int size,  // 한 페이지당 보여줄 개수 (기본값 10)
-	        @RequestParam(required = false) String keyword,
-	        Model model	) {
-		
-	    int offset = (page - 1) * size;
 
-		
-	    //  리스트 가져오기
-	    // List<Map<String, Object>> list = projectMngService.getProjectList(page, size);
-	    
-	    //  전체 프로젝트 수 가져오기 
-	    //int totalCount = projectMngService.getProjectCount(keyword);
-	    //int totalPages = (int) Math.ceil((double) totalCount / size);
-
-	  
-	    
-	    // ✅ View에 전달할 데이터(모델에 담기)
-	  //  model.addAttribute("projectList", list);       // 프로젝트 목록
-	  //  model.addAttribute("currentPage", page);       // 현재 페이지
-	  //  model.addAttribute("totalPages", totalPages);  // 총 페이지 수
-	 //   model.addAttribute("keyword", keyword); // 검색 유지
-
-
-	    model.addAttribute("mainUrl", "pjt_mng/pjt_list"); // Thymeleaf include용
-	    return "home";
-	}
 
 
 	

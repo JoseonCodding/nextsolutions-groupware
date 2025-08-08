@@ -121,7 +121,7 @@
   </div>
   
   <!-- 검색 form -->
-<form  method="get" style="margin-top: 20px; display: flex; gap: 12px;">
+<form action="/pjtMng/getPjtList"  method="get" style="margin-top: 20px; display: flex; gap: 12px;">
   <input type="text" name="keyword" placeholder="프로젝트명, 담당자 검색" class="form-control" 
          style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;" />
   <button type="submit" class="button" style="background-color: #2962ff; color: white;">
@@ -173,35 +173,42 @@
 </tr>
   </tbody>
 </table>
-<!-- ✅ 페이지네이션 블럭 시작 -->
-<div class="pagination" style="margin-top: 20px; text-align: center;">
-  <ul class="pagination-list" style="list-style: none; display: inline-flex; gap: 8px; padding: 0;">
-    
-    <li th:if="${currentPage > 1}">
-      <a th:href="@{/pjtMng/pjtList(page=${currentPage - 1}, keyword=${keyword})}"
-         style="padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; text-decoration: none;">
+
+
+
+<!-- ✅ 페이징 UI -->
+<nav class="mt-4 text-center" th:if="${pageInfo != null}">
+  <ul class="pagination justify-content-center">
+
+    <!-- 이전 페이지 -->
+    <li class="page-item" th:classappend="${pageInfo.prePage == 0} ? 'disabled'">
+      <a class="page-link"
+         th:href="@{/pjtMng/getPjtList(pageNum=${pageInfo.prePage}, pageSize=${pageInfo.pageSize}, keyword=${keyword})}">
         Previous
       </a>
     </li>
 
-    <li th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
-        th:classappend="${pageNum == currentPage} ? 'active'" 
-        style="display: inline;">
-      <a th:href="@{/pjtMng/pjtList(page=${pageNum}, keyword=${keyword})}" 
-         th:text="${pageNum}" 
-         style="padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; text-decoration: none;"></a>
+    <!-- 숫자 페이지 -->
+    <li class="page-item"
+        th:each="page : ${#numbers.sequence(pageInfo.navigateFirstPage, pageInfo.navigateLastPage)}"
+        th:classappend="${page == pageInfo.pageNum} ? 'active'">
+      <a class="page-link"
+         th:text="${page}"
+         th:href="@{/pjtMng/getPjtList(pageNum=${page}, pageSize=${pageInfo.pageSize}, keyword=${keyword})}"></a>
     </li>
 
-    <li th:if="${currentPage < totalPages}">
-      <a th:href="@{/pjtMng/pjtList(page=${currentPage + 1}, keyword=${keyword})}"
-         style="padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; text-decoration: none;">
+    <!-- 다음 페이지 -->
+    <li class="page-item" th:classappend="${pageInfo.nextPage == 0} ? 'disabled'">
+      <a class="page-link"
+         th:href="@{/pjtMng/getPjtList(pageNum=${pageInfo.nextPage}, pageSize=${pageInfo.pageSize}, keyword=${keyword})}">
         Next
       </a>
     </li>
 
   </ul>
-</div>
-<!-- ✅ 페이지네이션 블럭 끝 -->
+</nav>
+
+
 
 
 

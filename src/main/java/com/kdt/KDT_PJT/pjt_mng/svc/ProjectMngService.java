@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.dao.CmmnDao;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.pjt_mng.mapper.PjtMngMapper;
@@ -43,7 +45,10 @@ public class ProjectMngService  {
 
     // 🔹 프로젝트 등록 (기존)
     public void savePjtProc(CmmnMap params) {
-        cmmnDao.insert("com.kdt.mapper.pjt_mng.PjtMngMapper.savePjtProc", params);
+    	
+    	String queryId = "com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.savePjtProc";
+    	
+        cmmnDao.insert(queryId, params);
     }
 
     // 🔹 프로젝트 수정 (기존)
@@ -79,19 +84,22 @@ public class ProjectMngService  {
     public int countProjectList(String keyword) {
         return cmmnDao.selectOne("com.kdt.mapper.pjt_mng.PjtMngMapper.countProjectList", keyword);
     }
+
+	public PageInfo<CmmnMap> getProjectList(int pageNum, int pageSize, String keyword) {
+		
+       PageHelper.startPage(pageNum, pageSize);
+
+       // ② 페이징 걸린 상태로 select 실행
+       List<CmmnMap> list = cmmnDao.selectList("com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.searchProjectMngList", keyword);
+
+       // ③ PageInfo로 래핑
+       return new PageInfo<>(list);
+
+	}
     
     
+
     
-    
-    
- // ✅ 페이지네이션용 목록 조회 (Mapper 방식)
-//    public List<Map<String, Object>> getProjectList(int page, int size) {
-//        int offset = (page - 1) * size;
-//        return pjtMngMapper.getProjectList(size, offset);
-//    }
-//
-//    public int getProjectCount(String keyword) {
-//        return pjtMngMapper.getProjectCount();
-//    }
+
 
 }
