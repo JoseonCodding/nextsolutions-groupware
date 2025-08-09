@@ -6,15 +6,27 @@
 <mapper namespace="com.kdt.KDT_PJT.employee.mapper.EmployeeMapper">
 
     <!-- 사원 목록 -->
-    <select id="getUserList" resultType="CmmnMap">
-        SELECT emp_seq,
-               employeeId,
-               password,
-               active,
-               emp_nm
-        FROM employee
-        ORDER BY emp_seq ASC
-    </select>
+<select id="getUserList" parameterType="string" resultType="CmmnMap">
+    <!--
+    QueryId : com.kdt.KDT_PJT.employee.mapper.EmployeeMapper.getUserList
+    설명 : 직원 목록 전체조회
+    -->
+    SELECT 
+        emp_seq,
+        employeeId,
+        password,
+        active,
+        emp_nm
+    FROM employee
+    WHERE 1=1
+ 	<if test="keyword != null and keyword != ''">
+        AND 
+          EMP_NM LIKE CONCAT('%', #{keyword}, '%')
+        
+      </if>
+    ORDER BY emp_seq ASC
+</select>
+
 
     <!-- 활성/비활성 토글 -->
     <update id="toggleActive" parameterType="CmmnMap">

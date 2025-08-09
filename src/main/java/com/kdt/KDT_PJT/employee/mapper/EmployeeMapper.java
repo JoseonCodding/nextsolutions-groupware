@@ -1,14 +1,17 @@
 package com.kdt.KDT_PJT.employee.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
-import java.util.List;
-
 @Mapper
 public interface EmployeeMapper {
-    List<CmmnMap> getUserList();
+    List<CmmnMap> getUserList(int pageNum, int pageSize, @Param("keyword") String keyword);
     void toggleActive(CmmnMap params);
     void insertEmployee(CmmnMap params);
     CmmnMap getEmployeeBySeq(int empSeq);
