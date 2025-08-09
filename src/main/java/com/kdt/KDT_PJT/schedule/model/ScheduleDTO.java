@@ -13,6 +13,7 @@ public class ScheduleDTO {
 	int scheduleId;
     String title, cate, alarm, content;
     Date startDate,endDate, createdAt,updatedAt,deleteDate;
+    String employeeId;
     
 
     public void setStartDateStr(String ttt) {

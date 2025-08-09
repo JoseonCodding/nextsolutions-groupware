@@ -45,13 +45,9 @@ public class ScheduleController {
 		
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
 	    
-		
-	    ScheduleDTO sche = new ScheduleDTO();
+	    dto.setEmployeeId(loginUser.getEmployeeId());
 	    
-	    //attend.setEmployeeId(loginUser.getEmployeeId());  
-	    //sche.setEmployeeId(loginUser.getEmployeeId()); 
-	    
-		System.out.println("보여라"+loginUser.getEmployeeId());
+		// System.out.println("보여라"+loginUser.getEmployeeId());
 		mapper.insert(dto);
 	    
 		model.addAttribute("mainUrl", "redirect:/schedule");

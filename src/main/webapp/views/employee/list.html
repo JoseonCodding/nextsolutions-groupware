@@ -11,6 +11,7 @@ body {
 	padding: 20px;
 }
 
+<<<<<<< HEAD
 h1 {
 	color: #2c3e50;
 	text-align: center;
@@ -117,6 +118,38 @@ tr:hover {
 .top-buttons button {
 	background: #ff9800;
 	color: white;
+=======
+    .top-buttons {
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .top-buttons a, .top-buttons button {
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: none;
+        font-size: 14px;
+        font-weight: bold;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .top-buttons a {
+        background: #4a90e2;
+        color: white;
+    }
+    .top-buttons button {
+        background: #ff9800;
+        color: white;
+    }
+    .pagination {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.pagination li {
+  list-style: none;
+>>>>>>> branch 'mmmaster' of https://gitlab.com/klp100119/kdt9_team2.git
 }
 </style>
 </head>
@@ -128,6 +161,7 @@ tr:hover {
 		<!-- <button id="editSelected">선택된 사원 수정</button> -->
 	</div>
 
+<<<<<<< HEAD
 	<table>
 		<thead>
 			<tr>
@@ -155,7 +189,50 @@ tr:hover {
 				<td>
 					<button th:if="${emp.active}" class="btn btn-inactive"
 						th:attr="data-emp=${emp.emp_seq}">비활성화</button>
+=======
+<div>
+  <!-- 검색 form -->
+<form action="/employee/list"  method="get" style="margin-top: 20px; display: flex; gap: 12px;">
+  <input type="text" name="keyword" placeholder="프로젝트명, 담당자 검색" class="form-control" 
+         style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;" />
+  <button type="submit" class="button" style="background-color: #2962ff; color: white;">
+    검색
+  </button>
+</form>
+</div>
 
+<table>
+    <thead>
+        <tr>
+            <th>선택</th>
+            <th>사번</th>
+            <th>아이디</th>
+            <th>비밀번호</th>
+            <th>상태</th>
+            <th>이름</th>
+            <th>작업</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="emp : ${employees}">
+            <td><input type="checkbox" class="emp-check" th:value="${emp.emp_seq}"></td>
+            <td th:text="${emp.emp_seq}"></td>
+            <td th:text="${emp.employeeId}"></td>
+            <td th:text="${emp.password}"></td>
+            <td class="status"
+                th:classappend="${emp.active == 1} ? 'status-active' : 'status-inactive'"
+                th:text="${emp.active == 1 ? '활성' : '비활성'}"></td>
+            <td th:text="${emp.emp_nm != null ? emp.emp_nm : ''}"></td>
+            <td>
+                <button th:if="${emp.active == 1}" class="btn btn-inactive" th:attr="data-emp=${emp.emp_seq}">비활성화</button>
+                <button th:if="${emp.active != 1}" class="btn btn-active" th:attr="data-emp=${emp.emp_seq}">활성화</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+>>>>>>> branch 'mmmaster' of https://gitlab.com/klp100119/kdt9_team2.git
+
+<<<<<<< HEAD
 					<button th:if="${!emp.active}" class="btn btn-active"
 						th:attr="data-emp=${emp.emp_seq}">활성화</button>
 				</td>
@@ -164,6 +241,46 @@ tr:hover {
 	</table>
 
 	<script>
+=======
+<!-- ✅ 페이징 UI -->
+<nav class="mt-4" th:if="${pageInfo != null}">
+  <ul class="pagination justify-content-center">
+
+    <!-- 이전 페이지 -->
+    <li class="page-item" 
+        th:classappend="${pageInfo.prePage == 0} ? 'disabled'">
+      <a class="page-link" aria-label="Previous"
+         th:href="@{/employee/list(pageNum=${pageInfo.prePage}, pageSize=${pageInfo.pageSize}, keyword=${keyword})}">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+
+    <!-- 페이지 번호 -->
+    <li class="page-item"
+        th:each="page : ${#numbers.sequence(pageInfo.navigateFirstPage, pageInfo.navigateLastPage)}"
+        th:classappend="${page == pageInfo.pageNum} ? 'active'">
+      <a class="page-link"
+         th:text="${page}"
+         th:href="@{/employee/list(pageNum=${page}, pageSize=${pageInfo.pageSize}, keyword=${keyword})}">
+      </a>
+    </li>
+
+    <!-- 다음 페이지 -->
+    <li class="page-item" 
+        th:classappend="${pageInfo.nextPage == 0} ? 'disabled'">
+      <a class="page-link" aria-label="Next"
+         th:href="@{/employee/list(pageNum=${pageInfo.nextPage}, pageSize=${pageInfo.pageSize}, keyword=${keyword})}">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+
+  </ul>
+</nav>
+
+
+
+<script>
+>>>>>>> branch 'mmmaster' of https://gitlab.com/klp100119/kdt9_team2.git
 document.querySelectorAll("button.btn-active, button.btn-inactive").forEach(btn => {
     btn.addEventListener("click", function() {
         const empSeq = this.dataset.emp;
