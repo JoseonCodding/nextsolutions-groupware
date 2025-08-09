@@ -41,6 +41,9 @@ public interface AttendMapper {
 			  AND DATE(check_in_time) = CURDATE()
 			""")
 	AttendDTO findTodayAttendance(@Param("employeeId") String employeeId);
+	
+	@Insert("INSERT INTO attendance (modified_by, modified_at, modification_reason) VALUES (#{modified_at}, #{modification_reason})")
+	void attendSave(AttendDTO attendance);
 
 	//work_hours, is_normal_work 반영
 //	@Update("""

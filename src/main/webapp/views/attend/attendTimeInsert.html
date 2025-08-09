@@ -1,20 +1,98 @@
+<form action="/attend/save" method="post" enctype="multipart/form-data" style="max-width:760px;margin:0 auto;">
 
-<form action="" method="post" >
-	<table border="">
-		<tr align="center">
-			<td>출퇴근 기록 수정 신청<a th:href="@{/attend}">닫힘</a></td>
-			
-		</tr>
-		<tr colspan="2">
-			<td>제목
-			<textarea name="" id="" cols="30" rows="1"></textarea></td>
-		</tr>
-		<tr colspan="2">
-			<td><textarea name="" id="" cols="40" rows="20"></textarea></td>
-		</tr>
-		<tr colspan="2" align="right">
-			<td><input type="submit" value="결재 신청"/></td>
-		</tr>
-	</table>
+
+  <h2 style="text-align:center; letter-spacing:1px; margin:16px 0 24px;">출퇴근 기록 수정 신청</h2>
+
+  <table style="width:100%; border-collapse:separate; border-spacing:0 18px;">
+    <!-- 제목 -->
+    <tr>
+      <td style="width:120px; vertical-align:middle; font-weight:600;">제목</td>
+      <td>
+        <input type="text" name="title" id="title"
+               placeholder="출퇴근 기록 수정 요청서"
+               style="width:100%; padding:12px 14px; border:2px solid #222; border-radius:6px; font-size:16px;" required />
+      </td>
+      <td style="width:80px; text-align:right;">
+        <a th:href="@{/attend}" style="font-size:14px; text-decoration:none; color:#444;">닫힘</a>
+      </td>
+    </tr>
+
+    <!-- 체크박스(정상출근/정상퇴근/정상출퇴근) -->
+    <tr>
+      <td style="vertical-align:top; font-weight:600;">출퇴근내역</td>
+      <td colspan="2">
+        <div style="display:flex; gap:28px; align-items:center; flex-wrap:wrap;">
+          <label style="display:flex; align-items:center; gap:8px; font-size:16px;">
+            <input class="action-one" type="checkbox" name="actions" value="IN" />
+            정상출근
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; font-size:16px;">
+            <input class="action-one" type="checkbox" name="actions" value="OUT" />
+            정상퇴근
+          </label>
+        </div>
+
+<div style="margin-top:16px;">
+  <label for="dateSelect">출석 날짜 선택</label>
+  <select id="dateSelect" name="attendId" style="padding:6px; border-radius:4px; width:100%;">
+    <option value="">-- 날짜 선택 --</option>
+    <option th:each="opt : ${attendOptions}"
+            th:value="${opt.id}"
+            th:text="${opt.date}">
+    </option>
+  </select>
+</div>
+
+      </td>
+    </tr>
+
+    <!-- 내용 -->
+    <tr>
+      <td style="vertical-align:top; font-weight:600;">내용</td>
+      <td colspan="2">
+        <textarea name="content" id="content" rows="10"
+                  placeholder="사유를 자세히 입력해주세요."
+                  style="width:100%; padding:14px; border:2px solid #222; border-radius:6px; font-size:18px; line-height:1.6;" required></textarea>
+      </td>
+    </tr>
+
+    <!-- 첨부파일 -->
+    <tr>
+      <td style="vertical-align:middle; font-weight:600;">첨부파일</td>
+      <td colspan="2">
+        <label style="display:inline-block; padding:10px 18px; border-radius:10px; border:1px solid #777; background:linear-gradient(#cfcfcf, #9b9b9b); color:#111; cursor:pointer;">
+          파일업로드
+          <input type="file" name="attachment" style="display:none;" />
+        </label>
+      </td>
+    </tr>
+
+    <!-- 제출 -->
+    <tr>
+      <td></td>
+      <td colspan="2" style="text-align:right;">
+        <button type="submit"
+                style="padding:12px 20px; border:none; border-radius:8px; background:#2b6cb0; color:#fff; font-size:16px; cursor:pointer;">
+          결재 신청
+        </button>
+      </td>
+    </tr>
+  </table>
 </form>
 
+<script>
+// '정상출퇴근' 체크 시 나머지 자동 해제, 개별 체크 시 BOTH 해제
+const both = document.querySelector('.action-both');
+const ones = document.querySelectorAll('.action-one');
+
+if (both) {
+  both.addEventListener('change', function(){
+    if (this.checked) ones.forEach(cb => cb.checked = false);
+  });
+}
+ones.forEach(cb => {
+  cb.addEventListener('change', function(){
+    if (this.checked && both) both.checked = false;
+  });
+});
+</script>

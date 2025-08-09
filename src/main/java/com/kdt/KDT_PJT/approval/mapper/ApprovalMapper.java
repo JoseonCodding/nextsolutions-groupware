@@ -3,6 +3,7 @@ package com.kdt.KDT_PJT.approval.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -64,7 +65,7 @@ public interface ApprovalMapper {
 			+ " WHERE docId = #{docId}")
 	ApprovalDTO viewById(@Param("docId") String docId);
 	
-	@Delete("DELETE FROM Approval_TEST "
+	@Delete("DELETE FROM Approval_TEST " 
 			+ " WHERE docId = #{docId}")
 	int deleteById(@Param("docId") String docId);
 	
@@ -73,4 +74,13 @@ public interface ApprovalMapper {
 			+ " WHERE docId=#{docId}")
 	int updateById(ApprovalDTO dto);
 	
+	@Select("SELECT * FROM attendance  WHERE employeeId = #{employeeId}")		
+	int getAttendInfoList(ApprovalDTO dto);
+	
+	@Insert("""   
+			INSERT INTO Approval_TEST  VALUES
+			
+			
+			""")
+	int saveProcs(ApprovalDTO dto);
 }

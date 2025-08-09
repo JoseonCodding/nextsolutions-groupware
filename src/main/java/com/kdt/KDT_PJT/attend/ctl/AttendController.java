@@ -1,6 +1,10 @@
 package com.kdt.KDT_PJT.attend.ctl;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
@@ -65,11 +68,32 @@ public class AttendController {
     
     //출퇴근 기록 수정 신청 
     @GetMapping("/attendTimeInsert")
-    String attendTimeInsert(Model model) {
-    	System.out.println("attendTimeInsert 작동하나");
+    String attendTimeInsert(HttpSession session, Model model) {
+        System.out.println("attendTimeInsert 작동하나");
+
+        EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+        List<AttendDTO> attendInfoList = service.getAttendInfoList(loginUser);
+
+        // 날짜만 표시 (yyyy-MM-dd), value는 id
+        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        List<Map<String, Object>> attendOptions = attendInfoList.stream()
+            .filter(a -> a.getCheckInTime() != null) // 날짜 없는 데이터 제외
+            .map(a -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", a.getId()); // <option value>
+                map.put("date", a.getCheckInTime().toLocalDate().format(dateFmt)); // 표시용 텍스트(날짜만)
+                return map;
+            })
+            // 필요 시 최신 날짜 먼저 보이게 정렬 (선택)
+            .sorted((m1, m2) -> ((String)m2.get("date")).compareTo((String)m1.get("date")))
+            .toList();
+
+        model.addAttribute("attendOptions", attendOptions);
         model.addAttribute("mainUrl", "attend/attendTimeInsert");
         return "navTap";
     }
+
     
     //근태 관리자 페이지(출퇴근 변경이력 포함)
     @GetMapping("/attendList")
