@@ -81,9 +81,9 @@ public class ApprovalController {
 			            @RequestParam(name = "type", required = false) String type,
 			            @RequestParam(name = "status", required = false) String status) {
     	
-    	ApprovalDTO viewData = approvalMapper.view(docId);
+    	ApprovalDTO approvalData = approvalMapper.view(docId);
     
-    	model.addAttribute("viewData", viewData);
+    	model.addAttribute("approvalData", approvalData);
 
     	model.addAttribute("page", page);
     	model.addAttribute("type", type);
@@ -99,9 +99,16 @@ public class ApprovalController {
 				        @RequestParam("docId") String docId,
 				        @RequestParam(name = "page", defaultValue = "1") int page,
 				        @RequestParam(name = "type", required = false) String type,
-				        @RequestParam(name = "status", required = false) String status) {
+				        @RequestParam(name = "status", required = false) String status,
+				        @RequestParam(name = "docType") String docType) {
     	
-        approvalMapper.delete(docId);
+        if ("공지사항".equals(docType)) {
+            approvalMapper.deleteNotice(docId);
+        } else if ("연차".equals(docType)) {
+            approvalMapper.deleteLeave(docId);
+        } else if ("프로젝트".equals(docType)) {
+            approvalMapper.deleteProject(docId);
+        }
         
         int totalCount = approvalMapper.approvalCountAll(type, status);	// 게시글 DB 전체 개수 (필터기능 반영됨)
         int size = 10;	// 페이지 당 표시될 게시글 수
@@ -143,9 +150,17 @@ public class ApprovalController {
 					@ModelAttribute ApprovalDTO editData,
 					@RequestParam(name = "page", defaultValue = "1") int page,
 					@RequestParam(name = "type", required = false) String type,
-					@RequestParam(name = "status", required = false) String status) {
+					@RequestParam(name = "status", required = false) String status,
+					@RequestParam(name = "docType") String docType) {
     	
-    	approvalMapper.edit(editData);
+        // 결재 종류별로 수정 메서드 분기 호출
+        if ("공지사항".equals(docType)) {
+            approvalMapper.editNotice(editData);
+        } else if ("연차".equals(docType)) {
+            approvalMapper.editLeave(editData);
+        } else if ("프로젝트".equals(docType)) {
+            approvalMapper.editProject(editData);
+        }
         
     	redirectAttributes.addAttribute("docId", editData.getDocId());
         redirectAttributes.addAttribute("page", page);

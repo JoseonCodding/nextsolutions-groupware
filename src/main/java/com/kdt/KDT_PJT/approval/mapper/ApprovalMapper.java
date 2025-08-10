@@ -14,19 +14,6 @@ import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 @Mapper
 public interface ApprovalMapper {
 	
-	@Select("SELECT * FROM Approval_TEST "
-			+ " WHERE docId = #{docId}")
-	ApprovalDTO view(@Param("docId") String docId);
-	
-	@Delete("DELETE FROM Approval_TEST " 
-			+ " WHERE docId = #{docId}")
-	int delete(@Param("docId") String docId);
-	
-	@Update("UPDATE Approval_TEST "
-			+ " SET docType=#{docType}, title=#{title}, content=#{content} "
-			+ " WHERE docId=#{docId}")
-	int edit(ApprovalDTO dto);
-	
 	@Update("UPDATE Approval_TEST SET status=#{status} WHERE docId=#{docId}")
 	int updateStatus(@Param("docId") String docId, @Param("status") String status);
 	
@@ -59,7 +46,7 @@ public interface ApprovalMapper {
 	    "     l.docId AS docId,",
 	    "     l.docType AS docType,",
 	    "     l.create_reason AS title,",
-	    "     NULL AS content,",
+	    "     l.used_reason AS content,",
 	    "     l.state_type AS status,",
 	    "     e.deptName AS deptName,",
 	    "     e.emp_nm AS writer,",
@@ -78,21 +65,21 @@ public interface ApprovalMapper {
 	    "   UNION ALL",
 	    "",
 	    "   SELECT",
-	    "     t.docId AS docId,",
-	    "     t.docType AS docType,",
-	    "     t.PJT_NM AS title,",
-	    "     NULL AS content,",
-	    "     t.PJT_STTS_CD AS status,",
+	    "     p.docId AS docId,",
+	    "     p.docType AS docType,",
+	    "     p.PJT_NM AS title,",
+	    "     p.content AS content,",
+	    "     p.PJT_STTS_CD AS status,",
 	    "     '프로젝트부' AS deptName,",
 	    "     '박길동' AS writer,",
-	    "     t.FRST_REG_DT AS createdAt",
-	    "   FROM TB_PJT_BASC t",
+	    "     p.FRST_REG_DT AS createdAt",
+	    "   FROM TB_PJT_BASC p",
 	    "   <where>",
 	    "     <if test='type != null and type != \"\"'>",
-	    "       t.docType = #{type}",
+	    "       p.docType = #{type}",
 	    "     </if>",
 	    "     <if test='status != null and status != \"\"'>",
-	    "       AND t.PJT_STTS_CD = #{status}",
+	    "       AND p.PJT_STTS_CD = #{status}",
 	    "     </if>",
 	    "   </where>",
 	    "",
@@ -134,14 +121,14 @@ public interface ApprovalMapper {
 		    + "     </if> "
 		    + "   </where>"
 		    + "  UNION ALL"
-		    + "  SELECT t.docId"
-		    + "    FROM TB_PJT_BASC t"
+		    + "  SELECT p.docId"
+		    + "    FROM TB_PJT_BASC p"
 		    + "   <where>"
 		    + "     <if test='type != null and type != \"\"'>"
-		    + "       t.docType = #{type}"
+		    + "       p.docType = #{type}"
 		    + "     </if> "
 		    + "     <if test='status != null and status != \"\"'>"
-		    + "       AND t.PJT_STTS_CD = #{status}"
+		    + "       AND p.PJT_STTS_CD = #{status}"
 		    + "     </if> "
 		    + "   </where>"
 		    + ") AS ALL_DATA"
@@ -151,5 +138,75 @@ public interface ApprovalMapper {
 		    @Param("type") String type,
 		    @Param("status") String status
 		);
+	
+	// 뷰어용 데이터 조회
+	@Select({
+	    "<script>",
+	    "SELECT * FROM (",
+	    "   SELECT ",
+	    "     b.docId AS docId,",
+	    "     b.docType AS docType,",
+	    "     b.title AS title,",
+	    "     b.content AS content,",
+	    "     b.status AS status,",
+	    "     e.deptName AS deptName,",
+	    "     e.emp_nm AS writer,",
+	    "     b.created_at AS createdAt",
+	    "   FROM board_post b",
+	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
+	    "   WHERE b.board_id = 1",
+	    "",
+	    "   UNION ALL",
+	    "",
+	    "   SELECT",
+	    "     l.docId AS docId,",
+	    "     l.docType AS docType,",
+	    "     l.create_reason AS title,",
+	    "     NULL AS content,",
+	    "     l.state_type AS status,",
+	    "     e.deptName AS deptName,",
+	    "     e.emp_nm AS writer,",
+	    "     l.create_date AS createdAt",
+	    "   FROM annual_leave l",
+	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
+	    "",
+	    "   UNION ALL",
+	    "",
+	    "   SELECT",
+	    "     t.docId AS docId,",
+	    "     t.docType AS docType,",
+	    "     t.PJT_NM AS title,",
+	    "     NULL AS content,",
+	    "     t.PJT_STTS_CD AS status,",
+	    "     '프로젝트부' AS deptName,",
+	    "     '박길동' AS writer,",
+	    "     t.FRST_REG_DT AS createdAt",
+	    "   FROM TB_PJT_BASC t",
+	    ") AS all_data",
+	    "WHERE docId = #{docId}",
+	    "</script>"
+	})
+	ApprovalDTO view(@Param("docId") String docId);
+	
+	// 결재 종류 별 삭제 메소드 3개
+	@Delete("DELETE FROM board_post WHERE docId = #{docId}")
+	int deleteNotice(@Param("docId") String docId);
+
+	@Delete("DELETE FROM annual_leave WHERE docId = #{docId}")
+	int deleteLeave(@Param("docId") String docId);
+
+	@Delete("DELETE FROM TB_PJT_BASC WHERE docId = #{docId}")
+	int deleteProject(@Param("docId") String docId);
+	
+	// 결재 종류 별 수정 메소드 3개
+	@Update("UPDATE board_post SET docType=#{docType}, title=#{title}, content=#{content} WHERE docId=#{docId}")
+	int editNotice(ApprovalDTO dto);
+
+	@Update("UPDATE annual_leave SET docType=#{docType}, create_reason=#{title}, content=#{content} WHERE docId=#{docId}")
+	int editLeave(ApprovalDTO dto);
+
+	@Update("UPDATE TB_PJT_BASC SET docType=#{docType}, PJT_NM=#{title}, content=#{content} WHERE docId=#{docId}")
+	int editProject(ApprovalDTO dto);
+
 
 }

@@ -13,19 +13,19 @@
 		<table border="">
 			<tr>
 				<td>작성자</td>
-				<td th:text="${viewData == null ? '-' : viewData.writer}"></td>
+				<td th:text="${approvalData == null ? '-' : approvalData.writer}"></td>
 			</tr>
 			<tr>
 				<td>부서</td>
-				<td th:text="${viewData == null ? '-' : viewData.deptName}"></td>
+				<td th:text="${approvalData == null ? '-' : approvalData.deptName}"></td>
 			</tr>
 			<tr>
 				<td>기안일</td>
-				<td th:text="${viewData == null ? '-' : #dates.format(viewData.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
+				<td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
 			</tr>
 			<tr>
 				<td>문서번호</td>
-				<td th:text="${viewData == null ? '-' : viewData.docId}"></td>
+				<td th:text="${approvalData == null ? '-' : approvalData.docId}"></td>
 			</tr>
 		</table>
 	
@@ -38,13 +38,13 @@
 		  </tr>
 		  <tr>
 		    <td>
-		    	<span th:text="${viewData == null ? '-' : viewData.writer}"></span>
+		    	<span th:text="${approvalData == null ? '-' : approvalData.writer}"></span>
 		    </td>
 			<td>
-			  <span th:text="${viewData == null ? '-' : (viewData.docType == '근태' ? '김근태대장' : (viewData.docType == '공지사항' ? '박공지사항' : (viewData.docType == '프로젝트' ? '정프로젝트' : '-')))}"></span>
+			  <span th:text="${approvalData == null ? '-' : (approvalData.docType == '근태' ? '김근태대장' : (approvalData.docType == '공지사항' ? '박공지사항' : (approvalData.docType == '프로젝트' ? '정프로젝트' : '-')))}"></span>
 			</td>
 		    <td>
-			  <span th:text="${viewData == null ? '-' : '김대표'}"></span>
+			  <span th:text="${approvalData == null ? '-' : '김대표'}"></span>
 			</td>
 		  </tr>
 		</table>
@@ -56,47 +56,47 @@
 		<table border="">
 			<tr>
 				<td>결재 종류</td>
-				<td th:text="${viewData == null ? '-' : viewData.docType}"></td>
+				<td th:text="${approvalData == null ? '-' : approvalData.docType}"></td>
 			</tr>
 			<tr>
 				<td>제목</td>
-				<td th:text="${viewData == null ? '-' : viewData.title}"></td>
+				<td th:text="${approvalData == null ? '존재하지 않는 문서입니다.' : approvalData.title}"></td>
 			</tr>
 		</table>
 	</div>
 
 	<!-- 뷰어 영역 : innerHTML로 렌더링 예정 -->
-	<div style="border:1px solid; margin-top: 20px; background-color: aqua;" th:text="${viewData == null ? '-' : viewData.content}">
+	<div style="border:1px solid; margin-top: 20px; background-color: aqua;" th:text="${approvalData == null ? '-' : approvalData.content}">
 	</div>
 	
-	<!-- 목록으로(viewData가 있을때) or 처음으로(viewData가 없을때) -->
-	<a th:if="${viewData != null}"
-	   th:href="@{'/approval/main'(docId=${viewData.docId}, page=${page}, type=${type}, status=${status})}">
+	<!-- 목록으로(approvalData가 있을때) or 처음으로(approvalData가 없을때) -->
+	<a th:if="${approvalData != null}"
+	   th:href="@{'/approval/main'(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status})}">
 	   목록으로
 	</a>
 	
-	<a th:unless="${viewData != null}"
+	<a th:unless="${approvalData != null}"
 	   th:href="@{/approval/main}">
 	   처음으로
 	</a>
 	
 	<!-- 수정, 삭제 버튼 영역 -->
-	<div th:if="${viewData == null ? '-' : viewData.status =='대기'}">
-		<th:block th:if="${viewData != null}">
-			<a th:href="@{/approval/edit(docId=${viewData.docId} , page=${page}, type=${type}, status=${status})}">수정</a>
+	<div th:if="${approvalData == null ? '-' : approvalData.status =='대기'}">
+		<th:block th:if="${approvalData != null}">
+			<a th:href="@{/approval/edit(docId=${approvalData.docId} , page=${page}, type=${type}, status=${status})}">수정</a>
 		</th:block>
 		
-		<th:block th:if="${viewData != null}">
-			<a th:href="@{/approval/delete(docId=${viewData.docId}, page=${page}, type=${type}, status=${status})}"
-				onclick="return confirm('삭제하면 복원할 수 없습니다.\n정말로 삭제하시겠습니까?');">삭제</a>
+		<th:block th:if="${approvalData != null}">
+			<a th:href="@{/approval/delete(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status}, docType=${approvalData.docType})}"
+   				onclick="return confirm('삭제하면 복원할 수 없습니다.\n정말로 삭제하시겠습니까?');">삭제</a>
 		</th:block>
 	</div>
 	
 	<!-- 승인, 반려 버튼 영역 -->
-	<div th:if="${viewData != null and viewData.status == '대기'}">
+	<div th:if="${approvalData != null and approvalData.status == '대기'}">
 	    <!-- 승인 버튼 -->
 	    <form th:action="@{/approval/approve}" method="post" style="display: inline;">
-	        <input type="hidden" name="docId" th:value="${viewData.docId}" />
+	        <input type="hidden" name="docId" th:value="${approvalData.docId}" />
 	        <input type="hidden" name="page" th:value="${page}" />
 	        <input type="hidden" name="type" th:value="${type}" />
 	        <input type="hidden" name="status" th:value="${status}" />
@@ -104,7 +104,7 @@
 	    </form>
 	    <!-- 반려 버튼 -->
 	    <form th:action="@{/approval/reject}" method="post" style="display: inline;">
-	        <input type="hidden" name="docId" th:value="${viewData.docId}" />
+	        <input type="hidden" name="docId" th:value="${approvalData.docId}" />
 	        <input type="hidden" name="page" th:value="${page}" />
 	        <input type="hidden" name="type" th:value="${type}" />
 	        <input type="hidden" name="status" th:value="${status}" />
