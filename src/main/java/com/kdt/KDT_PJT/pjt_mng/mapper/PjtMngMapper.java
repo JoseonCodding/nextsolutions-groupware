@@ -28,8 +28,21 @@ public interface PjtMngMapper {
 	 * // 총 프로젝트 개수 가져오기 (나중에 필요함) int getProjectCount();
 	 */
 	
+	// DB 전체 개수 조회
 	@Select("select count(*) from TB_PJT_BASC")
 	int countAll();
+	
+	// DB에서 PJT_STTS_CD가 '진행중'인 개수 조회
+	@Select("select count(*) from TB_PJT_BASC WHERE PJT_STTS_CD = '진행중'")
+	int countProgress();
+	
+	// DB에서 PJT_STTS_CD가 '완료'인 개수 조회
+	@Select("select count(*) from TB_PJT_BASC WHERE PJT_STTS_CD = '완료'")
+	int countComplete();
+	
+	// DB에서 PJT_STTS_CD가 '대기'인 개수 조회
+	@Select("select count(*) from TB_PJT_BASC WHERE PJT_STTS_CD = '대기'")
+	int countPending();
 	
 	
 }

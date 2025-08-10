@@ -42,7 +42,7 @@
     text-align: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
     <div style="font-size: 14px; color: #0d47a1;">총 프로젝트 </div>
-    <div style="font-size: 22px; font-weight: bold; color: #0d47a1;" th:text="${totalCount}">0</div>
+    <div style="font-size: 22px; font-weight: bold; color: #0d47a1;" th:text="${totalCount != null ? totalCount : 0}">0</div>
   </div>
 
   <!-- 내 참여 프로젝트 -->
@@ -55,7 +55,7 @@
     text-align: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
     <div style="font-size: 14px; color: #6a1b9a;">내 참여 프로젝트</div>
-    <div style="font-size: 22px; font-weight: bold; color: #6a1b9a;" th:text="${myProjectCount}">0</div>
+    <div style="font-size: 22px; font-weight: bold; color: #6a1b9a;" th:text="${myProjectCount}"></div>
   </div>
 
   <!-- 진행중 -->
@@ -68,7 +68,7 @@
     text-align: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
     <div style="font-size: 14px; color: #f57f17;">진행중인 프로젝트</div>
-    <div style="font-size: 22px; font-weight: bold; color: #f57f17;" th:text="${inProgressCount}">0</div>
+    <div style="font-size: 22px; font-weight: bold; color: #f57f17;" th:text="${progressCount != null ? progressCount : 0}"></div>
   </div>
 
   <!-- 완료 -->
@@ -81,7 +81,7 @@
     text-align: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
     <div style="font-size: 14px; color: #1b5e20;">완료된 프로젝트 </div>
-    <div style="font-size: 22px; font-weight: bold; color: #1b5e20;" th:text="${completedCount}">0</div>
+    <div style="font-size: 22px; font-weight: bold; color: #1b5e20;" th:text="${completeCount != null ? completeCount : 0}"></div>
   </div>
 
   <!-- 대기 -->
@@ -94,7 +94,7 @@
     text-align: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
     <div style="font-size: 14px; color: #b71c1c;">대기중인 프로젝트</div>
-    <div style="font-size: 22px; font-weight: bold; color: #b71c1c;" th:text="${delayedCount}">0</div>
+    <div style="font-size: 22px; font-weight: bold; color: #b71c1c;" th:text="${pendingCount != null ? pendingCount : 0}"></div>
   </div>
 
 </div>

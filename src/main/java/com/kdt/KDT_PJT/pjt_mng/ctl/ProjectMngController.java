@@ -89,9 +89,21 @@ public class ProjectMngController {
     	    model.addAttribute("pjtList", list.getList());
     	}
        
-       // 총 개수 가져오기
-       int totalCount = projectMngService.getTotalProjectCount();
+       // DB 전체 개수 조회
+       int totalCount = projectMngService.getTotalCount();
        model.addAttribute("totalCount", totalCount);
+       
+       // DB에서 PJT_STTS_CD가 '진행중'인 개수 조회
+       int progressCount = projectMngService.getProgressCount();
+       model.addAttribute("progressCount", progressCount);
+       
+       // DB에서 PJT_STTS_CD가 '완료'인 개수 조회
+       int completeCount = projectMngService.getCompleteCount();
+       model.addAttribute("completeCount", completeCount);
+       
+       // DB에서 PJT_STTS_CD가 '대기'인 개수 조회
+       int pendingCount = projectMngService.getPendingCount();
+       model.addAttribute("pendingCount", pendingCount);
        
        model.addAttribute("pjtList", list.getList());   // 현재 페이지 데이터
        model.addAttribute("pageInfo", list);             // 페이징 정보      

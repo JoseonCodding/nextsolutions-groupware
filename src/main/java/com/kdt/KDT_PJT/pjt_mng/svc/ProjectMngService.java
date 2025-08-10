@@ -98,8 +98,23 @@ public class ProjectMngService  {
 	}
 	
 	// DB 전체 개수 조회
-	public int getTotalProjectCount() {
+	public int getTotalCount() {
 	    return pjtMngMapper.countAll();
+	}
+	
+	// DB에서 PJT_STTS_CD가 '진행중'인 개수 조회
+	public int getProgressCount() {
+	    return pjtMngMapper.countProgress();
+	}
+	
+	// DB에서 PJT_STTS_CD가 '진행중'인 개수 조회
+	public int getCompleteCount() {
+		return pjtMngMapper.countComplete();
+	}
+	
+	// DB에서 PJT_STTS_CD가 '대기'인 개수 조회
+	public int getPendingCount() {
+		return pjtMngMapper.countPending();
 	}
 
 
