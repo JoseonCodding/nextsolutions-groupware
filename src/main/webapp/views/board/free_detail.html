@@ -124,9 +124,13 @@
        th:href="@{'/board/free/modify'(postId=${board.postId})}">수정</a>
 
     <a class="btn btn-danger"
-       th:if="${session.loginUser != null and #strings.equals(board.employeeId, session.loginUser.employeeId)}"
-       th:href="@{'/board/free/delete'(postId=${board.postId})}"
-       th:onclick="|return confirm('게시글을 삭제하시겠습니까?');|">삭제</a>
+   th:if="${session.loginUser != null and (
+             #strings.equals(board.employeeId, session.loginUser.employeeId)
+             or #strings.equals(session.loginUser.employeeId, '20250002')
+           )}"
+   th:href="@{'/board/free/delete'(postId=${board.postId})}"
+   th:onclick="|return confirm('게시글을 삭제하시겠습니까?');|">삭제</a>
+
   </div>
 </div>
 </body>
