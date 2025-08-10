@@ -7,13 +7,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
+import com.kdt.KDT_PJT.boards.model.BoardDTO;
 
 import jakarta.annotation.Resource;
 
@@ -41,7 +41,7 @@ public class ApprovalController {
     	
 		int size = 10;	// 페이지 당 표시될 게시글 개수
     	int offset = (page - 1) * size;	// 페이지 마다 표시되는 게시글의 시작점 (ex.1페이지:0~9번, 2페이지:10~19번...)
-    	int totalCount = approvalMapper.countAll(type, status);	// 게시글 DB 전체 개수
+    	int totalCount = approvalMapper.noticeCountAll(type, status);	// 게시글 DB 전체 개수
     	int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
     	int blockSize = 5;	// 페이지네이션에 나타낼 페이지 개수
     	int startPage, endPage;
@@ -56,9 +56,9 @@ public class ApprovalController {
     	// 필터에 해당하는 게시글이 없는 경우 endPage=0이 되는 상황 방지 
     	if (totalPages == 0) {endPage = 1;}
     	
-    	List<ApprovalDTO> approvalData = approvalMapper.pageData(offset, size,type, status); // 현재 페이지 게시글 DB 정보 (offset부터 size까지)
+    	List<BoardDTO> noticeData = approvalMapper.noticeData(offset, size, type, status); // 공지사항 DB 정보 (offset부터 size까지)
     	
-    	model.addAttribute("approvalData", approvalData);
+    	model.addAttribute("noticeData", noticeData);
     	
     	model.addAttribute("page", page);
     	model.addAttribute("totalPages", totalPages);
@@ -81,7 +81,7 @@ public class ApprovalController {
 			            @RequestParam(name = "type", required = false) String type,
 			            @RequestParam(name = "status", required = false) String status) {
     	
-    	ApprovalDTO viewData = approvalMapper.viewById(docId);
+    	ApprovalDTO viewData = approvalMapper.view(docId);
     
     	model.addAttribute("viewData", viewData);
 
@@ -101,9 +101,9 @@ public class ApprovalController {
 				        @RequestParam(name = "type", required = false) String type,
 				        @RequestParam(name = "status", required = false) String status) {
     	
-        approvalMapper.deleteById(docId);
+        approvalMapper.delete(docId);
         
-        int totalCount = approvalMapper.countAll(type, status);	// 게시글 DB 전체 개수 (필터기능 반영됨)
+        int totalCount = approvalMapper.noticeCountAll(type, status);	// 게시글 DB 전체 개수 (필터기능 반영됨)
         int size = 10;	// 페이지 당 표시될 게시글 수
         int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
         
@@ -125,7 +125,7 @@ public class ApprovalController {
 				        @RequestParam(name = "type", required = false) String type,
 				        @RequestParam(name = "status", required = false) String status) {
     	
-    	ApprovalDTO editData = approvalMapper.viewById(docId);
+    	ApprovalDTO editData = approvalMapper.view(docId);
     	
     	model.addAttribute("editData", editData);
     	
@@ -145,7 +145,7 @@ public class ApprovalController {
 					@RequestParam(name = "type", required = false) String type,
 					@RequestParam(name = "status", required = false) String status) {
     	
-    	approvalMapper.updateById(editData);
+    	approvalMapper.edit(editData);
         
     	redirectAttributes.addAttribute("docId", editData.getDocId());
         redirectAttributes.addAttribute("page", page);
@@ -154,5 +154,42 @@ public class ApprovalController {
         
         return "redirect:/approval/viewer";	// 파라미터가 쿼리스트링에 자동으로 붙음
     }
+    
+    @PostMapping("/approve")
+    public String approvalApprove(
+        RedirectAttributes redirectAttributes,
+        @RequestParam("docId") String docId,
+        @RequestParam(name = "page", defaultValue = "1") int page,
+        @RequestParam(name = "type", required = false) String type,
+        @RequestParam(name = "status", required = false) String status) {
+
+        approvalMapper.updateStatus(docId, "완료");
+
+        redirectAttributes.addAttribute("docId", docId);
+        redirectAttributes.addAttribute("page", page);
+        redirectAttributes.addAttribute("type", type);
+        redirectAttributes.addAttribute("status", status);
+
+        return "redirect:/approval/viewer";
+    }
+
+    @PostMapping("/reject")
+    public String approvalReject(
+        RedirectAttributes redirectAttributes,
+        @RequestParam("docId") String docId,
+        @RequestParam(name = "page", defaultValue = "1") int page,
+        @RequestParam(name = "type", required = false) String type,
+        @RequestParam(name = "status", required = false) String status) {
+
+        approvalMapper.updateStatus(docId, "반려");
+
+        redirectAttributes.addAttribute("docId", docId);
+        redirectAttributes.addAttribute("page", page);
+        redirectAttributes.addAttribute("type", type);
+        redirectAttributes.addAttribute("status", status);
+
+        return "redirect:/approval/viewer";
+    }
+
 
 }

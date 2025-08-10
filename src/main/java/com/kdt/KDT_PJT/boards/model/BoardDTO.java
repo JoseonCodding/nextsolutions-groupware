@@ -20,6 +20,12 @@ public class BoardDTO {
     Integer viewCount;   // 조회수
     Integer likeCount;   // 좋아요 수
     boolean isDeleted; // 삭제 여부
+    
+    // 전자결재를 위해 추가로 작성됨
+    String docType;	// 문서 종류 (ex:프로젝트,공지사항,근태)
+    String empNm;	// 사원명 (employee 테이블에서 조인해옴)
+    String deptName;	// 부서명 (employee 테이블에서 조인해옴)
+    String status;	// 결재 상태 (ex:대기, 진행중, 완료, 반려)
 
     // 줄바꿈 <br/> 처리용 (뷰에 사용)
     public String getContentBr() {
