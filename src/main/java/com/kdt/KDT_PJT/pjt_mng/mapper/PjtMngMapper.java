@@ -26,5 +26,9 @@ public interface PjtMngMapper {
 	 * 
 	 * // 총 프로젝트 개수 가져오기 (나중에 필요함) int getProjectCount();
 	 */
+	
+	//테스트
+	int getTotalProjectCount();
+	
 }
 

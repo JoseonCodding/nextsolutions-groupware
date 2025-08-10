@@ -26,7 +26,6 @@ public class ProjectMngService  {
     @Autowired
     private PjtMngMapper pjtMngMapper;
 
-    
 	// log 사용을 위함
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -97,10 +96,6 @@ public class ProjectMngService  {
        return new PageInfo<>(list);
 
 	}
-    
-    
-
-    
-
+	
 
 }

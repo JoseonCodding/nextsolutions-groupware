@@ -80,7 +80,8 @@
            ATCH_FILE_SN,
            ORG_FILE_NM,
            PJT_BGNG_DT,
-           PJT_END_DT
+           PJT_END_DT,
+           content
     FROM team2_db.TB_PJT_BASC
     WHERE PJT_SN = #{pjtSn}
   </select>
@@ -176,24 +177,5 @@
   LIMIT #{limit} OFFSET #{offset}
 </select>
 
-<!-- 전체 프로젝트 수 -->
-<select id="getTotalProjectCount" resultType="int">
-    SELECT COUNT(*) FROM TB_PJT_BASC
-</select>
-
-<!-- 진행중 프로젝트 수 -->
-<select id="getInProgressCount" resultType="int">
-    SELECT COUNT(*) FROM TB_PJT_BASC WHERE PJT_STTS_CD = '진행중'
-</select>
-
-<!-- 완료된 프로젝트 수 -->
-<select id="getCompletedCount" resultType="int">
-    SELECT COUNT(*) FROM TB_PJT_BASC WHERE PJT_STTS_CD = '완료'
-</select>
-
-<!-- 대기중 프로젝트 수 -->
-<select id="getDelayedCount" resultType="int">
-    SELECT COUNT(*) FROM TB_PJT_BASC WHERE PJT_STTS_CD = '대기'
-</select>
 
 </mapper>
