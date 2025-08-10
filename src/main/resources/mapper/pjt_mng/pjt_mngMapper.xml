@@ -32,6 +32,7 @@
         PJT_BGNG_DT = #{PJT_BGNG_DT},     <!-- 시작일 -->
         PJT_END_DT = #{PJT_END_DT},       <!-- 종료일 -->
         PJT_STTS_CD = #{PJT_STTS_CD},     <!-- 상태 코드 -->
+        CONTENT = #{CONTENT},				<!-- 내용 -->
         LAST_MDFCN_DT = #{LAST_MDFCN_DT}, <!-- 최종 수정일 -->
         LAST_MDFR_ID = #{LAST_MDFR_ID}    <!-- 최종 수정자 ID -->
     WHERE PJT_SN = #{PJT_SN}              <!-- 프로젝트 고유번호 조건 -->
@@ -91,15 +92,17 @@
       PJT_END_DT,
       PJT_STTS_CD,
       FRST_RGTR_ID,
-      FRST_REG_DT
+      FRST_REG_DT,
+      docType
     ) VALUES (
       #{PJT_NM},             <!-- 프로젝트명 -->
       #{EMP_NM},             <!-- 담당자명 -->
       #{PJT_BGNG_DT},        <!-- 시작일 -->
       #{PJT_END_DT},         <!-- 종료일 -->
-      '01',                  <!-- 상태코드: 진행중 기본값 -->
+      '대기',                  <!-- 상태코드: 기본값 '대기' -->
       'SYSTEM',              <!-- 최초등록자: 시스템 -->
-      #{FRST_REG_DT}         <!-- 최초등록일 -->
+      #{FRST_REG_DT},         <!-- 최초등록일 -->
+      '프로젝트'				<!-- 결재 종류: 기본값 '프로젝트' -->
     )
   </insert>
 

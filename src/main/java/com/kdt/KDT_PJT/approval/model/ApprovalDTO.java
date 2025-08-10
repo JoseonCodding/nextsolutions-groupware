@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class ApprovalDTO {
 
-	String docId, docType, title, content, department, creatorId, status, writer;
+	String docId, docType, title, content, deptName, status, writer, empNm;
 	Date createdAt;
 	
 }

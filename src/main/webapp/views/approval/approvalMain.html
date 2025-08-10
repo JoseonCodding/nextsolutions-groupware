@@ -13,7 +13,7 @@
 				<select name="type" class="filter-selector">
 				    <option value="" th:selected="${type == null or type == ''}">결재 종류</option>
 				    <option value="프로젝트" th:selected="${type == '프로젝트'}">프로젝트</option>
-				    <option value="근태" th:selected="${type == '근태'}">근태</option>
+				    <option value="연차" th:selected="${type == '연차'}">연차</option>
 				    <option value="공지사항" th:selected="${type == '공지사항'}">공지사항</option>
 				</select>
 
@@ -49,18 +49,18 @@
             
             <tbody>
             
-            	<tr th:if="${#lists.isEmpty(noticeData)}">
+            	<tr th:if="${#lists.isEmpty(approvalData)}">
             		<td colspan="6" class="list-empty">필터 조건에 해당하는 게시글이 없습니다.</td>
             	</tr>
             	
-                <tr th:each="dto : ${noticeData}">
-                	<td th:text="${#dates.format(dto.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
+                <tr th:each="dto : ${approvalData}">
+                	<td th:text="${#dates.format(dto.createdAt, 'yyyy/M/d HH:mm:ss')}"></td>
             		<td th:text="${dto.docType}"></td>
 				    <td class="title">
-				    	<a th:href="@{/approval/viewer(postId=${dto.postId}, page=${page}, type=${type}, status=${status})}" th:text="${dto.title}"></a>
+				    	<a th:href="@{/approval/viewer(docId=${dto.docId}, page=${page}, type=${type}, status=${status})}" th:text="${dto.title}"></a>
 				    </td>
 				    <td th:text="${dto.deptName}"></td>
-				    <td th:text="${dto.empNm}"></td>
+				    <td th:text="${dto.writer}"></td>
 				    <td th:text="${dto.status}"></td>
 				</tr>
             </tbody>

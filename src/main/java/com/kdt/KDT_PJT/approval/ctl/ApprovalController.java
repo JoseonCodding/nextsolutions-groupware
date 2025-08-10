@@ -1,5 +1,7 @@
 package com.kdt.KDT_PJT.approval.ctl;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -13,7 +15,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
-import com.kdt.KDT_PJT.boards.model.BoardDTO;
 
 import jakarta.annotation.Resource;
 
@@ -38,7 +39,7 @@ public class ApprovalController {
 						@RequestParam(name = "page", defaultValue = "1") int page, // 현재 페이지 번호
 						@RequestParam(name = "type", required = false) String type,
 						@RequestParam(name = "status", required = false) String status) {
-    	
+		
 		int size = 10;	// 페이지 당 표시될 게시글 개수
     	int offset = (page - 1) * size;	// 페이지 마다 표시되는 게시글의 시작점 (ex.1페이지:0~9번, 2페이지:10~19번...)
     	int totalCount = approvalMapper.noticeCountAll(type, status);	// 게시글 DB 전체 개수
@@ -56,13 +57,22 @@ public class ApprovalController {
     	// 필터에 해당하는 게시글이 없는 경우 endPage=0이 되는 상황 방지 
     	if (totalPages == 0) {endPage = 1;}
     	
-    	List<BoardDTO> noticeData = approvalMapper.noticeData(offset, size, type, status); // 공지사항 DB 정보 (offset부터 size까지)
-    	
-    	model.addAttribute("noticeData", noticeData);
+    	List<ApprovalDTO> noticeData = approvalMapper.noticeData(offset, size, type, status);	// 공지사항 DB
+    	List<ApprovalDTO> leaveData = approvalMapper.leaveData(offset, size, type, status);		// 연차 DB
+    	List<ApprovalDTO> projectData = approvalMapper.projectData(offset, size, type, status);		// 프로젝트 DB
+
+    	// 공지사항 DB + 연차 DB 합치기
+    	List<ApprovalDTO> approvalData = new ArrayList<>();
+    	approvalData.addAll(noticeData);
+    	approvalData.addAll(leaveData);
+    	approvalData.addAll(projectData);
+
+    	approvalData.sort(Comparator.comparing(ApprovalDTO::getCreatedAt).reversed());	// 생성일 내림차순 정렬(옵션)
+
+    	model.addAttribute("approvalData", approvalData);
     	
     	model.addAttribute("page", page);
     	model.addAttribute("totalPages", totalPages);
-    	model.addAttribute("size", size);
     	model.addAttribute("startPage", startPage);
     	model.addAttribute("endPage", endPage);
     	

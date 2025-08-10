@@ -210,7 +210,7 @@ public class ProjectMngController {
 	        @RequestParam(value = "pjtEndDt", required = false) 
 	        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
 	        @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd,
-	        @RequestParam(value = "CONTENT", required = false) String content,
+	        @RequestParam(value = "CONTENT", required = false) String CONTENT,
 	        @RequestParam(value = "approvers", required = false) String approvers,
 	        @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile
 
@@ -224,7 +224,7 @@ public class ProjectMngController {
 	    params.put("PJT_BGNG_DT", pjtBgngDt);
 	    params.put("PJT_END_DT", pjtEndDt);
 	    params.put("PJT_STTS_CD", pjtSttsCd);
-	    params.put("CONTENT", content);
+	    params.put("CONTENT", CONTENT);
 	    params.put("APPROVERS", approvers);
 
 
