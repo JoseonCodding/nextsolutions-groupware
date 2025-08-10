@@ -97,5 +97,10 @@ public class ProjectMngService  {
 
 	}
 	
+	// DB 전체 개수 조회
+	public int getTotalProjectCount() {
+	    return pjtMngMapper.countAll();
+	}
+
 
 }

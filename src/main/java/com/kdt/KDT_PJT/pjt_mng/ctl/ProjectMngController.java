@@ -89,6 +89,10 @@ public class ProjectMngController {
     	    model.addAttribute("pjtList", list.getList());
     	}
        
+       // 총 개수 가져오기
+       int totalCount = projectMngService.getTotalProjectCount();
+       model.addAttribute("totalCount", totalCount);
+       
        model.addAttribute("pjtList", list.getList());   // 현재 페이지 데이터
        model.addAttribute("pageInfo", list);             // 페이징 정보      
        

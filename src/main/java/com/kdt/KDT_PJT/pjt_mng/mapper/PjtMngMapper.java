@@ -2,6 +2,7 @@ package com.kdt.KDT_PJT.pjt_mng.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
@@ -27,8 +28,9 @@ public interface PjtMngMapper {
 	 * // 총 프로젝트 개수 가져오기 (나중에 필요함) int getProjectCount();
 	 */
 	
-	//테스트
-	int getTotalProjectCount();
+	@Select("select count(*) from TB_PJT_BASC")
+	int countAll();
+	
 	
 }
 
