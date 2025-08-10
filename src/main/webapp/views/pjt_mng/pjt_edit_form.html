@@ -98,7 +98,10 @@ input, select {
 
 	<form method="post" action="/pjtMng/updatePjtProc" enctype="multipart/form-data">
 
-		<input type="hidden" name="pjtSn" th:value="${pjt.PJT_SN}" />
+		<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN']}" />
+		<input type="hidden" name="oldFileName" th:value="${pjt['ATCH_FILE_SN']}">
+		<input type="hidden" name="oldOrgFileName" th:value="${pjt['ORG_FILE_NM']}">
+		
 
 		<table>
 			<tr>
@@ -120,21 +123,22 @@ input, select {
 
 <tr>
   <th>시작일</th>
-  <td><input type="date" name="pjtBgngDt" th:value="${pjt.PJT_BGNG_DT}" /></td>
+  <td><input type="date" name="pjtBgngDt" th:value="${pjt['PJT_BGNG_DT']}" /></td>
 </tr>
 
 <tr>
   <th>종료일</th>
-  <td><input type="date" name="pjtEndDt" th:value="${pjt.PJT_END_DT}" /></td>
+  <td><input type="date" name="pjtEndDt" th:value="${pjt['PJT_END_DT']}" /></td>
 </tr>
 
 <tr>
   <th>상태</th>
   <td>
     <select name="pjtSttsCd">
-      <option value="01" th:selected="${pjt.PJT_STTS_CD == '01'}">진행중</option>
-      <option value="02" th:selected="${pjt.PJT_STTS_CD == '02'}">완료</option>
-      <option value="03" th:selected="${pjt.PJT_STTS_CD == '03'}">보류</option>
+      <option value="대기" th:selected="${pjt.PJT_STTS_CD == '대기'}">대기</option>
+      <option value="진행중" th:selected="${pjt.PJT_STTS_CD == '진행중'}">진행중</option>
+      <option value="완료" th:selected="${pjt.PJT_STTS_CD == '완료'}">완료</option>
+      <option value="반려" th:selected="${pjt.PJT_STTS_CD == '반려'}">반려</option>
     </select>
   </td>
 </tr>
@@ -168,6 +172,7 @@ input, select {
 			</tr>
 		</table>
 		<input type="hidden" name="approvers" id="approversInput" />
+		
 		<div class="button-row">
 			<button type="submit" class="save-btn">저장</button>
 			<button type="button" class="back-btn" onclick="history.back()">←
@@ -254,10 +259,6 @@ input, select {
 			]
 		});
 	});
-	
-	var initContent = /*[[${#strings.escapeJavaScript(pjt['content'] ?: '')}]]*/ '';
-	$('#content').summernote('code', initContent);
-
 </script>
 </body>
 </html>

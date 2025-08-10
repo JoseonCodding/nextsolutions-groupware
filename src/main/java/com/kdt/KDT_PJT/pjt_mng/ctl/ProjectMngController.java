@@ -1,16 +1,25 @@
 package com.kdt.KDT_PJT.pjt_mng.ctl;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -228,35 +237,35 @@ public class ProjectMngController {
 	        @RequestParam("pjtSn") String pjtSn,
 	        @RequestParam("pjtNm") String pjtNm,
 	        @RequestParam(value = "empNm", required = false) String empNm,
-	        @RequestParam(value = "pjtBgngDt", required = false) 
+	        @RequestParam(value = "pjtBgngDt", required = false)
 	        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
-	        @RequestParam(value = "pjtEndDt", required = false) 
+	        @RequestParam(value = "pjtEndDt", required = false)
 	        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
 	        @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd,
 	        @RequestParam(value = "content", required = false) String content,
 	        @RequestParam(value = "approvers", required = false) String approvers,
-	        @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile
-
+	        @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile,
+	        @RequestParam(value = "oldFileName", required = false) String oldFileName,
+	        @RequestParam(value = "oldOrgFileName", required = false) String oldOrgFileName
 	) {
 
 	    Safelist customSafelist = Safelist.basicWithImages()
-	    	    .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
-	    	    .addAttributes("table", "style", "border", "cellpadding", "cellspacing")
-	    	    .addAttributes("th", "style", "colspan", "rowspan")
-	    	    .addAttributes("td", "style", "colspan", "rowspan")
-	    	    .addAttributes("tr", "style")
-	    	    .addAttributes("thead", "style")
-	    	    .addAttributes("tbody", "style")
-	    	    .addAttributes("tfoot", "style")
-	    	    .addAttributes("col", "style", "span", "width")
-	    	    .addAttributes("colgroup", "span", "width", "style")
-	    	    .addAttributes("caption", "style")
-	    	    .addAttributes("img", "style", "src", "alt", "width", "height")
-	    	    .addProtocols("img", "src", "data", "http", "https");
+	            .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
+	            .addAttributes("table", "style", "border", "cellpadding", "cellspacing")
+	            .addAttributes("th", "style", "colspan", "rowspan")
+	            .addAttributes("td", "style", "colspan", "rowspan")
+	            .addAttributes("tr", "style")
+	            .addAttributes("thead", "style")
+	            .addAttributes("tbody", "style")
+	            .addAttributes("tfoot", "style")
+	            .addAttributes("col", "style", "span", "width")
+	            .addAttributes("colgroup", "span", "width", "style")
+	            .addAttributes("caption", "style")
+	            .addAttributes("img", "style", "src", "alt", "width", "height")
+	            .addProtocols("img", "src", "data", "http", "https");
 
-		String safeContent = Jsoup.clean(content, customSafelist);
+	    String safeContent = Jsoup.clean(content, customSafelist);
 
-		
 	    log.info("updatePjtProc Called >>> " + pjtSn);
 
 	    CmmnMap params = new CmmnMap();
@@ -269,18 +278,73 @@ public class ProjectMngController {
 	    params.put("content", safeContent);
 	    params.put("APPROVERS", approvers);
 
+	    String uploadDir = "C:/upload/";
+	    String newFileName = oldFileName != null ? oldFileName : "";
+	    String newOrgFileName = oldOrgFileName != null ? oldOrgFileName : "";
 
+	    if (uploadFile != null && !uploadFile.isEmpty()) {
+	        String extension = uploadFile.getOriginalFilename().substring(uploadFile.getOriginalFilename().lastIndexOf("."));
+	        newFileName = java.util.UUID.randomUUID().toString() + extension;
+	        newOrgFileName = uploadFile.getOriginalFilename();
+
+	        File dir = new File(uploadDir);
+	        if (!dir.exists()) dir.mkdirs();
+
+	        File dest = new File(uploadDir + newFileName);
+
+	        try {
+	            uploadFile.transferTo(dest);
+	            // 기존 파일 삭제
+	            if (oldFileName != null && !oldFileName.isEmpty()) {
+	                File prevFile = new File(uploadDir + oldFileName);
+	                if (prevFile.exists()) prevFile.delete();
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    params.put("ATCH_FILE_SN", newFileName);
+	    params.put("ORG_FILE_NM", newOrgFileName);
 
 	    // 마지막 수정일시 업데이트
 	    LocalDateTime now = LocalDateTime.now();
 	    String formatted = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
 	    params.put("LAST_MDFCN_DT", formatted);
-	    params.put("LAST_MDFR_ID", "SYSTEM"); // 임시로 SYSTEM. 나중에 세션 사용자 ID로 대체 가능
+	    params.put("LAST_MDFR_ID", "SYSTEM"); // 임시
 
-	    projectMngService.updatePjtProc(params);  // service에서 update 메서드 필요!
+	    projectMngService.updatePjtProc(params);
 
 	    return "redirect:/pjtMng/getPjtList";
 	}
+	
+	@GetMapping("/downloadFile")
+	public ResponseEntity<Resource> downloadFile(
+	        @RequestParam("fileName") String fileName,        // (uuid명)
+	        @RequestParam("orgName") String orgName           // (원본명)
+	) throws UnsupportedEncodingException {
+	    String path = "C:/upload/" + fileName;
+	    Resource resource = new FileSystemResource(path);
+
+	    if (!resource.exists()) {
+	        return ResponseEntity.notFound().build();
+	    }
+
+	    // 한글/공백 깨짐 대비
+	    String encodedOrgName = URLEncoder.encode(orgName, "UTF-8").replaceAll("\\+", " ");
+
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedOrgName + "\"");
+	    headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+	    headers.add("Content-Transfer-Encoding", "binary");
+
+	    return ResponseEntity.ok()
+	            .headers(headers)
+	            .body(resource);
+	}
+
+
+
 	
 	
 //	@PostMapping("/pjtMng/updatePjtProc")
@@ -326,15 +390,15 @@ public class ProjectMngController {
 	
 	@PostMapping("/savePjtProc")
 	public String savePjtProc(
-	    Model model,
-	    @RequestParam("pjtNm") String pjtNm,
-	    @RequestParam(value = "empNm", required = false) String empNm,
-	    @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
-	    @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
-	    @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd,   // ✅ 추가된 부분
-	    @RequestParam(value = "content", required = false) String content
-	) {
-
+					    Model model,
+					    @RequestParam("pjtNm") String pjtNm,
+					    @RequestParam(value = "empNm", required = false) String empNm,
+					    @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
+					    @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
+					    @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd,   // ✅ 추가된 부분
+					    @RequestParam(value = "content", required = false) String content,
+					    @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile) {
+		
 	    Safelist customSafelist = Safelist.basicWithImages()
 	    	    .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
 	    	    .addAttributes("table", "style", "border", "cellpadding", "cellspacing")
@@ -362,13 +426,34 @@ public class ProjectMngController {
 		log.info("pjtEndDt " + pjtEndDt);
 		
 		
+		// 파일 업로드
+		if (uploadFile != null && !uploadFile.isEmpty()) {
+		    String originalFileName = uploadFile.getOriginalFilename();
+		    String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+		    String uuidFileName = UUID.randomUUID().toString() + extension;
+
+		    String uploadDir = "C:/upload/";
+		    File dir = new File(uploadDir);
+		    if (!dir.exists()) dir.mkdirs();
+
+		    File dest = new File(uploadDir + uuidFileName);
+
+		    try {
+		        uploadFile.transferTo(dest);
+		        params.put("ATCH_FILE_SN", uuidFileName);
+		        params.put("ORG_FILE_NM", originalFileName);
+		    } catch (IllegalStateException | IOException e) {
+		        e.printStackTrace();
+		    }
+		}
+
+		
 		params.put("PJT_NM", pjtNm);
 		params.put("EMP_NM", empNm);
 		params.put("PJT_BGNG_DT", pjtBgngDt);
 		params.put("PJT_END_DT", pjtEndDt);
 		params.put("PJT_STTS_CD", pjtSttsCd);
 		params.put("content", safeContent);
-
 		
 		LocalDateTime now = LocalDateTime.now(); // 현재 시간 가져오기
 		String formatted = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")); // 14자리 문자열로 포맷

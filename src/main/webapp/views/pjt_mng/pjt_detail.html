@@ -75,6 +75,20 @@
     <tr><th>등록자</th><td th:text="${pjt['FRST_RGTR_ID']}"></td></tr>
     <tr><th>등록일</th><td th:text="${pjt['FRST_REG_DT']}"></td></tr>
     <tr><th>내용</th><td th:utext="${pjt['content']}"></td></tr>
+	<tr>
+	<tr>
+	  <th>첨부파일</th>
+	  <td>
+	    <span th:if="${not #strings.isEmpty(pjt['ATCH_FILE_SN'])}">
+			<a th:href="@{'/pjtMng/downloadFile?fileName=' + ${pjt['ATCH_FILE_SN']} + '&orgName=' + ${pjt['ORG_FILE_NM']}}"
+			   th:text="${pjt['ORG_FILE_NM']}">첨부파일 다운로드</a>
+	    </span>
+	    <span th:unless="${not #strings.isEmpty(pjt['ATCH_FILE_SN'])}">
+	      첨부 없음
+	    </span>
+	  </td>
+	</tr>
+    
   </table>
 
   <button onclick="history.back()">← 목록으로 돌아가기</button>

@@ -8,6 +8,12 @@
 	<!-- 썸머노트 CSS -->
 	<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
     
+    <style>
+		.note-editor .note-editing-area .note-editable {
+		    background-color: #fff;
+		}
+	</style>
+    
 </head>
 <body>
 
@@ -70,13 +76,8 @@
 	</div>
 
 	<!-- 내용 영역 -->
-	<div th:if="${approvalData != null}">
-	    <div th:utext="${approvalData.content != null ? approvalData.content : '내용이 없습니다'}"></div>
-	</div>
-	<div th:unless="${approvalData != null}">
-	    <div>해당 데이터가 존재하지 않습니다.</div>
-	</div>
-	
+	<textarea id="content" name="content"></textarea>
+
 	<!-- 목록으로(approvalData가 있을때) or 처음으로(approvalData가 없을때) -->
 	<a th:if="${approvalData != null}"
 	   th:href="@{'/approval/main'(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status})}">
@@ -146,10 +147,6 @@
 				]
 			});
 		});
-		
-		var initContent = /*[[${approvalData != null && approvalData.content != null ? #strings.escapeJavaScript(approvalData.content) : ''}]]*/'';
-		$('#content').summernote('code', initContent);
-	
 	</script>
 </body>
 </html>
