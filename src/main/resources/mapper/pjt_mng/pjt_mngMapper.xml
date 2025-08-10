@@ -7,8 +7,7 @@
 
 
 <!-- 프로젝트 관리 Mapper -->
-<mapper namespace="com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper">
-
+<mapper namespace="com.kdt.KDT_PJT.pjt_mng.mapper.PjtMngMapper">
 
 <select id="countProjects" resultType="int">
   SELECT COUNT(*)
@@ -177,9 +176,24 @@
   LIMIT #{limit} OFFSET #{offset}
 </select>
 
-<!-- ✅ 총 프로젝트 수 세기  -->
-	<select id="getProjectCount" resultType="int">
+<!-- 전체 프로젝트 수 -->
+<select id="getTotalProjectCount" resultType="int">
     SELECT COUNT(*) FROM TB_PJT_BASC
+</select>
+
+<!-- 진행중 프로젝트 수 -->
+<select id="getInProgressCount" resultType="int">
+    SELECT COUNT(*) FROM TB_PJT_BASC WHERE PJT_STTS_CD = '진행중'
+</select>
+
+<!-- 완료된 프로젝트 수 -->
+<select id="getCompletedCount" resultType="int">
+    SELECT COUNT(*) FROM TB_PJT_BASC WHERE PJT_STTS_CD = '완료'
+</select>
+
+<!-- 대기중 프로젝트 수 -->
+<select id="getDelayedCount" resultType="int">
+    SELECT COUNT(*) FROM TB_PJT_BASC WHERE PJT_STTS_CD = '대기'
 </select>
 
 </mapper>

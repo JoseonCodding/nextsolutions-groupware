@@ -57,6 +57,16 @@ public class ProjectMngController {
 	        @RequestParam(required = false, name = "keyword") String keyword
 	        , HttpServletRequest request
 	        , Model model) {
+		
+	    // 상단 카드용 숫자 세팅
+	    int totalCount = projectMngService.getTotalProjectCount();
+	    int inProgressCount = projectMngService.getInProgressCount();
+	    int completedCount = projectMngService.getCompletedCount();
+	    int delayedCount = projectMngService.getDelayedCount();
+	    model.addAttribute("totalCount", totalCount);
+	    model.addAttribute("inProgressCount", inProgressCount);
+	    model.addAttribute("completedCount", completedCount);
+	    model.addAttribute("delayedCount", delayedCount);
 
 	    // 🔍 검색어 로그 확인 (디버깅용)
 	   System.out.println("getPjtList Called >>> keyword = " + keyword);
