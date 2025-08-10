@@ -190,10 +190,20 @@ public class ProjectMngController {
 	    String content = (String) pjtData.get("content");
 
 	    Safelist customSafelist = Safelist.basicWithImages()
-	        .addAttributes("img", "style", "src", "alt", "width", "height")
-	        .addProtocols("img", "src", "data")
-	        .addProtocols("img", "src", "http")
-	        .addProtocols("img", "src", "https");
+	    	    .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
+	    	    .addAttributes("table", "style", "border", "cellpadding", "cellspacing")
+	    	    .addAttributes("th", "style", "colspan", "rowspan")
+	    	    .addAttributes("td", "style", "colspan", "rowspan")
+	    	    .addAttributes("tr", "style")
+	    	    .addAttributes("thead", "style")
+	    	    .addAttributes("tbody", "style")
+	    	    .addAttributes("tfoot", "style")
+	    	    .addAttributes("col", "style", "span", "width")
+	    	    .addAttributes("colgroup", "span", "width", "style")
+	    	    .addAttributes("caption", "style")
+	    	    .addAttributes("img", "style", "src", "alt", "width", "height")
+	    	    .addProtocols("img", "src", "data", "http", "https");
+
 
 	    String safeContent = Jsoup.clean(content, customSafelist);
 	    pjtData.put("content", safeContent);
@@ -229,11 +239,20 @@ public class ProjectMngController {
 
 	) {
 
-		Safelist customSafelist = Safelist.basicWithImages()
-			    .addAttributes("img", "style", "src", "alt", "width", "height")
-			    .addProtocols("img", "src", "data")
-			    .addProtocols("img", "src", "http")
-			    .addProtocols("img", "src", "https");
+	    Safelist customSafelist = Safelist.basicWithImages()
+	    	    .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
+	    	    .addAttributes("table", "style", "border", "cellpadding", "cellspacing")
+	    	    .addAttributes("th", "style", "colspan", "rowspan")
+	    	    .addAttributes("td", "style", "colspan", "rowspan")
+	    	    .addAttributes("tr", "style")
+	    	    .addAttributes("thead", "style")
+	    	    .addAttributes("tbody", "style")
+	    	    .addAttributes("tfoot", "style")
+	    	    .addAttributes("col", "style", "span", "width")
+	    	    .addAttributes("colgroup", "span", "width", "style")
+	    	    .addAttributes("caption", "style")
+	    	    .addAttributes("img", "style", "src", "alt", "width", "height")
+	    	    .addProtocols("img", "src", "data", "http", "https");
 
 		String safeContent = Jsoup.clean(content, customSafelist);
 
@@ -316,11 +335,20 @@ public class ProjectMngController {
 	    @RequestParam(value = "content", required = false) String content
 	) {
 
-		Safelist customSafelist = Safelist.basicWithImages()
-			    .addAttributes("img", "style", "src", "alt", "width", "height")
-			    .addProtocols("img", "src", "data")
-			    .addProtocols("img", "src", "http")
-			    .addProtocols("img", "src", "https");
+	    Safelist customSafelist = Safelist.basicWithImages()
+	    	    .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
+	    	    .addAttributes("table", "style", "border", "cellpadding", "cellspacing")
+	    	    .addAttributes("th", "style", "colspan", "rowspan")
+	    	    .addAttributes("td", "style", "colspan", "rowspan")
+	    	    .addAttributes("tr", "style")
+	    	    .addAttributes("thead", "style")
+	    	    .addAttributes("tbody", "style")
+	    	    .addAttributes("tfoot", "style")
+	    	    .addAttributes("col", "style", "span", "width")
+	    	    .addAttributes("colgroup", "span", "width", "style")
+	    	    .addAttributes("caption", "style")
+	    	    .addAttributes("img", "style", "src", "alt", "width", "height")
+	    	    .addProtocols("img", "src", "data", "http", "https");
 
 		String safeContent = Jsoup.clean(content, customSafelist);
 		

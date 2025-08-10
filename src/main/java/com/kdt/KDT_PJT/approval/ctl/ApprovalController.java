@@ -144,14 +144,34 @@ public class ApprovalController {
     
     @PostMapping("/edit")
     public String approvalEditProc(
-    				RedirectAttributes redirectAttributes,
-					@ModelAttribute ApprovalDTO editData,
-					@RequestParam(name = "page", defaultValue = "1") int page,
-					@RequestParam(name = "type", required = false) String type,
-					@RequestParam(name = "status", required = false) String status,
-					@RequestParam(name = "docType") String docType) {
-    	
-        // 결재 종류별로 수정 메서드 분기 호출
+        RedirectAttributes redirectAttributes,
+        @ModelAttribute ApprovalDTO editData,
+        @RequestParam(name = "page", defaultValue = "1") int page,
+        @RequestParam(name = "type", required = false) String type,
+        @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "docType") String docType) {
+        
+    	String rawContent = editData.getContent();
+
+        org.jsoup.safety.Safelist customSafelist = org.jsoup.safety.Safelist.basicWithImages()
+            .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
+            .addAttributes("table", "style", "border", "cellpadding", "cellspacing")
+            .addAttributes("th", "style", "colspan", "rowspan")
+            .addAttributes("td", "style", "colspan", "rowspan")
+            .addAttributes("tr", "style")
+            .addAttributes("thead", "style")
+            .addAttributes("tbody", "style")
+            .addAttributes("tfoot", "style")
+            .addAttributes("col", "style", "span", "width")
+            .addAttributes("colgroup", "span", "width", "style")
+            .addAttributes("caption", "style")
+            .addAttributes("img", "style", "src", "alt", "width", "height")
+            .addProtocols("img", "src", "data", "http", "https");
+
+        String safeContent = org.jsoup.Jsoup.clean(rawContent, customSafelist);
+
+        editData.setContent(safeContent);
+
         if ("공지사항".equals(docType)) {
             approvalMapper.editNotice(editData);
         } else if ("연차".equals(docType)) {
@@ -159,13 +179,13 @@ public class ApprovalController {
         } else if ("프로젝트".equals(docType)) {
             approvalMapper.editProject(editData);
         }
-        
-    	redirectAttributes.addAttribute("docId", editData.getDocId());
+
+        redirectAttributes.addAttribute("docId", editData.getDocId());
         redirectAttributes.addAttribute("page", page);
         redirectAttributes.addAttribute("type", type);
         redirectAttributes.addAttribute("status", status);
-        
-        return "redirect:/approval/viewer";	// 파라미터가 쿼리스트링에 자동으로 붙음
+
+        return "redirect:/approval/viewer";
     }
     
     @PostMapping("/approve")
