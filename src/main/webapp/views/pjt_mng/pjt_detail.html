@@ -74,6 +74,7 @@
     <tr><th>종료일</th><td th:text="${pjt['PJT_END_DT']}"></td></tr>
     <tr><th>등록자</th><td th:text="${pjt['FRST_RGTR_ID']}"></td></tr>
     <tr><th>등록일</th><td th:text="${pjt['FRST_REG_DT']}"></td></tr>
+    <tr><th>내용</th><td th:utext="${pjt['content']}"></td></tr>
   </table>
 
   <button onclick="history.back()">← 목록으로 돌아가기</button>

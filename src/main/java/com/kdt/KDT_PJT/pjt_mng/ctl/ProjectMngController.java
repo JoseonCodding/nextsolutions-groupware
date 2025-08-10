@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,18 +187,29 @@ public class ProjectMngController {
 	public String saveEditedProject(@ModelAttribute CmmnMap pjtData, RedirectAttributes redirectAttributes) {
 	    log.info("saveEditedProject Called >>> " + pjtData);
 
+	    String content = (String) pjtData.get("content");
+
+	    Safelist customSafelist = Safelist.basicWithImages()
+	        .addAttributes("img", "style", "src", "alt", "width", "height")
+	        .addProtocols("img", "src", "data")
+	        .addProtocols("img", "src", "http")
+	        .addProtocols("img", "src", "https");
+
+	    String safeContent = Jsoup.clean(content, customSafelist);
+	    pjtData.put("content", safeContent);
+
 	    try {
-	        projectMngService.updatePjtProc(pjtData); // 수정 저장 처리
-
-	        // ✅ 저장 후 상세 페이지로 리디렉트
+	        projectMngService.updatePjtProc(pjtData);
 	        String pjtSn = (String) pjtData.get("pjtSn");
-	        return "redirect:/pjtDetail?pjtSn=" + pjtSn; // 상세 페이지 URL로 이동
-
+	        return "redirect:/pjtDetail?pjtSn=" + pjtSn;
 	    } catch (Exception e) {
 	        redirectAttributes.addFlashAttribute("msg", "수정 중 오류 발생: " + e.getMessage());
-	        return "redirect:/pjtEditForm?pjtSn=" + pjtData.get("pjtSn"); // 다시 수정 폼으로
+	        return "redirect:/pjtEditForm?pjtSn=" + pjtData.get("pjtSn");
 	    }
 	}
+
+	
+	
 
 	
 	
@@ -215,6 +228,16 @@ public class ProjectMngController {
 	        @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile
 
 	) {
+
+		Safelist customSafelist = Safelist.basicWithImages()
+			    .addAttributes("img", "style", "src", "alt", "width", "height")
+			    .addProtocols("img", "src", "data")
+			    .addProtocols("img", "src", "http")
+			    .addProtocols("img", "src", "https");
+
+		String safeContent = Jsoup.clean(content, customSafelist);
+
+		
 	    log.info("updatePjtProc Called >>> " + pjtSn);
 
 	    CmmnMap params = new CmmnMap();
@@ -224,7 +247,7 @@ public class ProjectMngController {
 	    params.put("PJT_BGNG_DT", pjtBgngDt);
 	    params.put("PJT_END_DT", pjtEndDt);
 	    params.put("PJT_STTS_CD", pjtSttsCd);
-	    params.put("content", content);
+	    params.put("content", safeContent);
 	    params.put("APPROVERS", approvers);
 
 
@@ -293,6 +316,13 @@ public class ProjectMngController {
 	    @RequestParam(value = "content", required = false) String content
 	) {
 
+		Safelist customSafelist = Safelist.basicWithImages()
+			    .addAttributes("img", "style", "src", "alt", "width", "height")
+			    .addProtocols("img", "src", "data")
+			    .addProtocols("img", "src", "http")
+			    .addProtocols("img", "src", "https");
+
+		String safeContent = Jsoup.clean(content, customSafelist);
 		
 		
 		log.info("savePjtProc Called >>> ");
@@ -309,7 +339,7 @@ public class ProjectMngController {
 		params.put("PJT_BGNG_DT", pjtBgngDt);
 		params.put("PJT_END_DT", pjtEndDt);
 		params.put("PJT_STTS_CD", pjtSttsCd);
-		params.put("content", content);
+		params.put("content", safeContent);
 
 		
 		LocalDateTime now = LocalDateTime.now(); // 현재 시간 가져오기

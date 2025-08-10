@@ -1,158 +1,164 @@
 
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>프로젝트 등록</title>
-<style>
-body {
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	margin: 50px;
-	background-color: #f5f7fa;
-	color: #333;
-}
+	<meta charset="UTF-8">
+	<title>프로젝트 등록</title>
 
-h1 {
-	color: #4a4a4a;
-	text-align: center;
-	margin-bottom: 40px;
-}
+	<!-- 썸머노트 CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
 
-table {
-	width: 60%;
-	margin: 0 auto;
-	border-collapse: collapse;
-	background-color: #ffffff;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	border-radius: 10px;
-	overflow: hidden;
-}
-
-th, td {
-	padding: 16px 20px;
-	text-align: left;
-	border-bottom: 1px solid #e0e0e0;
-}
-
-th {
-	width: 30%;
-	background-color: #f0f0f0;
-	font-weight: bold;
-	color: #333;
-}
-
-tr:last-child td {
-	border-bottom: none;
-}
-
-button {
-	display: block;
-	margin: 40px auto 0;
-	padding: 12px 24px;
-	background-color: #4a90e2;
-	color: white;
-	border: none;
-	border-radius: 6px;
-	font-size: 16px;
-	cursor: pointer;
-	transition: background-color 0.2s;
-}
-
-button:hover {
-	background-color: #357abd;
-}
-
-button.save-btn {
-	background-color: #28a745;
-}
-
-button.save-btn:hover {
-	background-color: #218838;
-}
-/* 워크플로우 라인 스타일 */
-.workflow-step {
-	display: flex;
-	align-items: center;
-	margin-bottom: 10px;
-}
-
-.workflow-step select {
-	flex: 1;
-	padding: 6px;
-	font-size: 14px;
-}
-
-.workflow-step button {
-	margin-left: 10px;
-	padding: 4px 10px;
-	font-size: 14px;
-	background-color: #007bff;
-	color: white;
-	border: none;
-	border-radius: 4px;
-	cursor: pointer;
-	transition: background-color 0.2s;
-}
-
-.workflow-step button:hover {
-	background-color: #0056b3;
-}
-
-/* 결재자 추가 버튼 */
-.btn-add-approver {
-	margin-top: 10px;
-	padding: 8px 16px;
-	font-size: 14px;
-	background-color: #007bff;
-	color: white;
-	border: none;
-	border-radius: 6px;
-	cursor: pointer;
-	transition: background-color 0.2s;
-}
-
-.btn-add-approver:hover {
-	background-color: #0056b3;
-}
-
-.button-row {
-	display: flex;
-	justify-content: center; /* 가운데 정렬 */
-	gap: 10px; /* 버튼 간격 */
-	margin-top: 30px;
-}
-
-.button-row button {
-	width: 200px;
-	height: 45px;
-	font-size: 16px;
-	border: none;
-	border-radius: 6px;
-	cursor: pointer;
-	transition: background-color 0.2s;
-}
-
-/* 저장 버튼 스타일 */
-.button-row .save-btn {
-	background-color: #28a745;
-	color: white;
-}
-
-.button-row .save-btn:hover {
-	background-color: #218838;
-}
-
-/* 돌아가기 버튼 스타일 */
-.button-row .back-btn {
-	background-color: #4a90e2;
-	color: white;
-}
-
-.button-row .back-btn:hover {
-	background-color: #357abd;
-}
-</style>
+	<style>
+	body {
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		margin: 50px;
+		background-color: #f5f7fa;
+		color: #333;
+	}
+	
+	h1 {
+		color: #4a4a4a;
+		text-align: center;
+		margin-bottom: 40px;
+	}
+	
+	table {
+		width: 75%;
+		margin: 0 auto;
+		border-collapse: collapse;
+		background-color: #ffffff;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		border-radius: 10px;
+		overflow: hidden;
+	}
+	
+	th, td {
+		padding: 16px 20px;
+		text-align: left;
+		border-bottom: 1px solid #e0e0e0;
+	}
+	
+	th {
+		width: 20%;
+		background-color: #f0f0f0;
+		font-weight: bold;
+		color: #333;
+	}
+	
+	tr:last-child td {
+		border-bottom: none;
+	}
+	
+	button {
+		display: block;
+		margin: 40px auto 0;
+		padding: 12px 24px;
+		background-color: #4a90e2;
+		color: white;
+		border: none;
+		border-radius: 6px;
+		font-size: 16px;
+		cursor: pointer;
+		transition: background-color 0.2s;
+	}
+	
+	button:hover {
+		background-color: #357abd;
+	}
+	
+	button.save-btn {
+		background-color: #28a745;
+	}
+	
+	button.save-btn:hover {
+		background-color: #218838;
+	}
+	/* 워크플로우 라인 스타일 */
+	.workflow-step {
+		display: flex;
+		align-items: center;
+		margin-bottom: 10px;
+	}
+	
+	.workflow-step select {
+		flex: 1;
+		padding: 6px;
+		font-size: 14px;
+	}
+	
+	.workflow-step button {
+		margin-left: 10px;
+		padding: 4px 10px;
+		font-size: 14px;
+		background-color: #007bff;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: background-color 0.2s;
+	}
+	
+	.workflow-step button:hover {
+		background-color: #0056b3;
+	}
+	
+	/* 결재자 추가 버튼 */
+	.btn-add-approver {
+		margin-top: 10px;
+		padding: 8px 16px;
+		font-size: 14px;
+		background-color: #007bff;
+		color: white;
+		border: none;
+		border-radius: 6px;
+		cursor: pointer;
+		transition: background-color 0.2s;
+	}
+	
+	.btn-add-approver:hover {
+		background-color: #0056b3;
+	}
+	
+	.button-row {
+		display: flex;
+		justify-content: center; /* 가운데 정렬 */
+		gap: 10px; /* 버튼 간격 */
+		margin-top: 30px;
+	}
+	
+	.button-row button {
+		width: 200px;
+		height: 45px;
+		font-size: 16px;
+		border: none;
+		border-radius: 6px;
+		cursor: pointer;
+		transition: background-color 0.2s;
+	}
+	
+	/* 저장 버튼 스타일 */
+	.button-row .save-btn {
+		background-color: #28a745;
+		color: white;
+	}
+	
+	.button-row .save-btn:hover {
+		background-color: #218838;
+	}
+	
+	/* 돌아가기 버튼 스타일 */
+	.button-row .back-btn {
+		background-color: #4a90e2;
+		color: white;
+	}
+	
+	.button-row .back-btn:hover {
+		background-color: #357abd;
+	}
+	</style>
 </head>
+
 <body>
 	<!-- 생략된 <head>와 스타일은 그대로 유지 -->
 
@@ -179,11 +185,11 @@ button.save-btn:hover {
 
 			<tr>
 				<th>내용</th>
-				<td><input type="text" name="content" /></td>
+				<td>
+					<textarea id="content" name="content"></textarea>
+				</td>
 			</tr>
 			
-
-
 			<tr>
 				<th>파일업로드</th>
 				<td><input type="file" name="uploadFile" id="uploadFile" />
@@ -207,6 +213,7 @@ button.save-btn:hover {
 			<button type="button" class="back-btn" onclick="history.back()">←
 				목록으로 돌아가기</button>
 		</div>
+	</form>
 
 		<!-- 🔧 파일명 표시 스크립트 (기존 유지) -->
 		<script>
@@ -283,5 +290,32 @@ button.save-btn:hover {
     document.getElementById('approversInput').value = names.join(',');
   }
 </script>
+
+<!-- 썸머노트용 JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>	
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
+<script>
+	$(document).ready(function() {
+		$('#content').summernote({
+			lang: 'ko-KR',
+			placeholder: '내용을 입력하세요',
+			tabsize: 2,
+			height: 300,
+			toolbar: [
+				['style', ['style']],
+				['font', ['bold', 'italic', 'underline', 'clear']],
+				['fontname', ['fontname']],
+				['fontsize', ['fontsize']],
+				['color', ['color']],
+				['para', ['ul', 'ol', 'paragraph']],
+				['height', ['height']],
+				['insert', ['picture', 'link', 'video', 'table']],
+				['view', ['fullscreen', 'codeview', 'help']]
+			]
+		});
+	});
+</script>
+
 </body>
 </html>

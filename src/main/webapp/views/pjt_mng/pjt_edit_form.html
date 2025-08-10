@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>프로젝트 변경</title>
+
+	<!-- 썸머노트 CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+
+
 <style>
 body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -18,7 +23,7 @@ h1 {
 }
 
 table {
-	width: 60%;
+	width: 75%;
 	margin: 0 auto;
 	border-collapse: collapse;
 	background-color: #ffffff;
@@ -34,7 +39,7 @@ th, td {
 }
 
 th {
-	width: 30%;
+	width: 20%;
 	background-color: #f0f0f0;
 	font-weight: bold;
 	color: #333;
@@ -134,10 +139,12 @@ input, select {
   </td>
 </tr>
 
-<!-- Freeware 에디터 달아야함 ㅠㅠ  -->
+
 <tr>
-  <th>내용</th>
-  <td><input type="text" name="content" th:value="${pjt['content']}" /></td>
+	<th>내용</th>
+	<td>
+		<textarea id="content" name="content"></textarea>
+	</td>
 </tr>
 
 
@@ -221,6 +228,32 @@ input, select {
 
     document.getElementById('approversInput').value = names.join(',');
   }
+</script>
+
+<!-- 썸머노트용 JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>	
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
+<script>
+	$(document).ready(function() {
+		$('#content').summernote({
+			lang: 'ko-KR',
+			placeholder: '내용을 입력하세요',
+			tabsize: 2,
+			height: 300,
+			toolbar: [
+				['style', ['style']],
+				['font', ['bold', 'italic', 'underline', 'clear']],
+				['fontname', ['fontname']],
+				['fontsize', ['fontsize']],
+				['color', ['color']],
+				['para', ['ul', 'ol', 'paragraph']],
+				['height', ['height']],
+				['insert', ['picture', 'link', 'video', 'table']],
+				['view', ['fullscreen', 'codeview', 'help']]
+			]
+		});
+	});
 </script>
 
 </body>
