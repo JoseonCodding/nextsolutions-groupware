@@ -1,5 +1,39 @@
-일정이다
-달력
-123456
+<h3 th:text="${year} + '년 ' + ${month} + '월 일정'"></h3>
+
+<table border="">
+    <thead>
+        <tr>
+            <th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <!-- 첫 주 공백 -->
+            <td th:colspan="${firstDayOfWeek - 1}"></td>
+
+            <!-- 날짜 출력 -->
+            <th:block th:each="day : ${#numbers.sequence(1, T(java.time.YearMonth).of(year, month).lengthOfMonth())}">
+                <td>
+                    <div th:text="${day}"></div>
+
+                    <div th:each="sc : ${scheduleList}"
+                         th:if="${sc.startLocalDate != null and sc.endLocalDate != null
+                                 and day >= sc.startLocalDate.dayOfMonth
+                                 and day <= sc.endLocalDate.dayOfMonth}">
+                        <span th:text="${sc.title}"><br/></span>
+                    </div>
+                </td>
+
+              	</tr><tr>
+           
+            </th:block>
+        </tr>
+    </tbody>
+</table>
+
+<br />
+
 
 <a th:href="@{/schedule/insert}">일정 등록</a>
+
+

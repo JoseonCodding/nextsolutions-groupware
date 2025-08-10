@@ -2,6 +2,8 @@ package com.kdt.KDT_PJT.schedule.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 import lombok.Data;
@@ -13,8 +15,17 @@ public class ScheduleDTO {
 	int scheduleId;
     String title, cate, alarm, content;
     Date startDate,endDate, createdAt,updatedAt,deleteDate;
+    String employeeId;
     
 
+    LocalDate startLocalDate;
+    LocalDate endLocalDate;
+
+    public void convertDatesToLocal() {
+        if (startDate != null) startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        if (endDate != null) endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+    
     public void setStartDateStr(String ttt) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {

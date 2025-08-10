@@ -64,7 +64,7 @@ public interface ApprovalMapper {
 			+ " WHERE docId = #{docId}")
 	ApprovalDTO viewById(@Param("docId") String docId);
 	
-	@Delete("DELETE FROM Approval_TEST "
+	@Delete("DELETE FROM Approval_TEST " 
 			+ " WHERE docId = #{docId}")
 	int deleteById(@Param("docId") String docId);
 	
@@ -72,5 +72,6 @@ public interface ApprovalMapper {
 			+ " SET docType=#{docType}, title=#{title}, content=#{content} "
 			+ " WHERE docId=#{docId}")
 	int updateById(ApprovalDTO dto);
+	
 	
 }
