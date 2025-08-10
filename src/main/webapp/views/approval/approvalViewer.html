@@ -5,9 +5,6 @@
 	<meta charset="UTF-8">
 	<title>★전자 결재 뷰어</title>
 
-	<!-- 썸머노트 CSS -->
-	<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
-    
     <style>
 		.note-editor .note-editing-area .note-editable {
 		    background-color: #fff;
@@ -76,7 +73,22 @@
 	</div>
 
 	<!-- 내용 영역 -->
-	<textarea id="content" name="content"></textarea>
+	<div style="border:1px solid; margin-top: 20px; background-color: aqua;"
+	     th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
+	</div>
+	
+	<!-- 첨부파일 다운로드 영역 -->
+	<div style="background-color: white; margin-top: 20px;">
+	  <b>첨부파일</b> :
+	  <span th:if="${approvalData != null and not #strings.isEmpty(approvalData.attachFileUuid)}">
+	    <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid} + '&orgName=' + ${approvalData.attachFileOrgName}}"
+	       th:text="${approvalData.attachFileOrgName}">다운로드</a>
+	  </span>
+	  <span th:unless="${approvalData != null and not #strings.isEmpty(approvalData.attachFileUuid)}">
+	    첨부 없음
+	  </span>
+	</div>
+	
 
 	<!-- 목록으로(approvalData가 있을때) or 처음으로(approvalData가 없을때) -->
 	<a th:if="${approvalData != null}"
@@ -123,30 +135,6 @@
 	    </form>
 	</div>
 	
-	<!-- 썸머노트용 JS -->
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>	
-	<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
-	<script>
-		$(document).ready(function() {
-			$('#content').summernote({
-				lang: 'ko-KR',
-				placeholder: '내용을 입력하세요',
-				tabsize: 2,
-				height: 300,
-				toolbar: [
-					['style', ['style']],
-					['font', ['bold', 'italic', 'underline', 'clear']],
-					['fontname', ['fontname']],
-					['fontsize', ['fontsize']],
-					['color', ['color']],
-					['para', ['ul', 'ol', 'paragraph']],
-					['height', ['height']],
-					['insert', ['picture', 'link', 'table']],
-					['view', ['fullscreen', 'codeview', 'help']]
-				]
-			});
-		});
-	</script>
+
 </body>
 </html>

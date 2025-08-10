@@ -1,7 +1,14 @@
 package com.kdt.KDT_PJT.approval.ctl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 
-import jakarta.annotation.Resource;
-
-
 @Controller
 @RequestMapping("/approval")
 public class ApprovalController {
@@ -28,7 +32,7 @@ public class ApprovalController {
 		return "approval/approvalNav";
 	}
 	
-	@Resource
+	@Autowired
 	ApprovalMapper approvalMapper;
     
 	@RequestMapping("/main")
@@ -90,6 +94,24 @@ public class ApprovalController {
     	model.addAttribute("mainUrl", "approval/approvalViewer");
     	return "navTap";
     }
+    
+    @GetMapping("/downloadFile")
+    public ResponseEntity<Resource> downloadFile(
+        @RequestParam("fileName") String fileName,
+        @RequestParam("orgName") String orgName
+    ) throws UnsupportedEncodingException {
+        String path = "C:/upload/" + fileName;
+        Resource resource = new FileSystemResource(path); // ★ 좌변 Resource!
+        if (!resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+        String encodedOrgName = URLEncoder.encode(orgName, "UTF-8").replaceAll("\\+", " ");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedOrgName + "\"");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+        return ResponseEntity.ok().headers(headers).body(resource);
+    }
+
 
     @RequestMapping("/delete")
     public String approvalDelete (

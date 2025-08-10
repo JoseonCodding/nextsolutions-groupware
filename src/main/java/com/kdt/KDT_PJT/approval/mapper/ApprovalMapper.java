@@ -26,7 +26,9 @@ public interface ApprovalMapper {
 	    "     b.status AS status,",
 	    "     e.deptName AS deptName,",
 	    "     e.emp_nm AS writer,",
-	    "     b.created_at AS createdAt",
+	    "     b.created_at AS createdAt,",
+	    "     NULL AS attachFileUuid,",     // 추가!
+	    "     NULL AS attachFileOrgName",   // 추가!
 	    "   FROM board_post b",
 	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
 	    "   WHERE b.board_id = 1",
@@ -47,7 +49,9 @@ public interface ApprovalMapper {
 	    "     l.state_type AS status,",
 	    "     e.deptName AS deptName,",
 	    "     e.emp_nm AS writer,",
-	    "     l.create_date AS createdAt",
+	    "     l.create_date AS createdAt,",
+	    "     NULL AS attachFileUuid,",       // 추가
+	    "     NULL AS attachFileOrgName",     // 추가
 	    "   FROM annual_leave l",
 	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
 	    "   <where>",
@@ -69,7 +73,9 @@ public interface ApprovalMapper {
 	    "     p.PJT_STTS_CD AS status,",
 	    "     '프로젝트부' AS deptName,",
 	    "     '박길동' AS writer,",
-	    "     p.FRST_REG_DT AS createdAt",
+	    "     p.FRST_REG_DT AS createdAt,",
+	    "     p.ATCH_FILE_SN AS attachFileUuid,",
+	    "     p.ORG_FILE_NM AS attachFileOrgName",
 	    "   FROM TB_PJT_BASC p",
 	    "   <where>",
 	    "     <if test='type != null and type != \"\"'>",
@@ -148,7 +154,9 @@ public interface ApprovalMapper {
 	    "     b.status AS status,",
 	    "     e.deptName AS deptName,",
 	    "     e.emp_nm AS writer,",
-	    "     b.created_at AS createdAt",
+	    "     b.created_at AS createdAt,",
+	    "     NULL AS attachFileUuid,",     // 추가!
+	    "     NULL AS attachFileOrgName",   // 추가!
 	    "   FROM board_post b",
 	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
 	    "   WHERE b.board_id = 1",
@@ -163,7 +171,9 @@ public interface ApprovalMapper {
 	    "     l.state_type AS status,",
 	    "     e.deptName AS deptName,",
 	    "     e.emp_nm AS writer,",
-	    "     l.create_date AS createdAt",
+	    "     l.create_date AS createdAt,",
+	    "     NULL AS attachFileUuid,",     // 추가!
+	    "     NULL AS attachFileOrgName",   // 추가!
 	    "   FROM annual_leave l",
 	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
 	    "",
@@ -177,7 +187,9 @@ public interface ApprovalMapper {
 	    "     p.PJT_STTS_CD AS status,",
 	    "     '프로젝트부' AS deptName,",
 	    "     '박길동' AS writer,",
-	    "     p.FRST_REG_DT AS createdAt",
+	    "     p.FRST_REG_DT AS createdAt,",
+	    "     p.ATCH_FILE_SN AS attachFileUuid,",
+	    "     p.ORG_FILE_NM AS attachFileOrgName",
 	    "   FROM TB_PJT_BASC p",
 	    ") AS all_data",
 	    "WHERE docId = #{docId}",

@@ -10,4 +10,7 @@ public class ApprovalDTO {
 	String docId, docType, title, content, deptName, status, writer, empNm;
 	Date createdAt;
 	
+    String attachFileUuid;
+    String attachFileOrgName;
+	
 }
