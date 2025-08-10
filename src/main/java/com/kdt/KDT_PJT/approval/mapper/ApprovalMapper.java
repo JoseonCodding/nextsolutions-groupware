@@ -30,170 +30,126 @@ public interface ApprovalMapper {
 	@Update("UPDATE Approval_TEST SET status=#{status} WHERE docId=#{docId}")
 	int updateStatus(@Param("docId") String docId, @Param("status") String status);
 	
-	/* 게시판 DB 끌어오기 */
+	// 공지사항 + 연차 + 프로젝트 DB 끌어오기
+	@Select({
+	    "<script>",
+	    "SELECT * FROM (",
+	    "   SELECT ",
+	    "     b.docId AS docId,",
+	    "     b.docType AS docType,",
+	    "     b.title AS title,",
+	    "     b.content AS content,",
+	    "     b.status AS status,",
+	    "     e.deptName AS deptName,",
+	    "     e.emp_nm AS writer,",
+	    "     b.created_at AS createdAt",
+	    "   FROM board_post b",
+	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
+	    "   WHERE b.board_id = 1",
+	    "     <if test='type != null and type != \"\"'>",
+	    "       AND b.docType = #{type}",
+	    "     </if>",
+	    "     <if test='status != null and status != \"\"'>",
+	    "       AND b.status = #{status}",
+	    "     </if>",
+	    "",
+	    "   UNION ALL",
+	    "",
+	    "   SELECT",
+	    "     l.docId AS docId,",
+	    "     l.docType AS docType,",
+	    "     l.create_reason AS title,",
+	    "     NULL AS content,",
+	    "     l.state_type AS status,",
+	    "     e.deptName AS deptName,",
+	    "     e.emp_nm AS writer,",
+	    "     l.create_date AS createdAt",
+	    "   FROM annual_leave l",
+	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
+	    "   <where>",
+	    "     <if test='type != null and type != \"\"'>",
+	    "       l.docType = #{type}",
+	    "     </if>",
+	    "     <if test='status != null and status != \"\"'>",
+	    "       AND l.state_type = #{status}",
+	    "     </if>",
+	    "   </where>",
+	    "",
+	    "   UNION ALL",
+	    "",
+	    "   SELECT",
+	    "     t.docId AS docId,",
+	    "     t.docType AS docType,",
+	    "     t.PJT_NM AS title,",
+	    "     NULL AS content,",
+	    "     t.PJT_STTS_CD AS status,",
+	    "     '프로젝트부' AS deptName,",
+	    "     '박길동' AS writer,",
+	    "     t.FRST_REG_DT AS createdAt",
+	    "   FROM TB_PJT_BASC t",
+	    "   <where>",
+	    "     <if test='type != null and type != \"\"'>",
+	    "       t.docType = #{type}",
+	    "     </if>",
+	    "     <if test='status != null and status != \"\"'>",
+	    "       AND t.PJT_STTS_CD = #{status}",
+	    "     </if>",
+	    "   </where>",
+	    "",
+	    ") AS all_data",
+	    "ORDER BY createdAt DESC",
+	    "LIMIT #{offset}, #{size}",
+	    "</script>"
+	})
+	List<ApprovalDTO> approvalData(
+	    @Param("offset") int offset,
+	    @Param("size") int size,
+	    @Param("type") String type,
+	    @Param("status") String status
+	);
+
+	
+	// 공지사항 + 연차 + 프로젝트 DB 총 개수 세기
 	@Select(
 		    "<script>"
-			
-		    + "SELECT b.docType, b.title, b.content, b.status, b.docId, "
-		    + " e.emp_nm as writer, e.deptName, "
-		    + " b.created_at as createdAt "
-		    
-		    + "FROM board_post b "
-		    + "LEFT JOIN employee e ON b.employee_id = e.employeeId "
-		    
-		    + "WHERE b.board_id = 1 "
-		    
-		    + "<if test='type != null and type != \"\"'>"
-		    + " AND b.docType = #{type} "
-		    + "</if>"
-		    
-		    + "<if test='status != null and status != \"\"'>"
-		    + " AND b.status = #{status} "
-		    + "</if>"
-		    
-		    + "LIMIT #{offset}, #{size}"
-		    
+		    + "SELECT COUNT(*) FROM ("
+		    + "  SELECT b.docId"
+		    + "    FROM board_post b"
+		    + "   WHERE b.board_id = 1"
+		    + "     <if test='type != null and type != \"\"'>"
+		    + "       AND b.docType = #{type}"
+		    + "     </if> "
+		    + "     <if test='status != null and status != \"\"'>"
+		    + "       AND b.status = #{status}"
+		    + "     </if> "
+		    + "  UNION ALL"
+		    + "  SELECT l.docId"
+		    + "    FROM annual_leave l"
+		    + "   <where>"
+		    + "     <if test='type != null and type != \"\"'>"
+		    + "       l.docType = #{type}"
+		    + "     </if> "
+		    + "     <if test='status != null and status != \"\"'>"
+		    + "       AND l.state_type = #{status}"
+		    + "     </if> "
+		    + "   </where>"
+		    + "  UNION ALL"
+		    + "  SELECT t.docId"
+		    + "    FROM TB_PJT_BASC t"
+		    + "   <where>"
+		    + "     <if test='type != null and type != \"\"'>"
+		    + "       t.docType = #{type}"
+		    + "     </if> "
+		    + "     <if test='status != null and status != \"\"'>"
+		    + "       AND t.PJT_STTS_CD = #{status}"
+		    + "     </if> "
+		    + "   </where>"
+		    + ") AS ALL_DATA"
 		    + "</script>"
 		)
-	List<ApprovalDTO> noticeData(
-							@Param("offset") int offset,
-							@Param("size") int size,
-							@Param("type") String type,
-							@Param("status") String status);
-	
-	// 공지사항 DB 게시글 수 세기
-	@Select(
-			"<script> "
-			+ "SELECT COUNT(*) FROM board_post "
-			
-			+ " <where> "
-			
-			+ " board_id = 1 "
-			
-			+ 	" <if test='type != null and type != \"\"'> "
-			+ 		" AND docType = #{type} "
-			+ 	" </if> "
-			
-			+ 	" <if test='status != null and status != \"\"'> "
-			+ 		" AND status = #{status} "
-			+ 	" </if> "
-			
-			+ " </where> "
-			
-			+ " </script>"
-			)
-	int noticeCountAll(
-					@Param("type") String type,
-					@Param("status") String status);
-	
-	// 연차 DB 데이터 끌어오기
-	@Select(
-		    "<script>"
-		    + "SELECT l.docId, l.docType, l.create_reason as title, l.state_type as status, "
-		    + "e.deptName, e.emp_nm as writer, "
-		    + "l.create_date as createdAt "
-		    
-		    + "FROM annual_leave l "
-		    + "LEFT JOIN employee e ON l.employeeId = e.employeeId "
+		int approvalCountAll(
+		    @Param("type") String type,
+		    @Param("status") String status
+		);
 
-		    + "<where>"
-		    
-		    + " <if test='type != null and type != \"\"'> "
-		    + 	" l.docType = #{type} "
-		    + " </if> "
-		    
-		    + " <if test='status != null and status != \"\"'> "
-		    + 	" AND l.state_type = #{status} "
-		    + " </if> "
-		   
-		    + "</where>"
-		    
-		    + "LIMIT #{offset}, #{size}"
-		  
-		    + "</script>"
-			)
-		List<ApprovalDTO> leaveData(
-							    @Param("offset") int offset,
-							    @Param("size") int size,
-							    @Param("type") String type,
-							    @Param("status") String status);
-	
-	// 연차 DB 게시글 수 세기
-	@Select(
-		    "<script>"
-		    + "SELECT COUNT(*) FROM annual_leave "
-		    
-		    + "<where>"
-		    
-		    + " <if test='type != null and type != \"\"'> "
-		    + 	" docType = #{type} "
-		    + " </if> "
-		    
-		    + " <if test='status != null and status != \"\"'> "
-		    + 	" AND state_type = #{status} "
-		    + " </if> "
-		    
-		    + "</where>"
-		    
-		    + "</script>"
-			)
-		int leaveCountAll(
-				    @Param("type") String type,
-				    @Param("status") String status);
-	
-	// 프로젝트 DB 데이터 끌어오기
-	@Select(
-		    "<script>"
-			
-		    + "SELECT "
-		    + " docId, docType, PJT_NM as title, PJT_STTS_CD as status, "
-		    + " '김길동' as writer, '프로젝트부' as deptName, FRST_REG_DT as createdAt "
-		    
-		    + " FROM TB_PJT_BASC "
-		    
-		    + "<where>"
-		    
-		    + " <if test='type != null and type != \"\"'> "
-		    + 	" docType = #{type} "
-		    + " </if> "
-
-		    + " <if test='status != null and status != \"\"'> "
-		    + 	" AND PJT_STTS_CD = #{status} "
-		    + " </if> "
-		    
-		    + "</where>"
-		    
-		    + "ORDER BY FRST_REG_DT DESC "
-		    + "LIMIT #{offset}, #{size}"
-		    
-		    + "</script>"
-			)
-	List<ApprovalDTO> projectData(
-							    @Param("offset") int offset,
-							    @Param("size") int size,
-							    @Param("type") String type,
-							    @Param("status") String status);
-	
-	// 프로젝트 DB 게시글 수 세기
-	@Select(
-		    "<script>"
-		    + "SELECT COUNT(*) FROM TB_PJT_BASC "
-		    
-		    + "<where>"
-		    
-		    + " <if test='type != null and type != \"\"'> "
-		    + 	" docType = #{type} "
-		    + " </if> "
-		    
-		    + " <if test='status != null and status != \"\"'> "
-		    + 	" AND PJT_STTS_CD = #{status} "
-		    + " </if> "
-		    
-		    + "</where>"
-		    
-		    + "</script>"
-			)
-		int projectCountAll(
-				    @Param("type") String type,
-				    @Param("status") String status);
 }

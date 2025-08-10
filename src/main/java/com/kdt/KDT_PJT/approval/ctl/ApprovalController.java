@@ -42,7 +42,7 @@ public class ApprovalController {
 		
 		int size = 10;	// 페이지 당 표시될 게시글 개수
     	int offset = (page - 1) * size;	// 페이지 마다 표시되는 게시글의 시작점 (ex.1페이지:0~9번, 2페이지:10~19번...)
-    	int totalCount = approvalMapper.noticeCountAll(type, status);	// 게시글 DB 전체 개수
+    	int totalCount = approvalMapper.approvalCountAll(type, status);	// 게시글 DB 전체 개수
     	int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
     	int blockSize = 5;	// 페이지네이션에 나타낼 페이지 개수
     	int startPage, endPage;
@@ -57,17 +57,7 @@ public class ApprovalController {
     	// 필터에 해당하는 게시글이 없는 경우 endPage=0이 되는 상황 방지 
     	if (totalPages == 0) {endPage = 1;}
     	
-    	List<ApprovalDTO> noticeData = approvalMapper.noticeData(offset, size, type, status);	// 공지사항 DB
-    	List<ApprovalDTO> leaveData = approvalMapper.leaveData(offset, size, type, status);		// 연차 DB
-    	List<ApprovalDTO> projectData = approvalMapper.projectData(offset, size, type, status);		// 프로젝트 DB
-
-    	// 공지사항 DB + 연차 DB 합치기
-    	List<ApprovalDTO> approvalData = new ArrayList<>();
-    	approvalData.addAll(noticeData);
-    	approvalData.addAll(leaveData);
-    	approvalData.addAll(projectData);
-
-    	approvalData.sort(Comparator.comparing(ApprovalDTO::getCreatedAt).reversed());	// 생성일 내림차순 정렬(옵션)
+    	List<ApprovalDTO> approvalData = approvalMapper.approvalData(offset, size, type, status);
 
     	model.addAttribute("approvalData", approvalData);
     	
@@ -113,7 +103,7 @@ public class ApprovalController {
     	
         approvalMapper.delete(docId);
         
-        int totalCount = approvalMapper.noticeCountAll(type, status);	// 게시글 DB 전체 개수 (필터기능 반영됨)
+        int totalCount = approvalMapper.approvalCountAll(type, status);	// 게시글 DB 전체 개수 (필터기능 반영됨)
         int size = 10;	// 페이지 당 표시될 게시글 수
         int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
         

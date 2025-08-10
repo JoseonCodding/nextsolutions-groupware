@@ -92,8 +92,7 @@
       PJT_END_DT,
       PJT_STTS_CD,
       FRST_RGTR_ID,
-      FRST_REG_DT,
-      docType
+      FRST_REG_DT
     ) VALUES (
       #{PJT_NM},             <!-- 프로젝트명 -->
       #{EMP_NM},             <!-- 담당자명 -->
@@ -101,8 +100,7 @@
       #{PJT_END_DT},         <!-- 종료일 -->
       '대기',                  <!-- 상태코드: 기본값 '대기' -->
       'SYSTEM',              <!-- 최초등록자: 시스템 -->
-      #{FRST_REG_DT},         <!-- 최초등록일 -->
-      '프로젝트'				<!-- 결재 종류: 기본값 '프로젝트' -->
+      #{FRST_REG_DT}         <!-- 최초등록일 -->
     )
   </insert>
 
