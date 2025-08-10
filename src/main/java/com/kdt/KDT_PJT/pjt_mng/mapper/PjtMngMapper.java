@@ -8,11 +8,6 @@ import java.util.Map;
 
 @Mapper
 public interface PjtMngMapper {
-	
-	int getTotalProjectCount();
-	int getInProgressCount();
-	int getCompletedCount();
-	int getDelayedCount();
 
 	/*
 	 * List<Map<String, Object>> searchProjects(@Param("keyword") String

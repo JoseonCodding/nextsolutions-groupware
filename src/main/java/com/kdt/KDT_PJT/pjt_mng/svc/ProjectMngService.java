@@ -25,26 +25,7 @@ public class ProjectMngService  {
     
     @Autowired
     private PjtMngMapper pjtMngMapper;
-    
-    /** 전체 프로젝트 수 조회 */
-    public int getTotalProjectCount() {
-        return pjtMngMapper.getTotalProjectCount();
-    }
 
-    /** 진행중 프로젝트 수 조회 */
-    public int getInProgressCount() {
-        return pjtMngMapper.getInProgressCount();
-    }
-
-    /** 완료된 프로젝트 수 조회 */
-    public int getCompletedCount() {
-        return pjtMngMapper.getCompletedCount();
-    }
-
-    /** 대기중 프로젝트 수 조회 */
-    public int getDelayedCount() {
-        return pjtMngMapper.getDelayedCount();
-    }
     
 	// log 사용을 위함
 	private final Logger log = LoggerFactory.getLogger(getClass());

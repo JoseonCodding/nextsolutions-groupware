@@ -7,7 +7,7 @@
 
 
 <!-- 프로젝트 관리 Mapper -->
-<mapper namespace="com.kdt.KDT_PJT.pjt_mng.mapper.PjtMngMapper">
+<mapper namespace="com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper">
 
 <select id="countProjects" resultType="int">
   SELECT COUNT(*)
