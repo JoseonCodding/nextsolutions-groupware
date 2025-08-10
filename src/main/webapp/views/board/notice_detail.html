@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>공지사항 상세보기</title>
+  </head>
+   
+  <body>
+    <div class="container">
+      <h2 th:text="${board.title}">게시글 제목</h2>
+      <div class="board-meta">
+        <span
+          >작성자:
+          <strong th:text="${board.employeeId}">employeeId</strong></span
+        >
+        <p>
+          <strong>작성일:</strong>
+          <span
+            th:text="${board.regDate != null ? #dates.format(board.regDate, 'yyyy-MM-dd HH:mm') 
+      					   : '작성일 정보 없음'}"
+            >2025-08-05</span
+          >
+        </p>
+        <span>조회: <strong th:text="${board.viewCnt}">0</strong></span>
+      </div>
+      <hr />
+      <div class="board-content" th:utext="${board.content}">
+        게시글 내용이 여기에 표시됩니다.
+      </div>
+      <hr />
+
+      <!-- 본문 -->
+      <div class="text" th:text="${c.content}">내용</div>
+
+      <div class="board-actions">
+        <a th:href="@{/board/free}" class="btn">목록으로</a>
+      </div>
+  </body>
+</html>

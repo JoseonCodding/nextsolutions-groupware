@@ -45,6 +45,21 @@ public class BoardController {
         model.addAttribute("mainUrl", "board/notice_list");
         return "home";
     }
+    
+    // 공지사항게시판 상세보기
+    @GetMapping("/notice/detail")
+    public String noticeDetail(BoardDTO dto, Model model, HttpSession session) {
+    	 BoardDTO board = boardMapper.detail(dto);
+        
+        EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+        dto.setEmployeeId(loginUser.getEmployeeId());
+        
+        model.addAttribute("board", board);
+        model.addAttribute("activeBoard", "notice");
+        
+        model.addAttribute("mainUrl", "board/notice_detail");
+        return "home";
+    }
 
     // 자유게시판 목록
     @GetMapping("/free")
@@ -83,9 +98,9 @@ public class BoardController {
         Integer boardId = boardMapper.findBoardIdByType("free");
         dto.setBoardId(boardId);
         dto.setEmployeeId(loginUser.getEmployeeId());
-        dto.setRegDate(new Date());
-        dto.setViewCnt(0);
-        dto.setLikeCnt(0);
+        dto.setCreatedAt(new Date());
+        dto.setViewCount(0);
+        dto.setLikeCount(0);
         dto.setDeleted(false);
 
         boardMapper.insert(dto);
@@ -94,30 +109,42 @@ public class BoardController {
     
     // 자유게시판 상세보기
     @GetMapping("/free/detail")
-    public String freeDetail(@RequestParam("id") int id, Model model, HttpSession session) {
-        BoardDTO board = boardMapper.detail(id);
-        
-        EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
- 
-        List<CommentDTO> comments = commentMapper.selectCommentsByPostId((long) id);
-        List<BoardLikeDTO> likes = likeMapper.selectLikesByPostId((long)id);
-        
-        final String me = loginUser != null ? loginUser.getEmployeeId() : null;
+    public String freeDetail(BoardDTO dto, BoardLikeDTO likeDto,
+                             Model model,
+                             HttpSession session) {
 
-        boolean likedByMe = me != null && likes.stream()
-                .anyMatch(l -> me.equals(l.getEmployeeId()));
-        int likeCount = likes.size();
-        
+        // 1) 상세 진입 시 조회수 +1
+    	boardMapper.increaseViewCount(dto);
+    	
+    	// 2) 증가 후 본문 재조회 (DTO 파라미터)
+        BoardDTO board = boardMapper.detail(dto);
+        if (board == null || board.isDeleted()) return "redirect:/board/free";
+    	
+        // 3) 댓글
+        List<CommentDTO> comments = commentMapper.selectCommentsByPostId(dto.getPostId().longValue());
+
+        // 3) 로그인 사용자
+        EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+        String me = (loginUser != null) ? loginUser.getEmployeeId() : null;
+
+        // 4) 좋아요 (필요 최소만 계산: 개수, 내가 눌렀는지)
+        likeDto.setPostId(dto.getPostId().longValue());
+        likeDto.setEmployeeId(me);
+
+        int likeCount = likeMapper.countByPostId(likeDto);                 // 총 개수
+        boolean likedByMe = (me != null) && likeMapper.exists(likeDto);    // 내가 눌렀는지
+
+        // 5) 모델
         model.addAttribute("board", board);
         model.addAttribute("comments", comments);
-        model.addAttribute("likes", likes);
         model.addAttribute("likeCount", likeCount);
         model.addAttribute("likedByMe", likedByMe);
         model.addAttribute("activeBoard", "free");
-        
         model.addAttribute("mainUrl", "board/free_detail");
+
         return "home";
     }
+
     
     // 댓글 저장 처리
     @PostMapping("/free/comment/save")
@@ -132,7 +159,7 @@ public class BoardController {
         
         
         commentMapper.insertComment(dto);
-        return "redirect:/board/free/detail?id=" + dto.getPostId();
+        return "redirect:/board/free/detail?postId=" + dto.getPostId();
     }
     
     // 답글 달기
@@ -145,7 +172,7 @@ public class BoardController {
     	dto.setEmployeeId(loginUser.getEmployeeId());
     	
     	commentMapper.insertComment(dto);
-        return "redirect:/board/free/detail?id=" + dto.getPostId();
+        return "redirect:/board/free/detail?postId=" + dto.getPostId();
     }
     
     //댓글삭제
@@ -153,34 +180,97 @@ public class BoardController {
     public String commentDelete(CommentDTO dto, Model model) {
         commentMapper.deleteComment(dto);
         
-        return "redirect:/board/free/detail?id=" + dto.getPostId();
+        return "redirect:/board/free/detail?postId=" + dto.getPostId();
     }
     
     //좋아요 저장
     @PostMapping("/free/like/toggle")
     public String toggleLike( BoardLikeDTO dto, HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        
-        loginUser = new EmployeeDto();
-    	loginUser.setEmployeeId("20250002");
-    	
         dto.setEmployeeId(loginUser.getEmployeeId());
         
         if (likeMapper.exists(dto)) {
-        	// 이미 내가 좋아요를 누른 상태라면
-            likeMapper.delete(dto);         // 좋아요 기록(행) 삭제
-            boardMapper.decrementLikeCnt(dto);
+            likeMapper.delete(dto);
         } else {
-            try {
-                
-            	likeMapper.insert(dto);
-            } catch (DuplicateKeyException ignore) {
-                // 동시 클릭 등으로 UNIQUE 충돌나면 무시
-            }
+            likeMapper.insert(dto);
         }
-        return "redirect:/board/free/detail?id=" + dto.getPostId();
+        
+        // ★ 항상 동기화(가장 안전)
+        boardMapper.syncLikeCount(dto);
+        
+        return "redirect:/board/free/detail?postId=" + dto.getPostId();
     }
     
+    // 게시글 수정
+    @GetMapping("/free/modify")
+    public String modifyFreeForm(BoardDTO dto,
+                                 Model model,
+                                 HttpSession session) {
+    	if (dto.getPostId() == null) return "redirect:/board/free";
+
+    	BoardDTO board = boardMapper.detail(dto); // detail(BoardDTO dto) 시그니처 기준
+        if (board == null || board.isDeleted()) {
+            return "redirect:/board/free";
+        }
+        
+        // 권한: 본인만
+        EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+        if (!board.getEmployeeId().equals(loginUser.getEmployeeId())) {
+            return "redirect:/board/free/detail?postId=" + dto.getPostId();
+        }
+
+        model.addAttribute("board", board);
+        model.addAttribute("activeBoard", "free");
+        model.addAttribute("mainUrl", "board/free_modifyform");
+        return "home";
+    }
+
     
+    // 수정 저장
+    @PostMapping("/free/modify")
+    public String modifyFreeSubmit(@ModelAttribute BoardDTO form,
+                                   HttpSession session,
+                                   Model model) {
+        EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+
+        BoardDTO dto = new BoardDTO();
+        dto.setPostId(form.getPostId());
+        dto.setTitle(form.getTitle());
+        dto.setContent(form.getContent());
+        dto.setEmployeeId(loginUser.getEmployeeId()); // 소유자 체크용
+
+        boardMapper.modify(dto);
+        return "redirect:/board/free/detail?postId=" + form.getPostId();
+    }
+    
+    //게시글 삭제
+    @PostMapping("/free/delete")
+    public String deleteFree(@RequestParam("postId") int postId,
+                             HttpSession session, 
+                             BoardDTO dto, Model model) {
+    	
+    	EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+    	
+    	dto.setEmployeeId(loginUser.getEmployeeId());
+        dto.setPostId(postId);
+        dto.setEmployeeId(loginUser.getEmployeeId());
+        boardMapper.delete(dto);
+  
+        return "redirect:/board/free";
+    }
+    
+    @GetMapping("/free/delete")
+    public String deleteFreeGet(@RequestParam("postId") int postId,
+            					HttpSession session, BoardDTO dto) {
+    	EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+
+    	dto.setPostId(postId);
+    	dto.setEmployeeId(loginUser.getEmployeeId());
+
+    	boardMapper.delete(dto);
+
+    	return "redirect:/board/free";
+    }
+
 
 }
