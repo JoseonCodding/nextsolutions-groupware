@@ -1,5 +1,9 @@
 package com.kdt.KDT_PJT.schedule.ctl;
 
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,10 +31,36 @@ public class ScheduleController {
 	ScheduleMapper mapper;
 	
 	@RequestMapping
-	String showSchedulePage(Model model) {
+	String showSchedulePage(HttpSession session,Model model) {
+
+		    LocalDate now = LocalDate.now();
+		    LocalDate firstDay = now.withDayOfMonth(1);
+		    model.addAttribute("firstDayOfWeek", firstDay.getDayOfWeek().getValue());  // 1=월요일 ~ 7=일요일
+		    LocalDate lastDay = now.withDayOfMonth(now.lengthOfMonth());
+
+		    Date startDate = java.sql.Date.valueOf(firstDay);
+		    Date endDate = java.sql.Date.valueOf(lastDay);
+
+		    List<ScheduleDTO> scheduleList = mapper.getScheduleListByMonth(
+		    		startDate,endDate);
+		    
+		    for (ScheduleDTO dto : scheduleList) {
+		        dto.convertDatesToLocal();
+		    }
+
+
+		    model.addAttribute("scheduleList", scheduleList);
+		    model.addAttribute("year", now.getYear());
+		    model.addAttribute("month", now.getMonthValue());
+		
+		
 		model.addAttribute("mainUrl", "schedule/main");
 		return "navTap";
 	}
+
+
+	
+	
 	
 	@GetMapping("/insert")
 	String insert(HttpSession session, Model model) {
@@ -50,9 +80,7 @@ public class ScheduleController {
 		// System.out.println("보여라"+loginUser.getEmployeeId());
 		mapper.insert(dto);
 	    
-		model.addAttribute("mainUrl", "redirect:/schedule");
-		return "navTap";
+		return "redirect:/schedule";
 	}
-	
 	
 }
