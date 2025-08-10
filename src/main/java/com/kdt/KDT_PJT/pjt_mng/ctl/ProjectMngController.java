@@ -316,7 +316,7 @@ public class ProjectMngController {
 
 	    projectMngService.updatePjtProc(params);
 
-	    return "redirect:/pjtMng/getPjtList";
+	    return "redirect:/pjtMng/pjtDetail?pjtSn=" + pjtSn;
 	}
 	
 	@GetMapping("/downloadFile")
