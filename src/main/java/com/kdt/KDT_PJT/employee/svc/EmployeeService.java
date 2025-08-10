@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.employee.mapper.EmployeeMapper;
+import com.kdt.KDT_PJT.pjt_mng.mapper.PjtMngMapper;
+
 import java.util.List;
 
 @Service
@@ -32,7 +34,9 @@ public class EmployeeService {
     public void updateEmployee(CmmnMap params) {
         employeeMapper.updateEmployee(params);
     }
-    
+    public List<CmmnMap> getApproverList() {
+        return PjtMngMapper.getApproverList();
+    }
    
 
 }
