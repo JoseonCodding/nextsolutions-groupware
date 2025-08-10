@@ -84,7 +84,7 @@ public class LoginController {
     
 //    @GetMapping("/testSession")
 //    @ResponseBody
-//    public String testSession(HttpSession session) {
+//    public String testSession(HttpSession session) {ww a
 //        return "세션에 저장된 ID: " + session.getAttribute("employeeId");
 //    }
     
