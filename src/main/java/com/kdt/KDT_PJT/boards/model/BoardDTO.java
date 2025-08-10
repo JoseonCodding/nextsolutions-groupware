@@ -2,8 +2,6 @@ package com.kdt.KDT_PJT.boards.model;
 
 import java.util.Date;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,10 +15,10 @@ public class BoardDTO {
     String employeeId;   // 작성자 ID (employeeId 기준)
     String title;      // 제목
     String content;    // 내용
-    Date regDate;      // 작성일
-    Date updDate;      // 수정일
-    Integer viewCnt;   // 조회수
-    Integer likeCnt;   // 좋아요 수
+    Date createdAt;      // 작성일
+    Date updatedAt;      // 수정일
+    Integer viewCount;   // 조회수
+    Integer likeCount;   // 좋아요 수
     boolean isDeleted; // 삭제 여부
 
     // 줄바꿈 <br/> 처리용 (뷰에 사용)
