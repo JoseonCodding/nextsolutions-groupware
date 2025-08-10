@@ -1,5 +1,6 @@
 package com.kdt.KDT_PJT.attend.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
@@ -41,6 +42,26 @@ public interface AttendMapper {
 			  AND DATE(check_in_time) = CURDATE()
 			""")
 	AttendDTO findTodayAttendance(@Param("employeeId") String employeeId);
+	
+	@Insert("INSERT INTO attendance (modified_by, modified_at, modification_reason) VALUES (#{modified_at}, #{modification_reason})")
+	void attendSave(AttendDTO attendance);
+
+    // 🔹 수정 요청 업데이트 (employeeId + 날짜)
+    @Update("""
+        UPDATE attendance
+        SET
+            modified_by = #{modifiedBy},
+            modified_at = #{modifiedAt},
+            modification_reason = #{modificationReason}
+        WHERE employeeId = #{employeeId}
+          AND DATE(check_in_time) = #{workDate}
+    """)
+    int updateAttendModification(@Param("employeeId") String employeeId,
+                                 @Param("workDate") String workDate,
+                                 @Param("modifiedBy") String modifiedBy,
+                                 @Param("modifiedAt") LocalDateTime modifiedAt,
+                                 @Param("modificationReason") String modificationReason);
+	
 
 	//work_hours, is_normal_work 반영
 //	@Update("""
