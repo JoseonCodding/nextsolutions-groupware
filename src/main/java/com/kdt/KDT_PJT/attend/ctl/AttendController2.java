@@ -1,6 +1,8 @@
 package com.kdt.KDT_PJT.attend.ctl;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,35 +23,67 @@ public class AttendController2 {
 
     private final AttendMapper attendMapper;
 
-    /**
-     * 출퇴근 기록 수정 신청 저장
-     * - WHERE: employeeId + DATE(check_in_time) = workDate
-     * - SET: modified_by(=employeeId), modified_at(now), modification_reason(content)
-     */
     @PostMapping("/save")
     public String attendSave(
-            @RequestParam("workDate") String workDate,   // yyyy-MM-dd (셀렉트 value)
-            @RequestParam("title") String title,         // 현재는 DB 미저장 (원하면 content에 prefix로 합치기)
-            @RequestParam("content") String content,     // 수정 사유
+            @RequestParam("workDate") String workDate,                // yyyy-MM-dd
+            @RequestParam("title") String title,                      // 제목
+            @RequestParam("content") String content,                  // 사유
+            @RequestParam(value = "actions", required = false) String[] actionsArr,
             HttpSession session,
             RedirectAttributes ra
     ) {
+        // 세션 사용자 (WHERE에는 employeeId 사용, modified_by는 매퍼에서 emp_nm으로 설정)
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         String employeeId = (loginUser != null) ? loginUser.getEmployeeId() : null;
 
+        // 기본 검증
         if (employeeId == null || workDate == null || workDate.isBlank()) {
             ra.addFlashAttribute("msg", "필수 정보가 누락되었습니다.");
             return "redirect:/attend";
         }
 
-        int updated = attendMapper.updateAttendModification( // ✅ 인스턴스로, 이름도 매퍼와 동일
-                employeeId,           // WHERE employeeId
-                workDate,             // WHERE DATE(check_in_time) = workDate
-                employeeId,           // modified_by ← employeeId 사용
-                LocalDateTime.now(),  // modified_at
-                content               // modification_reason
-        );
-        ra.addFlashAttribute("msg", updated == 1 ? "결재 신청이 등록되었습니다." : "대상 기록이 없습니다.");
+        List<String> actions = (actionsArr == null) ? List.of() : Arrays.asList(actionsArr);
+        if (actions.isEmpty()) {
+            ra.addFlashAttribute("msg", "정정 항목(정상출근/정상퇴근)을 선택하세요.");
+            return "redirect:/attend";
+        }
+
+        // 처리
+        LocalDateTime now = LocalDateTime.now();
+        int inUpdated = 0;
+        int outUpdated = 0;
+
+        if (actions.contains("IN")) {
+            inUpdated = attendMapper.fixInByEmpAndDate(
+                    employeeId,   // WHERE employeeId
+                    workDate,     // WHERE DATE(check_in_time) = workDate AND state_type='대기'
+                    now,          // modified_at
+                    title,        // 제목
+                    content       // modification_reason (매퍼에서 [title] content 형태로 저장)
+            );
+        }
+        if (actions.contains("OUT")) {
+            outUpdated = attendMapper.fixOutByEmpAndDate(
+                    employeeId,
+                    workDate,
+                    now,
+                    title,
+                    content
+            );
+        }
+
+        int total = inUpdated + outUpdated;
+
+        if (total > 0) {
+            StringBuilder sb = new StringBuilder("정상 처리되었습니다.");
+            sb.append(" (출근 수정: ").append(inUpdated).append("건, 퇴근 수정: ").append(outUpdated).append("건)");
+            ra.addFlashAttribute("msg", sb.toString());
+        } else {
+            // 매퍼 WHERE에 state_type='대기' 조건이 있으므로 이 메시지로 안내
+            ra.addFlashAttribute("msg", "대상 기록이 없거나 상태가 ‘대기’가 아닙니다.");
+        }
+
         return "redirect:/attend";
     }
 }
+
