@@ -66,7 +66,8 @@
 	</div>
 
 	<!-- 뷰어 영역 : innerHTML로 렌더링 예정 -->
-	<div style="border:1px solid; margin-top: 20px; background-color: aqua;" th:text="${approvalData == null ? '-' : approvalData.content}">
+	<div style="border:1px solid; margin-top: 20px; background-color: aqua;"
+	     th:text="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
 	</div>
 	
 	<!-- 목록으로(approvalData가 있을때) or 처음으로(approvalData가 없을때) -->
@@ -97,6 +98,7 @@
 	    <!-- 승인 버튼 -->
 	    <form th:action="@{/approval/approve}" method="post" style="display: inline;">
 	        <input type="hidden" name="docId" th:value="${approvalData.docId}" />
+	        <input type="hidden" name="docType" th:value="${approvalData.docType}" />
 	        <input type="hidden" name="page" th:value="${page}" />
 	        <input type="hidden" name="type" th:value="${type}" />
 	        <input type="hidden" name="status" th:value="${status}" />
@@ -105,6 +107,7 @@
 	    <!-- 반려 버튼 -->
 	    <form th:action="@{/approval/reject}" method="post" style="display: inline;">
 	        <input type="hidden" name="docId" th:value="${approvalData.docId}" />
+	        <input type="hidden" name="docType" th:value="${approvalData.docType}" />
 	        <input type="hidden" name="page" th:value="${page}" />
 	        <input type="hidden" name="type" th:value="${type}" />
 	        <input type="hidden" name="status" th:value="${status}" />

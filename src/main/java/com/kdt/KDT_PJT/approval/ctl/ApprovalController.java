@@ -176,9 +176,16 @@ public class ApprovalController {
         @RequestParam("docId") String docId,
         @RequestParam(name = "page", defaultValue = "1") int page,
         @RequestParam(name = "type", required = false) String type,
-        @RequestParam(name = "status", required = false) String status) {
+        @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "docType") String docType) {
 
-        approvalMapper.updateStatus(docId, "완료");
+        if ("공지사항".equals(docType)) {
+            approvalMapper.updateStatusNotice(docId, "완료");
+        } else if ("연차".equals(docType)) {
+            approvalMapper.updateStatusLeave(docId, "완료");
+        } else if ("프로젝트".equals(docType)) {
+            approvalMapper.updateStatusProject(docId, "완료");
+        }
 
         redirectAttributes.addAttribute("docId", docId);
         redirectAttributes.addAttribute("page", page);
@@ -194,9 +201,16 @@ public class ApprovalController {
         @RequestParam("docId") String docId,
         @RequestParam(name = "page", defaultValue = "1") int page,
         @RequestParam(name = "type", required = false) String type,
-        @RequestParam(name = "status", required = false) String status) {
+        @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "docType") String docType) {
 
-        approvalMapper.updateStatus(docId, "반려");
+        if ("공지사항".equals(docType)) {
+            approvalMapper.updateStatusNotice(docId, "반려");
+        } else if ("연차".equals(docType)) {
+            approvalMapper.updateStatusLeave(docId, "반려");
+        } else if ("프로젝트".equals(docType)) {
+            approvalMapper.updateStatusProject(docId, "반려");
+        }
 
         redirectAttributes.addAttribute("docId", docId);
         redirectAttributes.addAttribute("page", page);
