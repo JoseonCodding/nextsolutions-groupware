@@ -5,62 +5,204 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface AttendMapper {
+	
+    // --- 출근/퇴근 기록 ---
 
-	//출근 시간 기록
-	@Insert("INSERT INTO attendance (employeeId, check_in_time) VALUES (#{employeeId}, #{checkInTime})")
+    // 출근 기록 INSERT
+    @Insert("""
+        INSERT INTO attendance (employeeId, check_in_time)
+        VALUES (#{employeeId}, #{checkInTime})
+    """)
+    @Options(useGeneratedKeys = true, keyProperty = "id") // PK 필요 없으면 삭제 가능
     void insertAttendance(AttendDTO attendance);
 
-	//퇴근 시간 기록
-	@Update("UPDATE attendance SET check_out_time = #{checkOutTime} WHERE employeeId = #{employeeId} AND DATE(check_in_time) = CURDATE()")
-	void updateAttendance(AttendDTO attendance);
-	
-	//사용자 본인의 출퇴근 기록
-	@Select("select * from attendance where employeeId = #{employeeId} ")
-	List<AttendDTO> userAttendList(@Param("employeeId") String employeeId);
-		
-	
-	//모든 사용자의 출퇴근 기록(관리자용)
-	//@Select("select * from attendance ")
-	@Select("""
-			SELECT a.*, e.emp_nm 
-			FROM attendance a
-			JOIN employee e ON a.employeeId = e.employeeId
-			ORDER BY a.check_in_time DESC
-			""")
-	List<AttendDTO> attendList();
-	
-	//오늘 출근 조회용
-	@Select("""
-			SELECT * FROM attendance 
-			WHERE employeeId = #{employeeId} 
-			  AND DATE(check_in_time) = CURDATE()
-			""")
-	AttendDTO findTodayAttendance(@Param("employeeId") String employeeId);
-	
-	@Insert("INSERT INTO attendance (modified_by, modified_at, modification_reason) VALUES (#{modified_at}, #{modification_reason})")
-	void attendSave(AttendDTO attendance);
+    // 오늘자 퇴근 기록 UPDATE
+    @Update("""
+        UPDATE attendance
+        SET check_out_time = #{checkOutTime}
+        WHERE employeeId = #{employeeId}
+          AND DATE(check_in_time) = CURDATE()
+          
+    """)
+    void updateAttendance(AttendDTO attendance);
 
-    // 🔹 수정 요청 업데이트 (employeeId + 날짜)
+    // 본인 출퇴근 목록
+    @Select("""
+        SELECT * FROM attendance
+        WHERE employeeId = #{employeeId}
+        ORDER BY check_in_time DESC
+    """)
+    List<AttendDTO> userAttendList(@Param("employeeId") String employeeId);
+
+    // 관리자용 전체 목록
+    @Select("""
+        SELECT a.*, e.emp_nm
+        FROM attendance a
+        JOIN employee e ON a.employeeId = e.employeeId
+        ORDER BY a.check_in_time DESC
+    """)
+    List<AttendDTO> attendList();
+
+    // 오늘 출근 1건 조회
+    @Select("""
+        SELECT * FROM attendance
+        WHERE employeeId = #{employeeId}
+          AND DATE(check_in_time) = CURDATE()
+    """)
+    AttendDTO findTodayAttendance(@Param("employeeId") String employeeId);
+
+
+    // --- 결재 신청(정정) - 체크박스 분기용 ---
+
+    // IN만 09:00으로 정정
     @Update("""
         UPDATE attendance
         SET
-            modified_by = #{modifiedBy},
-            modified_at = #{modifiedAt},
-            modification_reason = #{modificationReason}
+          check_in_time  = STR_TO_DATE(CONCAT(#{workDate}, ' 09:00:00'), '%Y-%m-%d %H:%i:%s'),
+          modified_by    = (SELECT emp_nm FROM employee WHERE employeeId = #{employeeId}),
+          modified_at    = #{modifiedAt},
+          modification_reason = CASE
+              WHEN #{title} IS NOT NULL AND #{title} <> '' THEN CONCAT('[', #{title}, '] ', #{modificationReason})
+              ELSE #{modificationReason}
+          END
         WHERE employeeId = #{employeeId}
           AND DATE(check_in_time) = #{workDate}
+          AND state_type = '대기'
     """)
-    int updateAttendModification(@Param("employeeId") String employeeId,
-                                 @Param("workDate") String workDate,
-                                 @Param("modifiedBy") String modifiedBy,
-                                 @Param("modifiedAt") LocalDateTime modifiedAt,
-                                 @Param("modificationReason") String modificationReason);
+    int fixInByEmpAndDate(@Param("employeeId") String employeeId,
+                          @Param("workDate") String workDate,                  // yyyy-MM-dd
+                          @Param("modifiedAt") LocalDateTime modifiedAt,
+                          @Param("title") String title,
+                          @Param("modificationReason") String modificationReason);
+
+    // OUT만 18:00으로 정정
+    @Update("""
+        UPDATE attendance
+        SET
+          check_out_time = STR_TO_DATE(CONCAT(#{workDate}, ' 18:00:00'), '%Y-%m-%d %H:%i:%s'),
+          modified_by    = (SELECT emp_nm FROM employee WHERE employeeId = #{employeeId}),
+          modified_at    = #{modifiedAt},
+          modification_reason = CASE
+              WHEN #{title} IS NOT NULL AND #{title} <> '' THEN CONCAT('[', #{title}, '] ', #{modificationReason})
+              ELSE #{modificationReason}
+          END
+        WHERE employeeId = #{employeeId}
+          AND DATE(check_in_time) = #{workDate}
+          AND state_type = '대기'
+    """)
+    int fixOutByEmpAndDate(@Param("employeeId") String employeeId,
+                           @Param("workDate") String workDate,
+                           @Param("modifiedAt") LocalDateTime modifiedAt,
+                           @Param("title") String title,
+                           @Param("modificationReason") String modificationReason);
+    
+ // 변경이력 검색 (페이징 O)
+    @Select("""
+      <script>
+        SELECT a.*, e.emp_nm
+        FROM attendance a
+        JOIN employee e ON a.employeeId = e.employeeId
+        WHERE a.modified_at IS NOT NULL
+        <if test="fromDate != null and fromDate != ''">
+          AND a.check_in_time &gt;= STR_TO_DATE(CONCAT(#{fromDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="toDate != null and toDate != ''">
+          AND a.check_in_time &lt;  DATE_ADD(STR_TO_DATE(CONCAT(#{toDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 DAY)
+        </if>
+        <if test="empNm != null and empNm != ''">
+          AND e.emp_nm LIKE CONCAT('%', #{empNm}, '%')
+        </if>
+        <if test="modifiedBy != null and modifiedBy != ''">
+          AND a.modified_by LIKE CONCAT('%', #{modifiedBy}, '%')
+        </if>
+        <if test="stateType != null and stateType != ''">
+          AND a.state_type = #{stateType}
+        </if>
+        ORDER BY a.check_in_time DESC
+        LIMIT #{limit} OFFSET #{offset}
+      </script>
+    """)
+    List<AttendDTO> searchAttendListHistoryPaged(
+            @Param("fromDate") String fromDate,
+            @Param("toDate") String toDate,
+            @Param("empNm") String empNm,
+            @Param("modifiedBy") String modifiedBy,
+            @Param("stateType") String stateType,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
+
+    // 총 건수 (페이징용)
+    @Select("""
+      <script>
+        SELECT COUNT(*)
+        FROM attendance a
+        JOIN employee e ON a.employeeId = e.employeeId
+        WHERE a.modified_at IS NOT NULL
+        <if test="fromDate != null and fromDate != ''">
+          AND a.check_in_time &gt;= STR_TO_DATE(CONCAT(#{fromDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="toDate != null and toDate != ''">
+          AND a.check_in_time &lt;  DATE_ADD(STR_TO_DATE(CONCAT(#{toDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 DAY)
+        </if>
+        <if test="empNm != null and empNm != ''">
+          AND e.emp_nm LIKE CONCAT('%', #{empNm}, '%')
+        </if>
+        <if test="modifiedBy != null and modifiedBy != ''">
+          AND a.modified_by LIKE CONCAT('%', #{modifiedBy}, '%')
+        </if>
+        <if test="stateType != null and stateType != ''">
+          AND a.state_type = #{stateType}
+        </if>
+      </script>
+    """)
+    int countAttendListHistory(
+            @Param("fromDate") String fromDate,
+            @Param("toDate") String toDate,
+            @Param("empNm") String empNm,
+            @Param("modifiedBy") String modifiedBy, 
+            @Param("stateType") String stateType
+    );
+    
+    
+
+	/*
+	 * //출근 시간 기록
+	 * 
+	 * @Insert("INSERT INTO attendance (employeeId, check_in_time) VALUES (#{employeeId}, #{checkInTime})"
+	 * ) void insertAttendance(AttendDTO attendance);
+	 * 
+	 * //퇴근 시간 기록
+	 * 
+	 * @Update("UPDATE attendance SET check_out_time = #{checkOutTime} WHERE employeeId = #{employeeId} AND DATE(check_in_time) = CURDATE()"
+	 * ) void updateAttendance(AttendDTO attendance);
+	 * 
+	 * //사용자 본인의 출퇴근 기록
+	 * 
+	 * @Select("select * from attendance where employeeId = #{employeeId} ")
+	 * List<AttendDTO> userAttendList(@Param("employeeId") String employeeId);
+	 * 
+	 * 
+	 * //모든 사용자의 출퇴근 기록(관리자용) //@Select("select * from attendance ")
+	 * 
+	 * @Select(""" SELECT a.*, e.emp_nm FROM attendance a JOIN employee e ON
+	 * a.employeeId = e.employeeId ORDER BY a.check_in_time DESC """)
+	 * List<AttendDTO> attendList();
+	 * 
+	 * //오늘 출근 조회용
+	 * 
+	 * @Select(""" SELECT * FROM attendance WHERE employeeId = #{employeeId} AND
+	 * DATE(check_in_time) = CURDATE() """) AttendDTO
+	 * findTodayAttendance(@Param("employeeId") String employeeId);
+	 */
+	
 	
 
 	//work_hours, is_normal_work 반영
