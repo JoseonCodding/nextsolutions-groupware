@@ -1,104 +1,90 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>공지사항</title>
-    <style>
-        .board-nav {
-            background-color: #f7f9fc;
-            padding: 10px 20px;
-            border-bottom: 1px solid #dcdcdc;
-        }
-        .board-nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-        }
-        .board-nav ul li {
-            margin-right: 30px;
-        }
-        .board-nav ul li a {
-            text-decoration: none;
-            font-weight: bold;
-            color: #666;
-            padding: 8px 12px;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-        }
-        .board-nav ul li.active a {
-            color: #000;
-            border-bottom: 2px solid #2c3e50;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>공지사항게시판</title>
 </head>
 <body>
+<!-- notice_list.html / free_list.html / dyn_list.html 공통 -->
+<div th:replace="~{board/board_nav :: boardNav}"></div>
 
-<!-- 상단 탭 네비게이션 -->
-<div class="board-nav">
-    <ul>
-        <li th:classappend="${activeBoard} == 'notice' ? 'active'">
-            <a href="/board/notice">공지사항</a>
-        </li>
-        <li th:classappend="${activeBoard} == 'free' ? 'active'">
-            <a href="/board/free">자유게시판</a>
-        </li>
-    </ul>
-</div>
 
-<!-- 📌 자유게시판 본문 -->
-<div class="container">
-    <div class="board-controls" style="display: flex; justify-content: space-between; margin: 20px 0;">
-        <!-- 정렬 드롭다운 -->
-        <div class="sort">
-            <select name="sort" th:onchange="|location.href='?sort=' + this.value|">
-                <option value="" th:selected="${sort == null}">정렬</option>
-                <option value="viewCount" th:selected="${sort=='viewCount'}">조회순</option>
-                <option value="likeCount" th:selected="${sort=='likeCount'}">추천순</option>
-            </select>
-        </div>
 
-        <!-- 검색 폼 -->
-        <form th:action="@{/board/free}" method="get" class="search-form" style="display: flex;">
-            <input type="text" name="keyword" th:value="${keyword}" placeholder="검색" style="padding: 5px;" />
-            <button type="submit" style="padding: 5px 10px; margin-left: 5px;">🔍</button>
-        </form>
+  <!-- 본문 -->
+  <div class="container">
+    <div class="board-controls" style="display:flex; justify-content:space-between; margin:20px 0;">
+      <!-- 정렬 드롭다운 -->
+      <div class="sort">
+        <select name="sort" th:onchange="|location.href='?sort=' + this.value|">
+          <option value="" th:selected="${sort == null}">정렬</option>
+          <!-- 라벨을 값과 맞춤 -->
+          <option value="createdAt" th:selected="${sort=='createdAt'}">최신순</option>
+          <option value="viewCount" th:selected="${sort=='viewCount'}">조회수순</option>
+          <option value="likeCount" th:selected="${sort=='likeCount'}">추천순</option>
+        </select>
+      </div>
 
-        <!-- 글쓰기 버튼 
-        <a th:href="@{/board/notice/write}" style="padding: 5px 10px; margin-left: 10px; background: #007bff; color: #fff; border-radius: 4px; text-decoration: none;">
-            글쓰기
-        </a> -->
-    </div>
+      <!-- 검색 -->
+      <form th:action="@{/board/notice}" method="get" class="search-form" style="display:flex;">
+        <input type="text" name="keyword" th:value="${keyword}" placeholder="검색" style="padding:5px;" />
+        <button type="submit" style="padding:5px 10px; margin-left:5px;">🔍</button>
+      </form>
 
-    <!-- 게시글 테이블 -->
-    <table class="board-table" style="width: 100%; border-collapse: collapse;">
-        <thead style="background: #f5f5f5;">
+      <!-- 글쓰기 -->
+      <a class="btn" th:if="${canWrite}" th:href="@{|/board/${boardMeta.boardId}/write|}">글쓰기</a>
+
+     </div>
+
+
+    <!-- 목록 테이블 -->
+    <table class="board-table" style="width:100%; border-collapse:collapse;">
+      <thead style="background:#f5f5f5;">
         <tr>
-            <th style="padding: 10px; border-bottom: 1px solid #ddd;">NO</th>
-            <th style="padding: 10px; border-bottom: 1px solid #ddd;">제목</th>
-            <th style="padding: 10px; border-bottom: 1px solid #ddd;">작성자</th>
-            <th style="padding: 10px; border-bottom: 1px solid #ddd;">작성일</th>
-            <th style="padding: 10px; border-bottom: 1px solid #ddd;">조회수</th>
-            <th style="padding: 10px; border-bottom: 1px solid #ddd;">추천수</th>
+          <th style="padding:10px; border-bottom:1px solid #ddd;">NO</th>
+          <th style="padding:10px; border-bottom:1px solid #ddd;">제목</th>
+          <th style="padding:10px; border-bottom:1px solid #ddd;">작성자</th>
+          <th style="padding:10px; border-bottom:1px solid #ddd;">작성일</th>
+          <th style="padding:10px; border-bottom:1px solid #ddd;">조회수</th>
+          <th style="padding:10px; border-bottom:1px solid #ddd;">추천수</th>
         </tr>
-        </thead>
-        <tbody>
+      </thead>
+      <tbody>
         <tr th:each="b, stat : ${boards}">
-            <td style="padding: 10px; text-align: center;" th:text="${stat.count}">1</td>
-            <td style="padding: 10px;">
-                <a th:href="@{/board/notice/view(id=${b.postId})}" th:text="${b.title}">제목</a>
-            </td>
-            <td style="padding: 10px; text-align: center;" th:text="${b.employeeId}">작성자</td>
-            <td style="padding: 10px; text-align: center;" 
-                th:text="${b.regDate != null ? #dates.format(b.regDate, 'yyyy-MM-dd') : '작성일 없음'}">2025-01-01</td>
-            <td style="padding: 10px; text-align: center;" th:text="${b.viewCnt}">0</td>
-            <td style="padding: 10px; text-align: center;" th:text="${b.likeCnt}">0</td>
+          <td style="padding:10px; text-align:center;" th:text="${stat.count}">1</td>
+          <td style="padding:10px;">
+            <a th:href="@{/board/notice/detail(postId=${b.postId})}" th:text="${b.title}">제목</a>
+          </td>
+          <td style="padding:10px; text-align:center;" th:text="${b.employeeId}">작성자</td>
+
+          <td style="padding:10px; text-align:center;"
+              th:text="${b.createdAt != null ? #dates.format(b.createdAt, 'yyyy-MM-dd HH:mm') : ''}"></td>
+          <td style="padding:10px; text-align:center;" th:text="${b.viewCount} ?: 0"></td>
+          <td style="padding:10px; text-align:center;" th:text="${b.likeCount} ?: 0"></td>
         </tr>
+        
+
         <tr th:if="${#lists.isEmpty(boards)}">
-            <td colspan="6" style="padding: 90px; text-align: center; color: #999;">등록된 게시글이 없습니다.</td>
+          <td colspan="6" style="padding:90px; text-align:center; color:#999;">등록된 게시글이 없습니다.</td>
         </tr>
-        </tbody>
+      </tbody>
     </table>
+    
+    <div class="pagination" style="display:flex;gap:6px;align-items:center">
+  <a th:classappend="${page==1}?' disabled'" th:href="@{/board/notice(page=1,size=${size})}">&lt;&lt;</a>
+  <a th:classappend="${page==1}?' disabled'" th:href="@{/board/notice(page=${page>1?page-1:1},size=${size})}">&lt;</a>
+
+  <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
+    <a th:if="${p!=page}" th:href="@{/board/notice(page=${p},size=${size})}" th:text="${p}"></a>
+    <span th:if="${p==page}" th:text="${p}" style="font-weight:700;padding:2px 6px;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff"></span>
+  </span>
+
+  <a th:classappend="${page==totalPages}?' disabled'"
+     th:href="@{/board/notice(page=${page<totalPages?page+1:totalPages},size=${size})}">&gt;</a>
+  <a th:classappend="${page==totalPages}?' disabled'"
+     th:href="@{/board/notice(page=${totalPages},size=${size})}">&gt;&gt;</a>
 </div>
+
+    
+  </div>
 </body>
 </html>

@@ -47,6 +47,12 @@ public class EmployeeService {
         employeeMapper.updateEmployee(params);
     }
 
+
+	public Object getEmployeeList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
    
 
 }

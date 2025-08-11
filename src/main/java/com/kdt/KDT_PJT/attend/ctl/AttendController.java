@@ -14,16 +14,20 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
+import com.kdt.KDT_PJT.attend.model.AttendMapper;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 
 @Controller
 @RequestMapping("/attend")
+@RequiredArgsConstructor
 public class AttendController {
 
 	@ModelAttribute("navUrl")
@@ -33,6 +37,9 @@ public class AttendController {
 	
 	@Autowired
     Attendance service;
+	
+	@Autowired
+    private final AttendMapper attendMapper;
 
 	//사용자 본인의 출퇴근 기록 (근태관리 메인 페이지)
     @GetMapping
@@ -40,7 +47,7 @@ public class AttendController {
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
     	
     	//List<AttendDTO> attendList = service.userAttendList(); 
-    	List<AttendDTO> attendList = service.getUserAttendData(loginUser); 
+    	List<AttendDTO> attendList =  attendMapper.userAttendList(loginUser); 
  
     	//System.out.println("사용자 인식: "+empDto.getEmployeeId());
     	System.out.println("showAttendancePage:"+attendList);
@@ -73,7 +80,7 @@ public class AttendController {
         System.out.println("attendTimeInsert 작동하나");
 
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        List<AttendDTO> attendInfoList = service.getAttendInfoList(loginUser);
+        List<AttendDTO> attendInfoList =  attendMapper.userAttendList(loginUser);
 
         // 날짜만 표시 (yyyy-MM-dd), value는 id
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -107,24 +114,25 @@ public class AttendController {
    
  // 근태 관리자 페이지 - 검색 기능 포함
     @GetMapping("/attendList")
-    public String attendListPage(
-        @RequestParam(required = false) String workDate,
-        @RequestParam(required = false) String empNm,
-        @RequestParam(required = false) String modifiedBy,
-        Model model) {
+    public String attendListPage(AttendDTO dto,
+    	    Model model) {
 
         // 검색 조건이 없으면 오늘 출근한 사람만 보여줌
         List<AttendDTO> attendList;
-        if (workDate == null && empNm == null && modifiedBy == null) {
-            attendList = service.getTodayAttendData();
+        if (dto.getWorkDate() == null && dto.getEmpNm() == null && dto.getModifiedBy() == null) {
+            attendList = attendMapper.getTodayAttendList();
         } else {
-            attendList = service.searchAttendData(workDate, empNm, modifiedBy);
+        	
+        	System.out.println("attendListPage2 : "+dto);
+            attendList = attendMapper.searchAttendList(dto);
         }
 
         model.addAttribute("mainData", attendList);
         model.addAttribute("mainUrl", "attend/attendList");
         return "navTap"; 
     }
+    
+    
 
 
     

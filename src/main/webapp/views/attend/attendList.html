@@ -1,6 +1,4 @@
-
-
-  <!-- 검색 폼 -->
+ <!-- 검색 폼 -->
   <form method="get" th:action="@{/attend/attendList/search}">
     <label>날짜(시작): <input type="date" name="fromDate" th:value="${fromDate}" /></label>
     <label>날짜(종료): <input type="date" name="toDate" th:value="${toDate}" /></label>
@@ -14,6 +12,13 @@
         <option value="반려" th:selected="${stateType=='반려'}">반려</option>
       </select>
     </label>
+
+
+<!-- 근태 관리 출퇴근변경이력 - 근태 관리자 화면 -->
+<form method="get" action="/attend/attendList">
+    <label>날짜: <input type="date" name="workDate" /></label>
+    <label>이름: <input type="text" name="empNm" /></label>
+    <label>수정자: <input type="text" name="modifiedBy" /></label>
 
     <button type="submit">검색</button>
 

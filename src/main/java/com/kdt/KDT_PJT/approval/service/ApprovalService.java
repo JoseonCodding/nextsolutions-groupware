@@ -1,0 +1,16 @@
+package com.kdt.KDT_PJT.approval.service;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class ApprovalService {
+
+//	★수정/삭제 페이지에서 url에 있는 docId 파라미터에 '대기'가 아닌 문서번호 입력하면 수정 및 삭제 가능한 버그 있음 
+//	★포스트맨 등으로 데이터 변조해서 발사 가능 (ex.결재반려된 문서를 변조해서 완료로 변조가능)
+//
+//	9. updateById, deleteById where 조건
+//	작성자, 상태값 같은 추가 검증로직(예: '대기' 상태가 아닌데 수정/삭제 시도하면 reject)이 없으므로
+//	실제 서비스에서는 필요 시 추가 권장.
+//	==================================================================
+
+}
