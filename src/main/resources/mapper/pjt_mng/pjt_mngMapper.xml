@@ -4,6 +4,8 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 
+
+
 <!-- 프로젝트 관리 Mapper -->
 <mapper namespace="com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper">
 
@@ -30,16 +32,15 @@
         PJT_BGNG_DT = #{PJT_BGNG_DT},     <!-- 시작일 -->
         PJT_END_DT = #{PJT_END_DT},       <!-- 종료일 -->
         PJT_STTS_CD = #{PJT_STTS_CD},     <!-- 상태 코드 -->
-        content = #{content},				<!-- 내용 -->
-        ATCH_FILE_SN = #{ATCH_FILE_SN},		<!-- 업로드된 파일 uuid 이름 -->
-        ORG_FILE_NM = #{ORG_FILE_NM},		<!-- 업로드된 파일 원래 이름 -->
+        content = #{content},            <!-- 내용 -->
+        ATCH_FILE_SN = #{ATCH_FILE_SN},      <!-- 업로드된 파일 uuid 이름 -->
+        ORG_FILE_NM = #{ORG_FILE_NM},      <!-- 업로드된 파일 원래 이름 -->
         LAST_MDFCN_DT = #{LAST_MDFCN_DT}, <!-- 최종 수정일 -->
         TB_PJT_APR = #{TB_PJT_APR},   <!-- ✅ 결재자 수정 가능 -->
         LAST_MDFR_ID = #{LAST_MDFR_ID}    <!-- 최종 수정자 ID -->
     WHERE PJT_SN = #{PJT_SN}              <!-- 프로젝트 고유번호 조건 -->
   </update>
 
-	<!-- 선생님이 보증하는 진짜 프로젝트 메인 데이터 쏴주는놈 -->
   <!-- ✅ 프로젝트 목록 검색 -->
   <select id="searchProjectMngList" parameterType="string" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     SELECT PJT_SN,
@@ -86,13 +87,8 @@
   </select>
 
   <!-- ✅ 프로젝트 등록 -->
-  <insert id="savePjtProc"
-          parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap"
-          useGeneratedKeys="true"
-          keyProperty="PJT_SN"
-          keyColumn="PJT_SN">            
-
- INSERT INTO TB_PJT_BASC (
+  <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+    INSERT INTO TB_PJT_BASC (
       PJT_NM,
       employeeid,
       PJT_BGNG_DT,
@@ -104,15 +100,6 @@
       ATCH_FILE_SN,
       ORG_FILE_NM
     ) VALUES (
-<<<<<<< HEAD
-      #{PJT_NM},
-      #{EMP_NM},
-      #{PJT_BGNG_DT},
-      #{PJT_END_DT},
-      '01',
-      #{FRST_RGTR_ID},
-      #{FRST_REG_DT}
-=======
       #{PJT_NM},             <!-- 프로젝트명 -->
       #{employeeid},             <!-- 담당자명 -->
       #{PJT_BGNG_DT},        <!-- 시작일 -->
@@ -120,11 +107,10 @@
       '대기',                  <!-- 상태코드: 기본값 '대기' -->
       'SYSTEM',              <!-- 최초등록자: 시스템 -->
       #{FRST_REG_DT},         <!-- 최초등록일 -->
-      #{content}, 			<!-- 내용 -->
-      #{ATCH_FILE_SN}, 		<!-- 업로드한 파일 uuid 이름 -->
-      #{ORG_FILE_NM} 		<!-- 업로드한 파일 원래 이름 -->
+      #{content},          <!-- 내용 -->
+      #{ATCH_FILE_SN},       <!-- 업로드한 파일 uuid 이름 -->
+      #{ORG_FILE_NM}       <!-- 업로드한 파일 원래 이름 -->
       
->>>>>>> refs/remotes/origin/project_ar
     )
   </insert>
 
@@ -146,7 +132,7 @@
            ORG_FILE_NM,
            content
     FROM team2_db.TB_PJT_BASC
-    ORDER BY PJT_SN DESC
+    ORDER BY PJT_SN ASC
   </select>
   
   <!-- ✅ 신규: 정렬 + 검색 + 페이징 -->
@@ -164,7 +150,7 @@
       <when test="sortType == 'PJT_BGNG_DT'"> PJT_BGNG_DT </when>
       <otherwise> PJT_NM </otherwise>
     </choose>
-  ${order} 
+  ${order}
   LIMIT #{offset}, #{pageSize}
 </select>
 
@@ -201,17 +187,6 @@
     ORDER BY employeeid
 </select>
 
-<<<<<<< HEAD
-<!-- ✅ 결재자(사원) 목록 조회 -->
-<!-- pjt_mngMapper.xml (namespace는 네가 쓰는 PjtMngMapper에 맞춰) -->
- <select id="getApproverList" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
-    SELECT 
-      emp_seq AS EMP_SEQ,
-      emp_nm  AS EMP_NM
-    FROM employee
-    ORDER BY emp_nm ASC
-  </select>
-=======
 <!-- 결재자 정보 디비에서 받아오기 -->
 <select id="getProjectById" parameterType="int" resultType="CmmnMap">
   SELECT PJT_SN,
@@ -253,5 +228,4 @@
      WHERE PJT_SN = #{PJT_SN}
   </update>
 
->>>>>>> refs/remotes/origin/project_ar
 </mapper>
