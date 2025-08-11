@@ -9,6 +9,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
+
 @Mapper
 public interface AttendMapper {
 
@@ -22,7 +24,7 @@ public interface AttendMapper {
 	
 	//사용자 본인의 출퇴근 기록
 	@Select("select * from attendance where employeeId = #{employeeId} ")
-	List<AttendDTO> userAttendList(@Param("employeeId") String employeeId);
+	List<AttendDTO> userAttendList(EmployeeDto loginUser);
 		
 	
 	//모든 사용자의 출퇴근 기록(관리자용)
@@ -102,8 +104,6 @@ public interface AttendMapper {
 	    ORDER BY a.check_in_time DESC
 	    </script>
 	""")
-	List<AttendDTO> searchAttendList(@Param("workDate") String workDate,
-	                                 @Param("empNm") String empNm,
-	                                 @Param("modifiedBy") String modifiedBy);
+	List<AttendDTO> searchAttendList(AttendDTO dto);
 
 }
