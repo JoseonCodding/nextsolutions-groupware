@@ -1,4 +1,3 @@
-
 <!-- 근태 관리 출퇴근변경이력 - 근태 관리자 화면 -->
 <form method="get" action="/attend/attendList">
     <label>날짜: <input type="date" name="workDate" /></label>
@@ -7,15 +6,18 @@
 
     <button type="submit">검색</button>
 
+</form>
+
+<form>
     <!-- 동일 파라미터로 PDF -->
-    <button type="submit" formmethod="get" th:formaction="@{/attend/attendList/search/pdf}">
+    <button type="submit" formmethod="get" th:formaction="@{/attend/pdf}">
       PDF 다운로드
     </button>
 
     <!-- 초기 진입 안전값 -->
     <input type="hidden" name="size" th:value="${size} ?: 10"/>
     <input type="hidden" name="page" value="1"/>
-  </form>
+</form>
 
 <!-- 페이저: #numbers 사용 금지, 안전 파싱 -->
 <div th:with="
@@ -28,24 +30,24 @@
     "
     style="margin-top:10px; display:flex; gap:6px; align-items:center;">
 
-  <a th:href="@{/attend/attendList/search(fromDate=${fromDate},toDate=${toDate},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=1,size=${s})}"
+  <a th:href="@{/attend/attendList/search(startDay=${startDay},endDay=${endDay},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=1,size=${s})}"
      th:classappend="${p == 1} ? 'disabled'">« 처음</a>
 
-  <a th:href="@{/attend/attendList/search(fromDate=${fromDate},toDate=${toDate},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=${prev},size=${s})}"
+  <a th:href="@{/attend/attendList/search(startDay=${startDay},endDay=${endDay},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=${prev},size=${s})}"
      th:classappend="${p == 1} ? 'disabled'">‹ 이전</a>
 
   <span th:text="${p} + ' / ' + ${tp}"></span>
 
-  <a th:href="@{/attend/attendList/search(fromDate=${fromDate},toDate=${toDate},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=${(next>0?next:1)},size=${s})}"
+  <a th:href="@{/attend/attendList/search(startDay=${startDay},endDay=${endDay},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=${(next>0?next:1)},size=${s})}"
      th:classappend="${p == tp or tp == 0} ? 'disabled'">다음 ›</a>
 
-  <a th:href="@{/attend/attendList/search(fromDate=${fromDate},toDate=${toDate},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=${(tp>0?tp:1)},size=${s})}"
+  <a th:href="@{/attend/attendList/search(startDay=${startDay},endDay=${endDay},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=${(tp>0?tp:1)},size=${s})}"
      th:classappend="${p == tp or tp == 0} ? 'disabled'">끝 »</a>
 
   <!-- 페이지 크기 변경 -->
   <form method="get" th:action="@{/attend/attendList/search}" style="margin-left:auto;">
-    <input type="hidden" name="fromDate" th:value="${fromDate}">
-    <input type="hidden" name="toDate" th:value="${toDate}">
+    <input type="hidden" name="startDay" th:value="${startDay}">
+    <input type="hidden" name="endDay" th:value="${endDay}">
     <input type="hidden" name="empNm" th:value="${empNm}">
     <input type="hidden" name="modifiedBy" th:value="${modifiedBy}">
     <input type="hidden" name="stateType" th:value="${stateType}">
@@ -84,7 +86,6 @@
       </tr>
     </tbody>
   </table>
-
 </div>
 
 

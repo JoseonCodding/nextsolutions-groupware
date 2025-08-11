@@ -1,6 +1,7 @@
 package com.kdt.KDT_PJT.attend.ctl;
 
 import java.time.LocalDate;
+
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -17,15 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
 import com.kdt.KDT_PJT.attend.model.AttendMapper;
+import com.kdt.KDT_PJT.attend.model.AttendMapper2;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
 
 
 @Controller
 @RequestMapping("/attend")
-@RequiredArgsConstructor
 public class AttendController {
 
 	@ModelAttribute("navUrl")
@@ -37,7 +38,10 @@ public class AttendController {
     Attendance service;
 	
 	@Autowired
-    private final AttendMapper attendMapper;
+    AttendMapper attendMapper;
+	
+	@Autowired
+	AttendMapper2 attendMapper2;
 
 	//사용자 본인의 출퇴근 기록 (근태관리 메인 페이지)
     @GetMapping
@@ -128,9 +132,24 @@ public class AttendController {
 //    }
    
  // 근태 관리자 페이지 - 검색 기능 포함
+	/*
+	 * @GetMapping("/attendList") public String attendListPage(AttendDTO dto, Model
+	 * model) {
+	 * 
+	 * // 검색 조건이 없으면 오늘 출근한 사람만 보여줌 List<AttendDTO> attendList; if
+	 * (dto.getWorkDate() == null && dto.getEmpNm() == null && dto.getModifiedBy()
+	 * == null) { attendList = attendMapper.getTodayAttendList(); } else {
+	 * 
+	 * System.out.println("attendListPage2 : "+dto); attendList =
+	 * attendMapper.searchAttendList(dto); }
+	 * 
+	 * model.addAttribute("mainData", attendList); model.addAttribute("mainUrl",
+	 * "attend/attendList"); return "navTap"; }
+	 */
+    
     @GetMapping("/attendList")
     public String attendListPage(AttendDTO dto,
-    	    Model model) {
+    	    Model model, HttpServletResponse resp) {
 
         // 검색 조건이 없으면 오늘 출근한 사람만 보여줌
         List<AttendDTO> attendList;
@@ -144,12 +163,21 @@ public class AttendController {
 
         model.addAttribute("mainData", attendList);
         model.addAttribute("mainUrl", "attend/attendList");
-        return "navTap"; 
-    }
-    
+        
+        // ✅ attendMapper → attendMapper2 로 변경
+	
+		/*
+		 * List<AttendDTO> list = attendMapper2.searchAttendListHistoryPaged(dto);
+		 * 
+		 * String fileBase = "attendance_changes"; String encoded =
+		 * URLEncoder.encode(fileBase, StandardCharsets.UTF_8);
+		 * resp.setContentType(MediaType.APPLICATION_PDF_VALUE);
+		 * resp.setHeader("Content-Disposition", "attachment; filename=\"" + encoded +
+		 * ".pdf\""); writePdf(list, resp);
+		 */
+        
+        return "navTap";
+    } 
     
 
-
-    
-
-}
+} // ← 클래스 닫기

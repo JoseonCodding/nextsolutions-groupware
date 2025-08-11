@@ -92,6 +92,7 @@ public class ProjectMngService  {
 
        List<CmmnMap> list = cmmnDao.selectList("com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.searchProjectMngList", keyword);  // ② 페이징 걸린 상태로 select 실행
        return new PageInfo<>(list);          // ③ PageInfo로 래핑
+       
 
 
    }
