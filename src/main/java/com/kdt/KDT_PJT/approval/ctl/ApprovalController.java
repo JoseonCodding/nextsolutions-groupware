@@ -80,13 +80,20 @@ public class ApprovalController {
     @RequestMapping("/viewer")
     public String approvalViewer(
 			    		Model model,
+			    		RedirectAttributes redirectAttributes,
 			    		@RequestParam("docId") String docId,
 			            @RequestParam(name = "page", defaultValue = "1") int page,
 			            @RequestParam(name = "type", required = false) String type,
 			            @RequestParam(name = "status", required = false) String status) {
     	
     	ApprovalDTO approvalData = approvalMapper.view(docId);
-    
+    	
+    	// null 방어 로직
+    	if (approvalData == null) {
+    	    redirectAttributes.addFlashAttribute("errorMsg", "존재하지 않는 문서입니다.");
+    	    return "redirect:/approval/main";
+    	}
+
     	model.addAttribute("approvalData", approvalData);
 
     	model.addAttribute("page", page);
@@ -124,12 +131,14 @@ public class ApprovalController {
 				        @RequestParam(name = "status", required = false) String status,
 				        @RequestParam(name = "docType") String docType) {
     	
+    	String pkId = docId.split("_")[1]; // prefix 제거 → 실제 PK 값
+    	
         if ("공지사항".equals(docType)) {
-            approvalMapper.deleteNotice(docId);
+            approvalMapper.deleteNotice(pkId);
         } else if ("연차".equals(docType)) {
-            approvalMapper.deleteLeave(docId);
+            approvalMapper.deleteLeave(pkId);
         } else if ("프로젝트".equals(docType)) {
-            approvalMapper.deleteProject(docId);
+            approvalMapper.deleteProject(pkId);
         }
         
         int totalCount = approvalMapper.approvalCountAll(type, status);	// 게시글 DB 전체 개수 (필터기능 반영됨)
@@ -149,12 +158,19 @@ public class ApprovalController {
     @GetMapping("/edit")
     public String approvalEditForm(
     					Model model,
+    					RedirectAttributes redirectAttributes,
 				        @RequestParam("docId") String docId,
 				        @RequestParam(name = "page", defaultValue = "1") int page,
 				        @RequestParam(name = "type", required = false) String type,
 				        @RequestParam(name = "status", required = false) String status) {
     	
     	ApprovalDTO editData = approvalMapper.view(docId);
+    	
+    	// null 방어 로직
+        if (editData == null) {
+            redirectAttributes.addFlashAttribute("errorMsg", "존재하지 않는 문서입니다.");
+            return "redirect:/approval/main";
+        }
     	
     	model.addAttribute("editData", editData);
     	
@@ -203,15 +219,17 @@ public class ApprovalController {
         	;
 
         String safeContent = Jsoup.clean(rawContent, customSafelist);
-
+        
+        String pkId = editData.getDocId().split("_")[1]; // PK 추출
+        
         editData.setContent(safeContent);
 
         if ("공지사항".equals(docType)) {
-            approvalMapper.editNotice(editData);
+            approvalMapper.editNotice(pkId, editData);
         } else if ("연차".equals(docType)) {
-            approvalMapper.editLeave(editData);
+            approvalMapper.editLeave(pkId, editData);
         } else if ("프로젝트".equals(docType)) {
-            approvalMapper.editProject(editData);
+            approvalMapper.editProject(pkId, editData);
         }
 
         redirectAttributes.addAttribute("docId", editData.getDocId());
@@ -230,13 +248,15 @@ public class ApprovalController {
         @RequestParam(name = "type", required = false) String type,
         @RequestParam(name = "status", required = false) String status,
         @RequestParam(name = "docType") String docType) {
+    	
+    	String pkId = docId.split("_")[1]; // prefix 제거 → 실제 PK 값
 
         if ("공지사항".equals(docType)) {
-            approvalMapper.updateStatusNotice(docId, "완료");
+            approvalMapper.updateStatusNotice(pkId, "완료");
         } else if ("연차".equals(docType)) {
-            approvalMapper.updateStatusLeave(docId, "완료");
+            approvalMapper.updateStatusLeave(pkId, "완료");
         } else if ("프로젝트".equals(docType)) {
-            approvalMapper.updateStatusProject(docId, "완료");
+            approvalMapper.updateStatusProject(pkId, "완료");
         }
 
         redirectAttributes.addAttribute("docId", docId);
@@ -255,13 +275,15 @@ public class ApprovalController {
         @RequestParam(name = "type", required = false) String type,
         @RequestParam(name = "status", required = false) String status,
         @RequestParam(name = "docType") String docType) {
+    	
+    	String pkId = docId.split("_")[1]; // prefix 제거 → 실제 PK 값
 
         if ("공지사항".equals(docType)) {
-            approvalMapper.updateStatusNotice(docId, "반려");
+            approvalMapper.updateStatusNotice(pkId, "반려");
         } else if ("연차".equals(docType)) {
-            approvalMapper.updateStatusLeave(docId, "반려");
+            approvalMapper.updateStatusLeave(pkId, "반려");
         } else if ("프로젝트".equals(docType)) {
-            approvalMapper.updateStatusProject(docId, "반려");
+            approvalMapper.updateStatusProject(pkId, "반려");
         }
 
         redirectAttributes.addAttribute("docId", docId);

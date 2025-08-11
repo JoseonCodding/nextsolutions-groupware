@@ -60,10 +60,12 @@
 			<tr>
 				<td>결재 종류</td>
 				<td th:text="${approvalData == null ? '-' : approvalData.docType}"></td>
+				<td>결재 상태</td>
+				<td th:text="${approvalData == null ? '-' : approvalData.status}"></td>
 			</tr>
 			<tr>
 				<td>제목</td>
-				<td th:text="${approvalData == null ? '존재하지 않는 문서입니다.' : approvalData.title}"></td>
+				<td colspan="3" th:text="${approvalData == null ? '존재하지 않는 문서입니다.' : approvalData.title}"></td>
 			</tr>
 		</table>
 	</div>

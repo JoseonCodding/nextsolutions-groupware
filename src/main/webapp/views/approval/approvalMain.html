@@ -14,6 +14,7 @@
 				    <option value="" th:selected="${type == null or type == ''}">결재 종류</option>
 				    <option value="프로젝트" th:selected="${type == '프로젝트'}">프로젝트</option>
 				    <option value="연차" th:selected="${type == '연차'}">연차</option>
+				    <option value="근태" th:selected="${type == '근태'}">근태</option>
 				    <option value="공지사항" th:selected="${type == '공지사항'}">공지사항</option>
 				</select>
 
@@ -92,6 +93,10 @@
 		  <!-- Next 버튼 -->
 		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages}, type=${type}, status=${status})}">Next &#x203A;</a>
 		</nav>
-
+	
+	<!-- null 방어 로직 -->
+	<script th:if="${errorMsg}" th:inline="javascript">
+		alert('[[${errorMsg}]]');
+	</script>
 </body>
 </html>
