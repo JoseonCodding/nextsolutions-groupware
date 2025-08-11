@@ -1,6 +1,6 @@
 package com.kdt.KDT_PJT.attend.ctl;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
@@ -43,17 +41,35 @@ public class AttendController {
 
 	//사용자 본인의 출퇴근 기록 (근태관리 메인 페이지)
     @GetMapping
-    String showAttendancePage(HttpSession session, Model model) {
+    String showAttendancePage(HttpSession session, Model model,AttendDTO attendance) {
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
     	
-    	//List<AttendDTO> attendList = service.userAttendList(); 
-    	List<AttendDTO> attendList =  attendMapper.userAttendList(loginUser); 
- 
-    	//System.out.println("사용자 인식: "+empDto.getEmployeeId());
-    	System.out.println("showAttendancePage:"+attendList);
+    	// 현재 조회 기간이 없으면 기본값 세팅 (이번달 시작일 ~ 이번달 말일)
+        if(attendance.getStartDay() == null || attendance.getEndDay() == null) {
+            LocalDate now = LocalDate.now();
+            attendance.setStartDay(now.withDayOfMonth(1).toString());      // 이번달 1일
+            attendance.setEndDay(now.withDayOfMonth(now.lengthOfMonth()).toString()); // 이번달 마지막 날
+        }
+
+        // 로그인 사용자 아이디 세팅
+        attendance.setEmployeeId(loginUser.getEmployeeId());
     	
-        model.addAttribute("mainData", attendList);
+    	List<AttendDTO> attendMonthList =  attendMapper.userAttendMonthList(attendance); 
+    	
+    	System.out.println("showAttendancePage:"+attendMonthList);
+    	
+        model.addAttribute("mainData", attendMonthList);
         model.addAttribute("mainUrl", "attend/check");
+        model.addAttribute("attendDTO", attendance);   // 조회 조건 유지용
+       
+        
+        // DTO에 구현한 메서드 호출
+        model.addAttribute("prevMonthStartDay", attendance.getPrevMonthStartDay());
+        model.addAttribute("prevMonthEndDay", attendance.getPrevMonthEndDay());
+        model.addAttribute("nextMonthStartDay", attendance.getNextMonthStartDay());
+        model.addAttribute("nextMonthEndDay", attendance.getNextMonthEndDay());
+
+        model.addAttribute("currentStartDay", attendance.getStartDay());
         return "navTap";
         
     }

@@ -25,8 +25,17 @@ public interface AttendMapper {
    //사용자 본인의 출퇴근 기록
    @Select("select * from attendance where employeeId = #{employeeId} ")
    List<AttendDTO> userAttendList(EmployeeDto loginUser);
-      
    
+   //사용자 본인의 출퇴근 기록 한달 기준 보기
+   @Select("""
+		    SELECT * FROM attendance
+		    WHERE employeeId = #{employeeId}
+		      AND DATE(check_in_time) BETWEEN #{startDay} AND #{endDay}
+		    ORDER BY check_in_time
+		""")
+   List<AttendDTO> userAttendMonthList( AttendDTO attendance);
+      
+
    //모든 사용자의 출퇴근 기록(관리자용)
    //@Select("select * from attendance ")
    @Select("""

@@ -92,43 +92,43 @@ public class AttendController2 {
     }
 
  // === 2) 변경이력 목록(검색 + 페이징) ===
-    @GetMapping("/attendList/search")
-    public String attendListPage(
-            @RequestParam(name="fromDate", required=false) String fromDate,
-            @RequestParam(name="toDate", required=false) String toDate,
-            @RequestParam(name="empNm", required=false) String empNm,
-            @RequestParam(name="modifiedBy", required=false) String modifiedBy,
-            @RequestParam(name="stateType", required=false) String stateType,
-            @RequestParam(name="page", defaultValue="1") int page,
-            @RequestParam(name="size", defaultValue="10") int size,
-            Model model
-    ) {
-        if (page < 1) page = 1;
-        if (size < 1) size = 10;
-        int offset = (page - 1) * size;
-
-        // ✅ attendMapper → attendMapper2 로 변경
-        int total = attendMapper2.countAttendListHistory(fromDate, toDate, empNm, modifiedBy, stateType);
-        List<AttendDTO> list = attendMapper2.searchAttendListHistoryPaged(
-                fromDate, toDate, empNm, modifiedBy, stateType, size, offset);
-
-        int totalPages = (int) Math.ceil(total / (double) size);
-
-        model.addAttribute("fromDate", fromDate);
-        model.addAttribute("toDate", toDate);
-        model.addAttribute("empNm", empNm);
-        model.addAttribute("modifiedBy", modifiedBy);
-        model.addAttribute("stateType", stateType);
-        model.addAttribute("page", page);
-        model.addAttribute("size", size);
-        model.addAttribute("total", total);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("mainData", list);
-
-        model.addAttribute("navUrl", "/attend/nav");
-        model.addAttribute("mainUrl", "/attend/attendList");
-        return "navTap";
-    }
+//    @GetMapping("/attendList/search")
+//    public String attendListPage(
+//            @RequestParam(name="fromDate", required=false) String fromDate,
+//            @RequestParam(name="toDate", required=false) String toDate,
+//            @RequestParam(name="empNm", required=false) String empNm,
+//            @RequestParam(name="modifiedBy", required=false) String modifiedBy,
+//            @RequestParam(name="stateType", required=false) String stateType,
+//            @RequestParam(name="page", defaultValue="1") int page,
+//            @RequestParam(name="size", defaultValue="10") int size,
+//            Model model
+//    ) {
+//        if (page < 1) page = 1;
+//        if (size < 1) size = 10;
+//        int offset = (page - 1) * size;
+//
+//        // ✅ attendMapper → attendMapper2 로 변경
+//        int total = attendMapper2.countAttendListHistory(fromDate, toDate, empNm, modifiedBy, stateType);
+//        List<AttendDTO> list = attendMapper2.searchAttendListHistoryPaged(
+//                fromDate, toDate, empNm, modifiedBy, stateType, size, offset);
+//
+//        int totalPages = (int) Math.ceil(total / (double) size);
+//
+//        model.addAttribute("fromDate", fromDate);
+//        model.addAttribute("toDate", toDate);
+//        model.addAttribute("empNm", empNm);
+//        model.addAttribute("modifiedBy", modifiedBy);
+//        model.addAttribute("stateType", stateType);
+//        model.addAttribute("page", page);
+//        model.addAttribute("size", size);
+//        model.addAttribute("total", total);
+//        model.addAttribute("totalPages", totalPages);
+//        model.addAttribute("mainData", list);
+//
+//        model.addAttribute("navUrl", "/attend/nav");
+//        model.addAttribute("mainUrl", "/attend/attendList");
+//        return "navTap";
+//    }
 
     // === 3) PDF (전체 내보내기) ===
     @GetMapping(value="/attendList/search/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
@@ -186,7 +186,7 @@ public class AttendController2 {
             PdfPTable table = new PdfPTable(10);
             table.setWidthPercentage(100);
             table.setWidths(new float[]{12,12,12,8,8,10,10,10,10,20});
-            addHeader(table, headerFont, "근무일","사번","이름","출근","퇴근","근무시간","상태","수정자","수정일","사유");
+            addHeader(table, headerFont, "근무일","사번","이름","출근","퇴근","수정자","수정일","사유");
 
             var d  = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
             var hm = java.time.format.DateTimeFormatter.ofPattern("HH:mm");
@@ -195,8 +195,6 @@ public class AttendController2 {
                 String workDate = formatLocalDate(extractLdt(a.getCheckInTime()), d);
                 String in       = formatLocalTime(extractLdt(a.getCheckInTime()), hm);
                 String out      = formatLocalTime(extractLdt(a.getCheckOutTime()), hm);
-                String wh       = (a.getWorkHours()==null) ? "" : String.valueOf(a.getWorkHours());
-                String st       = (a.getNormalWork()==null) ? "" : (a.getNormalWork() ? "정상" : "비정상");
                 String modAt    = formatLocalDate(extractLdt(a.getModifiedAt()), d);
 
                 addCell(table, cellFont, workDate);
@@ -204,8 +202,6 @@ public class AttendController2 {
                 addCell(table, cellFont, ns(a.getEmpNm()));
                 addCell(table, cellFont, in);
                 addCell(table, cellFont, out);
-                addCell(table, cellFont, wh);
-                addCell(table, cellFont, st);
                 addCell(table, cellFont, ns(a.getModifiedBy()));
                 addCell(table, cellFont, modAt);
                 addCell(table, cellFont, ns(a.getModificationReason()));
