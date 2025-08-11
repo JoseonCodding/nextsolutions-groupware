@@ -50,30 +50,10 @@ public class ProjectMngController {
 	// log 사용을 위함
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-
 	// ✅ 프로젝트 목록 화면 조회 (검색어 유무에 따라 분기)
-
-
-	// ✅ 프로젝트 목록 화면 조회 (검색 + 페이징 + 연속 순번)
-
 	@GetMapping("/getPjtList")
-
 	public String getPjtList(@RequestParam(required = false, name = "keyword") String keyword,
 			HttpServletRequest request, Model model) {
-
-	public String getPjtList(
-		       @RequestParam(value = "keyword", required = false) String keyword,
-		        @RequestParam(value = "sort",    required = false, defaultValue = "PJT_SN") String sort,
-		        @RequestParam(value = "order",   required = false, defaultValue = "DESC")   String order,
-		        @RequestParam(value = "pageNum", required = false, defaultValue = "1")      int pageNum,
-		        @RequestParam(value = "pageSize",required = false, defaultValue = "10")     int pageSize,
-		        Model model
-		) {
-	
-		  log.info("getPjtList >>> keyword={}, pageNum={}, pageSize={}, sort={}, order={}",
-		            keyword, pageNum, pageSize, sort, order);
-		  
-	    // ✅ PageHelper로 페이지네이션된 결과 가져오기
 
 		// 🔍 검색어 로그 확인 (디버깅용)
 		System.out.println("getPjtList Called >>> keyword = " + keyword);
@@ -127,29 +107,9 @@ public class ProjectMngController {
 		model.addAttribute("mainUrl", "pjt_mng/pjt_main");
 		return "home";
 
-
-	    // ✅ 순번 계산용 offset (0, 10, 20 …)
-	    int offset = (page.getPageNum() - 1) * page.getPageSize();
-
-	    // ✅ NPE 방지: list가 null이면 빈 리스트로 대체
-	    List<CmmnMap> list = (page.getList() != null) ? page.getList() : java.util.Collections.emptyList();
-
-	    // 뷰에 데이터 바인딩
-
-	    model.addAttribute("pjtList", list);
-	    model.addAttribute("pageInfo", page);
-	    model.addAttribute("offset", offset);
-
-	    model.addAttribute("sort", sort);
-	    model.addAttribute("order", order);
-
-	    // 검색어 유지 (검색창에 그대로 보이게)
-	    model.addAttribute("keyword", keyword);
-
-	    // 메인 레이아웃에서 불러올 바디 템플릿 지정
-	    model.addAttribute("mainUrl", "pjt_mng/pjt_main");
-	    return "home";
-
+	}
+	
+	
 	
 	// 결재자 리스트 디비에 받아오는거 
 	@GetMapping("/project/edit")
@@ -157,19 +117,6 @@ public class ProjectMngController {
 	    CmmnMap pjt = projectMngService.getProjectWithApprover(pjtSn);
 	    model.addAttribute("pjt", pjt);
 	    return "pjt_mng/pjt_edit_form";
-
-	// 프로젝트 상세보기 페이지 호출 
-	@GetMapping("/pjtDetail")
-	public String getPjtDetail(@RequestParam("pjtSn") String pjtSn, Model model) {
-	    log.info("getPjtDetail Called >>> " + pjtSn);
-	    
-	    CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
-	    model.addAttribute("pjt", pjtDetail);
-
-	 	    
-	    model.addAttribute("mainUrl", "pjt_mng/pjt_detail");
-	    return "home";
-
 	}
 	
 	
@@ -231,7 +178,6 @@ public class ProjectMngController {
 	    return "home";
 	}
 	
-
 	@GetMapping("/pjtDetail")
 	public String pjtDetail(@RequestParam("pjtSn") int pjtSn, Model model) {
 		    CmmnMap pjt = projectMngService.getPjtDetail(pjtSn);
@@ -241,32 +187,6 @@ public class ProjectMngController {
 		    model.addAttribute("mainUrl", "pjt_mng/pjt_detail");
 		    return "home";
 		}
-
-	@GetMapping("/pjtRegForm")
-	public String pjtRegForm(Model model) {
-	    List<CmmnMap> approverList = projectMngService.getApproverList();
-	    model.addAttribute("approverList", approverList);
-	    
-	    model.addAttribute("mainUrl", "pjt_mng/pjt_reg_form");
-	    return "home";   // 등록 페이지 경로
-	}
-	
-	
-	  @PostMapping("/pjtSave")    // ← 폼의 th:action과 일치!!
-	  public String saveProject(@ModelAttribute CmmnMap form,
-	                            @RequestParam(name="files", required=false) MultipartFile[] files,
-	                            HttpSession session, RedirectAttributes ra) {
-	    int pjtSn = projectMngService.saveOrUpdateProject(form);
-	    if (files != null && files.length > 0) {
-	      String loginId = (String) session.getAttribute("loginId");
-	      projectMngService.saveProjectFiles(pjtSn, files, loginId == null ? "system" : loginId);
-	    }
-	    ra.addFlashAttribute("msg","저장되었습니다.");
-	    return "redirect:/pjtMng/pjtDetail?pjtSn=" + pjtSn;
-	  }
-	
-	
-
 	
 	@PostMapping("/updateApprover")
 	public String updateApprover(@RequestParam("PJT_SN") int pjtSn,
@@ -300,7 +220,6 @@ public class ProjectMngController {
 				.addAttributes("img", "style", "src", "alt", "width", "height")
 				.addProtocols("img", "src", "data", "http", "https");
 
-<<<<<<< HEAD
 		String safeContent = Jsoup.clean(content, customSafelist);
 		pjtData.put("content", safeContent);
 
@@ -312,16 +231,9 @@ public class ProjectMngController {
 			redirectAttributes.addFlashAttribute("msg", "수정 중 오류 발생: " + e.getMessage());
 			return "redirect:/pjtEditForm?pjtSn=" + pjtData.get("pjtSn");
 		}
-=======
-	    } catch (Exception e) {
-	        redirectAttributes.addFlashAttribute("msg", "수정 중 오류 발생: " + e.getMessage());
-	        return "redirect:/pjtMng/pjtDetail…" + pjtData.get("pjtSn"); // 다시 수정 폼으로
-	    }
->>>>>>> refs/heads/mmmaster
 	}
 
 	@PostMapping("/updatePjtProc")
-<<<<<<< HEAD
 	public String updatePjtProc(@RequestParam("pjtSn") String pjtSn, @RequestParam("pjtNm") String pjtNm,
 			@RequestParam(value = "empNm", required = false) String empNm,
 			@RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
@@ -344,39 +256,7 @@ public class ProjectMngController {
 				.addProtocols("img", "src", "data", "http", "https");
 
 		String safeContent = Jsoup.clean(content, customSafelist);
-=======
-	public String updatePjtProc(
-	    @RequestParam(value="pjtSn") String pjtSn,
-	    @RequestParam(value="pjtNm") String pjtNm,
-	    @RequestParam(value="empNm",     required=false) String empNm,
-	    @RequestParam(value="pjtBgngDt", required=false)
-	    @org.springframework.format.annotation.DateTimeFormat(pattern="yyyy-MM-dd") java.time.LocalDate pjtBgngDt,
-	    @RequestParam(value="pjtEndDt",  required=false)
-	    @org.springframework.format.annotation.DateTimeFormat(pattern="yyyy-MM-dd") java.time.LocalDate pjtEndDt,
-	    @RequestParam(value="pjtSttsCd", required=false) String pjtSttsCd,
-	    @RequestParam(value="content",   required=false) String content,   // ← 폼 name과 동일 (소문자)
-	    @RequestParam(value="approvers", required=false) String approvers,
-	    @RequestParam(value="uploadFile", required=false) org.springframework.web.multipart.MultipartFile uploadFile
-	){
-	    var params = new com.kdt.KDT_PJT.cmmn.map.CmmnMap();
-	    params.put("PJT_SN", pjtSn);
-	    params.put("PJT_NM", pjtNm);
-	    params.put("EMP_NM", empNm);
-	    params.put("PJT_BGNG_DT", pjtBgngDt);
-	    params.put("PJT_END_DT", pjtEndDt);
-	    params.put("PJT_STTS_CD", pjtSttsCd);
-	    params.put("CONTENT", content);
-	    params.put("APPROVERS", approvers);
-	    if (uploadFile != null && !uploadFile.isEmpty()) {
-	        params.put("UPLOAD_ORG_NM", uploadFile.getOriginalFilename());
-	        // TODO: 저장 로직 있으면 서비스에서 처리
-	    }
-	    params.put("LAST_MDFCN_DT", java.time.LocalDateTime.now()
-	            .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-	    params.put("LAST_MDFR_ID", "SYSTEM");
->>>>>>> refs/heads/mmmaster
 
-<<<<<<< HEAD
 		log.info("updatePjtProc Called >>> " + pjtSn);
 
 		CmmnMap params = new CmmnMap();
@@ -522,16 +402,6 @@ public class ProjectMngController {
 		projectMngService.savePjtProc(params);
 
 		return "redirect:/pjtMng/getPjtList";
-=======
-	    projectMngService.updatePjtProc(params);
-	    return "redirect:/pjtMng/getPjtList";
-	}
->>>>>>> refs/heads/mmmaster
 
-<<<<<<< HEAD
 	}
 }
-=======
-	}	
-
->>>>>>> refs/heads/mmmaster
