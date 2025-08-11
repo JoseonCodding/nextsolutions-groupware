@@ -19,4 +19,11 @@ public class ApprovalDTO {
     String leaveUsedReason; // 사용 이유(l.used_reason)
     Date leaveUsedDate; // 휴가 사용일(l.used_date)
 	
+    // 근태 전용 추가 필드
+    Date checkInTime;          // 출근 시간
+    Date checkOutTime;         // 퇴근 시간
+    String modifiedBy;         // 수정자
+    Date modifiedAt;           // 수정 일자
+    String modificationReason; // 수정 사유
+    
 }

@@ -34,13 +34,17 @@
 			<tr>
 				<td>제목</td>
 				<td>
-				    <!-- 연차 : 수정 불가 -->
-				    <span th:if="${editData.docType == '연차'}" th:text="*{title}"></span>
-				    <input th:if="${editData.docType == '연차'}" type="hidden" th:field="*{title}" />
-				
-				    <!-- 나머지 : 수정 가능 -->
-				    <input th:if="${editData.docType != '연차'}" type="text" th:field="*{title}"
-				           placeholder="제목 (공백 입력 불가)" pattern=".*\S.*" required />
+					<!-- 연차 또는 근태 : 수정 불가 -->
+					<span th:if="${editData.docType == '연차'}" th:text="*{title}"></span>
+					<span th:if="${editData.docType == '근태'}">근태 수정 신청</span>
+					
+					<input th:if="${editData.docType == '연차'}" type="hidden" th:field="*{title}" />
+					<input th:if="${editData.docType == '근태'}" type="hidden" name="title" value="근태 수정 신청" />
+					
+					<!-- 나머지 : 수정 가능 -->
+					<input th:if="${editData.docType != '연차' and editData.docType != '근태'}"
+					       type="text" th:field="*{title}"
+					       placeholder="제목 (공백 입력 불가)" pattern=".*\S.*" required />
 				</td>
 			</tr>
             <tr>
@@ -48,7 +52,7 @@
 				<td>
 				    <!-- if 프로젝트 -->
 				    <textarea th:if="${editData.docType == '프로젝트'}"
-				              id="summernote" name="content" th:utext="*{content}"></textarea>
+				              id="summernote" name="content" th:text="*{content}"></textarea>
 				
 				    <!-- if 연차 -->
 				    <table th:if="${editData.docType != '프로젝트' and editData.docType == '연차'}"
@@ -62,7 +66,7 @@
 				        <tr>
 				        </tr>
 				        <tr>
-				            <th>휴가 사용일</th>
+				            <th>연차 사용일</th>
 				            <td>
 				                <input type="date" name="leaveUsedDate"
 				                    th:value="${editData.leaveUsedDate != null ? #dates.format(editData.leaveUsedDate, 'yyyy-MM-dd') : ''}" />

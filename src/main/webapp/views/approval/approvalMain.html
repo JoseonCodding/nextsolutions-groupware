@@ -94,9 +94,5 @@
 		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages}, type=${type}, status=${status})}">Next &#x203A;</a>
 		</nav>
 	
-	<!-- null 방어 로직 -->
-	<script th:if="${errorMsg}" th:inline="javascript">
-		alert('[[${errorMsg}]]');
-	</script>
 </body>
 </html>

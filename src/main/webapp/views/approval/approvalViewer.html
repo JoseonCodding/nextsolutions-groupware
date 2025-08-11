@@ -44,7 +44,12 @@
 		    	<span th:text="${approvalData == null ? '-' : approvalData.writer}"></span>
 		    </td>
 			<td>
-			  <span th:text="${approvalData == null ? '-' : (approvalData.docType == '연차' ? '김연차대장' : (approvalData.docType == '공지사항' ? '박공지사항' : (approvalData.docType == '프로젝트' ? '정프로젝트' : '-')))}"></span>
+			  <span th:text="${approvalData == null ? '-' :
+				  (approvalData.docType == '연차' ? '김연차대장'
+				  : (approvalData.docType == '공지사항' ? '박공지사항'
+				  : (approvalData.docType == '프로젝트' ? '정프로젝트'
+				  : (approvalData.docType == '근태' ? '이근태소장' : '-'))))}">
+				</span>
 			</td>
 		    <td>
 			  <span th:text="${approvalData == null ? '-' : '김대표'}"></span>
@@ -82,12 +87,36 @@
 	    </tr>
 	    <tr>
 	        <th>사용 이유</th>
-	        <td><div th:utext="${approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content}"></div></td>
+	        <td><div th:text="${approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content}"></div></td>
+	    </tr>
+	</table>
+	
+	<!-- if 근태 -->
+	<table th:if="${approvalData != null and approvalData.docType == '근태'}" style="margin-top: 20px;" border="">
+	    <tr>
+	        <th>출근 시간</th>
+	        <td><span th:text="${approvalData.checkInTime != null ? #dates.format(approvalData.checkInTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
+	    </tr>
+	    <tr>
+	        <th>퇴근 시간</th>
+	        <td><span th:text="${approvalData.checkOutTime != null ? #dates.format(approvalData.checkOutTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
+	    </tr>
+	    <tr>
+	        <th>수정자</th>
+	        <td><span th:text="${approvalData.modifiedBy != null ? approvalData.modifiedBy : '-'}"></span></td>
+	    </tr>
+	    <tr>
+	        <th>수정일자</th>
+	        <td><span th:text="${approvalData.modifiedAt != null ? #dates.format(approvalData.modifiedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
+	    </tr>
+	    <tr>
+	        <th>수정 사유</th>
+	        <td><div th:utext="${approvalData.modificationReason == null or approvalData.modificationReason.isEmpty() ? '내용이 없습니다' : approvalData.modificationReason}"></div></td>
 	    </tr>
 	</table>
 
 	
-	<!-- if 공지사항 / 프로젝트 등 일반 문서 -->
+	<!-- if 공지사항 / 프로젝트 -->
 	<div th:unless="${approvalData != null and approvalData.docType == '연차'}"
 	     style="border:1px solid; margin-top: 20px; background-color: aqua; padding:10px;"
 	     th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
@@ -98,7 +127,7 @@
 	  <b>첨부파일</b> :
 	  <span th:if="${approvalData != null and not #strings.isEmpty(approvalData.attachFileUuid)}">
 	    <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid} + '&orgName=' + ${approvalData.attachFileOrgName}}"
-	       th:text="${approvalData.attachFileOrgName}">다운로드</a>
+	       th:utext="${approvalData.attachFileOrgName}">다운로드</a>
 	  </span>
 	  <span th:unless="${approvalData != null and not #strings.isEmpty(approvalData.attachFileUuid)}">
 	    첨부파일이 없습니다.
