@@ -141,7 +141,6 @@
       <th>시작일</th>
       <th>마감일</th>
       <th>진행상태</th>
-      <th>완료율</th>
       <th>비고</th>    
       
     </tr>
@@ -150,12 +149,12 @@
 <tr th:each="pjt, stat : ${pjtList}">
   <td th:text="${stat.index + 1}">1</td> <!-- 순번 -->
   <td th:text="${pjt['PJT_NM']}">프로젝트명</td>
-  <td th:text="${pjt['EMP_NM']}">담당자</td>
+  <td th:text="${pjt['employeeid']}">담당자</td>
   <td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>
   <td th:text="${pjt['PJT_BGNG_DT']}">시작일</td>
   <td th:text="${pjt['PJT_END_DT']}">마감일</td>
   <td th:text="${pjt['PJT_STTS_CD']}">진행상태(중복)</td>
-  <td>50%</td>                <!-- 예시로 완료율 넣음, 계산하려면 백엔드 로직 필요 -->
+  
   <td>
   
             

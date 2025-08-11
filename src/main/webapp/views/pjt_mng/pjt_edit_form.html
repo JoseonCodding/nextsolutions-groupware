@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <title>프로젝트 변경</title>
 
-	<!-- 썸머노트 CSS -->
-	<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+<!-- 썸머노트 CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css"
+	rel="stylesheet">
 
 
 <style>
@@ -96,73 +98,51 @@ input, select {
 
 	<h1>프로젝트 변경</h1>
 
-	<form method="post" action="/pjtMng/updatePjtProc" enctype="multipart/form-data">
+	<form method="post" action="/pjtMng/updatePjtProc"
+		enctype="multipart/form-data">
 
-		<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN']}" />
+		<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN']}" /> 
 		<input type="hidden" name="oldFileName" th:value="${pjt['ATCH_FILE_SN']}">
-		<input type="hidden" name="oldOrgFileName" th:value="${pjt['ORG_FILE_NM']}">
-		
+		<input type="hidden" name="oldOrgFileName"
+			th:value="${pjt['ORG_FILE_NM']}">
+
 
 		<table>
 			<tr>
-  <th>프로젝트명</th>
-  <td><input type="text" name="pjtNm" th:value="${pjt.PJT_NM}" required /></td>
-</tr>
-
-<tr>
-  <th>담당자</th>
-  <td>
-    <select name="empNm">
-      <option value="">선택</option>
-      <option th:each="emp : ${empList}" th:value="${emp.EMP_NM}"
-              th:text="${emp.EMP_NM}"
-              th:selected="${emp.EMP_NM} == ${pjt.EMP_NM}"></option>
-    </select>
-  </td>
-</tr>
-
-<tr>
-  <th>시작일</th>
-  <td><input type="date" name="pjtBgngDt" th:value="${pjt['PJT_BGNG_DT']}" /></td>
-</tr>
-
-<tr>
-  <th>종료일</th>
-  <td><input type="date" name="pjtEndDt" th:value="${pjt['PJT_END_DT']}" /></td>
-</tr>
-
-<tr>
-  <th>상태</th>
-  <td>
-    <select name="pjtSttsCd">
-      <option value="대기" th:selected="${pjt.PJT_STTS_CD == '대기'}">대기</option>
-      <option value="진행중" th:selected="${pjt.PJT_STTS_CD == '진행중'}">진행중</option>
-      <option value="완료" th:selected="${pjt.PJT_STTS_CD == '완료'}">완료</option>
-      <option value="반려" th:selected="${pjt.PJT_STTS_CD == '반려'}">반려</option>
-    </select>
-  </td>
-</tr>
-
-
-<tr>
-	<th>내용</th>
-	<td>
-		<textarea id="content" name="content" th:text="${pjt['content']}"></textarea>
-	</td>
-</tr>
-
-
-			<!-- ✅ [2] 결재 워크플로우 UI -->
-			<tr>
-				<th>결재 워크플로우</th>
-				<td>
-					<div id="workflow-container"></div>
-					<button type="button" onclick="addApprover()"
-						class="btn-add-approver">+ 결재자 추가</button>
-				</td>
+				<th>프로젝트명</th>
+				<td><input type="text" name="pjtNm" th:value="${pjt.PJT_NM}"
+					required /></td>
 			</tr>
 
-			<!-- ✅ [3] 파일 업로드 -->
+			<tr>
+				<th>담당자</th>
+				<td><input type="text" name="empNm" th:value="${pjt.employeeid}" placeholder="담당자 이름 입력" /></td>
+			</tr>
+			<tr>
+				<th>기간</th>
+				<td>시작일: <input type="date" name="pjtBgngDt"
+					style="margin-right: 10px;" /> 종료일: <input type="date"
+					name="pjtEndDt" /></td>
+			</tr>
+
+			<tr>
+				<th>상태</th>
+				<td><select name="pjtSttsCd">
+						<option value="대기" th:selected="${pjt.PJT_STTS_CD == '대기'}">대기</option>
+						<option value="진행중" th:selected="${pjt.PJT_STTS_CD == '진행중'}">진행중</option>
+						<option value="완료" th:selected="${pjt.PJT_STTS_CD == '완료'}">완료</option>
+						<option value="반려" th:selected="${pjt.PJT_STTS_CD == '반려'}">반려</option>
+				</select></td>
+			</tr>
+			<tr>
+				<th>내용</th>
+				<td><textarea id="content" name="content"
+						th:text="${pjt['content']}"></textarea></td>
+			</tr>
+			<tr>
+				<th>결재자</th>
+				<td> <input type="text" name="TB_PJT_APR" th:value="${pjt['TB_PJT_APR']}"  placeholder="결재자 이름 입력" /></td>
+			</tr>
 			<tr>
 				<th>파일업로드</th>
 				<td><input type="file" name="uploadFile" id="uploadFile" />
@@ -172,14 +152,14 @@ input, select {
 			</tr>
 		</table>
 		<input type="hidden" name="approvers" id="approversInput" />
-		
+
 		<div class="button-row">
 			<button type="submit" class="save-btn">저장</button>
 			<button type="button" class="back-btn" onclick="history.back()">←
 				돌아가기</button>
 		</div>
 	</form>
-<script>
+	<script>
   const fileInput = document.getElementById('uploadFile');
   const fileNameDiv = document.getElementById('fileName');
 
@@ -235,11 +215,13 @@ input, select {
   }
 </script>
 
-<!-- 썸머노트용 JS -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>	
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
-<script>
+	<!-- 썸머노트용 JS -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
+	<script>
 	$(document).ready(function() {
 		$('#content').summernote({
 			lang: 'ko-KR',

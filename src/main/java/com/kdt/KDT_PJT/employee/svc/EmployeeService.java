@@ -45,6 +45,11 @@ public class EmployeeService {
     public void updateEmployee(CmmnMap params) {
         employeeMapper.updateEmployee(params);
     }
+
+	public Object getEmployeeList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
    
 

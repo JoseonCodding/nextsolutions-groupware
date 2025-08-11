@@ -4,29 +4,17 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
+
 import java.util.List;
 import java.util.Map;
 
 @Mapper
 public interface PjtMngMapper {
+    List<CmmnMap> selectApproverCandidates();
+    int updateApprover(Map<String, Object> param);
 
-	/*
-	 * List<Map<String, Object>> searchProjects(@Param("keyword") String
-	 * keyword, @Param("sortType") String sortType,
-	 * 
-	 * @Param("order") String order, @Param("offset") int offset, @Param("pageSize")
-	 * int pageSize);
-	 * 
-	 * int countProjects(@Param("keyword") String keyword);
-	 * 
-	 * // 프로젝트 리스트 일부만 가져오기 (limit, offset)
-	 * 
-	 * @Select("SELECT * FROM TB_PJT_BASC ORDER BY PJT_SN DESC LIMIT #{limit} OFFSET #{offset}"
-	 * ) List<Map<String, Object>> getProjectList(@Param("limit") int
-	 * limit, @Param("offset") int offset);
-	 * 
-	 * // 총 프로젝트 개수 가져오기 (나중에 필요함) int getProjectCount();
-	 */
+	
 	
 	// DB 전체 개수 조회
 	@Select("select count(*) from TB_PJT_BASC")
@@ -43,6 +31,16 @@ public interface PjtMngMapper {
 	// DB에서 PJT_STTS_CD가 '대기'인 개수 조회
 	@Select("select count(*) from TB_PJT_BASC WHERE PJT_STTS_CD = '대기'")
 	int countPending();
+	
+	@Select("select TB_PJT_BASC.* , e1.emp_nm as reg_user, e2.emp_nm as app_user "
+			+ "    FROM TB_PJT_BASC, employee e1,  employee e2 "
+			+ "    WHERE PJT_SN = #{pjtSn}"
+			+ "    and TB_PJT_BASC.employeeid = e1.employeeid "
+			+ "    and TB_PJT_BASC.TB_PJT_APR = e2.employeeid ")
+    CmmnMap selectPjtDetail(@Param("pjtSn") int pjtSn);
+
+
+
 	
 	
 }
