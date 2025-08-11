@@ -55,7 +55,7 @@
 	</div>
 	
 	<!-- 제목 영역 -->
-	<div style="margin-top: 20px;">
+	<div style="margin-top: 20px; ">
 		<table border="">
 			<tr>
 				<td>결재 종류</td>
@@ -71,7 +71,25 @@
 	</div>
 
 	<!-- 내용 영역 -->
-	<div style="border:1px solid; margin-top: 20px; background-color: aqua;"
+	<!-- if 연차 -->
+	<table th:if="${approvalData != null and approvalData.docType == '연차'}" style="margin-top: 20px;" border="">
+	    <tr>
+	        <th>연차 발생일</th>
+	        <td><span th:text="${approvalData.leaveCreateDate != null ? #dates.format(approvalData.leaveCreateDate, 'yyyy-MM-dd') : '-'}"></span></td>
+	    </tr>
+	    <tr><th>휴가 사용일</th>
+	        <td><span th:text="${approvalData.leaveUsedDate != null ? #dates.format(approvalData.leaveUsedDate, 'yyyy-MM-dd') : '-'}"></span></td>
+	    </tr>
+	    <tr>
+	        <th>사용 이유</th>
+	        <td><div th:utext="${approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content}"></div></td>
+	    </tr>
+	</table>
+
+	
+	<!-- if 공지사항 / 프로젝트 등 일반 문서 -->
+	<div th:unless="${approvalData != null and approvalData.docType == '연차'}"
+	     style="border:1px solid; margin-top: 20px; background-color: aqua; padding:10px;"
 	     th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
 	</div>
 	
@@ -83,7 +101,7 @@
 	       th:text="${approvalData.attachFileOrgName}">다운로드</a>
 	  </span>
 	  <span th:unless="${approvalData != null and not #strings.isEmpty(approvalData.attachFileUuid)}">
-	    첨부 없음
+	    첨부파일이 없습니다.
 	  </span>
 	</div>
 	

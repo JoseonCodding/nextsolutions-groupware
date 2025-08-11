@@ -14,89 +14,95 @@ import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 @Mapper
 public interface ApprovalMapper {
 	
-	// 공지사항 + 연차 + 프로젝트 DB 끌어오기 (TEST : docId 만들어서 사용)
-	@Select({
-	    "<script>",
-	    "SELECT * FROM (",
-	    "   SELECT ",
-	    "     CONCAT('notice_', b.post_id) AS docId,",
-	    "     '공지사항' AS docType,",
-	    "     b.title AS title,",
-	    "     b.content AS content,",
-	    "     b.status AS status,",
-	    "     e.deptName AS deptName,",
-	    "     e.emp_nm AS writer,",
-	    "     b.created_at AS createdAt,",
-	    "     NULL AS attachFileUuid,",
-	    "     NULL AS attachFileOrgName",
-	    "   FROM board_post b",
-	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
-	    "   WHERE b.board_id = 1",
-	    "     <if test='type != null and type != \"\"'>",
-	    "       AND b.docType = #{type}",
-	    "     </if>",
-	    "     <if test='status != null and status != \"\"'>",
-	    "       AND b.status = #{status}",
-	    "     </if>",
-	    "",
-	    "   UNION ALL",
-	    "",
-	    "   SELECT",
-	    "     CONCAT('leave_', l.leave_id) AS docId,",
-	    "     '연차' AS docType,",
-	    "     l.create_reason AS title,",
-	    "     l.used_reason AS content,",
-	    "     l.state_type AS status,",
-	    "     e.deptName AS deptName,",
-	    "     e.emp_nm AS writer,",
-	    "     l.create_date AS createdAt,",
-	    "     NULL AS attachFileUuid,",
-	    "     NULL AS attachFileOrgName",
-	    "   FROM annual_leave l",
-	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
-	    "   <where>",
-	    "     l.state_type IS NOT NULL", // null 제외
-	    "     <if test='type != null and type != \"\"'>",
-	    "       AND l.docType = #{type}",
-	    "     </if>",
-	    "     <if test='status != null and status != \"\"'>",
-	    "       AND l.state_type = #{status}",
-	    "     </if>",
-	    "   </where>",
-	    "",
-	    "   UNION ALL",
-	    "",
-	    "   SELECT",
-	    "     CONCAT('project_', p.PJT_SN) AS docId,",
-	    "     '프로젝트' AS docType,",
-	    "     p.PJT_NM AS title,",
-	    "     p.content AS content,",
-	    "     p.PJT_STTS_CD AS status,",
-	    "     '프로젝트부' AS deptName,",
-	    "     '박길동' AS writer,",
-	    "     p.FRST_REG_DT AS createdAt,",
-	    "     p.ATCH_FILE_SN AS attachFileUuid,",
-	    "     p.ORG_FILE_NM AS attachFileOrgName",
-	    "   FROM TB_PJT_BASC p",
-	    "   <where>",
-	    "     <if test='type != null and type != \"\"'>",
-	    "       p.docType = #{type}",
-	    "     </if>",
-	    "     <if test='status != null and status != \"\"'>",
-	    "       AND p.PJT_STTS_CD = #{status}",
-	    "     </if>",
-	    "   </where>",
-	    ") AS all_data",
-	    "ORDER BY createdAt DESC",
-	    "LIMIT #{offset}, #{size}",
-	    "</script>"
-	})
-	List<ApprovalDTO> approvalData(
-	    @Param("offset") int offset,
-	    @Param("size") int size,
-	    @Param("type") String type,
-	    @Param("status") String status
-	);
+    // 공지사항 + 연차 + 프로젝트 DB 끌어오기
+    @Select({
+        "<script>",
+        "SELECT * FROM (",
+        "   SELECT ",
+        "     CONCAT('notice_', b.post_id) AS docId,",
+        "     '공지사항' AS docType,",
+        "     b.title AS title,",
+        "     b.content AS content,",
+        "     b.status AS status,",
+        "     e.deptName AS deptName,",
+        "     e.emp_nm AS writer,",
+        "     b.created_at AS createdAt,",
+        "     NULL AS attachFileUuid,",
+        "     NULL AS attachFileOrgName,",
+        "     NULL AS leaveCreateDate,",
+        "     NULL AS leaveUsedDate",
+        "   FROM board_post b",
+        "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
+        "   WHERE b.board_id = 1",
+        "     <if test='type != null and type != \"\"'>",
+        "       AND b.docType = #{type}",
+        "     </if>",
+        "     <if test='status != null and status != \"\"'>",
+        "       AND b.status = #{status}",
+        "     </if>",
+
+        "   UNION ALL",
+
+        "   SELECT",
+        "     CONCAT('leave_', l.leave_id) AS docId,",
+        "     '연차' AS docType,",
+        "     CONCAT('연차 사용신청 - ', l.create_reason) AS title,",
+        "     l.used_reason AS content,",
+        "     l.state_type AS status,",
+        "     e.deptName AS deptName,",
+        "     e.emp_nm AS writer,",
+        "     l.approval_date AS createdAt,",
+        "     NULL AS attachFileUuid,",
+        "     NULL AS attachFileOrgName,",
+        "     l.create_date AS leaveCreateDate,",
+        "     l.used_date AS leaveUsedDate",
+        "   FROM annual_leave l",
+        "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
+        "   <where>",
+        "     l.state_type IS NOT NULL",
+        "     <if test='type != null and type != \"\"'>",
+        "       AND l.docType = #{type}",
+        "     </if>",
+        "     <if test='status != null and status != \"\"'>",
+        "       AND l.state_type = #{status}",
+        "     </if>",
+        "   </where>",
+
+        "   UNION ALL",
+
+        "   SELECT",
+        "     CONCAT('project_', p.PJT_SN) AS docId,",
+        "     '프로젝트' AS docType,",
+        "     p.PJT_NM AS title,",
+        "     p.content AS content,",
+        "     p.PJT_STTS_CD AS status,",
+        "     '프로젝트부' AS deptName,",
+        "     '박길동' AS writer,",
+        "     p.FRST_REG_DT AS createdAt,",
+        "     p.ATCH_FILE_SN AS attachFileUuid,",
+        "     p.ORG_FILE_NM AS attachFileOrgName,",
+        "     NULL AS leaveCreateDate,",
+        "     NULL AS leaveUsedDate",
+        "   FROM TB_PJT_BASC p",
+        "   <where>",
+        "     <if test='type != null and type != \"\"'>",
+        "       p.docType = #{type}",
+        "     </if>",
+        "     <if test='status != null and status != \"\"'>",
+        "       AND p.PJT_STTS_CD = #{status}",
+        "     </if>",
+        "   </where>",
+        ") AS all_data",
+        "ORDER BY createdAt DESC",
+        "LIMIT #{offset}, #{size}",
+        "</script>"
+    })
+    List<ApprovalDTO> approvalData(
+        @Param("offset") int offset,
+        @Param("size") int size,
+        @Param("type") String type,
+        @Param("status") String status
+    );
 
 
 	
@@ -146,60 +152,66 @@ public interface ApprovalMapper {
 
 	
 	// 뷰어용 데이터 조회 (docId 접두어+PK 방식 적용)
-	@Select({
-	    "<script>",
-	    "SELECT * FROM (",
-	    "   SELECT ",
-	    "     CONCAT('notice_', b.post_id) AS docId,",
-	    "     '공지사항' AS docType,",
-	    "     b.title AS title,",
-	    "     b.content AS content,",
-	    "     b.status AS status,",
-	    "     e.deptName AS deptName,",
-	    "     e.emp_nm AS writer,",
-	    "     b.created_at AS createdAt,",
-	    "     NULL AS attachFileUuid,",     
-	    "     NULL AS attachFileOrgName",   
-	    "   FROM board_post b",
-	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
-	    "   WHERE b.board_id = 1",
-	    "",
-	    "   UNION ALL",
-	    "",
-	    "   SELECT",
-	    "     CONCAT('leave_', l.leave_id) AS docId,",
-	    "     '연차' AS docType,",
-	    "     l.create_reason AS title,",
-	    "     l.used_reason AS content,",
-	    "     l.state_type AS status,",
-	    "     e.deptName AS deptName,",
-	    "     e.emp_nm AS writer,",
-	    "     l.create_date AS createdAt,",
-	    "     NULL AS attachFileUuid,",     
-	    "     NULL AS attachFileOrgName",   
-	    "   FROM annual_leave l",
-	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
-	    "   WHERE l.state_type IS NOT NULL",  // NULL 값 제외 조건 추가
-	    "",
-	    "   UNION ALL",
-	    "",
-	    "   SELECT",
-	    "     CONCAT('project_', p.PJT_SN) AS docId,",
-	    "     '프로젝트' AS docType,",
-	    "     p.PJT_NM AS title,",
-	    "     p.content AS content,",
-	    "     p.PJT_STTS_CD AS status,",
-	    "     '프로젝트부' AS deptName,",
-	    "     '박길동' AS writer,",
-	    "     p.FRST_REG_DT AS createdAt,",
-	    "     p.ATCH_FILE_SN AS attachFileUuid,",
-	    "     p.ORG_FILE_NM AS attachFileOrgName",
-	    "   FROM TB_PJT_BASC p",
-	    ") AS all_data",
-	    "WHERE docId = #{docId}",
-	    "</script>"
-	})
-	ApprovalDTO view(@Param("docId") String docId);
+    @Select({
+        "<script>",
+        "SELECT * FROM (",
+        "   SELECT ",
+        "     CONCAT('notice_', b.post_id) AS docId,",
+        "     '공지사항' AS docType,",
+        "     b.title AS title,",
+        "     b.content AS content,",
+        "     b.status AS status,",
+        "     e.deptName AS deptName,",
+        "     e.emp_nm AS writer,",
+        "     b.created_at AS createdAt,",
+        "     NULL AS attachFileUuid,",     
+        "     NULL AS attachFileOrgName,",
+        "     NULL AS leaveCreateDate,",
+        "     NULL AS leaveUsedDate",   
+        "   FROM board_post b",
+        "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
+        "   WHERE b.board_id = 1",
+
+        "   UNION ALL",
+
+        "   SELECT",
+        "     CONCAT('leave_', l.leave_id) AS docId,",
+        "     '연차' AS docType,",
+        "     CONCAT('연차 사용신청 - ', l.create_reason) AS title,",
+        "     l.used_reason AS content,",
+        "     l.state_type AS status,",
+        "     e.deptName AS deptName,",
+        "     e.emp_nm AS writer,",
+        "     l.approval_date AS createdAt,",
+        "     NULL AS attachFileUuid,",     
+        "     NULL AS attachFileOrgName,",
+        "     l.create_date AS leaveCreateDate,",
+        "     l.used_date AS leaveUsedDate",   
+        "   FROM annual_leave l",
+        "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
+        "   WHERE l.state_type IS NOT NULL",
+
+        "   UNION ALL",
+
+        "   SELECT",
+        "     CONCAT('project_', p.PJT_SN) AS docId,",
+        "     '프로젝트' AS docType,",
+        "     p.PJT_NM AS title,",
+        "     p.content AS content,",
+        "     p.PJT_STTS_CD AS status,",
+        "     '프로젝트부' AS deptName,",
+        "     '박길동' AS writer,",
+        "     p.FRST_REG_DT AS createdAt,",
+        "     p.ATCH_FILE_SN AS attachFileUuid,",
+        "     p.ORG_FILE_NM AS attachFileOrgName,",
+        "     NULL AS leaveCreateDate,",
+        "     NULL AS leaveUsedDate",
+        "   FROM TB_PJT_BASC p",
+        ") AS all_data",
+        "WHERE docId = #{docId}",
+        "</script>"
+    })
+    ApprovalDTO view(@Param("docId") String docId);
 
 
 	// 결재 종류 별 삭제 메소드 (PK로 비교)
@@ -211,19 +223,26 @@ public interface ApprovalMapper {
 
 	@Delete("DELETE FROM TB_PJT_BASC WHERE PJT_SN = #{id}")
 	int deleteProject(@Param("id") String id);
-
 	
 	
 	// 결재 종류 별 수정 메소드 3개
 	@Update("UPDATE board_post SET docType=#{dto.docType}, title=#{dto.title}, content=#{dto.content} WHERE post_id=#{id}")
 	int editNotice(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 
-	@Update("UPDATE annual_leave SET docType=#{dto.docType}, create_reason=#{dto.title}, content=#{dto.content} WHERE leave_id=#{id}")
+	@Update({
+	    "<script>",
+	    "UPDATE annual_leave",
+	    "SET docType = #{dto.docType},",
+	    "    create_reason = #{dto.title},",
+	    "    used_reason = #{dto.content},",  // 여기서 DTO의 content 필드 값이 used_reason에 들어감
+	    "    used_date = #{dto.leaveUsedDate}",
+	    "WHERE leave_id = #{id}",
+	    "</script>"
+	})
 	int editLeave(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 
 	@Update("UPDATE TB_PJT_BASC SET docType=#{dto.docType}, PJT_NM=#{dto.title}, content=#{dto.content} WHERE PJT_SN=#{id}")
 	int editProject(@Param("id") String id, @Param("dto") ApprovalDTO dto);
-
 	
 	
 	// 결재 종류 별 승인or반려 메소드 3개
