@@ -91,64 +91,63 @@ input, select {
 
 	<h1>프로젝트 변경</h1>
 
-	<form method="post" action="/pjtMng/updatePjtProc" enctype="multipart/form-data">
+	<form method="post" action="/pjtMng/updatePjtProc" enctype="multipart/form-data"
+      onsubmit="prepareApprovers()">
 
-		<input type="hidden" name="pjtSn" th:value="${pjt.PJT_SN}" />
+	<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN']}" />
 
 		<table>
 			<tr>
-  <th>프로젝트명</th>
-  <td><input type="text" name="pjtNm" th:value="${pjt.PJT_NM}" required /></td>
-</tr>
+				<th>프로젝트명</th>
+				<td><input type="text" name="pjtNm" th:value="${pjt['PJT_NM']}"
+					required /></td>
+			</tr>
 
-<tr>
-  <th>담당자</th>
-  <td>
-    <select name="empNm">
-      <option value="">선택</option>
-      <option th:each="emp : ${empList}" th:value="${emp.EMP_NM}"
-              th:text="${emp.EMP_NM}"
-              th:selected="${emp.EMP_NM} == ${pjt.EMP_NM}"></option>
-    </select>
-  </td>
-</tr>
+			<tr>
+				<th>담당자</th>
+				<td><input type="text" name="empNm" th:value="${pjt['EMP_NM']}" />
+				</td>
+			</tr>
 
-<tr>
-  <th>시작일</th>
-  <td><input type="date" name="pjtBgngDt" th:value="${pjt.PJT_BGNG_DT}" /></td>
-</tr>
+			<tr>
+				<th>시작일</th>
+				<td><input type="date" name="pjtBgngDt"
+					th:value="${pjt['PJT_BGNG_DT']}" /></td>
+			</tr>
 
-<tr>
-  <th>종료일</th>
-  <td><input type="date" name="pjtEndDt" th:value="${pjt.PJT_END_DT}" /></td>
-</tr>
+			<tr>
+				<th>종료일</th>
+				<td><input type="date" name="pjtEndDt"
+					th:value="${pjt['PJT_END_DT']}" /></td>
+			</tr>
 
-<tr>
-  <th>상태</th>
-  <td>
-    <select name="pjtSttsCd">
-      <option value="01" th:selected="${pjt.PJT_STTS_CD == '01'}">진행중</option>
-      <option value="02" th:selected="${pjt.PJT_STTS_CD == '02'}">완료</option>
-      <option value="03" th:selected="${pjt.PJT_STTS_CD == '03'}">보류</option>
-    </select>
-  </td>
-</tr>
+			<tr>
+				<th>상태</th>
+				<td><select name="pjtSttsCd">
+						<option value="01" th:selected="${pjt['PJT_STTS_CD'] == '01'}">진행중</option>
+						<option value="02" th:selected="${pjt['PJT_STTS_CD'] == '02'}">완료</option>
+						<option value="03" th:selected="${pjt['PJT_STTS_CD'] == '03'}">보류</option>
+				</select></td>
+			</tr>
 
-<tr>
-  <th>내용</th>
-  <td><input type="text" name="content" th:value="${pjt['CONTENT']}" /></td>
-</tr>
+			<tr>
+				<th>내용</th>
+				<td><input type="text" name="content"
+					th:value="${pjt['CONTENT']}" /></td>
+			</tr>
 
 
 			<!-- ✅ [2] 결재 워크플로우 UI -->
 			<tr>
-				<th>결재 워크플로우</th>
-				<td>
-					<div id="workflow-container"></div>
-					<button type="button" onclick="addApprover()"
-						class="btn-add-approver">+ 결재자 추가</button>
-				</td>
+				<th>결재자</th>
+				<td> <select class="approver-select" style="margin-right: 10px;">
+						<option value="">-- 결재자 선택 --</option>
+						<th:block th:each="ap : ${approverList}">
+							<option th:value="${ap.emp_seq}" th:text="${ap.emp_nm}"></option>
+						</th:block>
+				</select></td>
 			</tr>
+
 
 			<!-- ✅ [3] 파일 업로드 -->
 			<tr>
@@ -166,7 +165,7 @@ input, select {
 				돌아가기</button>
 		</div>
 	</form>
-<script>
+	<script>
   const fileInput = document.getElementById('uploadFile');
   const fileNameDiv = document.getElementById('fileName');
 

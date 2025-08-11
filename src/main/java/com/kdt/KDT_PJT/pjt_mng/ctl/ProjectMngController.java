@@ -38,82 +38,49 @@ public class ProjectMngController {
 	// log 사용을 위함
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
-	
-	
-	// ✅ 프로젝트 목록 화면 조회 (검색어 유무에 따라 분기)
+
+	// ✅ 프로젝트 목록 화면 조회 (검색 + 페이징 + 연속 순번)
 	@GetMapping("/getPjtList")
 	public String getPjtList(
-	        @RequestParam(required = false, name = "keyword") String keyword
-	        , HttpServletRequest request
-	        , Model model) {
+		       @RequestParam(value = "keyword", required = false) String keyword,
+		        @RequestParam(value = "sort",    required = false, defaultValue = "PJT_SN") String sort,
+		        @RequestParam(value = "order",   required = false, defaultValue = "DESC")   String order,
+		        @RequestParam(value = "pageNum", required = false, defaultValue = "1")      int pageNum,
+		        @RequestParam(value = "pageSize",required = false, defaultValue = "10")     int pageSize,
+		        Model model
+		) {
+	
+		  log.info("getPjtList >>> keyword={}, pageNum={}, pageSize={}, sort={}, order={}",
+		            keyword, pageNum, pageSize, sort, order);
+		  
+	    // ✅ PageHelper로 페이지네이션된 결과 가져오기
+	    PageInfo<CmmnMap> page = projectMngService.getProjectList(pageNum, pageSize, keyword);
 
-	    // 🔍 검색어 로그 확인 (디버깅용)
-	   System.out.println("getPjtList Called >>> keyword = " + keyword);
-	   
-       // ① 페이지 번호/사이즈 받아오기 (없으면 기본값)
-       int pageNum = 1;
-       int pageSize = 10;
-       
-       try {
-           if (request.getParameter("pageNum") != null) {
-               pageNum = Integer.parseInt(request.getParameter("pageNum"));
-           }
-           if (request.getParameter("pageSize") != null) {
-               pageSize = Integer.parseInt(request.getParameter("pageSize"));
-           }
-       } catch (Exception e) {
-           log.warn("페이지 번호 파싱 실패, 기본값 사용");
-       }
-       
-		//  리스트 가져오기
-       PageInfo<CmmnMap>  list = projectMngService.getProjectList(pageNum, pageSize, keyword);
-       // ③ model에 값 담기
-       
-       if (list == null || list.getList() == null || list.getList().isEmpty()) {
-    	    log.warn("⚠️ 프로젝트 리스트가 비어있거나 null입니다.");
-    	    model.addAttribute("pjtList", List.of());  // 빈 리스트로 넘기기 (NPE 방지)
-    	} else {
-    	    log.info("✅ 프로젝트 리스트 로드 성공. 개수: " + list.getList().size());
-    	    model.addAttribute("pjtList", list.getList());
-    	}
-       
-       model.addAttribute("pjtList", list.getList());   // 현재 페이지 데이터
-       model.addAttribute("pageInfo", list);             // 페이징 정보      
-       
-       
-       
-       
-       
-//	    // 🗂 프로젝트 리스트 선언
-//	    List<CmmnMap> pjtList;
-//
-//	    // 🔎 keyword가 있으면 → 검색 조건으로 조회
-//	    if (keyword != null && !keyword.isEmpty()) {
-//	        pjtList = projectMngService.searchProjectMngList(keyword);
-//	        log.info("🔍 검색 결과 개수: " + pjtList.size());
-//	    } 
-//	    // 🔁 keyword 없으면 → 전체 리스트 조회
-//	    else {
-//	        pjtList = projectMngService.getPjtList();
-//	        log.info("📄 전체 목록 개수: " + pjtList.size());
-//	    }
-//
-//	    // 💾 View에 리스트 전달
-//	    model.addAttribute("pjtList", pjtList);
-//	    model.addAttribute("currentPage", 1);
-//	    model.addAttribute("totalPages", 10); // ✅ 이거 안 넘기면 NPE 뜸
-	   
+	    // ✅ 순번 계산용 offset (0, 10, 20 …)
+	    int offset = (page.getPageNum() - 1) * page.getPageSize();
+
+	    // ✅ NPE 방지: list가 null이면 빈 리스트로 대체
+	    List<CmmnMap> list = (page.getList() != null) ? page.getList() : java.util.Collections.emptyList();
+
+	    // 뷰에 데이터 바인딩
+
+	    model.addAttribute("pjtList", list);
+	    model.addAttribute("pageInfo", page);
+	    model.addAttribute("offset", offset);
+
+	    model.addAttribute("sort", sort);
+	    model.addAttribute("order", order);
+
+	    // 검색어 유지 (검색창에 그대로 보이게)
+	    model.addAttribute("keyword", keyword);
+
+	    // 메인 레이아웃에서 불러올 바디 템플릿 지정
 	    model.addAttribute("mainUrl", "pjt_mng/pjt_main");
 	    return "home";
-
 	}
-
+  
 	
-
-
-
-	
-	//2. 프로젝트 상세보기 페이지 호출 
+	// 프로젝트 상세보기 페이지 호출 
 	@GetMapping("/pjtDetail")
 	public String getPjtDetail(@RequestParam("pjtSn") String pjtSn, Model model) {
 	    log.info("getPjtDetail Called >>> " + pjtSn);
@@ -137,9 +104,6 @@ public class ProjectMngController {
 	    return "home";
 	   
 	}
-	
-	
-	
 	
 	@GetMapping("/getSavePjtForm")
 	public String getSavePjtForm(HttpSession session, Model model) {
@@ -166,7 +130,6 @@ public class ProjectMngController {
 	    
 	}
 
-	
 	@GetMapping("/pjtEditForm")
 	public String getPjtEditForm(@RequestParam("pjtSn") String pjtSn, Model model) {
 	    log.info("getPjtEditForm Called >>> " + pjtSn);
@@ -179,6 +142,30 @@ public class ProjectMngController {
 	    return "home";
 	    
 	}
+	
+	@GetMapping("/pjtRegForm")
+	public String pjtRegForm(Model model) {
+	    List<CmmnMap> approverList = projectMngService.getApproverList();
+	    model.addAttribute("approverList", approverList);
+	    
+	    model.addAttribute("mainUrl", "pjt_mng/pjt_reg_form");
+	    return "home";   // 등록 페이지 경로
+	}
+	
+	
+	  @PostMapping("/pjtSave")    // ← 폼의 th:action과 일치!!
+	  public String saveProject(@ModelAttribute CmmnMap form,
+	                            @RequestParam(name="files", required=false) MultipartFile[] files,
+	                            HttpSession session, RedirectAttributes ra) {
+	    int pjtSn = projectMngService.saveOrUpdateProject(form);
+	    if (files != null && files.length > 0) {
+	      String loginId = (String) session.getAttribute("loginId");
+	      projectMngService.saveProjectFiles(pjtSn, files, loginId == null ? "system" : loginId);
+	    }
+	    ra.addFlashAttribute("msg","저장되었습니다.");
+	    return "redirect:/pjtMng/pjtDetail?pjtSn=" + pjtSn;
+	  }
+	
 	
 	
 	@PostMapping("/pjtEditSave")
@@ -194,7 +181,7 @@ public class ProjectMngController {
 
 	    } catch (Exception e) {
 	        redirectAttributes.addFlashAttribute("msg", "수정 중 오류 발생: " + e.getMessage());
-	        return "redirect:/pjtEditForm?pjtSn=" + pjtData.get("pjtSn"); // 다시 수정 폼으로
+	        return "redirect:/pjtMng/pjtDetail…" + pjtData.get("pjtSn"); // 다시 수정 폼으로
 	    }
 	}
 
@@ -202,22 +189,19 @@ public class ProjectMngController {
 	
 	@PostMapping("/updatePjtProc")
 	public String updatePjtProc(
-	        @RequestParam("pjtSn") String pjtSn,
-	        @RequestParam("pjtNm") String pjtNm,
-	        @RequestParam(value = "empNm", required = false) String empNm,
-	        @RequestParam(value = "pjtBgngDt", required = false) 
-	        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
-	        @RequestParam(value = "pjtEndDt", required = false) 
-	        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
-	        @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd,
-	        @RequestParam(value = "CONTENT", required = false) String content,
-	        @RequestParam(value = "approvers", required = false) String approvers,
-	        @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile
-
-	) {
-	    log.info("updatePjtProc Called >>> " + pjtSn);
-
-	    CmmnMap params = new CmmnMap();
+	    @RequestParam(value="pjtSn") String pjtSn,
+	    @RequestParam(value="pjtNm") String pjtNm,
+	    @RequestParam(value="empNm",     required=false) String empNm,
+	    @RequestParam(value="pjtBgngDt", required=false)
+	    @org.springframework.format.annotation.DateTimeFormat(pattern="yyyy-MM-dd") java.time.LocalDate pjtBgngDt,
+	    @RequestParam(value="pjtEndDt",  required=false)
+	    @org.springframework.format.annotation.DateTimeFormat(pattern="yyyy-MM-dd") java.time.LocalDate pjtEndDt,
+	    @RequestParam(value="pjtSttsCd", required=false) String pjtSttsCd,
+	    @RequestParam(value="content",   required=false) String content,   // ← 폼 name과 동일 (소문자)
+	    @RequestParam(value="approvers", required=false) String approvers,
+	    @RequestParam(value="uploadFile", required=false) org.springframework.web.multipart.MultipartFile uploadFile
+	){
+	    var params = new com.kdt.KDT_PJT.cmmn.map.CmmnMap();
 	    params.put("PJT_SN", pjtSn);
 	    params.put("PJT_NM", pjtNm);
 	    params.put("EMP_NM", empNm);
@@ -226,101 +210,17 @@ public class ProjectMngController {
 	    params.put("PJT_STTS_CD", pjtSttsCd);
 	    params.put("CONTENT", content);
 	    params.put("APPROVERS", approvers);
+	    if (uploadFile != null && !uploadFile.isEmpty()) {
+	        params.put("UPLOAD_ORG_NM", uploadFile.getOriginalFilename());
+	        // TODO: 저장 로직 있으면 서비스에서 처리
+	    }
+	    params.put("LAST_MDFCN_DT", java.time.LocalDateTime.now()
+	            .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+	    params.put("LAST_MDFR_ID", "SYSTEM");
 
-
-
-	    // 마지막 수정일시 업데이트
-	    LocalDateTime now = LocalDateTime.now();
-	    String formatted = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-	    params.put("LAST_MDFCN_DT", formatted);
-	    params.put("LAST_MDFR_ID", "SYSTEM"); // 임시로 SYSTEM. 나중에 세션 사용자 ID로 대체 가능
-
-	    projectMngService.updatePjtProc(params);  // service에서 update 메서드 필요!
-
+	    projectMngService.updatePjtProc(params);
 	    return "redirect:/pjtMng/getPjtList";
 	}
-	
-	
-//	@PostMapping("/pjtMng/updatePjtProc")
-//	public String updatePjtProc(CmmnMap pjtData
-//								, 
-//								// @RequestParam("pjtSn") int pjtSn,
-//						        @RequestParam("pjtNm") String pjtNm,
-//						        @RequestParam("empNm") String empNm,
-//						        @RequestParam("pjtBgngDt") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
-//						        @RequestParam("pjtEndDt") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
-//						        @RequestParam("pjtSttsCd") String pjtSttsCd,
-//						        @RequestParam("content") String content,
-//						        @RequestParam("approvers") String approvers,
-//						        @RequestParam("uploadFile") MultipartFile uploadFile,
-//						        RedirectAttributes redirectAttributes) {
-//		
-//		
-//	   // log.info("updatePjtProc Called >>> " + pjtData);
-//
-//		 log.info("updatePjtProc Called >>> " + pjtNm);
-//		 log.info("updatePjtProc Called >>> " + empNm);
-//	    
-//	    
-//	    /*
-//	    try {
-//	        //실제 DB 업데이트 처리--- 이지만 일단 상세페이지로 넘어가게 만들어 놓음 
-//	        return "redirect:/pjtDetail?pjtSn=" + pjtData.get("pjtSn");
-//	        
-//	     // DB에 수정 처리 -- 나중에 적용해보기 
-//	        //projectMngService.updatePjtProc(pjtData);
-//
-//	    } catch (Exception e) {
-//	        // 실패 시 수정 페이지로 다시
-//	        redirectAttributes.addFlashAttribute("msg", "수정 실패: " + e.getMessage());
-//	        return "redirect:/pjtEditForm?pjtSn=" + pjtData.get("pjtSn");
-//	    } */
-//		 
-//		 return "";
-//	}
-
-
-
-	
-	@PostMapping("/savePjtProc")
-	public String savePjtProc(
-	    Model model,
-	    @RequestParam("pjtNm") String pjtNm,
-	    @RequestParam(value = "empNm", required = false) String empNm,
-	    @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
-	    @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
-	    @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd   // ✅ 추가된 부분
-	) {
-
-		
-		
-		log.info("savePjtProc Called >>> ");
-		
-		CmmnMap params = new CmmnMap();
-		log.info("pjtNm " + pjtNm);
-		log.info("empNm" + empNm);
-		log.info("pjtBgngDt " + pjtBgngDt);
-		log.info("pjtEndDt " + pjtEndDt);
-		
-		
-		params.put("PJT_NM", pjtNm);
-		params.put("EMP_NM", empNm);
-		params.put("PJT_BGNG_DT", pjtBgngDt);
-		params.put("PJT_END_DT", pjtEndDt);
-		params.put("PJT_STTS_CD", pjtSttsCd);
-
-		
-		LocalDateTime now = LocalDateTime.now(); // 현재 시간 가져오기
-		String formatted = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")); // 14자리 문자열로 포맷
-
-		log.info("현재시간 (formatted): " + formatted);
-		params.put("FRST_REG_DT", formatted); // DB에 저장할 값
-
-		
-		
-		projectMngService.savePjtProc(params);		
-		
-		return "redirect:/pjtMng/getPjtList";
 
 	}	
-}
+
