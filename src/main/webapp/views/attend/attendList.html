@@ -1,18 +1,3 @@
- <!-- 검색 폼 -->
-  <form method="get" th:action="@{/attend/attendList/search}">
-    <label>날짜(시작): <input type="date" name="fromDate" th:value="${fromDate}" /></label>
-    <label>날짜(종료): <input type="date" name="toDate" th:value="${toDate}" /></label>
-    <label>이름: <input type="text" name="empNm" th:value="${empNm}" /></label>
-    <label>수정자: <input type="text" name="modifiedBy" th:value="${modifiedBy}" /></label>
-    <label>상태:
-      <select name="stateType">
-        <option value="" th:selected="${stateType==null or stateType==''}">전체</option>
-        <option value="대기" th:selected="${stateType=='대기'}">대기</option>
-        <option value="승인" th:selected="${stateType=='승인'}">승인</option>
-        <option value="반려" th:selected="${stateType=='반려'}">반려</option>
-      </select>
-    </label>
-
 
 <!-- 근태 관리 출퇴근변경이력 - 근태 관리자 화면 -->
 <form method="get" action="/attend/attendList">
@@ -93,7 +78,6 @@
         <td th:text="${dto.empNm}"></td>
         <td th:text="${dto.checkInHourMinute}"></td>
         <td th:text="${dto.checkOutHourMinute}"></td>
-        <td th:text="${dto.workHours}"></td>
         <td th:text="${dto.modifiedBy}"></td>
         <td th:text="${#temporals.format(dto.modifiedAt, 'yyyy-MM-dd')}"></td>
         <td th:text="${dto.modificationReason}"></td>

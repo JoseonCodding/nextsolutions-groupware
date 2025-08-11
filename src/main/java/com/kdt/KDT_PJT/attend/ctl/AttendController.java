@@ -68,7 +68,6 @@ public class AttendController {
         model.addAttribute("prevMonthEndDay", attendance.getPrevMonthEndDay());
         model.addAttribute("nextMonthStartDay", attendance.getNextMonthStartDay());
         model.addAttribute("nextMonthEndDay", attendance.getNextMonthEndDay());
-
         model.addAttribute("currentStartDay", attendance.getStartDay());
         return "navTap";
         
