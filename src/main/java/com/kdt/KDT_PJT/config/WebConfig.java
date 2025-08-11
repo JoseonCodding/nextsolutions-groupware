@@ -1,4 +1,4 @@
-package com.kdt.KDT_PJT.pjt_mng.config;
+package com.kdt.KDT_PJT.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
