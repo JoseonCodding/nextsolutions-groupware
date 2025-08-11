@@ -10,12 +10,7 @@ import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.employee.mapper.EmployeeMapper;
-<<<<<<< HEAD
-import com.kdt.KDT_PJT.pjt_mng.mapper.PjtMngMapper;
 
-import java.util.List;
-=======
->>>>>>> refs/remotes/origin/mmmaster
 
 @Service
 public class EmployeeService {
@@ -51,9 +46,7 @@ public class EmployeeService {
     public void updateEmployee(CmmnMap params) {
         employeeMapper.updateEmployee(params);
     }
-    public List<CmmnMap> getApproverList() {
-        return PjtMngMapper.getApproverList();
-    }
+
    
 
 }
