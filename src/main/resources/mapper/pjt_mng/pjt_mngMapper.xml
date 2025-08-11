@@ -4,8 +4,6 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 
-
-
 <!-- 프로젝트 관리 Mapper -->
 <mapper namespace="com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper">
 
@@ -87,8 +85,13 @@
   </select>
 
   <!-- ✅ 프로젝트 등록 -->
-  <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
-    INSERT INTO TB_PJT_BASC (
+  <insert id="savePjtProc"
+          parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap"
+          useGeneratedKeys="true"
+          keyProperty="PJT_SN"
+          keyColumn="PJT_SN">            
+
+ INSERT INTO TB_PJT_BASC (
       PJT_NM,
       employeeid,
       PJT_BGNG_DT,
@@ -100,6 +103,7 @@
       ATCH_FILE_SN,
       ORG_FILE_NM
     ) VALUES (
+<<<<<<< HEAD
       #{PJT_NM},             <!-- 프로젝트명 -->
       #{employeeid},             <!-- 담당자명 -->
       #{PJT_BGNG_DT},        <!-- 시작일 -->
@@ -111,6 +115,15 @@
       #{ATCH_FILE_SN}, 		<!-- 업로드한 파일 uuid 이름 -->
       #{ORG_FILE_NM} 		<!-- 업로드한 파일 원래 이름 -->
       
+=======
+      #{PJT_NM},
+      #{EMP_NM},
+      #{PJT_BGNG_DT},
+      #{PJT_END_DT},
+      '01',
+      #{FRST_RGTR_ID},
+      #{FRST_REG_DT}
+>>>>>>> refs/heads/mmmaster
     )
   </insert>
 
@@ -187,6 +200,7 @@
     ORDER BY employeeid
 </select>
 
+<<<<<<< HEAD
 <!-- 결재자 정보 디비에서 받아오기 -->
 <select id="getProjectById" parameterType="int" resultType="CmmnMap">
   SELECT PJT_SN,
@@ -228,4 +242,15 @@
      WHERE PJT_SN = #{PJT_SN}
   </update>
 
+=======
+<!-- ✅ 결재자(사원) 목록 조회 -->
+<!-- pjt_mngMapper.xml (namespace는 네가 쓰는 PjtMngMapper에 맞춰) -->
+ <select id="getApproverList" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+    SELECT 
+      emp_seq AS EMP_SEQ,
+      emp_nm  AS EMP_NM
+    FROM employee
+    ORDER BY emp_nm ASC
+  </select>
+>>>>>>> refs/heads/mmmaster
 </mapper>

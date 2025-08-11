@@ -1,16 +1,20 @@
 package com.kdt.KDT_PJT.pjt_mng.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+<<<<<<< HEAD
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 
+=======
+import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
+>>>>>>> refs/heads/mmmaster
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface PjtMngMapper {
+<<<<<<< HEAD
     List<CmmnMap> selectApproverCandidates();
     int updateApprover(Map<String, Object> param);
 
@@ -43,5 +47,8 @@ public interface PjtMngMapper {
 
 	
 	
+=======
+    // ✅ static 지우고, 몸체(=메서드 본문) 없이 선언만 남긴다
+    List<CmmnMap> getApproverList();
+>>>>>>> refs/heads/mmmaster
 }
-

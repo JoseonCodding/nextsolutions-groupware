@@ -10,6 +10,7 @@ import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.employee.mapper.EmployeeMapper;
+import com.kdt.KDT_PJT.pjt_mng.mapper.PjtMngMapper;
 
 @Service
 public class EmployeeService {
@@ -46,11 +47,17 @@ public class EmployeeService {
         employeeMapper.updateEmployee(params);
     }
 
+
 	public Object getEmployeeList() {
 		// TODO Auto-generated method stub
 		return null;
 	}
     
+
+    public List<CmmnMap> getApproverList() {
+        return PjtMngMapper.getApproverList();
+    }
+
    
 
 }
