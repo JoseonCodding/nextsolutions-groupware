@@ -13,7 +13,6 @@ public interface EmployeeMapper {
 
     List<CmmnMap> getUserList();
 
-
     List<CmmnMap> getUserList(int pageNum, int pageSize, @Param("keyword") String keyword);
 
     void toggleActive(CmmnMap params);
@@ -27,3 +26,4 @@ public interface EmployeeMapper {
  
 
 }
+

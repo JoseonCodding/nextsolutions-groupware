@@ -38,15 +38,10 @@
   </div>
       <hr />
       
-      
-      <div class="board-content" th:utext="${board.content}">
-        게시글 내용이 여기에 표시됩니다.
-      </div>
-      <hr />
 
       <!-- 본문 -->
       <div class="text" th:text="${board.content}">내용</div>
-
+<hr />
       <div class="board-actions">
         <a th:href="@{/board/notice}" class="btn">목록으로</a>
       </div>

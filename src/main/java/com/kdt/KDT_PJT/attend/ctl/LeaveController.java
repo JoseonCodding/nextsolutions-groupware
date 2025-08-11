@@ -3,6 +3,7 @@ package com.kdt.KDT_PJT.attend.ctl;
 
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.kdt.KDT_PJT.attend.di.Leave;
 import com.kdt.KDT_PJT.attend.model.LeaveDTO;
 import com.kdt.KDT_PJT.attend.model.LeaveMapper;
 import com.kdt.KDT_PJT.attend.model.LeaveReqDTO;
@@ -17,9 +19,11 @@ import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
+import lombok.NoArgsConstructor;
 
 @Controller
 @RequestMapping("/attend")
+@NoArgsConstructor
 public class LeaveController {
 	
 	@ModelAttribute("navUrl")
@@ -31,7 +35,19 @@ public class LeaveController {
 	@Resource
 	LeaveMapper mapper;
 	
-	
+	@Resource
+	private Leave leaveService;
+
+	   
+    //@Scheduled(cron = "0 0 3 1 * ?") // 매월 1일 새벽 3시에 자동 실행
+    @Scheduled(cron = "0 */1 * * * ?") // 매 1분마다 실행
+    public void scheduleAutoLeave() {
+        System.out.println("[스케줄 시작] 전월 근무율 80% 이상 직원 자동 연차 부여 시작");
+       leaveService.autoGiveLeaveForQualifiedEmployees();
+        System.out.println("[스케줄 종료] 자동 연차 부여 완료");
+    }
+    
+    
 	//연차 관리(사용자용)
     @GetMapping("/leaveList")
     public String leaveList(HttpSession session,Model model) {

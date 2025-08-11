@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -175,22 +177,32 @@ public class ApprovalController {
         
     	String rawContent = editData.getContent();
 
-        org.jsoup.safety.Safelist customSafelist = org.jsoup.safety.Safelist.basicWithImages()
-            .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
-            .addAttributes("table", "style", "border", "cellpadding", "cellspacing")
-            .addAttributes("th", "style", "colspan", "rowspan")
-            .addAttributes("td", "style", "colspan", "rowspan")
-            .addAttributes("tr", "style")
-            .addAttributes("thead", "style")
-            .addAttributes("tbody", "style")
-            .addAttributes("tfoot", "style")
-            .addAttributes("col", "style", "span", "width")
-            .addAttributes("colgroup", "span", "width", "style")
-            .addAttributes("caption", "style")
-            .addAttributes("img", "style", "src", "alt", "width", "height")
-            .addProtocols("img", "src", "data", "http", "https");
+        Safelist customSafelist = Safelist.basicWithImages()
+        		// 테이블 관련 태그 허용
+        	    .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
+        	    // 테이블 관련 속성 허용
+        	    .addAttributes("table", "style", "border", "cellpadding", "cellspacing", "width", "height")
+        	    .addAttributes("th", "style", "colspan", "rowspan", "width", "height")
+        	    .addAttributes("td", "style", "colspan", "rowspan", "width", "height")
+        	    .addAttributes("tr", "style")
+        	    .addAttributes("thead", "style")
+        	    .addAttributes("tbody", "style")
+        	    .addAttributes("tfoot", "style")
+        	    .addAttributes("col", "style", "span", "width")
+        	    .addAttributes("colgroup", "span", "width", "style")
+        	    .addAttributes("caption", "style")
+        	    // 이미지 태그 및 속성 허용
+        	    .addAttributes("img", "style", "src", "alt", "width", "height")
+        	    .addProtocols("img", "src", "data", "http", "https")
+        	    // 링크 태그와 속성 허용
+        	    .addTags("a")
+        	    .addAttributes("a", "href", "title", "target", "rel")
+        	    .addProtocols("a", "href", "http", "https", "mailto")
+        	    // 스타일 태그 허용 및 주요 CSS 스타일 허용
+        	    .addAttributes(":all", "style")
+        	;
 
-        String safeContent = org.jsoup.Jsoup.clean(rawContent, customSafelist);
+        String safeContent = Jsoup.clean(rawContent, customSafelist);
 
         editData.setContent(safeContent);
 

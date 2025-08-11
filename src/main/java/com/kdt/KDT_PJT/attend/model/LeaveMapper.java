@@ -63,5 +63,14 @@ public interface LeaveMapper {
 			"</script> "
 			)
 	int approvalList(LeaveDTO dto); 
+	
+	//연차 자동 부여
+	 @Insert("""
+		        INSERT INTO annual_leave 
+		        (employeeId, create_date, leave_type, create_reason)
+		        VALUES (#{employeeId}, CURRENT_DATE, '발생', '전월 근무율 80% 이상 자동 부여')
+		    """)
+	 void insertAutoLeave(LeaveDTO dto);
+
 
 }
