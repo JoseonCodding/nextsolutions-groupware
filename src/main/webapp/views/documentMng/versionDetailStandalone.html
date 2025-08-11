@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>버전 상세보기 (독립)</title>
+<style>
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 8px; vertical-align: top; }
+    th { background: #f2f2f2; width: 20%; }
+    .content-cell { max-width: 600px; white-space: normal; }
+</style>
+</head>
+<body>
+<h2>버전 상세</h2>
+<table>
+    <tr>
+        <th>version_id</th>
+        <td th:text="${doc.versionId} ?: 'Null'"></td>
+        <th>original_id</th>
+        <td th:text="${doc.originalId} ?: 'Null'"></td>
+    </tr>
+    <tr>
+        <th>PJT_NM</th>
+        <td th:text="${doc.pjtNm} ?: 'Null'"></td>
+        <th>employeeId</th>
+        <td th:text="${doc.employeeId} ?: 'Null'"></td>
+    </tr>
+    <tr>
+        <th>employeeName</th>
+        <td th:text="${doc.employeeName} ?: 'Null'"></td>
+        <th>pjtSttsCd</th>
+        <td th:text="${doc.pjtSttsCd} ?: 'Null'"></td>
+    </tr>
+    <tr>
+        <th>pjtBgngDt</th>
+        <td th:text="${doc.pjtBgngDt} ?: 'Null'"></td>
+        <th>pjtEndDt</th>
+        <td th:text="${doc.pjtEndDt} ?: 'Null'"></td>
+    </tr>
+    <tr>
+        <th>ORG_FILE_NM</th>
+        <td colspan="3">
+            <a th:if="${doc.orgFileNm != null and doc.atchFileSn != null}"
+               th:href="@{/documentMng/downloadFile(fileName=${doc.atchFileSn}, orgName=${doc.orgFileNm})}"
+               th:text="${doc.orgFileNm}"></a>
+            <span th:if="${doc.orgFileNm == null or doc.atchFileSn == null}">Null</span>
+        </td>
+    </tr>
+    <tr>
+        <th>versionName</th>
+        <td th:text="${doc.versionName} ?: 'Null'"></td>
+        <th>versionCreatedAt</th>
+        <td th:text="${doc.versionCreatedAt} ?: 'Null'"></td>
+    </tr>
+    <tr>
+        <th>content</th>
+        <td class="content-cell" colspan="3"
+            th:utext="${doc.content != null ? doc.content : '<i>Null</i>'}"></td>
+    </tr>
+</table>
+<br>
+<a th:href="@{/documentMng/standalone/versions(originalId=${doc.originalId})}">← 버전 목록으로 돌아가기</a>
+</body>
+</html>
