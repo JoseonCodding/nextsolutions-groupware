@@ -32,9 +32,9 @@
         PJT_BGNG_DT = #{PJT_BGNG_DT},     <!-- 시작일 -->
         PJT_END_DT = #{PJT_END_DT},       <!-- 종료일 -->
         PJT_STTS_CD = #{PJT_STTS_CD},     <!-- 상태 코드 -->
-        content = #{content},            <!-- 내용 -->
-        ATCH_FILE_SN = #{ATCH_FILE_SN},      <!-- 업로드된 파일 uuid 이름 -->
-        ORG_FILE_NM = #{ORG_FILE_NM},      <!-- 업로드된 파일 원래 이름 -->
+        content = #{content},				<!-- 내용 -->
+        ATCH_FILE_SN = #{ATCH_FILE_SN},		<!-- 업로드된 파일 uuid 이름 -->
+        ORG_FILE_NM = #{ORG_FILE_NM},		<!-- 업로드된 파일 원래 이름 -->
         LAST_MDFCN_DT = #{LAST_MDFCN_DT}, <!-- 최종 수정일 -->
         TB_PJT_APR = #{TB_PJT_APR},   <!-- ✅ 결재자 수정 가능 -->
         LAST_MDFR_ID = #{LAST_MDFR_ID}    <!-- 최종 수정자 ID -->
@@ -107,9 +107,9 @@
       '대기',                  <!-- 상태코드: 기본값 '대기' -->
       'SYSTEM',              <!-- 최초등록자: 시스템 -->
       #{FRST_REG_DT},         <!-- 최초등록일 -->
-      #{content},          <!-- 내용 -->
-      #{ATCH_FILE_SN},       <!-- 업로드한 파일 uuid 이름 -->
-      #{ORG_FILE_NM}       <!-- 업로드한 파일 원래 이름 -->
+      #{content}, 			<!-- 내용 -->
+      #{ATCH_FILE_SN}, 		<!-- 업로드한 파일 uuid 이름 -->
+      #{ORG_FILE_NM} 		<!-- 업로드한 파일 원래 이름 -->
       
     )
   </insert>
