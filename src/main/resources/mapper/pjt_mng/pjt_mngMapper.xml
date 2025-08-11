@@ -39,6 +39,7 @@
     WHERE PJT_SN = #{PJT_SN}              <!-- 프로젝트 고유번호 조건 -->
   </update>
 
+	<!-- 선생님이 보증하는 진짜 프로젝트 메인 데이터 쏴주는놈 -->
   <!-- ✅ 프로젝트 목록 검색 -->
   <select id="searchProjectMngList" parameterType="string" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     SELECT PJT_SN,
@@ -145,7 +146,7 @@
            ORG_FILE_NM,
            content
     FROM team2_db.TB_PJT_BASC
-    ORDER BY PJT_SN ASC
+    ORDER BY PJT_SN DESC
   </select>
   
   <!-- ✅ 신규: 정렬 + 검색 + 페이징 -->
@@ -163,7 +164,7 @@
       <when test="sortType == 'PJT_BGNG_DT'"> PJT_BGNG_DT </when>
       <otherwise> PJT_NM </otherwise>
     </choose>
-  ${order}
+  ${order} 
   LIMIT #{offset}, #{pageSize}
 </select>
 

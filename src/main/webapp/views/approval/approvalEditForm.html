@@ -16,7 +16,8 @@
         <input type="hidden" th:name="page" th:value="${page}" />
         <input type="hidden" th:name="type" th:value="${type}" />
         <input type="hidden" th:name="status" th:value="${status}" />
-        
+        <input type="hidden" name="docType" th:value="${editData.docType}" />
+                
         <table>
             <tr>
                 <td>작성자</td>
@@ -28,13 +29,7 @@
             </tr>
             <tr>
                 <td>결재 종류</td>
-                <td>
-                    <select th:field="*{docType}">
-                        <option value="프로젝트" th:selected="*{docType == '프로젝트'}">프로젝트</option>
-                        <option value="근태" th:selected="*{docType == '근태'}">근태</option>
-                        <option value="공지사항" th:selected="*{docType == '공지사항'}">공지사항</option>
-                    </select>
-                </td>
+                <td th:text="*{docType}"></td>
             </tr>
             <tr>
                 <td>제목</td>
