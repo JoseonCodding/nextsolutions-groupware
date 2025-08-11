@@ -186,7 +186,7 @@ public interface BoardMapper {
     int syncLikeCount(BoardLikeDTO dto);
     
 
-    /* ============ 관리자 ============ */
+    /************* 관리자 ****************/
     /** 게시판명 중복 체크 */
     @Select("SELECT COUNT(1) FROM board_board WHERE board_name = #{name}")
     int countBoardName(@Param("name") String name);
@@ -230,50 +230,20 @@ public interface BoardMapper {
          SET is_active = #{active}, updated_at = NOW()
        WHERE board_id = #{boardId}
     """)
-    int toggleBoardActive(@Param("boardId") Integer  boardId, @Param("active") Boolean active);
- 
-    /** 게시판 메타 목록 조회 (검색/활성필터) */
+    int toggleBoardActive(@Param("boardId") Integer boardId, @Param("active") Boolean active);
+    
+    // 관리자: 보드 목록(검색/활성필터)
     @Select("""
-        SELECT board_id, board_name, board_type, access_role,
-               use_comment, use_like, is_active, created_at, updated_at
-        FROM board_board
-        WHERE (#{activeOnly} IS NULL OR is_active = #{activeOnly})
-          AND (#{q} IS NULL OR board_name LIKE CONCAT('%', #{q}, '%'))
-        ORDER BY created_at DESC
+      SELECT board_id, board_name, board_type, access_role,
+             use_comment, use_like, is_active, created_at, updated_at
+      FROM board_board
+      WHERE (#{activeOnly} IS NULL OR is_active = #{activeOnly})
+        AND (#{q} IS NULL OR board_name LIKE CONCAT('%', #{q}, '%'))
+      ORDER BY created_at DESC
     """)
     List<BoardDTO> findBoards(@Param("activeOnly") Boolean activeOnly,
                               @Param("q") String q);
 
-    /* ==== 동적 보드 공용 ==== */
 
-    @Select("""
-            SELECT board_id, board_name, board_type, access_role,
-                   use_comment, use_like, is_active, created_at, updated_at
-            FROM board_board
-            WHERE is_active = 1
-            ORDER BY created_at ASC
-        """)
-        List<BoardDTO> selectActiveBoards();
-
-        @Select("""
-            SELECT post_id, board_id, employee_id, title, content,
-                   created_at, updated_at, view_count, like_count, is_deleted
-            FROM board_post
-            WHERE board_id = #{boardId}
-              AND is_deleted = 0
-            ORDER BY created_at DESC
-            LIMIT #{size} OFFSET #{offset}
-        """)
-        List<BoardDTO> selectPostsByBoardId(@Param("boardId") Integer boardId,
-                                            @Param("size") int size,
-                                            @Param("offset") int offset);
-
-        @Select("""
-            SELECT COUNT(1)
-            FROM board_post
-            WHERE board_id = #{boardId}
-              AND is_deleted = 0
-        """)
-        int countPostsByBoardId(@Param("boardId") Integer boardId);
-
+   
 }
