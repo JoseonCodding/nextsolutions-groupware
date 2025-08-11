@@ -27,8 +27,8 @@ public interface ApprovalMapper {
 	    "     e.deptName AS deptName,",
 	    "     e.emp_nm AS writer,",
 	    "     b.created_at AS createdAt,",
-	    "     NULL AS attachFileUuid,",     
-	    "     NULL AS attachFileOrgName",   
+	    "     NULL AS attachFileUuid,",
+	    "     NULL AS attachFileOrgName",
 	    "   FROM board_post b",
 	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
 	    "   WHERE b.board_id = 1",
@@ -50,13 +50,14 @@ public interface ApprovalMapper {
 	    "     e.deptName AS deptName,",
 	    "     e.emp_nm AS writer,",
 	    "     l.create_date AS createdAt,",
-	    "     NULL AS attachFileUuid,",       
-	    "     NULL AS attachFileOrgName",     
+	    "     NULL AS attachFileUuid,",
+	    "     NULL AS attachFileOrgName",
 	    "   FROM annual_leave l",
 	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
 	    "   <where>",
+	    "     l.state_type IS NOT NULL", // null 제외
 	    "     <if test='type != null and type != \"\"'>",
-	    "       l.docType = #{type}",
+	    "       AND l.docType = #{type}",
 	    "     </if>",
 	    "     <if test='status != null and status != \"\"'>",
 	    "       AND l.state_type = #{status}",
@@ -85,7 +86,6 @@ public interface ApprovalMapper {
 	    "       AND p.PJT_STTS_CD = #{status}",
 	    "     </if>",
 	    "   </where>",
-	    "",
 	    ") AS all_data",
 	    "ORDER BY createdAt DESC",
 	    "LIMIT #{offset}, #{size}",
@@ -101,43 +101,44 @@ public interface ApprovalMapper {
 
 	
 	// 공지사항 + 연차 + 프로젝트 DB 총 개수 세기 (docId:concat 방식으로 임시생성 -> 파라미터로 발사 가능)
-	@Select(
-	    "<script>"
-	    + "SELECT COUNT(*) FROM ("
-	    + "  SELECT CONCAT('notice_', b.post_id) AS docId"
-	    + "    FROM board_post b"
-	    + "   WHERE b.board_id = 1"
-	    + "     <if test='type != null and type != \"\"'>"
-	    + "       AND b.docType = #{type}"
-	    + "     </if> "
-	    + "     <if test='status != null and status != \"\"'>"
-	    + "       AND b.status = #{status}"
-	    + "     </if> "
-	    + "  UNION ALL"
-	    + "  SELECT CONCAT('leave_', l.leave_id) AS docId"
-	    + "    FROM annual_leave l"
-	    + "   <where>"
-	    + "     <if test='type != null and type != \"\"'>"
-	    + "       l.docType = #{type}"
-	    + "     </if> "
-	    + "     <if test='status != null and status != \"\"'>"
-	    + "       AND l.state_type = #{status}"
-	    + "     </if> "
-	    + "   </where>"
-	    + "  UNION ALL"
-	    + "  SELECT CONCAT('project_', p.PJT_SN) AS docId"
-	    + "    FROM TB_PJT_BASC p"
-	    + "   <where>"
-	    + "     <if test='type != null and type != \"\"'>"
-	    + "       p.docType = #{type}"
-	    + "     </if> "
-	    + "     <if test='status != null and status != \"\"'>"
-	    + "       AND p.PJT_STTS_CD = #{status}"
-	    + "     </if> "
-	    + "   </where>"
-	    + ") AS ALL_DATA"
-	    + "</script>"
-	)
+	@Select({
+	    "<script>",
+	    "SELECT COUNT(*) FROM (",
+	    "  SELECT CONCAT('notice_', b.post_id) AS docId",
+	    "    FROM board_post b",
+	    "   WHERE b.board_id = 1",
+	    "     <if test='type != null and type != \"\"'>",
+	    "       AND b.docType = #{type}",
+	    "     </if>",
+	    "     <if test='status != null and status != \"\"'>",
+	    "       AND b.status = #{status}",
+	    "     </if>",
+	    "  UNION ALL",
+	    "  SELECT CONCAT('leave_', l.leave_id) AS docId",
+	    "    FROM annual_leave l",
+	    "   <where>",
+	    "     l.state_type IS NOT NULL", // null 제외
+	    "     <if test='type != null and type != \"\"'>",
+	    "       AND l.docType = #{type}",
+	    "     </if>",
+	    "     <if test='status != null and status != \"\"'>",
+	    "       AND l.state_type = #{status}",
+	    "     </if>",
+	    "   </where>",
+	    "  UNION ALL",
+	    "  SELECT CONCAT('project_', p.PJT_SN) AS docId",
+	    "    FROM TB_PJT_BASC p",
+	    "   <where>",
+	    "     <if test='type != null and type != \"\"'>",
+	    "       p.docType = #{type}",
+	    "     </if>",
+	    "     <if test='status != null and status != \"\"'>",
+	    "       AND p.PJT_STTS_CD = #{status}",
+	    "     </if>",
+	    "   </where>",
+	    ") AS ALL_DATA",
+	    "</script>"
+	})
 	int approvalCountAll(
 	    @Param("type") String type,
 	    @Param("status") String status
@@ -178,6 +179,7 @@ public interface ApprovalMapper {
 	    "     NULL AS attachFileOrgName",   
 	    "   FROM annual_leave l",
 	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
+	    "   WHERE l.state_type IS NOT NULL",  // NULL 값 제외 조건 추가
 	    "",
 	    "   UNION ALL",
 	    "",
