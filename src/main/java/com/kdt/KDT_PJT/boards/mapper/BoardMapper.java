@@ -44,9 +44,9 @@ public interface BoardMapper {
     // 초안(대기) 저장
     @Insert("""
       INSERT INTO board_post
-        (board_id, employee_id, title, content, created_at, updated_at, view_count, like_count, is_deleted, status)
+        (board_id, employee_id, title, content, created_at, updated_at, view_count, like_count, is_deleted, status, docType)
       VALUES
-        (1, #{employeeId}, #{title}, #{content}, NOW(), NOW(), 0, 0, FALSE, '대기')
+        (1, #{employeeId}, #{title}, #{content}, NOW(), NOW(), 0, 0, FALSE, '대기', '공지사항')
     """)
     @Options(useGeneratedKeys = true, keyProperty = "postId", keyColumn = "post_id")
     int insertNoticeDraft(BoardDTO dto);

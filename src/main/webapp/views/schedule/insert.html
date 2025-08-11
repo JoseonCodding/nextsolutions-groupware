@@ -8,26 +8,29 @@
 		</tr>
 		<tr >
 			<td colspan="3">
-				일정명<textarea name="title" id="title" cols="30" rows="1"></textarea>
+				일정명<textarea name="title" cols="30" rows="1"></textarea>
 			</td>
 		</tr>
 		<tr >
 			<td colspan="3">
-				<input type="date" name="startDateStr" />
-				~<input type="date" name="endDateStr" />
+				<input type="date" name="startDateStr" /><input type="time" name="startDateStr">
+				~ <input type="date" name="endDateStr" /><input type="time" name="endDateStr">
 			</td>
+
 		</tr>
 		<tr>
 			<td colspan="2">일정 종류 : 
-				<input type="checkbox" name="cate"/>종일일정
+				<input type="checkbox" name="cate" value="종일"/>종일일정
+				<input type="checkbox" name="cate" value="반복"/>반복일정
 				<select>
-					<option value="매일"></option>
-					<option value="매주"></option>
-					<option value="매달"></option>
+					<option value="매일">매일</option>
+					<option value="매주">매주</option>
+					<option value="매달">매달</option>
 				</select>
-				
 			</td>
-			<td>알림 설정</td>
+			<td>
+				<input type="checkbox" name="alarm" value="알림"/>알림 
+			</td>
 		</tr>
 		<tr >
 			<td colspan="3">

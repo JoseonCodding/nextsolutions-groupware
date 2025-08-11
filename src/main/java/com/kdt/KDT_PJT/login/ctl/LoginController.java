@@ -69,6 +69,7 @@ public class LoginController {
         	 // 필요한 값만 세션에 저장
         	dto.setEmployeeId(user.getString("employeeId"));
         	dto.setEmpNm(user.getString("empNm"));
+        	dto.setRole(user.getString("role"));
        
             session.setAttribute("loginUser", dto);
          
@@ -83,7 +84,7 @@ public class LoginController {
     
 //    @GetMapping("/testSession")
 //    @ResponseBody
-//    public String testSession(HttpSession session) {
+//    public String testSession(HttpSession session) {ww a
 //        return "세션에 저장된 ID: " + session.getAttribute("employeeId");
 //    }
     

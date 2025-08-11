@@ -19,8 +19,8 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/api")
 public class ApiController {
 	
-	@Autowired
-    BoardMapper boardMapper;
+	//@Autowired
+   // BoardMapper boardMapper;
 
 	
 	@GetMapping("logInfo")

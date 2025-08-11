@@ -1,24 +1,106 @@
+ <!-- 검색 폼 -->
+  <form method="get" th:action="@{/attend/attendList/search}">
+    <label>날짜(시작): <input type="date" name="fromDate" th:value="${fromDate}" /></label>
+    <label>날짜(종료): <input type="date" name="toDate" th:value="${toDate}" /></label>
+    <label>이름: <input type="text" name="empNm" th:value="${empNm}" /></label>
+    <label>수정자: <input type="text" name="modifiedBy" th:value="${modifiedBy}" /></label>
+    <label>상태:
+      <select name="stateType">
+        <option value="" th:selected="${stateType==null or stateType==''}">전체</option>
+        <option value="대기" th:selected="${stateType=='대기'}">대기</option>
+        <option value="승인" th:selected="${stateType=='승인'}">승인</option>
+        <option value="반려" th:selected="${stateType=='반려'}">반려</option>
+      </select>
+    </label>
+
+
 <!-- 근태 관리 출퇴근변경이력 - 근태 관리자 화면 -->
-<form action="">
-<table border="">
-	<tr>
-		<td>날짜</td>
-		<td>이름</td>
-	<!-- <td>부서</td> -->
-		<td>출근시간</td>
-		<td>퇴근시간</td>
-	<!--<td>근무시간</td>
-		<td>수정자</td>
-		<td>수정일</td>
-		<td>수정사유</td> -->
-	</tr>
-	<tr th:each="dto : ${mainData}">
-		<td th:text="${dto.workDate}"></td>
+<form method="get" action="/attend/attendList">
+    <label>날짜: <input type="date" name="workDate" /></label>
+    <label>이름: <input type="text" name="empNm" /></label>
+    <label>수정자: <input type="text" name="modifiedBy" /></label>
 
-		<!-- <td th:text="${dto.pname}"></td> -->
+    <button type="submit">검색</button>
 
-		<td th:text="${dto.checkInHourMinute}" />
-		<td th:text="${dto.checkOutHourMinute}" />
-	</tr>
-</table>
-</form>
+    <!-- 동일 파라미터로 PDF -->
+    <button type="submit" formmethod="get" th:formaction="@{/attend/attendList/search/pdf}">
+      PDF 다운로드
+    </button>
+
+    <!-- 초기 진입 안전값 -->
+    <input type="hidden" name="size" th:value="${size} ?: 10"/>
+    <input type="hidden" name="page" value="1"/>
+  </form>
+
+<!-- 페이저: #numbers 사용 금지, 안전 파싱 -->
+<div th:with="
+      pRaw=${page}, sRaw=${size}, tpRaw=${totalPages},
+      p=${(pRaw==null or pRaw=='') ? 1 : (pRaw instanceof T(java.lang.Number) ? pRaw.intValue() : T(java.lang.Integer).parseInt(pRaw))},
+      s=${(sRaw==null or sRaw=='') ? 10 : (sRaw instanceof T(java.lang.Number) ? sRaw.intValue() : T(java.lang.Integer).parseInt(sRaw))},
+      tp=${(tpRaw==null or tpRaw=='') ? 0 : (tpRaw instanceof T(java.lang.Number) ? tpRaw.intValue() : T(java.lang.Integer).parseInt(tpRaw))},
+      prev=${p>1 ? p-1 : 1},
+      next=${p<tp ? p+1 : tp}
+    "
+    style="margin-top:10px; display:flex; gap:6px; align-items:center;">
+
+  <a th:href="@{/attend/attendList/search(fromDate=${fromDate},toDate=${toDate},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=1,size=${s})}"
+     th:classappend="${p == 1} ? 'disabled'">« 처음</a>
+
+  <a th:href="@{/attend/attendList/search(fromDate=${fromDate},toDate=${toDate},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=${prev},size=${s})}"
+     th:classappend="${p == 1} ? 'disabled'">‹ 이전</a>
+
+  <span th:text="${p} + ' / ' + ${tp}"></span>
+
+  <a th:href="@{/attend/attendList/search(fromDate=${fromDate},toDate=${toDate},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=${(next>0?next:1)},size=${s})}"
+     th:classappend="${p == tp or tp == 0} ? 'disabled'">다음 ›</a>
+
+  <a th:href="@{/attend/attendList/search(fromDate=${fromDate},toDate=${toDate},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=${(tp>0?tp:1)},size=${s})}"
+     th:classappend="${p == tp or tp == 0} ? 'disabled'">끝 »</a>
+
+  <!-- 페이지 크기 변경 -->
+  <form method="get" th:action="@{/attend/attendList/search}" style="margin-left:auto;">
+    <input type="hidden" name="fromDate" th:value="${fromDate}">
+    <input type="hidden" name="toDate" th:value="${toDate}">
+    <input type="hidden" name="empNm" th:value="${empNm}">
+    <input type="hidden" name="modifiedBy" th:value="${modifiedBy}">
+    <input type="hidden" name="stateType" th:value="${stateType}">
+    <select name="size" onchange="this.form.submit()">
+      <option th:selected="${s == 10}" value="10">10</option>
+      <option th:selected="${s == 20}" value="20">20</option>
+      <option th:selected="${s == 50}" value="50">50</option>
+    </select>
+    <input type="hidden" name="page" value="1"/>
+  </form>
+</div>
+
+  <!-- 목록 그리드 -->
+  <table border="">
+    <thead>
+      <tr>
+        <th>날짜</th>
+        <th>이름</th>
+        <th>출근시간</th>
+        <th>퇴근시간</th>
+        <th>근무시간</th>
+        <th>수정자</th>
+        <th>수정일</th>
+        <th>수정사유</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="dto : ${mainData}">
+        <td th:text="${dto.workDate}"></td>
+        <td th:text="${dto.empNm}"></td>
+        <td th:text="${dto.checkInHourMinute}"></td>
+        <td th:text="${dto.checkOutHourMinute}"></td>
+        <td th:text="${dto.workHours}"></td>
+        <td th:text="${dto.modifiedBy}"></td>
+        <td th:text="${#temporals.format(dto.modifiedAt, 'yyyy-MM-dd')}"></td>
+        <td th:text="${dto.modificationReason}"></td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+

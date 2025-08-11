@@ -38,13 +38,6 @@ spring:
     username: team2_user  # DB 사용자명
     url: jdbc:mysql://${my.datasource.host}:${my.datasource.port}/${my.datasource.dbname}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
 
-#  JSP 사용시 주석해제
-#  mvc:
-#    view:
-#      prefix: /WEB-INF/views/  # JSP 파일이 위치한 디렉토리
-#      suffix: .jsp  # 뷰 파일 확장자
-#      encoding: UTF-8  # 뷰 인코딩 설정
-
 # HTML사용시 주석해제    
   thymeleaf:
 #    prefix: classpath:/templates/
@@ -63,10 +56,13 @@ spring:
   application:
     name: kdtpjt  # 스프링 애플리케이션 이름
 
-
-
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml  # Mapper XML 파일 위치
   type-aliases-package: com.kdt.KDT_PJT.cmmn.map  # Alias 등록할 패키지 (예: CmmnMap)
   configuration:
     map-underscore-to-camel-case: 'true'  # DB 컬럼명과 Java camelCase 자동 매핑
+
+# 파일 저장 루트 (우리 FileStorageHelper에서 @Value로 주입)
+file:
+  storage:
+  root: upload/project	

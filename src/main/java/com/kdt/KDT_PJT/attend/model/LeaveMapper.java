@@ -30,15 +30,28 @@ public interface LeaveMapper {
 			+ "; ")
 	LeaveDTO getAnnualLeaveOne(EmployeeDto dto);
 	
-	//관리자용 연차 조회
-	@Select("select t1.*, ifnull(use_cnt,0) as used from "
-			+ "(select employeeId, count(*) as total from annual_leave "
-			+ "group by employeeId ) t1 "
-			+ "left outer join "
-			+ "(select employeeId, count(*) use_cnt from annual_leave "
-			+ "where leave_type = '사용' "
-			+ "group by employeeId) t2 "
-			+ "on t1.employeeId = t2.employeeId ")
+
+
+	//관리자용 연차 조회 (이름 포함)
+	@Select("""
+	    SELECT e.emp_nm AS empNm,
+	           t1.employeeId,
+	           t1.total,
+	           IFNULL(t2.use_cnt, 0) AS used
+	    FROM (
+	        SELECT employeeId, COUNT(*) AS total
+	        FROM annual_leave
+	        GROUP BY employeeId
+	    ) t1
+	    LEFT JOIN (
+	        SELECT employeeId, COUNT(*) AS use_cnt
+	        FROM annual_leave
+	        WHERE leave_type = '사용'
+	        GROUP BY employeeId
+	    ) t2 ON t1.employeeId = t2.employeeId
+	    JOIN employee e ON t1.employeeId = e.employeeId
+	    ORDER BY e.emp_nm
+	""")
 	List<LeaveDTO> mngLeaveList(); 
 	
 	//연차 사용 신청
@@ -50,5 +63,14 @@ public interface LeaveMapper {
 			"</script> "
 			)
 	int approvalList(LeaveDTO dto); 
+	
+	//연차 자동 부여
+	 @Insert("""
+		        INSERT INTO annual_leave 
+		        (employeeId, create_date, leave_type, create_reason)
+		        VALUES (#{employeeId}, CURRENT_DATE, '발생', '전월 근무율 80% 이상 자동 부여')
+		    """)
+	 void insertAutoLeave(LeaveDTO dto);
+
 
 }

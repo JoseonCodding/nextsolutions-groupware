@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org" lang="ko">
+
 <head>
-<meta charset="UTF-8">
-<title>★전자 결재 뷰어</title>
-    
+	<meta charset="UTF-8">
+	<title>★전자 결재 뷰어</title>
+
+	<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+	
 </head>
 <body>
 
@@ -13,19 +16,19 @@
 		<table border="">
 			<tr>
 				<td>작성자</td>
-				<td th:text="${viewData == null ? '-' : viewData.writer}"></td>
+				<td th:text="${approvalData == null ? '-' : approvalData.writer}"></td>
 			</tr>
 			<tr>
 				<td>부서</td>
-				<td th:text="${viewData == null ? '-' : viewData.department}"></td>
+				<td th:text="${approvalData == null ? '-' : approvalData.deptName}"></td>
 			</tr>
 			<tr>
 				<td>기안일</td>
-				<td th:text="${viewData == null ? '-' : #dates.format(viewData.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
+				<td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
 			</tr>
 			<tr>
 				<td>문서번호</td>
-				<td th:text="${viewData == null ? '-' : viewData.docId}"></td>
+				<td th:text="${approvalData == null ? '-' : approvalData.docId}"></td>
 			</tr>
 		</table>
 	
@@ -38,13 +41,13 @@
 		  </tr>
 		  <tr>
 		    <td>
-		    	<span th:text="${viewData == null ? '-' : viewData.writer}"></span>
+		    	<span th:text="${approvalData == null ? '-' : approvalData.writer}"></span>
 		    </td>
 			<td>
-			  <span th:text="${viewData == null ? '-' : (viewData.docType == '근태' ? '김근태대장' : (viewData.docType == '공지사항' ? '박공지사항' : (viewData.docType == '프로젝트' ? '정프로젝트' : '-')))}"></span>
+			  <span th:text="${approvalData == null ? '-' : (approvalData.docType == '연차' ? '김연차대장' : (approvalData.docType == '공지사항' ? '박공지사항' : (approvalData.docType == '프로젝트' ? '정프로젝트' : '-')))}"></span>
 			</td>
 		    <td>
-			  <span th:text="${viewData == null ? '-' : '김대표'}"></span>
+			  <span th:text="${approvalData == null ? '-' : '김대표'}"></span>
 			</td>
 		  </tr>
 		</table>
@@ -56,53 +59,78 @@
 		<table border="">
 			<tr>
 				<td>결재 종류</td>
-				<td th:text="${viewData == null ? '-' : viewData.docType}"></td>
+				<td th:text="${approvalData == null ? '-' : approvalData.docType}"></td>
 			</tr>
 			<tr>
 				<td>제목</td>
-				<td th:text="${viewData == null ? '-' : viewData.title}"></td>
+				<td th:text="${approvalData == null ? '존재하지 않는 문서입니다.' : approvalData.title}"></td>
 			</tr>
 		</table>
 	</div>
 
-	<!-- 뷰어 영역 : innerHTML로 렌더링 예정 -->
-	<div style="border:1px solid; margin-top: 20px; background-color: aqua;" th:text="${viewData == null ? '-' : viewData.content}">
+	<!-- 내용 영역 -->
+	<div style="border:1px solid; margin-top: 20px; background-color: aqua;"
+	     th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
 	</div>
 	
-	<a th:href="@{'/approval/main'(docId=${viewData.docId}, page=${page}, type=${type}, status=${status})}">
-		목록으로
+	<!-- 첨부파일 다운로드 영역 -->
+	<div style="background-color: white; margin-top: 20px;">
+	  <b>첨부파일</b> :
+	  <span th:if="${approvalData != null and not #strings.isEmpty(approvalData.attachFileUuid)}">
+	    <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid} + '&orgName=' + ${approvalData.attachFileOrgName}}"
+	       th:text="${approvalData.attachFileOrgName}">다운로드</a>
+	  </span>
+	  <span th:unless="${approvalData != null and not #strings.isEmpty(approvalData.attachFileUuid)}">
+	    첨부 없음
+	  </span>
+	</div>
+	
+
+	<!-- 목록으로(approvalData가 있을때) or 처음으로(approvalData가 없을때) -->
+	<a th:if="${approvalData != null}"
+	   th:href="@{'/approval/main'(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status})}">
+	   목록으로
+	</a>
+	
+	<a th:unless="${approvalData != null}"
+	   th:href="@{/approval/main}">
+	   처음으로
 	</a>
 	
 	<!-- 수정, 삭제 버튼 영역 -->
-	<div th:if="${viewData == null ? '-' : viewData.status =='대기'}">
-		<th:block th:if="${viewData != null}">
-			<a th:href="@{/approval/edit(docId=${viewData.docId} , page=${page}, type=${type}, status=${status})}">
-				<button>수정</button>
-			</a>
+	<div th:if="${approvalData == null ? '-' : approvalData.status =='대기'}">
+		<th:block th:if="${approvalData != null}">
+			<a th:href="@{/approval/edit(docId=${approvalData.docId} , page=${page}, type=${type}, status=${status})}">수정</a>
 		</th:block>
 		
-		<th:block th:if="${viewData != null}">
-			<a th:href="@{/approval/delete(docId=${viewData.docId}, page=${page}, type=${type}, status=${status})}"
-				onclick="return confirm('삭제하면 복원할 수 없습니다.\n정말로 삭제하시겠습니까?');">
-				<button>삭제</button>
-			</a>
+		<th:block th:if="${approvalData != null}">
+			<a th:href="@{/approval/delete(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status}, docType=${approvalData.docType})}"
+   				onclick="return confirm('삭제하면 복원할 수 없습니다.\n정말로 삭제하시겠습니까?');">삭제</a>
 		</th:block>
 	</div>
 	
 	<!-- 승인, 반려 버튼 영역 -->
-	<div th:if="${viewData == null ? '-' : viewData.status =='대기'}">
-		<th:block th:if="${viewData != null}">
-			<a>
-				<button>승인</button>
-			</a>
-		</th:block>
-		
-		<th:block th:if="${viewData != null}">
-			<a onclick="return confirm('한 번 반려하면 취소할 수 없습니다.\n정말로 반려하시겠습니까?');">
-				<button>반려</button>
-			</a>
-		</th:block>
+	<div th:if="${approvalData != null and approvalData.status == '대기'}">
+	    <!-- 승인 버튼 -->
+	    <form th:action="@{/approval/approve}" method="post" style="display: inline;">
+	        <input type="hidden" name="docId" th:value="${approvalData.docId}" />
+	        <input type="hidden" name="docType" th:value="${approvalData.docType}" />
+	        <input type="hidden" name="page" th:value="${page}" />
+	        <input type="hidden" name="type" th:value="${type}" />
+	        <input type="hidden" name="status" th:value="${status}" />
+	        <button type="submit" onclick="return confirm('한 번 승인하면 취소할 수 없습니다.\n정말로 승인하시겠습니까?');">승인</button>
+	    </form>
+	    <!-- 반려 버튼 -->
+	    <form th:action="@{/approval/reject}" method="post" style="display: inline;">
+	        <input type="hidden" name="docId" th:value="${approvalData.docId}" />
+	        <input type="hidden" name="docType" th:value="${approvalData.docType}" />
+	        <input type="hidden" name="page" th:value="${page}" />
+	        <input type="hidden" name="type" th:value="${type}" />
+	        <input type="hidden" name="status" th:value="${status}" />
+	        <button type="submit" onclick="return confirm('한 번 반려하면 취소할 수 없습니다.\n정말로 반려하시겠습니까?');">반려</button>
+	    </form>
 	</div>
+	
 
 </body>
 </html>

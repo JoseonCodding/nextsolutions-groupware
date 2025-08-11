@@ -17,7 +17,7 @@
   
   
     <if test="keyword != null and keyword != ''">
-      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR EMP_NM LIKE CONCAT('%', #{keyword}, '%'))
+      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR employeeid LIKE CONCAT('%', #{keyword}, '%'))
     </if>
   </where>
 </select>
@@ -28,11 +28,15 @@
     UPDATE TB_PJT_BASC
     SET 
         PJT_NM = #{PJT_NM},              <!-- 프로젝트명 -->
-        EMP_NM = #{EMP_NM},              <!-- 담당자명 -->
+        employeeid = #{employeeid},              <!-- 담당자명 -->
         PJT_BGNG_DT = #{PJT_BGNG_DT},     <!-- 시작일 -->
         PJT_END_DT = #{PJT_END_DT},       <!-- 종료일 -->
         PJT_STTS_CD = #{PJT_STTS_CD},     <!-- 상태 코드 -->
+        content = #{content},            <!-- 내용 -->
+        ATCH_FILE_SN = #{ATCH_FILE_SN},      <!-- 업로드된 파일 uuid 이름 -->
+        ORG_FILE_NM = #{ORG_FILE_NM},      <!-- 업로드된 파일 원래 이름 -->
         LAST_MDFCN_DT = #{LAST_MDFCN_DT}, <!-- 최종 수정일 -->
+        TB_PJT_APR = #{TB_PJT_APR},   <!-- ✅ 결재자 수정 가능 -->
         LAST_MDFR_ID = #{LAST_MDFR_ID}    <!-- 최종 수정자 ID -->
     WHERE PJT_SN = #{PJT_SN}              <!-- 프로젝트 고유번호 조건 -->
   </update>
@@ -42,8 +46,7 @@
     SELECT PJT_SN,
            PJT_NM,
            PJT_STTS_CD,
-           EMP_SEQ,
-           EMP_NM,
+           employeeid,
            USE_YN,
            FRST_RGTR_ID,
            FRST_REG_DT,
@@ -57,10 +60,10 @@
       <if test="keyword != null and keyword != ''">
         AND (
           PJT_NM LIKE CONCAT('%', #{keyword}, '%')
-          OR EMP_NM LIKE CONCAT('%', #{keyword}, '%')
+          OR employeeid LIKE CONCAT('%', #{keyword}, '%')
         )
       </if>
-    ORDER BY PJT_SN ASC
+    ORDER BY PJT_SN DESC
   </select>
 
   <!-- ✅ 프로젝트 상세 조회 -->
@@ -68,16 +71,17 @@
     SELECT PJT_SN,
            PJT_NM,
            PJT_STTS_CD,
-           EMP_SEQ,
-           EMP_NM,
+           employeeid,
            USE_YN,
            FRST_RGTR_ID,
            FRST_REG_DT,
            LAST_MDFR_ID,
            LAST_MDFCN_DT,
            ATCH_FILE_SN,
+           ORG_FILE_NM,
            PJT_BGNG_DT,
-           PJT_END_DT
+           PJT_END_DT,
+           content
     FROM team2_db.TB_PJT_BASC
     WHERE PJT_SN = #{pjtSn}
   </select>
@@ -86,20 +90,27 @@
   <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     INSERT INTO TB_PJT_BASC (
       PJT_NM,
-      EMP_NM,
+      employeeid,
       PJT_BGNG_DT,
       PJT_END_DT,
       PJT_STTS_CD,
       FRST_RGTR_ID,
-      FRST_REG_DT
+      FRST_REG_DT,
+      content,
+      ATCH_FILE_SN,
+      ORG_FILE_NM
     ) VALUES (
       #{PJT_NM},             <!-- 프로젝트명 -->
-      #{EMP_NM},             <!-- 담당자명 -->
+      #{employeeid},             <!-- 담당자명 -->
       #{PJT_BGNG_DT},        <!-- 시작일 -->
       #{PJT_END_DT},         <!-- 종료일 -->
-      '01',                  <!-- 상태코드: 진행중 기본값 -->
+      '대기',                  <!-- 상태코드: 기본값 '대기' -->
       'SYSTEM',              <!-- 최초등록자: 시스템 -->
-      #{FRST_REG_DT}         <!-- 최초등록일 -->
+      #{FRST_REG_DT},         <!-- 최초등록일 -->
+      #{content},          <!-- 내용 -->
+      #{ATCH_FILE_SN},       <!-- 업로드한 파일 uuid 이름 -->
+      #{ORG_FILE_NM}       <!-- 업로드한 파일 원래 이름 -->
+      
     )
   </insert>
 
@@ -107,17 +118,19 @@
   <select id="getPjtList" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     SELECT PJT_SN,
            PJT_NM,
-           EMP_NM,
+           employeeid,
            PJT_BGNG_DT,
            PJT_END_DT,
            PJT_STTS_CD,
-           EMP_SEQ,
+
            USE_YN,
            FRST_RGTR_ID,
            FRST_REG_DT,
            LAST_MDFR_ID,
            LAST_MDFCN_DT,
-           ATCH_FILE_SN
+           ATCH_FILE_SN,
+           ORG_FILE_NM,
+           content
     FROM team2_db.TB_PJT_BASC
     ORDER BY PJT_SN ASC
   </select>
@@ -128,12 +141,12 @@
   FROM team2_db.TB_PJT_BASC
   <where>
     <if test="keyword != null and keyword != ''">
-      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR EMP_NM LIKE CONCAT('%', #{keyword}, '%'))
+      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR employeeid LIKE CONCAT('%', #{keyword}, '%'))
     </if>
   </where>
   ORDER BY
     <choose>
-      <when test="sortType == 'EMP_NM'"> EMP_NM </when>
+      <when test="sortType == 'employeeid'"> employeeid </when>
       <when test="sortType == 'PJT_BGNG_DT'"> PJT_BGNG_DT </when>
       <otherwise> PJT_NM </otherwise>
     </choose>
@@ -147,7 +160,7 @@
   FROM team2_db.TB_PJT_BASC
   <where>
     <if test="keyword != null and keyword != ''">
-      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR EMP_NM LIKE CONCAT('%', #{keyword}, '%'))
+      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR employeeid LIKE CONCAT('%', #{keyword}, '%'))
     </if>
   </where>
   ORDER BY PJT_SN DESC
@@ -164,9 +177,55 @@
   LIMIT #{limit} OFFSET #{offset}
 </select>
 
-<!-- ✅ 총 프로젝트 수 세기  -->
-	<select id="getProjectCount" resultType="int">
-    SELECT COUNT(*) FROM TB_PJT_BASC
+
+<!-- 작성자명 드롭박스로 가져오기  -->
+<select id="selectApproverCandidates" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+    SELECT DISTINCT employeeid AS employeeid
+    FROM TB_PJT_BASC
+    WHERE USE_YN = 'Y'
+      AND employeeid IS NOT NULL
+    ORDER BY employeeid
 </select>
+
+<!-- 결재자 정보 디비에서 받아오기 -->
+<select id="getProjectById" parameterType="int" resultType="CmmnMap">
+  SELECT PJT_SN,
+         PJT_NM,
+         PJT_STTS_CD,
+         
+         employeeid,
+         TB_PJT_APR,     -- ✅ 결재자명 컬럼
+         USE_YN,
+         FRST_RGTR_ID,
+         FRST_REG_DT,
+         LAST_MDFR_ID,
+         LAST_MDFCN_DT,
+         ATCH_FILE_SN,
+         PJT_BGNG_DT,
+         PJT_END_DT
+  FROM TB_PJT_BASC
+  WHERE PJT_SN = #{pjtSn}
+</select>
+
+
+
+<select id="selectProjectWithApprover" parameterType="int" resultType="CmmnMap">
+    SELECT b.PJT_SN,
+           b.PJT_NM,
+           a.APR_NM AS APPROVER_NAME,  -- 결재자명
+           b.PJT_BGNG_DT
+    FROM TB_PJT_BASC b
+    LEFT JOIN TB_PJT_APR a
+      ON b.PJT_SN = a.PJT_SN
+    WHERE b.PJT_SN = #{pjtSn}
+</select>
+
+
+  <update id="updateApprover" parameterType="map">
+    UPDATE TB_PJT_BASC
+       SET TB_PJT_APR = #{TB_PJT_APR},
+           LAST_MDFCN_DT = DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+     WHERE PJT_SN = #{PJT_SN}
+  </update>
 
 </mapper>
