@@ -88,6 +88,11 @@
 
   <!-- ✅ 프로젝트 등록 -->
   <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+  <!-- 문서관리로 넘기기 위한 코드 : 시작 (필규 작성) -->
+  <selectKey resultType="int" keyProperty="PJT_SN" order="AFTER">
+    SELECT LAST_INSERT_ID()
+  </selectKey>
+  <!-- 문서관리로 넘기기 위한 코드 : 끝 (필규 작성) -->
     INSERT INTO TB_PJT_BASC (
       PJT_NM,
       employeeId,
@@ -227,5 +232,48 @@
            LAST_MDFCN_DT = DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
      WHERE PJT_SN = #{PJT_SN}
   </update>
+  
+	<!-- 문서관리로 넘기기 위한 코드 : 시작 (필규 작성) -->
+	
+	<!-- 프로젝트 버전 기록 -->
+	<insert id="insertProjectVersion" parameterType="map">
+	    INSERT INTO TB_PJT_BASC_VERSION (
+	        original_id,
+	        PJT_NM,
+	        employeeId,
+	        PJT_BGNG_DT,
+	        PJT_END_DT,
+	        PJT_STTS_CD,
+	        content,
+	        ATCH_FILE_SN,
+	        ORG_FILE_NM,
+	        versionName,
+	        versionCreatedAt
+	    )
+	    SELECT 
+	        PJT_SN,
+	        PJT_NM,
+	        employeeId,
+	        PJT_BGNG_DT,
+	        PJT_END_DT,
+	        PJT_STTS_CD,
+	        content,
+	        ATCH_FILE_SN,
+	        ORG_FILE_NM,
+	        #{versionName},
+	        NOW()
+	    FROM TB_PJT_BASC
+	    WHERE PJT_SN = #{pjtSn}
+	</insert>
+	
+	<select id="selectLastVersion" resultType="string">
+	    SELECT versionName
+	    FROM TB_PJT_BASC_VERSION
+	    WHERE original_id = #{pjtSn}
+	    ORDER BY versionCreatedAt DESC
+	    LIMIT 1
+	</select>
+	  
+	<!-- 문서관리로 넘기기 위한 코드 : 끝 (필규 작성) -->
 
 </mapper>
