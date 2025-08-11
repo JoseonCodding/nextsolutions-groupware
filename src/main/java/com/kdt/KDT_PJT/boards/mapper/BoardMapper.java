@@ -16,12 +16,23 @@ public interface BoardMapper {
 
     
     /// ========= 공지(보드=1) =========
+    // 공지 목록 (완료만) - 페이징
     @Select("""
-      SELECT p.* FROM board_post p
-      WHERE p.board_id=1 AND p.status='완료' AND p.is_deleted=FALSE
-      ORDER BY COALESCE(p.published_at,p.updated_at,p.created_at) DESC, p.post_id DESC
-    """)
-    List<BoardDTO> selectNoticePosts();
+    		  <script>
+    		  SELECT p.* FROM board_post p
+    		  WHERE p.board_id=1 AND p.status='완료' AND p.is_deleted=FALSE
+    		  ORDER BY COALESCE(p.published_at,p.updated_at,p.created_at) DESC, p.post_id DESC
+    		  LIMIT <choose><when test="limit != null">#{limit}</when><otherwise>10</otherwise></choose>
+    		  OFFSET <choose><when test="offset != null">#{offset}</when><otherwise>0</otherwise></choose>
+    		  </script>
+    		""")
+    		List<BoardDTO> selectNoticePosts(BoardDTO dto);
+    
+    @Select("""
+    		  SELECT COUNT(*) FROM board_post p
+    		  WHERE p.board_id=1 AND p.status='완료' AND p.is_deleted=FALSE
+    		""")
+    		int noticeTotalCnt();
 
     // 공지 상세 (board_id=1, 완료만)
     @Select("""
@@ -30,7 +41,6 @@ public interface BoardMapper {
     	  """)
     BoardDTO findNoticeApprovedById(BoardDTO dto);
 
-    
     // 초안(대기) 저장
     @Insert("""
       INSERT INTO board_post
@@ -87,12 +97,20 @@ public interface BoardMapper {
 
 
     /// ========= 자유(보드=2) =========
+    // 자유 목록
     @Select("""
-      SELECT p.* FROM board_post p
-      WHERE p.board_id = 2 AND p.is_deleted = FALSE
-      ORDER BY p.post_id DESC
-    """)
-    List<BoardDTO> selectFreePosts();
+    		  <script>
+    		  SELECT p.* FROM board_post p
+    		  WHERE p.board_id=2 AND p.is_deleted=FALSE
+    		  ORDER BY p.post_id DESC
+    		  LIMIT <choose><when test="limit != null">#{limit}</when><otherwise>10</otherwise></choose>
+    		  OFFSET <choose><when test="offset != null">#{offset}</when><otherwise>0</otherwise></choose>
+    		  </script>
+    		""")
+    		List<BoardDTO> selectFreePosts(BoardDTO dto);
+    
+    @Select("SELECT COUNT(*) FROM board_post p WHERE p.board_id=2 AND p.is_deleted=FALSE")
+    int freeTotalCnt();
 
     // 게시글 상세 조회
     @Select("""
@@ -142,14 +160,6 @@ public interface BoardMapper {
     """)
     int adminDeleteFree(BoardDTO dto);
     
-    // 자유게시판 게시글 총 개수
-    @Select("""
-    	    SELECT COUNT(*)
-    	    FROM board_post p
-    	    WHERE p.board_id = 2 AND p.is_deleted = FALSE
-    	  """)
-    	  int totalCnt();
-    
     // 조회수(자유)
     @Options(flushCache = Options.FlushCachePolicy.TRUE, useCache = false)
     @Update("UPDATE board_post SET view_count = view_count + 1 WHERE post_id = #{postId}")
@@ -174,5 +184,96 @@ public interface BoardMapper {
        WHERE p.post_id = #{postId}
     """)
     int syncLikeCount(BoardLikeDTO dto);
-     
+    
+
+    /* ============ 관리자 ============ */
+    /** 게시판명 중복 체크 */
+    @Select("SELECT COUNT(1) FROM board_board WHERE board_name = #{name}")
+    int countBoardName(@Param("name") String name);
+
+    /** 보드 생성 */
+    @Insert("""
+      INSERT INTO board_board
+        (board_name, board_type, access_role, use_comment, use_like, is_active, created_at, updated_at)
+      VALUES
+        (#{boardName}, #{boardType}, #{accessRole}, #{useComment}, #{useLike}, 
+         COALESCE(#{isActive}, TRUE), NOW(), NOW())
+    """)
+    @Options(useGeneratedKeys = true, keyProperty = "boardId", keyColumn = "board_id")
+    int insertBoardMeta(BoardDTO dto);
+
+    /** 보드 상세 */
+    @Select("""
+      SELECT board_id, board_name, board_type, access_role,
+             use_comment, use_like, is_active, created_at, updated_at
+      FROM board_board
+      WHERE board_id = #{boardId}
+    """)
+    BoardDTO findBoardMetaById(BoardDTO dto);
+
+    /** 보드 수정(이름/권한/댓글/좋아요/활성만) */
+    @Update("""
+      UPDATE board_board
+         SET board_name = #{boardName},
+             access_role = #{accessRole},
+             use_comment = #{useComment},
+             use_like = #{useLike},
+             is_active = COALESCE(#{isActive}, is_active),
+             updated_at = NOW()
+       WHERE board_id = #{boardId}
+    """)
+    int updateBoardMeta(BoardDTO dto);
+
+    /** 보드 활성/비활성 토글 */
+    @Update("""
+      UPDATE board_board
+         SET is_active = #{active}, updated_at = NOW()
+       WHERE board_id = #{boardId}
+    """)
+    int toggleBoardActive(@Param("boardId") Integer  boardId, @Param("active") Boolean active);
+ 
+    /** 게시판 메타 목록 조회 (검색/활성필터) */
+    @Select("""
+        SELECT board_id, board_name, board_type, access_role,
+               use_comment, use_like, is_active, created_at, updated_at
+        FROM board_board
+        WHERE (#{activeOnly} IS NULL OR is_active = #{activeOnly})
+          AND (#{q} IS NULL OR board_name LIKE CONCAT('%', #{q}, '%'))
+        ORDER BY created_at DESC
+    """)
+    List<BoardDTO> findBoards(@Param("activeOnly") Boolean activeOnly,
+                              @Param("q") String q);
+
+    /* ==== 동적 보드 공용 ==== */
+
+    @Select("""
+            SELECT board_id, board_name, board_type, access_role,
+                   use_comment, use_like, is_active, created_at, updated_at
+            FROM board_board
+            WHERE is_active = 1
+            ORDER BY created_at ASC
+        """)
+        List<BoardDTO> selectActiveBoards();
+
+        @Select("""
+            SELECT post_id, board_id, employee_id, title, content,
+                   created_at, updated_at, view_count, like_count, is_deleted
+            FROM board_post
+            WHERE board_id = #{boardId}
+              AND is_deleted = 0
+            ORDER BY created_at DESC
+            LIMIT #{size} OFFSET #{offset}
+        """)
+        List<BoardDTO> selectPostsByBoardId(@Param("boardId") Integer boardId,
+                                            @Param("size") int size,
+                                            @Param("offset") int offset);
+
+        @Select("""
+            SELECT COUNT(1)
+            FROM board_post
+            WHERE board_id = #{boardId}
+              AND is_deleted = 0
+        """)
+        int countPostsByBoardId(@Param("boardId") Integer boardId);
+
 }

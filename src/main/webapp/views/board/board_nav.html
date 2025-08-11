@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<body>
+<!-- board/board_nav.html -->
+<div class="board-nav" th:fragment="boardNav">
+  <ul>
+    <li th:classappend="${(activeBoard=='notice') or (boardMeta!=null and #strings.equalsIgnoreCase(boardMeta.boardType,'NOTICE'))} ? ' active'">
+      <a th:href="@{/board/notice}">공지사항</a>
+    </li>
+    <li th:classappend="${(activeBoard=='free') or (boardMeta!=null and #strings.equalsIgnoreCase(boardMeta.boardType,'FREE'))} ? ' active'">
+      <a th:href="@{/board/free}">자유게시판</a>
+    </li>
+    <li th:each="t : ${navBoards}"
+        th:if="${#strings.toUpperCase(t.boardType) != 'NOTICE' and #strings.toUpperCase(t.boardType) != 'FREE'}"
+        th:classappend="${boardMeta != null and t.boardId == boardMeta.boardId} ? ' active'">
+      <a th:href="@{|/board/${t.boardId}|}" th:text="${t.boardName}">기타보드</a>
+    </li>
+    <li class="admin"
+        th:if="${session.loginUser != null and session.loginUser.employeeId == '20250002'}">
+      <a th:href="@{/admin/boards}">게시판관리</a>
+    </li>
+  </ul>
+</div>
+
+</body>
+</html>
