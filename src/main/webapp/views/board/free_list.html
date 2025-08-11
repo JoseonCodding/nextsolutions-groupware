@@ -3,26 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <title>자유게시판</title>
-  <style>
-    .board-nav { background-color:#f7f9fc; padding:10px 20px; border-bottom:1px solid #dcdcdc; }
-    .board-nav ul { list-style:none; padding:0; margin:0; display:flex; }
-    .board-nav ul li { margin-right:30px; }
-    .board-nav ul li a { text-decoration:none; font-weight:bold; color:#666; padding:8px 12px; border-bottom:2px solid transparent; transition:all .2s; }
-    .board-nav ul li.active a { color:#000; border-bottom:2px solid #2c3e50; }
-  </style>
+
 </head>
 <body>
-  <!-- 상단 탭 -->
-  <div class="board-nav">
-    <ul>
-      <li th:classappend="${activeBoard} == 'notice' ? 'active'">
-        <a href="/board/notice">공지사항</a>
-      </li>
-      <li th:classappend="${activeBoard} == 'free' ? 'active'">
-        <a href="/board/free">자유게시판</a>
-      </li>
-    </ul>
-  </div>
+<!-- notice_list.html / free_list.html / dyn_list.html 공통 -->
+<div th:replace="~{board/board_nav :: boardNav}"></div>
+
+
 
   <!-- 본문 -->
   <div class="container">
@@ -45,9 +32,8 @@
       </form>
 
       <!-- 글쓰기 -->
-      <a th:href="@{/board/free/write}" style="padding:5px 10px; margin-left:10px; background:#007bff; color:#fff; border-radius:4px; text-decoration:none;">
-        글쓰기
-      </a>
+      <a class="btn" th:if="${canWrite}" th:href="@{|/board/${boardMeta.boardId}/write|}">글쓰기</a>
+
     </div>
 
     <!-- 목록 테이블 -->
@@ -81,6 +67,23 @@
         </tr>
       </tbody>
     </table>
+    
+    <div class="pagination" style="display:flex;gap:6px;align-items:center">
+  <a th:classappend="${page==1}?' disabled'" th:href="@{/board/free(page=1,size=${size})}">&lt;&lt;</a>
+  <a th:classappend="${page==1}?' disabled'" th:href="@{/board/free(page=${page>1?page-1:1},size=${size})}">&lt;</a>
+
+  <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
+    <a th:if="${p!=page}" th:href="@{/board/free(page=${p},size=${size})}" th:text="${p}"></a>
+    <span th:if="${p==page}" th:text="${p}" style="font-weight:700;padding:2px 6px;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff"></span>
+  </span>
+
+  <a th:classappend="${page==totalPages}?' disabled'"
+     th:href="@{/board/free(page=${page<totalPages?page+1:totalPages},size=${size})}">&gt;</a>
+  <a th:classappend="${page==totalPages}?' disabled'"
+     th:href="@{/board/free(page=${totalPages},size=${size})}">&gt;&gt;</a>
+</div>
+
+    
   </div>
 </body>
 </html>

@@ -32,28 +32,4 @@ public class ApiController {
 		
 	}
 	
-    /**
-     * 🔷 메인페이지용: 최신 공지 목록
-     * - 기본 5개, 최대 20개까지 제한
-     * - Mapper는 그대로 사용: selectNoticePosts() (이미 최신순 정렬)
-     */
-    @GetMapping("/mainnotices")
-    
-    public ResponseEntity<List<BoardDTO>> getLatestNotices(
-            @RequestParam(name = "limit", defaultValue = "5") int limit
-    ) {
-        // 안전장치
-        if (limit < 1) limit = 1;
-        if (limit > 20) limit = 20;
-
-        List<BoardDTO> all = boardMapper.selectNoticePosts(); // 최신순 정렬되어 있음
-        if (all == null || all.isEmpty()) {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
-
-        int end = Math.min(limit, all.size());
-        List<BoardDTO> sliced = all.subList(0, end);
-        return ResponseEntity.ok(sliced);
-    }
 }
-
