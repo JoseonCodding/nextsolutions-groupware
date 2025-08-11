@@ -102,6 +102,76 @@ public interface AttendMapper {
                            @Param("modifiedAt") LocalDateTime modifiedAt,
                            @Param("title") String title,
                            @Param("modificationReason") String modificationReason);
+    
+ // 변경이력 검색 (페이징 O)
+    @Select("""
+      <script>
+        SELECT a.*, e.emp_nm
+        FROM attendance a
+        JOIN employee e ON a.employeeId = e.employeeId
+        WHERE a.modified_at IS NOT NULL
+        <if test="fromDate != null and fromDate != ''">
+          AND a.check_in_time &gt;= STR_TO_DATE(CONCAT(#{fromDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="toDate != null and toDate != ''">
+          AND a.check_in_time &lt;  DATE_ADD(STR_TO_DATE(CONCAT(#{toDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 DAY)
+        </if>
+        <if test="empNm != null and empNm != ''">
+          AND e.emp_nm LIKE CONCAT('%', #{empNm}, '%')
+        </if>
+        <if test="modifiedBy != null and modifiedBy != ''">
+          AND a.modified_by LIKE CONCAT('%', #{modifiedBy}, '%')
+        </if>
+        <if test="stateType != null and stateType != ''">
+          AND a.state_type = #{stateType}
+        </if>
+        ORDER BY a.check_in_time DESC
+        LIMIT #{limit} OFFSET #{offset}
+      </script>
+    """)
+    List<AttendDTO> searchAttendListHistoryPaged(
+            @Param("fromDate") String fromDate,
+            @Param("toDate") String toDate,
+            @Param("empNm") String empNm,
+            @Param("modifiedBy") String modifiedBy,
+            @Param("stateType") String stateType,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
+
+    // 총 건수 (페이징용)
+    @Select("""
+      <script>
+        SELECT COUNT(*)
+        FROM attendance a
+        JOIN employee e ON a.employeeId = e.employeeId
+        WHERE a.modified_at IS NOT NULL
+        <if test="fromDate != null and fromDate != ''">
+          AND a.check_in_time &gt;= STR_TO_DATE(CONCAT(#{fromDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="toDate != null and toDate != ''">
+          AND a.check_in_time &lt;  DATE_ADD(STR_TO_DATE(CONCAT(#{toDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 DAY)
+        </if>
+        <if test="empNm != null and empNm != ''">
+          AND e.emp_nm LIKE CONCAT('%', #{empNm}, '%')
+        </if>
+        <if test="modifiedBy != null and modifiedBy != ''">
+          AND a.modified_by LIKE CONCAT('%', #{modifiedBy}, '%')
+        </if>
+        <if test="stateType != null and stateType != ''">
+          AND a.state_type = #{stateType}
+        </if>
+      </script>
+    """)
+    int countAttendListHistory(
+            @Param("fromDate") String fromDate,
+            @Param("toDate") String toDate,
+            @Param("empNm") String empNm,
+            @Param("modifiedBy") String modifiedBy, 
+            @Param("stateType") String stateType
+    );
+    
+    
 
 	/*
 	 * //출근 시간 기록
