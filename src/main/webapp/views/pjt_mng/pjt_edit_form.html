@@ -98,105 +98,24 @@ input, select {
 
 	<h1>프로젝트 변경</h1>
 
-<<<<<<< HEAD
 	<form method="post" action="/pjtMng/updatePjtProc"
 		enctype="multipart/form-data">
-=======
-<<<<<<< HEAD
-	<form method="post" action="/pjtMng/updatePjtProc" enctype="multipart/form-data"
-      onsubmit="prepareApprovers()">
-=======
-	<form method="post" action="/pjtMng/updatePjtProc"
-		enctype="multipart/form-data">
->>>>>>> refs/remotes/origin/project_ar
->>>>>>> refs/remotes/origin/mmmaster
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-	<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN']}" />
-=======
->>>>>>> refs/remotes/origin/mmmaster
 		<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN']}" /> 
 		<input type="hidden" name="oldFileName" th:value="${pjt['ATCH_FILE_SN']}">
 		<input type="hidden" name="oldOrgFileName"
 			th:value="${pjt['ORG_FILE_NM']}">
 
-<<<<<<< HEAD
-=======
->>>>>>> refs/remotes/origin/project_ar
->>>>>>> refs/remotes/origin/mmmaster
 
 		<table>
 			<tr>
 				<th>프로젝트명</th>
-<<<<<<< HEAD
 				<td><input type="text" name="pjtNm" th:value="${pjt.PJT_NM}"
-=======
-<<<<<<< HEAD
-				<td><input type="text" name="pjtNm" th:value="${pjt['PJT_NM']}"
->>>>>>> refs/remotes/origin/mmmaster
 					required /></td>
 			</tr>
 
 			<tr>
 				<th>담당자</th>
-<<<<<<< HEAD
-=======
-				<td><input type="text" name="empNm" th:value="${pjt['EMP_NM']}" />
-				</td>
-			</tr>
-
-			<tr>
-				<th>시작일</th>
-				<td><input type="date" name="pjtBgngDt"
-					th:value="${pjt['PJT_BGNG_DT']}" /></td>
-			</tr>
-
-			<tr>
-				<th>종료일</th>
-				<td><input type="date" name="pjtEndDt"
-					th:value="${pjt['PJT_END_DT']}" /></td>
-			</tr>
-
-			<tr>
-				<th>상태</th>
-				<td><select name="pjtSttsCd">
-						<option value="01" th:selected="${pjt['PJT_STTS_CD'] == '01'}">진행중</option>
-						<option value="02" th:selected="${pjt['PJT_STTS_CD'] == '02'}">완료</option>
-						<option value="03" th:selected="${pjt['PJT_STTS_CD'] == '03'}">보류</option>
-				</select></td>
-			</tr>
-
-			<tr>
-				<th>내용</th>
-				<td><input type="text" name="content"
-					th:value="${pjt['CONTENT']}" /></td>
-			</tr>
-
-
-			<!-- ✅ [2] 결재 워크플로우 UI -->
-			<tr>
-				<th>결재자</th>
-				<td> <select class="approver-select" style="margin-right: 10px;">
-						<option value="">-- 결재자 선택 --</option>
-						<th:block th:each="ap : ${approverList}">
-							<option th:value="${ap.emp_seq}" th:text="${ap.emp_nm}"></option>
-						</th:block>
-				</select></td>
-=======
-				<td><input type="text" name="pjtNm" th:value="${pjt.PJT_NM}"
-					required /></td>
->>>>>>> refs/remotes/origin/project_ar
-			</tr>
-
-<<<<<<< HEAD
-
-			<!-- ✅ [3] 파일 업로드 -->
-=======
-			<tr>
-				<th>담당자</th>
->>>>>>> refs/remotes/origin/mmmaster
 				<td><input type="text" name="empNm" th:value="${pjt.employeeid}" placeholder="담당자 이름 입력" /></td>
 			</tr>
 			<tr>
@@ -224,10 +143,6 @@ input, select {
 				<th>결재자</th>
 				<td> <input type="text" name="TB_PJT_APR" th:value="${pjt['TB_PJT_APR']}"  placeholder="결재자 이름 입력" /></td>
 			</tr>
-<<<<<<< HEAD
-=======
->>>>>>> refs/remotes/origin/project_ar
->>>>>>> refs/remotes/origin/mmmaster
 			<tr>
 				<th>파일업로드</th>
 				<td><input type="file" name="uploadFile" id="uploadFile" />
