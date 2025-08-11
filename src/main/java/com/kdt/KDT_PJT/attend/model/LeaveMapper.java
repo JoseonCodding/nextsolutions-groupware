@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
@@ -71,7 +70,7 @@ public interface LeaveMapper {
 		        (employeeId, create_date, leave_type, create_reason)
 		        VALUES (#{employeeId}, CURRENT_DATE, '발생', '전월 근무율 80% 이상 자동 부여')
 		    """)
-	 void insertAutoLeave(@Param("employeeId") String employeeId);
+	 void insertAutoLeave(LeaveDTO dto);
 
 
 }

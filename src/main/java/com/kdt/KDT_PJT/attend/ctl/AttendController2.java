@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
 import com.kdt.KDT_PJT.attend.model.AttendMapper;
+import com.kdt.KDT_PJT.attend.model.AttendMapper2;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,10 +38,14 @@ import com.lowagie.text.pdf.PdfWriter;
 
 @Controller
 @RequestMapping("/attend")
-@RequiredArgsConstructor
+
 public class AttendController2 {
 
-    private final AttendMapper attendMapper;
+
+	@Autowired
+    AttendMapper attendMapper;  //소현
+	@Autowired
+    AttendMapper2 attendMapper2; //동현
 
     // === 1) 결재 신청 저장 ===
     @PostMapping("/save")
@@ -69,10 +75,10 @@ public class AttendController2 {
         int inUpdated = 0, outUpdated = 0;
 
         if (actions.contains("IN")) {
-            inUpdated = attendMapper.fixInByEmpAndDate(employeeId, workDate, now, title, content);
+            inUpdated = attendMapper2.fixInByEmpAndDate(employeeId, workDate, now, title, content);
         }
         if (actions.contains("OUT")) {
-            outUpdated = attendMapper.fixOutByEmpAndDate(employeeId, workDate, now, title, content);
+            outUpdated = attendMapper2.fixOutByEmpAndDate(employeeId, workDate, now, title, content);
         }
 
         int total = inUpdated + outUpdated;
@@ -88,21 +94,22 @@ public class AttendController2 {
  // === 2) 변경이력 목록(검색 + 페이징) ===
     @GetMapping("/attendList/search")
     public String attendListPage(
-            @RequestParam(name = "fromDate", required = false) String fromDate,    // yyyy-MM-dd
-            @RequestParam(name = "toDate", required = false) String toDate,        // yyyy-MM-dd
-            @RequestParam(name = "empNm", required = false) String empNm,
-            @RequestParam(name = "modifiedBy", required = false) String modifiedBy,
-            @RequestParam(name = "stateType", required = false) String stateType,
-            @RequestParam(name = "page", defaultValue = "1") int page,             // 1-based
-            @RequestParam(name = "size", defaultValue = "10") int size,            // page size
+            @RequestParam(name="fromDate", required=false) String fromDate,
+            @RequestParam(name="toDate", required=false) String toDate,
+            @RequestParam(name="empNm", required=false) String empNm,
+            @RequestParam(name="modifiedBy", required=false) String modifiedBy,
+            @RequestParam(name="stateType", required=false) String stateType,
+            @RequestParam(name="page", defaultValue="1") int page,
+            @RequestParam(name="size", defaultValue="10") int size,
             Model model
     ) {
         if (page < 1) page = 1;
         if (size < 1) size = 10;
         int offset = (page - 1) * size;
 
-        int total = attendMapper.countAttendListHistory(fromDate, toDate, empNm, modifiedBy, stateType);
-        List<AttendDTO> list = attendMapper.searchAttendListHistoryPaged(
+        // ✅ attendMapper → attendMapper2 로 변경
+        int total = attendMapper2.countAttendListHistory(fromDate, toDate, empNm, modifiedBy, stateType);
+        List<AttendDTO> list = attendMapper2.searchAttendListHistoryPaged(
                 fromDate, toDate, empNm, modifiedBy, stateType, size, offset);
 
         int totalPages = (int) Math.ceil(total / (double) size);
@@ -119,21 +126,22 @@ public class AttendController2 {
         model.addAttribute("mainData", list);
 
         model.addAttribute("navUrl", "/attend/nav");
-        model.addAttribute("mainUrl", "/attend/attendList"); // navTap이 @{${mainUrl}}면 앞에 슬래시 포함 권장
+        model.addAttribute("mainUrl", "/attend/attendList");
         return "navTap";
     }
 
-    // === 3) PDF 다운로드 (같은 필터, 전체 내보내기) ===
-    @GetMapping(value = "/attendList/search/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    // === 3) PDF (전체 내보내기) ===
+    @GetMapping(value="/attendList/search/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public void exportAttendListPdf(
-            @RequestParam(name = "fromDate", required = false) String fromDate,
-            @RequestParam(name = "toDate", required = false) String toDate,
-            @RequestParam(name = "empNm", required = false) String empNm,
-            @RequestParam(name = "modifiedBy", required = false) String modifiedBy,
-            @RequestParam(name = "stateType", required = false) String stateType,
+            @RequestParam(name="fromDate", required=false) String fromDate,
+            @RequestParam(name="toDate", required=false) String toDate,
+            @RequestParam(name="empNm", required=false) String empNm,
+            @RequestParam(name="modifiedBy", required=false) String modifiedBy,
+            @RequestParam(name="stateType", required=false) String stateType,
             HttpServletResponse resp
     ) throws IOException {
-        List<AttendDTO> list = attendMapper.searchAttendListHistoryPaged(
+        // ✅ attendMapper → attendMapper2 로 변경
+        List<AttendDTO> list = attendMapper2.searchAttendListHistoryPaged(
                 fromDate, toDate, empNm, modifiedBy, stateType, Integer.MAX_VALUE, 0);
 
         String fileBase = "attendance_changes";
@@ -248,5 +256,6 @@ public class AttendController2 {
         cell.setPadding(4f);
         table.addCell(cell);
     }
+
 }
 

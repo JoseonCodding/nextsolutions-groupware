@@ -3,7 +3,6 @@ package com.kdt.KDT_PJT.attend.di;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 
 import org.springframework.stereotype.Component;
 
@@ -63,31 +62,6 @@ public class Attendance {
             attend.setNormalWork(isNormal);
         }
         mapper.updateAttendance(attend);
-    }
-    
-    //사용자 본인의 출퇴근 기록
-    public List<AttendDTO> getUserAttendData(EmployeeDto loginUser) {
-    	return mapper.userAttendList(loginUser.getEmployeeId());
-    }
-    
-    //모든 사용자의 출퇴근 기록 (관리자용)
-    public List<AttendDTO> getAttendData() {
-    	return mapper.attendList();
-    }
-
-	public List<AttendDTO> getAttendInfoList(EmployeeDto loginUser) {
-		// TODO Auto-generated method stub
-		return mapper.userAttendList(loginUser.getEmployeeId());
-	}
-    
-	//  근태 관리자 페이지 - 기본 정렬은 금일 출퇴근 기록 뜨도록
-    public List<AttendDTO> getTodayAttendData() {
-        return mapper.getTodayAttendList();
-    }
-
-    //  근태 관리자 페이지 - 출퇴근 기록 조회에 검색 기능 추가시 필요 (오류나서 주석 처리 ,추후 해결하기)
-    public List<AttendDTO> searchAttendData(String workDate, String empNm, String modifiedBy) {
-        return mapper.searchAttendList(workDate, empNm, modifiedBy);
     }
 
 }
