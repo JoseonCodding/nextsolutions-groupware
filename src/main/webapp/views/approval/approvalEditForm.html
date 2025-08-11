@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>★전자 결재 문서 수정</title>
+    
+   	<!-- 썸머노트 CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+    
 </head>
 <body>
     <form method="post" th:action="@{/approval/edit}" th:object="${editData}">
@@ -20,7 +24,7 @@
             </tr>
             <tr>
                 <td>부서</td>
-                <td th:text="*{department}"></td>
+                <td th:text="*{deptName}"></td>
             </tr>
             <tr>
                 <td>결재 종류</td>
@@ -38,7 +42,9 @@
             </tr>
             <tr>
                 <td>내용</td>
-                <td><textarea th:field="*{content}" rows="10" cols="50"></textarea></td>
+                <td>
+                	<textarea id="content" name="content" th:text="*{content}"></textarea>
+                </td>
             </tr>
         </table>
         
@@ -49,5 +55,31 @@
             <button type="button">취소</button>
         </a>
     </form>
+    
+    	<!-- 썸머노트용 JS -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>	
+	<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			$('#content').summernote({
+				lang: 'ko-KR',
+				placeholder: '내용을 입력하세요',
+				tabsize: 2,
+				height: 300,
+				toolbar: [
+					['style', ['style']],
+					['font', ['bold', 'italic', 'underline', 'clear']],
+					['fontname', ['fontname']],
+					['fontsize', ['fontsize']],
+					['color', ['color']],
+					['para', ['ul', 'ol', 'paragraph']],
+					['height', ['height']],
+					['insert', ['picture', 'link', 'table']],
+					['view', ['fullscreen', 'codeview', 'help']]
+				]
+			});
+		});
+	</script>
 </body>
 </html>

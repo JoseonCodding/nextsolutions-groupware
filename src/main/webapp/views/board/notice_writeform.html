@@ -55,7 +55,7 @@
 
 <!-- 작성 폼 -->
 <div class="container">
-  <h2>공지사항 글쓰기</h2>
+  <h2>공지사항 작성</h2>
 
   <form th:action="@{/board/notice/save}" th:object="${boardDTO}" method="post">
     <!-- 제목 -->
@@ -72,7 +72,7 @@
 
     <!-- 버튼 -->
     <div class="form-actions">
-      <button type="submit">등록</button>
+      <button type="submit">등록 승인 요청</button>
       <a th:href="@{/board/notice}">취소</a>
     </div>
   </form>

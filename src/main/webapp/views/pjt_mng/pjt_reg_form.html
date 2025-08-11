@@ -1,9 +1,16 @@
 
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
 <meta charset="UTF-8">
 <title>프로젝트 등록</title>
+
+<!-- 썸머노트 CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css"
+	rel="stylesheet">
+
 <style>
 body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -19,7 +26,7 @@ h1 {
 }
 
 table {
-	width: 60%;
+	width: 75%;
 	margin: 0 auto;
 	border-collapse: collapse;
 	background-color: #ffffff;
@@ -35,7 +42,7 @@ th, td {
 }
 
 th {
-	width: 30%;
+	width: 20%;
 	background-color: #f0f0f0;
 	font-weight: bold;
 	color: #333;
@@ -153,6 +160,7 @@ button.save-btn:hover {
 }
 </style>
 </head>
+
 <body>
 	<!-- 생략된 <head>와 스타일은 그대로 유지 -->
 
@@ -167,14 +175,39 @@ button.save-btn:hover {
 				<td><input type="text" name="PJT_NM" required /></td>
 			</tr>
 			<tr>
+<<<<<<< HEAD
 				<th>상태</th>
 				<td><input type="text" name="PJT_STTS"
 					placeholder="예: 진행중/완료 등" /></td>
+=======
+				<th>담당자</th>
+				<td><input type="text" name="employeeid" /></td>
+			</tr>
+
+			<tr>
+				<th>기간</th>
+				<td>시작일: <input type="date" name="pjtBgngDt"
+					style="margin-right: 10px;" /> 종료일: <input type="date"
+					name="pjtEndDt" /></td>
+>>>>>>> refs/remotes/origin/project_ar
 			</tr>
 			<tr>
+<<<<<<< HEAD
 				<th>담당자</th>
 				<td><input type="text" name="EMP_NM" placeholder="담당자 이름" /></td>
+=======
+				<th>상태</th>
+				<td><select name="pjtSttsCd">
+						<option value="대기"
+							th:selected="${pjt == null or pjt.PJT_STTS_CD == '대기'}">대기</option>
+						<option value="진행중"
+							th:selected="${pjt != null and pjt.PJT_STTS_CD == '진행중'}">진행중</option>
+						<option value="완료"
+							th:selected="${pjt != null and pjt.PJT_STTS_CD == '완료'}">완료</option>
+				</select></td>
+>>>>>>> refs/remotes/origin/project_ar
 			</tr>
+<<<<<<< HEAD
 			<tr>
 				<th>시작일</th>
 				<td><input type="date" name="PJT_BGNG_DT"
@@ -195,10 +228,24 @@ button.save-btn:hover {
 						</th:block>
 				</select></td>
 			</tr>
+=======
+>>>>>>> refs/remotes/origin/project_ar
 			<tr>
 				<th>내용</th>
+<<<<<<< HEAD
 				<td><input type="text" name="CONTENT" placeholder="프로젝트 설명" /></td>
+=======
+				<td><textarea id="content" name="content"></textarea></td>
+>>>>>>> refs/remotes/origin/project_ar
 			</tr>
+<<<<<<< HEAD
+=======
+			<tr>
+				<th>결재자</th>
+				<td><input type="text" name="${pjt['TB_PJT_APR']}"
+					placeholder="결재자 이름 입력" /></td>
+			</tr>
+>>>>>>> refs/remotes/origin/project_ar
 			<tr>
 				<th>파일업로드</th>
 				<td><input type="file" name="files" id="files"
@@ -207,17 +254,20 @@ button.save-btn:hover {
 			</tr>
 		</table>
 
-		<!-- 🔧 숨겨진 input: 결재자들을 하나의 문자열로 서버에 전송 -->
-		<input type="hidden" name="approvers" id="approversInput" />
-
 		<!-- 🔧 버튼 묶음 -->
 		<div class="button-row">
+<<<<<<< HEAD
 
 			<!-- ✅ 저장 직전, 결재자 hidden 값 세팅 위해 JS에서 submit 이벤트를 가로채 처리합니다. -->
 			<button type="submit" class="save-btn">프로젝트 저장</button>
+=======
+			<button type="submit" class="save-btn">프로젝트 저장</button>
+
+>>>>>>> refs/remotes/origin/project_ar
 			<button type="button" class="back-btn" onclick="history.back()">←
 				목록으로 돌아가기</button>
 		</div>
+<<<<<<< HEAD
 
 		<!-- ✅ 페이지 스크립트: 파일명 표시 + 결재자 hidden 구성 -->
 		<script>
@@ -300,19 +350,26 @@ button.save-btn:hover {
 
     document.getElementById('approversInput').value = names.join(',');
   
+=======
+	</form>
+>>>>>>> refs/remotes/origin/project_ar
 
 
-  // 🔧 결재자 목록을 숨겨진 input에 저장
-  function prepareApprovers() {
-    const selects = document.querySelectorAll('.approver-select');
-    const names = [];
 
-    selects.forEach(select => {
-      if (select.value) names.push(select.value);
-    });
 
+<<<<<<< HEAD
     document.getElementById('approversInput').value = names.join(',');
   } -->
 		</script>
+=======
+	<!-- 썸머노트용 JS -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
+
+
+>>>>>>> refs/remotes/origin/project_ar
 </body>
 </html>

@@ -1,22 +1,25 @@
 package com.kdt.KDT_PJT.approval.ctl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
-
-import jakarta.annotation.Resource;
-
 
 @Controller
 @RequestMapping("/approval")
@@ -29,7 +32,7 @@ public class ApprovalController {
 		return "approval/approvalNav";
 	}
 	
-	@Resource
+	@Autowired
 	ApprovalMapper approvalMapper;
     
 	@RequestMapping("/main")
@@ -38,10 +41,10 @@ public class ApprovalController {
 						@RequestParam(name = "page", defaultValue = "1") int page, // 현재 페이지 번호
 						@RequestParam(name = "type", required = false) String type,
 						@RequestParam(name = "status", required = false) String status) {
-    	
+		
 		int size = 10;	// 페이지 당 표시될 게시글 개수
     	int offset = (page - 1) * size;	// 페이지 마다 표시되는 게시글의 시작점 (ex.1페이지:0~9번, 2페이지:10~19번...)
-    	int totalCount = approvalMapper.countAll(type, status);	// 게시글 DB 전체 개수
+    	int totalCount = approvalMapper.approvalCountAll(type, status);	// 게시글 DB 전체 개수
     	int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
     	int blockSize = 5;	// 페이지네이션에 나타낼 페이지 개수
     	int startPage, endPage;
@@ -56,13 +59,12 @@ public class ApprovalController {
     	// 필터에 해당하는 게시글이 없는 경우 endPage=0이 되는 상황 방지 
     	if (totalPages == 0) {endPage = 1;}
     	
-    	List<ApprovalDTO> approvalData = approvalMapper.pageData(offset, size,type, status); // 현재 페이지 게시글 DB 정보 (offset부터 size까지)
-    	
+    	List<ApprovalDTO> approvalData = approvalMapper.approvalData(offset, size, type, status);
+
     	model.addAttribute("approvalData", approvalData);
     	
     	model.addAttribute("page", page);
     	model.addAttribute("totalPages", totalPages);
-    	model.addAttribute("size", size);
     	model.addAttribute("startPage", startPage);
     	model.addAttribute("endPage", endPage);
     	
@@ -81,9 +83,9 @@ public class ApprovalController {
 			            @RequestParam(name = "type", required = false) String type,
 			            @RequestParam(name = "status", required = false) String status) {
     	
-    	ApprovalDTO viewData = approvalMapper.viewById(docId);
+    	ApprovalDTO approvalData = approvalMapper.view(docId);
     
-    	model.addAttribute("viewData", viewData);
+    	model.addAttribute("approvalData", approvalData);
 
     	model.addAttribute("page", page);
     	model.addAttribute("type", type);
@@ -92,6 +94,24 @@ public class ApprovalController {
     	model.addAttribute("mainUrl", "approval/approvalViewer");
     	return "navTap";
     }
+    
+    @GetMapping("/downloadFile")
+    public ResponseEntity<Resource> downloadFile(
+        @RequestParam("fileName") String fileName,
+        @RequestParam("orgName") String orgName
+    ) throws UnsupportedEncodingException {
+        String path = "C:/upload/" + fileName;
+        Resource resource = new FileSystemResource(path); // ★ 좌변 Resource!
+        if (!resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+        String encodedOrgName = URLEncoder.encode(orgName, "UTF-8").replaceAll("\\+", " ");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedOrgName + "\"");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+        return ResponseEntity.ok().headers(headers).body(resource);
+    }
+
 
     @RequestMapping("/delete")
     public String approvalDelete (
@@ -99,11 +119,18 @@ public class ApprovalController {
 				        @RequestParam("docId") String docId,
 				        @RequestParam(name = "page", defaultValue = "1") int page,
 				        @RequestParam(name = "type", required = false) String type,
-				        @RequestParam(name = "status", required = false) String status) {
+				        @RequestParam(name = "status", required = false) String status,
+				        @RequestParam(name = "docType") String docType) {
     	
-        approvalMapper.deleteById(docId);
+        if ("공지사항".equals(docType)) {
+            approvalMapper.deleteNotice(docId);
+        } else if ("연차".equals(docType)) {
+            approvalMapper.deleteLeave(docId);
+        } else if ("프로젝트".equals(docType)) {
+            approvalMapper.deleteProject(docId);
+        }
         
-        int totalCount = approvalMapper.countAll(type, status);	// 게시글 DB 전체 개수 (필터기능 반영됨)
+        int totalCount = approvalMapper.approvalCountAll(type, status);	// 게시글 DB 전체 개수 (필터기능 반영됨)
         int size = 10;	// 페이지 당 표시될 게시글 수
         int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
         
@@ -125,7 +152,7 @@ public class ApprovalController {
 				        @RequestParam(name = "type", required = false) String type,
 				        @RequestParam(name = "status", required = false) String status) {
     	
-    	ApprovalDTO editData = approvalMapper.viewById(docId);
+    	ApprovalDTO editData = approvalMapper.view(docId);
     	
     	model.addAttribute("editData", editData);
     	
@@ -139,20 +166,99 @@ public class ApprovalController {
     
     @PostMapping("/edit")
     public String approvalEditProc(
-    				RedirectAttributes redirectAttributes,
-					@ModelAttribute ApprovalDTO editData,
-					@RequestParam(name = "page", defaultValue = "1") int page,
-					@RequestParam(name = "type", required = false) String type,
-					@RequestParam(name = "status", required = false) String status) {
-    	
-    	approvalMapper.updateById(editData);
+        RedirectAttributes redirectAttributes,
+        @ModelAttribute ApprovalDTO editData,
+        @RequestParam(name = "page", defaultValue = "1") int page,
+        @RequestParam(name = "type", required = false) String type,
+        @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "docType") String docType) {
         
-    	redirectAttributes.addAttribute("docId", editData.getDocId());
+    	String rawContent = editData.getContent();
+
+        org.jsoup.safety.Safelist customSafelist = org.jsoup.safety.Safelist.basicWithImages()
+            .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
+            .addAttributes("table", "style", "border", "cellpadding", "cellspacing")
+            .addAttributes("th", "style", "colspan", "rowspan")
+            .addAttributes("td", "style", "colspan", "rowspan")
+            .addAttributes("tr", "style")
+            .addAttributes("thead", "style")
+            .addAttributes("tbody", "style")
+            .addAttributes("tfoot", "style")
+            .addAttributes("col", "style", "span", "width")
+            .addAttributes("colgroup", "span", "width", "style")
+            .addAttributes("caption", "style")
+            .addAttributes("img", "style", "src", "alt", "width", "height")
+            .addProtocols("img", "src", "data", "http", "https");
+
+        String safeContent = org.jsoup.Jsoup.clean(rawContent, customSafelist);
+
+        editData.setContent(safeContent);
+
+        if ("공지사항".equals(docType)) {
+            approvalMapper.editNotice(editData);
+        } else if ("연차".equals(docType)) {
+            approvalMapper.editLeave(editData);
+        } else if ("프로젝트".equals(docType)) {
+            approvalMapper.editProject(editData);
+        }
+
+        redirectAttributes.addAttribute("docId", editData.getDocId());
         redirectAttributes.addAttribute("page", page);
         redirectAttributes.addAttribute("type", type);
         redirectAttributes.addAttribute("status", status);
-        
-        return "redirect:/approval/viewer";	// 파라미터가 쿼리스트링에 자동으로 붙음
+
+        return "redirect:/approval/viewer";
     }
+    
+    @PostMapping("/approve")
+    public String approvalApprove(
+        RedirectAttributes redirectAttributes,
+        @RequestParam("docId") String docId,
+        @RequestParam(name = "page", defaultValue = "1") int page,
+        @RequestParam(name = "type", required = false) String type,
+        @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "docType") String docType) {
+
+        if ("공지사항".equals(docType)) {
+            approvalMapper.updateStatusNotice(docId, "완료");
+        } else if ("연차".equals(docType)) {
+            approvalMapper.updateStatusLeave(docId, "완료");
+        } else if ("프로젝트".equals(docType)) {
+            approvalMapper.updateStatusProject(docId, "완료");
+        }
+
+        redirectAttributes.addAttribute("docId", docId);
+        redirectAttributes.addAttribute("page", page);
+        redirectAttributes.addAttribute("type", type);
+        redirectAttributes.addAttribute("status", status);
+
+        return "redirect:/approval/viewer";
+    }
+
+    @PostMapping("/reject")
+    public String approvalReject(
+        RedirectAttributes redirectAttributes,
+        @RequestParam("docId") String docId,
+        @RequestParam(name = "page", defaultValue = "1") int page,
+        @RequestParam(name = "type", required = false) String type,
+        @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "docType") String docType) {
+
+        if ("공지사항".equals(docType)) {
+            approvalMapper.updateStatusNotice(docId, "반려");
+        } else if ("연차".equals(docType)) {
+            approvalMapper.updateStatusLeave(docId, "반려");
+        } else if ("프로젝트".equals(docType)) {
+            approvalMapper.updateStatusProject(docId, "반려");
+        }
+
+        redirectAttributes.addAttribute("docId", docId);
+        redirectAttributes.addAttribute("page", page);
+        redirectAttributes.addAttribute("type", type);
+        redirectAttributes.addAttribute("status", status);
+
+        return "redirect:/approval/viewer";
+    }
+
 
 }

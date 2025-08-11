@@ -86,27 +86,104 @@
   </a>
 </div>
 
+<<<<<<< HEAD
 <!-- ✅ 대시보드 카드 5개 (색상은 깔끔하게 통일) -->
 <div class="dash-cards">
   <div class="dash-card">
     <div class="dash-title">총 프로젝트</div>
     <div class="dash-value" th:text="${pjtList != null ? pjtList.size() : 0}">0</div>
+=======
+<!-- ✅ 카드 나열형 스타일 (5개 + 색상 버전) -->
+<div style="display: flex; gap: 16px; margin-top: 20px;">
+
+  <!-- 총 프로젝트 수 -->
+  <div style="
+    flex: 1;
+    background: #e3f2fd;  /* 연하늘 */
+    border: 1px solid #90caf9;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="font-size: 14px; color: #0d47a1;">총 프로젝트 </div>
+    <div style="font-size: 22px; font-weight: bold; color: #0d47a1;" th:text="${totalCount != null ? totalCount : 0}">0</div>
+>>>>>>> refs/remotes/origin/project_ar
   </div>
+<<<<<<< HEAD
   <div class="dash-card">
     <div class="dash-title">내 참여 프로젝트</div>
     <div class="dash-value" th:text="${myProjectCount}">0</div>
+=======
+
+  <!-- 내 참여 프로젝트 -->
+  <div style="
+    flex: 1;
+    background: #f3e5f5;  /* 연보라 */
+    border: 1px solid #ce93d8;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="font-size: 14px; color: #6a1b9a;">내 참여 프로젝트</div>
+    <div style="font-size: 22px; font-weight: bold; color: #6a1b9a;" th:text="${myProjectCount}"></div>
+>>>>>>> refs/remotes/origin/project_ar
   </div>
+<<<<<<< HEAD
   <div class="dash-card">
     <div class="dash-title">진행중</div>
     <div class="dash-value" th:text="${inProgressCount}">0</div>
+=======
+
+  <!-- 진행중 -->
+  <div style="
+    flex: 1;
+    background: #fff8e1;  /* 연노랑 */
+    border: 1px solid #ffe082;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="font-size: 14px; color: #f57f17;">진행중인 프로젝트</div>
+    <div style="font-size: 22px; font-weight: bold; color: #f57f17;" th:text="${progressCount != null ? progressCount : 0}"></div>
+>>>>>>> refs/remotes/origin/project_ar
   </div>
+<<<<<<< HEAD
   <div class="dash-card">
     <div class="dash-title">완료</div>
     <div class="dash-value" th:text="${completedCount}">0</div>
+=======
+
+  <!-- 완료 -->
+  <div style="
+    flex: 1;
+    background: #e8f5e9;  /* 연녹색 */
+    border: 1px solid #81c784;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="font-size: 14px; color: #1b5e20;">완료된 프로젝트 </div>
+    <div style="font-size: 22px; font-weight: bold; color: #1b5e20;" th:text="${completeCount != null ? completeCount : 0}"></div>
+>>>>>>> refs/remotes/origin/project_ar
   </div>
+<<<<<<< HEAD
   <div class="dash-card">
     <div class="dash-title">대기</div>
     <div class="dash-value" th:text="${delayedCount}">0</div>
+=======
+
+  <!-- 대기 -->
+  <div style="
+    flex: 1;
+    background: #ffebee;  /* 연분홍 */
+    border: 1px solid #ef9a9a;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="font-size: 14px; color: #b71c1c;">대기중인 프로젝트</div>
+    <div style="font-size: 22px; font-weight: bold; color: #b71c1c;" th:text="${pendingCount != null ? pendingCount : 0}"></div>
+>>>>>>> refs/remotes/origin/project_ar
   </div>
 </div>
 
@@ -173,15 +250,40 @@
       <th>상태</th>       <!-- (중복 제거) -->
       <th>시작일</th>
       <th>마감일</th>
+<<<<<<< HEAD
       <th>비고</th>
+=======
+      <th>진행상태</th>
+      <th>비고</th>    
+      
+>>>>>>> refs/remotes/origin/project_ar
     </tr>
   </thead>
 
   <tbody>
+<<<<<<< HEAD
     <!-- 목록이 없을 때 안내 -->
     <tr th:if="${pjtList == null or #lists.isEmpty(pjtList)}">
       <td colspan="8" style="text-align:center; color:#6b7280;">데이터가 없습니다.</td>
     </tr>
+=======
+<tr th:each="pjt, stat : ${pjtList}">
+  <td th:text="${stat.index + 1}">1</td> <!-- 순번 -->
+  <td th:text="${pjt['PJT_NM']}">프로젝트명</td>
+  <td th:text="${pjt['employeeid']}">담당자</td>
+  <td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>
+  <td th:text="${pjt['PJT_BGNG_DT']}">시작일</td>
+  <td th:text="${pjt['PJT_END_DT']}">마감일</td>
+  <td th:text="${pjt['PJT_STTS_CD']}">진행상태(중복)</td>
+  
+  <td>
+  
+            
+  <button class="button btn-view"
+            th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
+      상세보기
+    </button>
+>>>>>>> refs/remotes/origin/project_ar
 
     <!-- 목록 렌더링 -->
     <tr th:each="pjt, stat : ${pjtList}">
