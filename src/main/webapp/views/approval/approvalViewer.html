@@ -48,7 +48,7 @@
 		    	<span th:text="${approvalData == null ? '-' : approvalData.writer}"></span>
 		    </td>
 			<td>
-			  <span th:text="${approvalData == null ? '-' : (approvalData.docType == '근태' ? '김근태대장' : (approvalData.docType == '공지사항' ? '박공지사항' : (approvalData.docType == '프로젝트' ? '정프로젝트' : '-')))}"></span>
+			  <span th:text="${approvalData == null ? '-' : (approvalData.docType == '연차' ? '김연차대장' : (approvalData.docType == '공지사항' ? '박공지사항' : (approvalData.docType == '프로젝트' ? '정프로젝트' : '-')))}"></span>
 			</td>
 		    <td>
 			  <span th:text="${approvalData == null ? '-' : '김대표'}"></span>
