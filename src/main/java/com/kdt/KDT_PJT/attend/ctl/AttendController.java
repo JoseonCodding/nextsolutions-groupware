@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
@@ -96,35 +97,35 @@ public class AttendController {
 
     
     //근태 관리자 페이지(출퇴근 변경이력 포함)
-    @GetMapping("/attendList")
-    public String attendListPage(Model model) {
-        List<AttendDTO> attendList = service.getAttendData();
-        model.addAttribute("mainData", attendList);
-        model.addAttribute("mainUrl", "attend/attendList");
-        return "navTap"; 
-    }
-   
- // 근태 관리자 페이지 - 검색 기능 포함
 //    @GetMapping("/attendList")
-//    public String attendListPage(
-//        @RequestParam(required = false) String workDate,
-//        @RequestParam(required = false) String empNm,
-//        @RequestParam(required = false) String modifiedBy,
-//        Model model) {
-//
-//        // 검색 조건이 없으면 오늘 출근한 사람만 보여줌
-//        List<AttendDTO> attendList;
-//        if (workDate == null && empNm == null && modifiedBy == null) {
-//            attendList = service.getTodayAttendData();
-//        } else {
-//            attendList = service.searchAttendData(workDate, empNm, modifiedBy);
-//        }
-//
+//    public String attendListPage(Model model) {
+//        List<AttendDTO> attendList = service.getAttendData();
 //        model.addAttribute("mainData", attendList);
 //        model.addAttribute("mainUrl", "attend/attendList");
 //        return "navTap"; 
 //    }
-    //오류 해결하기
+   
+ // 근태 관리자 페이지 - 검색 기능 포함
+    @GetMapping("/attendList")
+    public String attendListPage(
+        @RequestParam(required = false) String workDate,
+        @RequestParam(required = false) String empNm,
+        @RequestParam(required = false) String modifiedBy,
+        Model model) {
+
+        // 검색 조건이 없으면 오늘 출근한 사람만 보여줌
+        List<AttendDTO> attendList;
+        if (workDate == null && empNm == null && modifiedBy == null) {
+            attendList = service.getTodayAttendData();
+        } else {
+            attendList = service.searchAttendData(workDate, empNm, modifiedBy);
+        }
+
+        model.addAttribute("mainData", attendList);
+        model.addAttribute("mainUrl", "attend/attendList");
+        return "navTap"; 
+    }
+
 
     
 
