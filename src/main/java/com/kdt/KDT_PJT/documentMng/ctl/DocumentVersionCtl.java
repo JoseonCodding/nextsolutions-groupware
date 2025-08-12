@@ -37,12 +37,15 @@ public class DocumentVersionCtl {
         model.addAttribute("mainUrl", "documentMng/versionDetail");
         return "navTap";
     }
-
-    // 복원 처리
-    @PostMapping("/restoreVersion")
-    public String restoreVersion(@RequestParam("versionId") Long versionId,
-                                 @RequestParam("originalId") Long originalId) {
-        service.restoreVersion(versionId);
-        return "redirect:/documentMng/main"; // 복원 후 이동할 화면
-    }
+    
+	/*
+	 * // 작업중입니다 (필규) // 복원 처리
+	 * 
+	 * @PostMapping("/restoreVersion") public String
+	 * restoreVersion(@RequestParam("versionId") Long versionId,
+	 * 
+	 * @RequestParam("originalId") Long originalId) {
+	 * service.restoreVersion(versionId); return "redirect:/documentMng/main"; // 복원
+	 * 후 이동할 화면 }
+	 */
 }

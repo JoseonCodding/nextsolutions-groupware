@@ -2,7 +2,6 @@ package com.kdt.KDT_PJT.attend.di;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 import org.springframework.stereotype.Component;
 
@@ -50,16 +49,7 @@ public class Attendance {
 
         if (todayAttend != null && todayAttend.getCheckInTime() != null) {
             long minutes = Duration.between(todayAttend.getCheckInTime(), attend.getCheckOutTime()).toMinutes();
-            double hours = minutes / 60.0;
-            attend.setWorkHours(hours);
-
-            // 정상근무 판정
-            boolean isNormal = 
-                !todayAttend.getCheckInTime().toLocalTime().isAfter(LocalTime.of(9,0)) &&
-                !attend.getCheckOutTime().toLocalTime().isBefore(LocalTime.of(18,0)) &&
-                hours >= 8.0;
-
-            attend.setNormalWork(isNormal);
+         
         }
         mapper.updateAttendance(attend);
     }

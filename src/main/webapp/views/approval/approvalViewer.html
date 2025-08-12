@@ -106,7 +106,7 @@
 	        <td><span th:text="${approvalData.modifiedBy != null ? approvalData.modifiedBy : '-'}"></span></td>
 	    </tr>
 	    <tr>
-	        <th>수정일자</th>
+	        <th>승인일자</th>
 	        <td><span th:text="${approvalData.modifiedAt != null ? #dates.format(approvalData.modifiedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
 	    </tr>
 	    <tr>
@@ -116,14 +116,14 @@
 	</table>
 
 	
-	<!-- if 공지사항 / 프로젝트 -->
-	<div th:unless="${approvalData != null and approvalData.docType == '연차'}"
+	<!-- if not 근태 /연차 -->
+	<div th:unless="${approvalData != null and (approvalData.docType == '연차' or approvalData.docType == '근태')}"
 	     style="border:1px solid; margin-top: 20px; background-color: aqua; padding:10px;"
 	     th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
 	</div>
 	
 	<!-- 첨부파일 다운로드 영역 -->
-	<div style="background-color: white; margin-top: 20px;">
+	<div th:if="${approvalData != null and approvalData.docType == '프로젝트'}" style="background-color: white; margin-top: 20px;">
 	  <b>첨부파일</b> :
 	  <span th:if="${approvalData != null and not #strings.isEmpty(approvalData.attachFileUuid)}">
 	    <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid} + '&orgName=' + ${approvalData.attachFileOrgName}}"

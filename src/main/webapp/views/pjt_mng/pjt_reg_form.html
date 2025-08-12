@@ -176,7 +176,7 @@ button.save-btn:hover {
 			</tr>
 			<tr>
 				<th>담당자</th>
-				<td><input type="text" name="employeeid" /></td>
+				<td><input type="text" name="employeeId" th:value="${id}" readonly /></td>
 			</tr>
 
 			<tr>
@@ -232,6 +232,27 @@ button.save-btn:hover {
 		src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		$('#content').summernote({
+			lang: 'ko-KR',
+			placeholder: '내용을 입력하세요',
+			tabsize: 2,
+			height: 300,
+			toolbar: [
+				['style', ['style']],
+				['font', ['bold', 'italic', 'underline', 'clear']],
+				['fontname', ['fontname']],
+				['fontsize', ['fontsize']],
+				['color', ['color']],
+				['para', ['ul', 'ol', 'paragraph']],
+				['height', ['height']],
+				['insert', ['picture', 'link', 'table']],
+				['view', ['fullscreen', 'codeview', 'help']]
+			]
+		});
+	});
+</script>
 
 
 </body>

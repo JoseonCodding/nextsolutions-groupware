@@ -339,7 +339,7 @@ public interface ApprovalMapper {
 	int deleteAttendance(@Param("id") String id);
 	
 	
-	// 결재 종류 별 수정 메소드 3개
+	// 결재 종류 별 수정 메소드 4개
 	@Update("UPDATE board_post SET docType=#{dto.docType}, title=#{dto.title}, content=#{dto.content} WHERE post_id=#{id}")
 	int editNotice(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 
@@ -362,7 +362,7 @@ public interface ApprovalMapper {
 	int editAttendance(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 	
 	
-	// 결재 종류 별 승인or반려 메소드 3개
+	// 결재 종류 별 승인or반려 메소드 4개
 	@Update("UPDATE board_post SET status=#{status} WHERE post_id=#{id}")
 	int updateStatusNotice(@Param("id") String id, @Param("status") String status);
 
@@ -386,6 +386,7 @@ public interface ApprovalMapper {
 	    "<if test='status == \"완료\"'>",
 	    "   , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00')",
 	    "   , check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
+	    "   , modified_at = CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul')",
 	    "</if>",
 	    "WHERE id = #{id}",
 	    "</script>"

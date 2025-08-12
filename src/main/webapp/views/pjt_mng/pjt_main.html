@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>프로젝트 목록</title>
+
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; }
     table { width: 100%; border-collapse: collapse; background-color: white; margin-top: 20px; }
@@ -113,7 +109,7 @@
     <tr th:each="pjt, stat : ${pjtList}">
       <td th:text="${stat.index + 1}">1</td>
       <td th:text="${pjt['PJT_NM']}">프로젝트명</td>
-      <td th:text="${pjt['employeeid']}">담당자</td>
+      <td th:text="${pjt['employeeId']}">담당자</td>
       <td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>
       <td th:text="${pjt['PJT_BGNG_DT']}">시작일</td>
       <td th:text="${pjt['PJT_END_DT']}">마감일</td>
@@ -169,5 +165,4 @@
   }
 </script>
 
-</body>
-</html>
+

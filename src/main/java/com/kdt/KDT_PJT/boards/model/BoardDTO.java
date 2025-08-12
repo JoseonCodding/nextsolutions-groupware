@@ -1,7 +1,7 @@
 package com.kdt.KDT_PJT.boards.model;
 
-import java.util.Date;
-
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -39,7 +39,11 @@ public class BoardDTO {
     /* ===== 보드(게시판) 메타 관리 ===== */
     private String boardName;     // 게시판명
     private String boardType;     // 게시판 타입 (NOTICE / FREE 등)
-    private String accessRole;    // 접근 권한
+    /** DB 저장용 CSV("USER,ADMIN") */
+    private String accessRole;
+    /** 폼 바인딩/뷰 편의용 중복선택 값 */
+    private List<String> accessRoles;
+    
     private Boolean useComment;   // 댓글 사용 여부
     private Boolean useLike;      // 좋아요 사용 여부
     private Boolean isActive;     // 활성화 여부
@@ -53,5 +57,36 @@ public class BoardDTO {
         this.title = title;
         this.employeeId = employeeId;
         this.content = content;
+    }
+    
+    /** accessRole(String CSV) ↔ accessRoles(List) 싱크 */
+    public List<String> getAccessRoles() {
+        if (accessRoles != null) return accessRoles;
+        if (accessRole == null || accessRole.isBlank()) return Collections.emptyList();
+        accessRoles = Arrays.stream(accessRole.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .distinct()
+                .collect(Collectors.toList());
+        return accessRoles;
+    }
+    public void setAccessRoles(List<String> roles) {
+        this.accessRoles = roles;
+        this.accessRole = (roles == null || roles.isEmpty())
+                ? ""
+                : String.join(",", roles);
+    }
+
+    /** UI 숨김/표시 편의 */
+    public boolean isCommentEnabled() { return Boolean.TRUE.equals(useComment); }
+    public boolean isLikeEnabled()    { return Boolean.TRUE.equals(useLike); }
+
+    /** 글쓰기 가능 여부 판단 (뷰/컨트롤러 양쪽에서 재사용) */
+    public boolean canWriteBy(String currentEmpId) {
+        List<String> roles = getAccessRoles();
+        if (roles.contains("USER")) return true;                 // 전원 허용
+        if (roles.contains("ADMIN") && "20250002".equals(currentEmpId)) return true;
+        if (roles.contains("NOTICE_MANAGER") && "20250003".equals(currentEmpId)) return true;
+        return false;
     }
 }

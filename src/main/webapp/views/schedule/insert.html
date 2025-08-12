@@ -13,20 +13,25 @@
 		</tr>
 		<tr >
 			<td colspan="3">
-				<input type="date" name="startDateStr" /><input type="time" name="startDateStr">
-				~ <input type="date" name="endDateStr" /><input type="time" name="endDateStr">
+				<input type="date" name="startDateStr" /><input type="time" name="startTime">
+				~ <input type="date" name="endDateStr" /><input type="time" name="endTime">
+				<input type="checkbox" name="cate" value="종일"/>종일일정
 			</td>
 
 		</tr>
 		<tr>
-			<td colspan="2">일정 종류 : 
-				<input type="checkbox" name="cate" value="종일"/>종일일정
-				<input type="checkbox" name="cate" value="반복"/>반복일정
-				<select>
-					<option value="매일">매일</option>
-					<option value="매주">매주</option>
-					<option value="매달">매달</option>
+			<td>
+				<span>반복일정 : </span>
+				<!-- 반복일정 옵션 -->
+				<select  name="repeatCheck" id="repeatCheck">
+					<option value="0">반복 없음</option>
+					<option value="1">매일</option>
+					<option value="2">매주</option>
+					<option value="3">매달</option>
 				</select>
+			</td>
+			<td>
+				<input type="checkbox" name="holiday" value="휴무일"/>휴무일
 			</td>
 			<td>
 				<input type="checkbox" name="alarm" value="알림"/>알림 
@@ -43,4 +48,4 @@
 			</td>
 		</tr>
 	</table>
-</form>
+</form> 
