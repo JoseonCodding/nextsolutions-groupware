@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace: 인터페이스 경로와 동일해야하는거  -->
+<mapper namespace="com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper">
+
+
+<!-- ===============================
+       1. 프로젝트 기본 CRUD
+       =============================== -->
+
+  <!-- 프로젝트 총 개수 (검색 조건 포함) -->
+  <select id="countProjects" resultType="int">
+    SELECT COUNT(*)
+    FROM TB_PJT_BASC
+    <where>
+      <if test="keyword != null and keyword != ''">
+        (PJT_NM LIKE CONCAT('%', #{keyword}, '%') 
+         OR employeeid LIKE CONCAT('%', #{keyword}, '%'))
+      </if>
+    </where>
+  </select>
+
+  <!-- 프로젝트 수정 -->
+  <update id="updatePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+    UPDATE TB_PJT_BASC
+    SET 
+        PJT_NM = #{PJT_NM},
+        employeeId = #{employeeId},
+        PJT_BGNG_DT = #{PJT_BGNG_DT},
+        PJT_END_DT = #{PJT_END_DT},
+        PJT_STTS_CD = #{PJT_STTS_CD},
+        content = #{content},
+        ATCH_FILE_SN = #{ATCH_FILE_SN},
+        ORG_FILE_NM = #{ORG_FILE_NM},
+        LAST_MDFCN_DT = #{LAST_MDFCN_DT},
+        TB_PJT_APR = #{TB_PJT_APR},
+        LAST_MDFR_ID = #{LAST_MDFR_ID}
+    WHERE PJT_SN = #{PJT_SN}
+  </update>
+
+  <!-- 프로젝트 등록 -->
+  <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+    INSERT INTO TB_PJT_BASC (
+      PJT_NM, employeeId, PJT_BGNG_DT, PJT_END_DT,
+      PJT_STTS_CD, FRST_RGTR_ID, FRST_REG_DT,
+      content, ATCH_FILE_SN, ORG_FILE_NM
+    ) VALUES (
+      #{PJT_NM},
+      #{employeeId},
+      #{PJT_BGNG_DT},
+      #{PJT_END_DT},
+      '대기',
+      'SYSTEM',
+      #{FRST_REG_DT},
+      #{content},
+      #{ATCH_FILE_SN},
+      #{ORG_FILE_NM}
+    )
+  </insert>
+
+  <!-- 프로젝트 상세 조회 -->
+  <select id="getPjtDetail" parameterType="String" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+    SELECT PJT_SN, PJT_NM, PJT_STTS_CD, employeeid, USE_YN,
+           FRST_RGTR_ID, FRST_REG_DT, LAST_MDFR_ID, LAST_MDFCN_DT,
+           ATCH_FILE_SN, ORG_FILE_NM, PJT_BGNG_DT, PJT_END_DT, content
+    FROM TB_PJT_BASC
+    WHERE PJT_SN = #{pjtSn}
+  </select>
+
+  <!-- 프로젝트 목록 (검색/페이징/필터 포함) -->
+  <select id="selectProjectList" parameterType="map"
+          resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+    SELECT B.PJT_SN, B.PJT_NM, B.PJT_STTS_CD, B.employeeId,
+           B.FRST_REG_DT, B.LAST_MDFCN_DT,
+           B.PJT_BGNG_DT, B.PJT_END_DT, B.TB_PJT_APR
+    FROM TB_PJT_BASC B
+    WHERE (B.USE_YN IS NULL OR B.USE_YN = 'Y')
+      <if test="keyword != null and keyword != ''">
+        AND (B.PJT_NM LIKE CONCAT('%', #{keyword}, '%')
+             OR B.employeeId LIKE CONCAT('%', #{keyword}, '%'))
+      </if>
+      <if test="myOnly == 1">
+        AND B.employeeId = #{employeeId}
+      </if>
+      <if test="approvalOnly == 1">
+        AND B.TB_PJT_APR = #{employeeId}
+      </if>
+    ORDER BY B.LAST_MDFCN_DT DESC, B.PJT_SN DESC
+    LIMIT #{pageSize} OFFSET #{offset}
+  </select>
+
+  <!-- 프로젝트 목록 총 건수 (검색/필터 포함) -->
+  <select id="selectProjectListCount" parameterType="map" resultType="int">
+    SELECT COUNT(1)
+    FROM TB_PJT_BASC B
+    WHERE (B.USE_YN IS NULL OR B.USE_YN = 'Y')
+      <if test="keyword != null and keyword != ''">
+        AND (B.PJT_NM LIKE CONCAT('%', #{keyword}, '%')
+             OR B.employeeId LIKE CONCAT('%', #{keyword}, '%'))
+      </if>
+      <if test="myOnly == 1">
+        AND B.employeeId = #{employeeId}
+      </if>
+      <if test="approvalOnly == 1">
+        AND B.TB_PJT_APR = #{employeeId}
+      </if>
+  </select>
+
+  <!-- ===============================
+       2. 대시보드 카드 숫자용 쿼리
+       =============================== -->
+
+  <!-- 내 참여 프로젝트 수 -->
+  <select id="countMyProjects" parameterType="string" resultType="int">
+  /* com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.  */
+    SELECT COUNT(*)
+    FROM TB_PJT_BASC
+    WHERE (USE_YN IS NULL OR USE_YN = 'Y')
+      AND employeeId = #{employeeId}
+  </select>
+
+  <!-- 내 결재 프로젝트 수 -->
+  <select id="countMyPendingApprovals" parameterType="string" resultType="int">
+    SELECT COUNT(*)
+    FROM TB_PJT_BASC
+    WHERE (USE_YN IS NULL OR USE_YN = 'Y')
+      AND TB_PJT_APR = #{employeeId}
+  </select>
+
+  <!-- ===============================
+       3. 결재자 / 기타 조회
+       =============================== -->
+
+  <!-- 작성자명 드롭다운 -->
+  <select id="selectApproverCandidates" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+    SELECT DISTINCT employeeId AS employeeId
+    FROM TB_PJT_BASC
+    WHERE USE_YN = 'Y' AND employeeId IS NOT NULL
+    ORDER BY employeeId
+  </select>
+
+  <!-- 프로젝트 결재자 수정 -->
+  <update id="updateApprover" parameterType="map">
+    UPDATE TB_PJT_BASC
+       SET TB_PJT_APR = #{TB_PJT_APR},
+           LAST_MDFCN_DT = DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
+     WHERE PJT_SN = #{PJT_SN}
+  </update>
+  
+  
+<select id="searchProjectMngList" 
+        parameterType="map" 
+        resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+        
+  SELECT *
+  FROM TB_PJT_BASC
+  WHERE (USE_YN IS NULL OR USE_YN = 'Y')
+    <if test="keyword != null and keyword != ''">
+      AND (PJT_NM LIKE CONCAT('%', #{keyword}, '%')
+           OR employeeId LIKE CONCAT('%', #{keyword}, '%'))
+    </if>
+  ORDER BY LAST_MDFCN_DT DESC
+</select>
+
+</mapper>
+
+
+
