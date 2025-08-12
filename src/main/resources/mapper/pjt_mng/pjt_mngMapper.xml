@@ -43,7 +43,6 @@
 
   <!-- 프로젝트 등록 -->
   <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
-
     INSERT INTO TB_PJT_BASC (
       PJT_NM, employeeId, PJT_BGNG_DT, PJT_END_DT,
       PJT_STTS_CD, FRST_RGTR_ID, FRST_REG_DT,
