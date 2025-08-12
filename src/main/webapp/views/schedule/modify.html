@@ -1,0 +1,51 @@
+<!-- 일정 등록 -->
+<form th:action="@{|/schedule/dedail?scheduleId=*{scheduleId}}" method="post" th:object="${modify}">
+	<table border="" >
+		<tr>
+			<td colspan="3" align="center">
+				일정 수정<a th:href="@{/schedule}">닫힘</a>
+			</td>	
+		</tr>
+		<tr >
+			<td colspan="3">
+				일정명<textarea name="title" th:field="*{title}" cols="30" rows="1">[[*{scd.title}]]</textarea>
+			</td>
+		</tr>
+		<tr >
+			<td colspan="3">
+				<input type="date" name="startDateStr" th:field="*{startDateStr}"/><input type="time" name="startTime" th:field="*{startTime}">
+				~ <input type="date" name="endDateStr" th:field="*{endDateStr}"/><input type="time" name="endTime" th:field="*{endTime}">
+				<input type="checkbox" name="cate" th:field="*{cate}" value="종일"/>종일일정
+			</td>
+
+		</tr>
+		<tr>
+			<td>
+				<span>반복일정 : </span>
+				<!-- 반복일정 옵션 -->
+				<select  name="repeatCheck" th:field="*{repeatCheck}" id="repeatCheck">
+					<option value="0">반복 없음</option>
+					<option value="1">매일</option>
+					<option value="2">매주</option>
+					<option value="3">매달</option>
+				</select>
+			</td>
+			<td>
+				<input type="checkbox" name="holiday" th:field="*{repeatCheck}" value="휴무일"/>휴무일
+			</td>
+			<td>
+				<input type="checkbox" name="alarm" th:field="*{repeatCheck}" value="알림"/>알림 
+			</td>
+		</tr>
+		<tr >
+			<td colspan="3">
+				<textarea name="content" id="" cols="50" rows="30">[[*{content}]]</textarea>
+			</td>
+		</tr>
+		<tr >
+			<td colspan="3" align="right">
+				<input type="submit" value="결재 신청"/>
+			</td>
+		</tr>
+	</table>
+</form> 

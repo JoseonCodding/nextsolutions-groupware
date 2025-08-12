@@ -81,4 +81,28 @@ public class ScheduleController {
 
 		return "navTap";
 	}
+	
+	//일정 수정
+	@GetMapping("/modify")
+	public String scheduleModify(Model model, ScheduleDTO dto) {
+		
+		ScheduleDTO scheduleDetail = mapper.getScheduleDetail(dto);
+		System.out.println("detail : "+scheduleDetail);
+		model.addAttribute("scd", scheduleDetail);
+		model.addAttribute("mainUrl", "schedule/modify");
+
+		return "navTap";
+	}
+	
+	//일정 수정 정보 보내기
+	@PostMapping("/modify")
+	public String scheduleModifyReg(Model model, ScheduleDTO dto) {
+		
+		int modify = mapper.modify(dto);
+		System.out.println("modify : "+modify);
+		model.addAttribute("modify", modify);
+		
+		return "redirect:/schedule";
+	}
+
 }
