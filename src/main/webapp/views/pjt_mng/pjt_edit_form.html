@@ -165,14 +165,19 @@ input, select {
       </td>
     </tr>
 
-    <tr>
-      <th>결재자</th>
-      <td>
-        <input type="text" name="TB_PJT_APR"
-               th:value="${pjt['TB_PJT_APR'] ?: ''}"
-               placeholder="결재자 이름 입력" />
-      </td>
-    </tr>
+   <tr>
+  <th>결재자</th>
+  <td>
+    <select name="TB_PJT_APR" class="form-select" th:disabled="${!isAdmin}">
+      <option value="">-- 결재자 선택 --</option>
+      <option th:each="a : ${approverList}"
+              th:value="${a.employeeId}"
+              th:text="${a.employeeId}"
+              th:selected="${pjt != null and a.employeeId == pjt.TB_PJT_APR}">
+      </option>
+    </select>
+  </td>
+</tr>
 
     <tr>
       <th>파일업로드</th>

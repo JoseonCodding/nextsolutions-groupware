@@ -153,4 +153,9 @@ public class ProjectMngService {
 		return pjtMngMapper.countMyProjects(employeeId);
 	}
 
+	public List<CmmnMap> selectApproverCandidates() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

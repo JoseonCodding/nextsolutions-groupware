@@ -219,9 +219,12 @@ public class ProjectMngController {
 		EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
 		boolean isAdmin = true; // 임시로 항상 true로 설정 !!
 
-		// isAdmin 값을 모델에 넣음
+	    List<CmmnMap> approverList = projectMngService.selectApproverCandidates();
+
+		//isAdmin 값을 모델에 넣음
 		model.addAttribute("isAdmin", isAdmin);
 		model.addAttribute("id", loginUser.getEmployeeId());
+	    model.addAttribute("approverList", approverList);
 
 		// 화면 이동
 		model.addAttribute("mainUrl", "pjt_mng/pjt_reg_form");
