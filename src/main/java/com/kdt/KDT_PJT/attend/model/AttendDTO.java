@@ -30,6 +30,12 @@ public class AttendDTO {
     int limit = 0;
     int offset = 0;
 	
+    int pageNum = 1;
+    int pageSize = 10;
+    
+    String keyword;
+    
+    
 //	work_hours DECIMAL(4,1) NULL,           -- 근무시간 (예: 8.0)
 //	ADD COLUMN is_normal_work BOOLEAN DEFAULT FALSE,   -- 정상근무 여부
 //	ADD COLUMN modified_by VARCHAR(20) NULL,           -- 수정자 ID

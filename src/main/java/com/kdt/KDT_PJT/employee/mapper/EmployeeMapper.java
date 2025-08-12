@@ -11,7 +11,10 @@ import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 @Mapper
 public interface EmployeeMapper {
 
+    List<CmmnMap> getUserList();
+
     List<CmmnMap> getUserList(int pageNum, int pageSize, @Param("keyword") String keyword);
+
     void toggleActive(CmmnMap params);
     void insertEmployee(CmmnMap params);
     CmmnMap getEmployeeBySeq(int empSeq);
@@ -20,4 +23,7 @@ public interface EmployeeMapper {
     EmployeeDto getDetail(EmployeeDto dto);
 
     int update(EmployeeDto dto);
+ 
+
 }
+

@@ -13,6 +13,12 @@ import java.util.Map;
 public interface PjtMngMapper {
     List<CmmnMap> selectApproverCandidates();
     int updateApprover(Map<String, Object> param);
+    
+    //내 프로젝트 갯수 조회
+
+    List<CmmnMap> selectProjectList(@Param("param") Map<String, Object> param);
+    int selectProjectListCount(@Param("param") Map<String, Object> param);
+    int countMyProjects1(@Param("empId") String empId);
 
    
    
@@ -40,8 +46,12 @@ public interface PjtMngMapper {
     CmmnMap selectPjtDetail(@Param("pjtSn") int pjtSn);
 
 
+   //메인 : 내가 참여한 프로젝트 관련
+   int countMyProjects(@org.apache.ibatis.annotations.Param("employeeId") String employeeId);
+   
+   
 
-   
-   
+
+
 }
 
