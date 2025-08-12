@@ -46,7 +46,7 @@ public interface ScheduleMapper {
 		        holiday       = #{holiday},
 		        alarm         = #{alarm},
 		        updated_at    = NOW()
-		    WHERE scheduleId = #{scheduleId}
+		    WHERE schedule_id = #{scheduleId}
 		      AND employeeId = #{employeeId}
 		""")
 
