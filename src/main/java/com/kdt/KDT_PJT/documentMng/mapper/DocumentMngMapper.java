@@ -86,7 +86,7 @@ public interface DocumentMngMapper {
 	    """)
 	    DocumentMngDTO selectVersionById(Long versionId);
 	
-	 // 버전 복원: 선택한 version_id의 데이터를 TB_PJT_BASC로 덮어쓰기
+	 // 복원 SQL (기존 restoreVersion + 필요 시 수정)
 	    @Update("""
 	        UPDATE TB_PJT_BASC t
 	        JOIN TB_PJT_BASC_VERSION v ON t.PJT_SN = v.original_id
@@ -103,6 +103,14 @@ public interface DocumentMngMapper {
 	        WHERE v.version_id = #{versionId}
 	    """)
 	    void restoreVersion(Long versionId);
+	    
+	 // versionId → originalId 조회
+	    @Select("""
+	        SELECT original_id
+	        FROM TB_PJT_BASC_VERSION
+	        WHERE version_id = #{versionId}
+	    """)
+	    Long getOriginalIdByVersionId(Long versionId);
 
 
 }

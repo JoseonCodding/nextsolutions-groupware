@@ -35,13 +35,18 @@ public class DocumentVersionStandaloneCtl {
         model.addAttribute("doc", dto);
         return "documentMng/versionDetailStandalone"; // navTap 거치지 않음
     }
-
-    // ✅ 복원 처리
-    @PostMapping("/restoreVersion")
-    public String restoreVersionStandalone(@RequestParam("versionId") Long versionId,
-                                           @RequestParam("originalId") Long originalId) {
-        service.restoreVersion(versionId);
-        return "redirect:/documentMng/standalone/versions?originalId=" + originalId + "&success=true";
-    }
+    
+    
+	/*
+	 * // 작업중입니다 (필규) // ✅ 복원 처리
+	 * 
+	 * @PostMapping("/restoreVersion") public String
+	 * restoreVersionStandalone(@RequestParam("versionId") Long versionId,
+	 * 
+	 * @RequestParam("originalId") Long originalId) {
+	 * service.restoreVersion(versionId); return
+	 * "redirect:/documentMng/standalone/versions?originalId=" + originalId +
+	 * "&success=true"; }
+	 */
 
 }

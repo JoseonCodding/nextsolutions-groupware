@@ -24,10 +24,23 @@ public class DocumentMngService {
     public DocumentMngDTO getVersionDetail(Long versionId) {
         return mapper.selectVersionById(versionId);
     }
-
-    @Transactional
-    public void restoreVersion(Long versionId) {
-        mapper.restoreVersion(versionId);
-    }
+    
+    
+	/*
+	 * // 작업중입니다. (필규)
+	 * 
+	 * @Transactional public void restoreVersion(Long versionId) { // 1. 원본 테이블 덮어쓰기
+	 * mapper.restoreVersion(versionId);
+	 * 
+	 * // 2. originalId 가져오기 Long originalId =
+	 * mapper.getOriginalIdByVersionId(versionId); if (originalId == null) { throw
+	 * new IllegalStateException("해당 versionId의 originalId를 찾을 수 없습니다."); }
+	 * 
+	 * // 3. 다음 버전명 생성 String nextVersionName =
+	 * getNextVersionName(originalId.intValue());
+	 * 
+	 * // 4. 현재 원본 테이블 상태 백업 backupProjectVersion(originalId.intValue(),
+	 * nextVersionName); }
+	 */
 
 }
