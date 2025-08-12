@@ -34,11 +34,23 @@ public interface CommentMapper {
     @Select("SELECT comment_id, post_id, employee_id, parent_comment_id, content, created_at, is_deleted " +
             "FROM board_comment WHERE comment_id = #{commentId}")
     int selectCommentById(CommentDTO dto);
+    
+ // 물리 삭제 → 소프트 삭제로 변경
+    @Update("""
+      UPDATE board_comment
+      SET is_deleted = 1
+      WHERE comment_id = #{commentId}
+    """)
+    int deleteComment(CommentDTO dto);
 
+
+      // 댓글 수정?
 //    @Update("UPDATE board_comment SET content = #{content} WHERE comment_id = #{commentId}")
 //    int updateCommentContent(@Param("commentId") Long commentId, @Param("content") String content);
 
-    //물리 삭제 => 데이터 삭제
-    @Update("delete from board_comment WHERE comment_id = #{commentId}")
-    int deleteComment(CommentDTO dto);
+//    //물리 삭제 => 데이터 삭제
+//    @Update("delete from board_comment WHERE comment_id = #{commentId}")
+//    int deleteComment(CommentDTO dto);
+    
+    
 }

@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class BoardLikeDTO {
-	private Long likeId;      // PK
-    private Long postId;      // FK (board_post.post_id)
-    private String employeeId;    // FK (employee.employeeId)
+	Long likeId;      // PK
+    Long postId;      // FK (board_post.post_id)
+    String employeeId;    // FK (employee.employeeId)
     //private Date createdAt;   // 생성일 (자동 매핑)
 }

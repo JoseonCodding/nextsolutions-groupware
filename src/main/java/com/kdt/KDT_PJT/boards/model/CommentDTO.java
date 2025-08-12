@@ -9,6 +9,7 @@ public class CommentDTO {
 	Long commentId;
     Long postId;
     String employeeId;
+    String empNm;
     Long parentCommentId;
     String content;
     LocalDateTime createdAt;
