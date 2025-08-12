@@ -123,7 +123,7 @@
 	</div>
 	
 	<!-- 첨부파일 다운로드 영역 -->
-	<div style="background-color: white; margin-top: 20px;">
+	<div th:if="${approvalData != null and approvalData.docType == '프로젝트'}" style="background-color: white; margin-top: 20px;">
 	  <b>첨부파일</b> :
 	  <span th:if="${approvalData != null and not #strings.isEmpty(approvalData.attachFileUuid)}">
 	    <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid} + '&orgName=' + ${approvalData.attachFileOrgName}}"
