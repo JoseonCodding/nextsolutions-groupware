@@ -17,7 +17,7 @@
   
   
     <if test="keyword != null and keyword != ''">
-      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR employeeid LIKE CONCAT('%', #{keyword}, '%'))
+      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR employeeId LIKE CONCAT('%', #{keyword}, '%'))
     </if>
   </where>
 </select>
@@ -28,13 +28,13 @@
     UPDATE TB_PJT_BASC
     SET 
         PJT_NM = #{PJT_NM},              <!-- 프로젝트명 -->
-        employeeid = #{employeeid},              <!-- 담당자명 -->
+        employeeId = #{employeeId},              <!-- 담당자명 -->
         PJT_BGNG_DT = #{PJT_BGNG_DT},     <!-- 시작일 -->
         PJT_END_DT = #{PJT_END_DT},       <!-- 종료일 -->
         PJT_STTS_CD = #{PJT_STTS_CD},     <!-- 상태 코드 -->
-        content = #{content},            <!-- 내용 -->
-        ATCH_FILE_SN = #{ATCH_FILE_SN},      <!-- 업로드된 파일 uuid 이름 -->
-        ORG_FILE_NM = #{ORG_FILE_NM},      <!-- 업로드된 파일 원래 이름 -->
+        content = #{content},				<!-- 내용 -->
+        ATCH_FILE_SN = #{ATCH_FILE_SN},		<!-- 업로드된 파일 uuid 이름 -->
+        ORG_FILE_NM = #{ORG_FILE_NM},		<!-- 업로드된 파일 원래 이름 -->
         LAST_MDFCN_DT = #{LAST_MDFCN_DT}, <!-- 최종 수정일 -->
         TB_PJT_APR = #{TB_PJT_APR},   <!-- ✅ 결재자 수정 가능 -->
         LAST_MDFR_ID = #{LAST_MDFR_ID}    <!-- 최종 수정자 ID -->
@@ -46,7 +46,7 @@
     SELECT PJT_SN,
            PJT_NM,
            PJT_STTS_CD,
-           employeeid,
+           employeeId,
            USE_YN,
            FRST_RGTR_ID,
            FRST_REG_DT,
@@ -60,7 +60,7 @@
       <if test="keyword != null and keyword != ''">
         AND (
           PJT_NM LIKE CONCAT('%', #{keyword}, '%')
-          OR employeeid LIKE CONCAT('%', #{keyword}, '%')
+          OR employeeId LIKE CONCAT('%', #{keyword}, '%')
         )
       </if>
     ORDER BY PJT_SN DESC
@@ -71,7 +71,7 @@
     SELECT PJT_SN,
            PJT_NM,
            PJT_STTS_CD,
-           employeeid,
+           employeeId,
            USE_YN,
            FRST_RGTR_ID,
            FRST_REG_DT,
@@ -88,6 +88,11 @@
 
   <!-- ✅ 프로젝트 등록 -->
   <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+  <!-- 문서관리로 넘기기 위한 코드 : 시작 (필규 작성) -->
+  <selectKey resultType="int" keyProperty="PJT_SN" order="AFTER">
+    SELECT LAST_INSERT_ID()
+  </selectKey>
+  <!-- 문서관리로 넘기기 위한 코드 : 끝 (필규 작성) -->
     INSERT INTO TB_PJT_BASC (
       PJT_NM,
       employeeId,
@@ -111,6 +116,7 @@
       #{ATCH_FILE_SN},       <!-- 업로드한 파일 uuid 이름 -->
       #{ORG_FILE_NM}       <!-- 업로드한 파일 원래 이름 -->
       <!-- TODO 결재자 사번 -->
+
     )
   </insert>
 
@@ -118,7 +124,7 @@
   <select id="getPjtList" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     SELECT PJT_SN,
            PJT_NM,
-           employeeid,
+           employeeId,
            PJT_BGNG_DT,
            PJT_END_DT,
            PJT_STTS_CD,
@@ -141,12 +147,12 @@
   FROM team2_db.TB_PJT_BASC
   <where>
     <if test="keyword != null and keyword != ''">
-      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR employeeid LIKE CONCAT('%', #{keyword}, '%'))
+      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR employeeId LIKE CONCAT('%', #{keyword}, '%'))
     </if>
   </where>
   ORDER BY
     <choose>
-      <when test="sortType == 'employeeid'"> employeeid </when>
+      <when test="sortType == 'employeeId'"> employeeId </when>
       <when test="sortType == 'PJT_BGNG_DT'"> PJT_BGNG_DT </when>
       <otherwise> PJT_NM </otherwise>
     </choose>
@@ -160,7 +166,7 @@
   FROM team2_db.TB_PJT_BASC
   <where>
     <if test="keyword != null and keyword != ''">
-      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR employeeid LIKE CONCAT('%', #{keyword}, '%'))
+      (PJT_NM LIKE CONCAT('%', #{keyword}, '%') OR employeeId LIKE CONCAT('%', #{keyword}, '%'))
     </if>
   </where>
   ORDER BY PJT_SN DESC
@@ -180,11 +186,11 @@
 
 <!-- 작성자명 드롭박스로 가져오기  -->
 <select id="selectApproverCandidates" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
-    SELECT DISTINCT employeeid AS employeeid
+    SELECT DISTINCT employeeId AS employeeId
     FROM TB_PJT_BASC
     WHERE USE_YN = 'Y'
-      AND employeeid IS NOT NULL
-    ORDER BY employeeid
+      AND employeeId IS NOT NULL
+    ORDER BY employeeId
 </select>
 
 <!-- 결재자 정보 디비에서 받아오기 -->
@@ -193,7 +199,7 @@
          PJT_NM,
          PJT_STTS_CD,
          
-         employeeid,
+         employeeId,
          TB_PJT_APR,     -- ✅ 결재자명 컬럼
          USE_YN,
          FRST_RGTR_ID,
@@ -227,6 +233,49 @@
            LAST_MDFCN_DT = DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
      WHERE PJT_SN = #{PJT_SN}
   </update>
+  
+	<!-- 문서관리로 넘기기 위한 코드 : 시작 (필규 작성) -->
+	
+	<!-- 프로젝트 버전 기록 -->
+	<insert id="insertProjectVersion" parameterType="map">
+	    INSERT INTO TB_PJT_BASC_VERSION (
+	        original_id,
+	        PJT_NM,
+	        employeeId,
+	        PJT_BGNG_DT,
+	        PJT_END_DT,
+	        PJT_STTS_CD,
+	        content,
+	        ATCH_FILE_SN,
+	        ORG_FILE_NM,
+	        versionName,
+	        versionCreatedAt
+	    )
+	    SELECT 
+	        PJT_SN,
+	        PJT_NM,
+	        employeeId,
+	        PJT_BGNG_DT,
+	        PJT_END_DT,
+	        PJT_STTS_CD,
+	        content,
+	        ATCH_FILE_SN,
+	        ORG_FILE_NM,
+	        #{versionName},
+	        NOW()
+	    FROM TB_PJT_BASC
+	    WHERE PJT_SN = #{pjtSn}
+	</insert>
+	
+	<select id="selectLastVersion" resultType="string">
+	    SELECT versionName
+	    FROM TB_PJT_BASC_VERSION
+	    WHERE original_id = #{pjtSn}
+	    ORDER BY versionCreatedAt DESC
+	    LIMIT 1
+	</select>
+	  
+	<!-- 문서관리로 넘기기 위한 코드 : 끝 (필규 작성) -->
 
 <!-- 메인게시판 : 내가 참여한 프로젝트 관련  -->
 <select id="countMyProjects" parameterType="string" resultType="int">

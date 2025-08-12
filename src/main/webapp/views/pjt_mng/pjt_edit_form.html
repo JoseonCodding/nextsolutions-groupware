@@ -100,10 +100,12 @@ input, select {
 
 	<form method="post" action="/pjtMng/updatePjtProc" enctype="multipart/form-data">
 
+
   <!-- hidden 값도 null-safe -->
   <input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN'] ?: ''}" />
   <input type="hidden" name="oldFileName" th:value="${pjt['ATCH_FILE_SN'] ?: ''}">
   <input type="hidden" name="oldOrgFileName" th:value="${pjt['ORG_FILE_NM'] ?: ''}">
+
 
   <table>
     <tr>
@@ -114,6 +116,7 @@ input, select {
                th:value="${pjt['PJT_NM'] ?: ''}" />
       </td>
     </tr>
+
 
     <tr>
       <th>담당자</th>
@@ -195,6 +198,7 @@ input, select {
     <button type="button" class="back-btn" onclick="history.back()">← 돌아가기</button>
   </div>
 </form>
+
 	<script>
   const fileInput = document.getElementById('uploadFile');
   const fileNameDiv = document.getElementById('fileName');

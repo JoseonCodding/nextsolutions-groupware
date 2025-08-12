@@ -31,15 +31,60 @@
                 <td>결재 종류</td>
                 <td th:text="*{docType}"></td>
             </tr>
+			<tr>
+				<td>제목</td>
+				<td>
+					<!-- 연차 또는 근태 : 수정 불가 -->
+					<span th:if="${editData.docType == '연차'}" th:text="*{title}"></span>
+					<span th:if="${editData.docType == '근태'}">근태 수정 신청</span>
+					
+					<input th:if="${editData.docType == '연차'}" type="hidden" th:field="*{title}" />
+					<input th:if="${editData.docType == '근태'}" type="hidden" name="title" value="근태 수정 신청" />
+					
+					<!-- 나머지 : 수정 가능 -->
+					<input th:if="${editData.docType != '연차' and editData.docType != '근태'}"
+					       type="text" th:field="*{title}"
+					       placeholder="제목 (공백 입력 불가)" pattern=".*\S.*" required />
+				</td>
+			</tr>
             <tr>
-                <td>제목</td>
-                <td><input type="text" th:field="*{title}" placeholder="제목 (공백 입력 불가)" pattern=".*\S.*" required /></td>
-            </tr>
-            <tr>
-                <td>내용</td>
-                <td>
-                	<textarea id="content" name="content" th:text="*{content}"></textarea>
-                </td>
+				<td>내용</td>
+				<td>
+				    <!-- if 프로젝트 -->
+				    <textarea th:if="${editData.docType == '프로젝트'}"
+				              id="summernote" name="content" th:text="*{content}"></textarea>
+				
+				    <!-- if 연차 -->
+				    <table th:if="${editData.docType != '프로젝트' and editData.docType == '연차'}"
+				           border="1" style="margin-top:10px; border-collapse:collapse; width:100%; background-color:#fffde4;">
+				        <tr>
+				            <th>연차 발생일</th>
+				            <td>
+				                <span th:text="${editData.leaveCreateDate != null ? #dates.format(editData.leaveCreateDate, 'yyyy-MM-dd') : '-'}"></span>
+				            </td>
+				        </tr>
+				        <tr>
+				        </tr>
+				        <tr>
+				            <th>연차 사용일</th>
+				            <td>
+				                <input type="date" name="leaveUsedDate"
+				                    th:value="${editData.leaveUsedDate != null ? #dates.format(editData.leaveUsedDate, 'yyyy-MM-dd') : ''}" />
+				            </td>
+				        </tr>
+				        <tr>
+				            <th>사용 이유</th>
+				            <td>
+				                <textarea name="content" rows="5" style="width:95%;" th:text="${editData.content}"></textarea>
+				            </td>
+				        </tr>
+				    </table>
+				
+				    <!-- if not 프로젝트 & 연차 -->
+				    <textarea th:if="${editData.docType != '프로젝트' and editData.docType != '연차'}"
+				              name="content" rows="5" style="width: 100%;" th:text="*{content}"></textarea>
+				
+				</td>
             </tr>
         </table>
         
@@ -51,30 +96,36 @@
         </a>
     </form>
     
-    	<!-- 썸머노트용 JS -->
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>	
-	<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
-	<script>
-		$(document).ready(function() {
-			$('#content').summernote({
-				lang: 'ko-KR',
-				placeholder: '내용을 입력하세요',
-				tabsize: 2,
-				height: 300,
-				toolbar: [
-					['style', ['style']],
-					['font', ['bold', 'italic', 'underline', 'clear']],
-					['fontname', ['fontname']],
-					['fontsize', ['fontsize']],
-					['color', ['color']],
-					['para', ['ul', 'ol', 'paragraph']],
-					['height', ['height']],
-					['insert', ['picture', 'link', 'table']],
-					['view', ['fullscreen', 'codeview', 'help']]
-				]
-			});
-		});
-	</script>
+    <!-- Summernote 관련 JS (프로젝트 문서일 때만 동작) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
+    <script th:if="${editData.docType == '프로젝트'}">
+    $(document).ready(function() {
+      $('#summernote').summernote({
+        lang: 'ko-KR',
+        placeholder: '내용을 입력하세요',
+        tabsize: 2,
+        height: 300,
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'italic', 'underline', 'clear']],
+          ['fontname', ['fontname']],
+          ['fontsize', ['fontsize']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['height', ['height']],
+          ['insert', ['picture', 'link', 'table']],
+          ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+          onInit: function() {
+            let $editable = $(this).next('.note-editor').find('.note-editable');
+            $editable.css('text-align', 'left');
+          }
+        }
+      });
+    });
+    </script>
 </body>
 </html>
