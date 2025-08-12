@@ -58,10 +58,8 @@
       </form>
 
       <!-- 글쓰기 -->
-      <a th:href="@{/board/notice/write}" class="btn"
-   th:if="${session.loginUser != null 
-           and (#strings.equals(session.loginUser.role,'3')
-                or #strings.equals(session.loginUser.employeeId,'20250003'))}">글쓰기</a>
+      <a th:href="@{/board/notice/write}" class="btn" th:if="${canWrite}">글쓰기</a>
+
      </div>
 
 

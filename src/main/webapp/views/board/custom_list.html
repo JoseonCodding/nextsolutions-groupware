@@ -57,10 +57,9 @@
       <button type="submit" style="padding:5px 10px; margin-left:5px;">🔍</button>
     </form>
 
-    <!-- 글쓰기 (커스텀은 자유처럼 기본 노출; 필요시 권한 조건 추가) -->
-    <a th:href="@{/board/custom/{boardId}/write(boardId=${board.boardId})}" class="btn">글쓰기</a>
-  </div>
-
+	<!-- 글쓰기 -->
+    <a th:href="@{/board/custom/{boardId}/write(boardId=${board.boardId})}" class="btn" th:if="${canWrite}">글쓰기</a>
+</div>
   <!-- 목록 테이블 -->
   <table class="board-table" style="width:100%; border-collapse:collapse;">
     <thead style="background:#f5f5f5;">

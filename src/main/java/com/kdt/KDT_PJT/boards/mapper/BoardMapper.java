@@ -6,15 +6,20 @@ import com.kdt.KDT_PJT.boards.model.BoardLikeDTO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface BoardMapper {
-
-	/// ========= 커스텀 =========
-    // (공통) 게시판 유형으로 board_id 찾기
+	
+	// (공통) 게시판 유형으로 board_id 찾기
     @Select("SELECT board_id FROM board_board WHERE board_type = #{boardType}")
     Integer findBoardIdByType(@Param("boardType") String boardType);
+    
+    // 댓글/좋아요/글쓰기 차단할 때 필요
+    @Select("SELECT board_id FROM board_post WHERE post_id = #{postId}")
+    Long findBoardIdByPostId(@Param("postId") Long postId);
 
+	/// ========= 커스텀 =========
     @Select("""
       SELECT board_type
       FROM board_board
@@ -280,14 +285,6 @@ public interface BoardMapper {
     """)
     int updateBoard(BoardDTO b);
 
-    // 활성/비활성 토글
-    @Update("""
-        UPDATE board_board
-        SET is_active = #{isActive}, updated_at = NOW()
-        WHERE board_id = #{boardId}
-    """)
-    int updateBoardActive(@Param("boardId") Integer boardId, @Param("isActive") Boolean isActive);
-
     // 커스텀 보드 생성
     @Select("""
             SELECT board_id,
@@ -304,5 +301,18 @@ public interface BoardMapper {
                      board_name
           """)
           List<BoardDTO> selectAllBoardsForTabs();
- 
+    
+    // 게시판 활성/비활성
+    @Update("UPDATE board_board SET is_active = #{active} WHERE board_id = #{boardId}")
+    int updateBoardActive(@Param("boardId") Integer boardId, @Param("active") Integer active);
+    
+    // (옵션) 통계
+    @Select("""
+      SELECT s.stat_id, s.board_id, b.board_name, s.view_date, s.view_count
+      FROM board_view_stats s
+      JOIN board_board b ON b.board_id = s.board_id
+      ORDER BY s.view_date DESC, s.board_id ASC
+    """)
+    List<Map<String,Object>> selectBoardViewStats();
+
 }
