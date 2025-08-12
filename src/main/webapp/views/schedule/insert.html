@@ -1,4 +1,29 @@
 <!-- 일정 등록 -->
+<!-- 종일 일정에 체크할 시 시간 선택 비활성화 -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const allDayCheckbox = document.querySelector('input[name="cate"][value="종일"]');
+    const startTimeInput = document.querySelector('input[name="startTime"]');
+    const endTimeInput = document.querySelector('input[name="endTime"]');
+
+    function toggleTimeInputs() {
+        const isAllDay = allDayCheckbox.checked;
+        startTimeInput.disabled = isAllDay;
+        endTimeInput.disabled = isAllDay;
+        
+        if (isAllDay) {
+            startTimeInput.value = "";
+            endTimeInput.value = "";
+        }
+    }
+
+    allDayCheckbox.addEventListener("change", toggleTimeInputs);
+
+    // 페이지 로드 시 초기 상태 설정
+    toggleTimeInputs();
+});
+</script>
+
 <form action="" method="post" >
 	<table border="" >
 		<tr>

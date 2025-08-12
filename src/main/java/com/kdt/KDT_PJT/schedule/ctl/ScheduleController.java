@@ -31,6 +31,10 @@ public class ScheduleController {
 	//일정 메인 페이지
 	@RequestMapping
 	String showSchedulePage(HttpSession session, Model model, ScheduleDTO schDto) {
+		
+		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+	    
+		schDto.setEmployeeId(loginUser.getEmployeeId());
 
 		// DTO에 이번 달 시작일·종료일 세팅
 	    schDto.monthDays();
@@ -45,7 +49,6 @@ public class ScheduleController {
 	    model.addAttribute("scheduleList", scheduleList);
 		model.addAttribute("mainUrl", "schedule/main");
 	    
-		
 		return "navTap";
 	}
 	
@@ -87,7 +90,7 @@ public class ScheduleController {
 	public String scheduleModify(Model model, ScheduleDTO dto) {
 		
 		ScheduleDTO scheduleDetail = mapper.getScheduleDetail(dto);
-		System.out.println("detail : "+scheduleDetail);
+		System.out.println("modify : "+scheduleDetail);
 		model.addAttribute("scd", scheduleDetail);
 		model.addAttribute("mainUrl", "schedule/modify");
 
@@ -96,11 +99,26 @@ public class ScheduleController {
 	
 	//일정 수정 정보 보내기
 	@PostMapping("/modify")
-	public String scheduleModifyReg(Model model, ScheduleDTO dto) {
-		
+	public String scheduleModifyReg(HttpSession session,Model model, ScheduleDTO dto) {
+		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+	    
+	    dto.setEmployeeId(loginUser.getEmployeeId());
 		int modify = mapper.modify(dto);
 		System.out.println("modify : "+modify);
 		model.addAttribute("modify", modify);
+		
+		return "redirect:/schedule";
+	}
+	
+	//일정 수정 정보 보내기
+	@RequestMapping("/delete")
+	public String scheduledelete(HttpSession session, ScheduleDTO dto) {
+		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+	    
+	    dto.setEmployeeId(loginUser.getEmployeeId());
+		int cnt = mapper.delete(dto);
+		System.out.println("delete : "+cnt);
+		
 		
 		return "redirect:/schedule";
 	}
