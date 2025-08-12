@@ -98,67 +98,103 @@ input, select {
 
 	<h1>프로젝트 변경</h1>
 
-	<form method="post" action="/pjtMng/updatePjtProc"
-		enctype="multipart/form-data">
+	<form method="post" action="/pjtMng/updatePjtProc" enctype="multipart/form-data">
 
-		<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN']}" /> 
-		<input type="hidden" name="oldFileName" th:value="${pjt['ATCH_FILE_SN']}">
-		<input type="hidden" name="oldOrgFileName"
-			th:value="${pjt['ORG_FILE_NM']}">
+  <!-- hidden 값도 null-safe -->
+  <input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN'] ?: ''}" />
+  <input type="hidden" name="oldFileName" th:value="${pjt['ATCH_FILE_SN'] ?: ''}">
+  <input type="hidden" name="oldOrgFileName" th:value="${pjt['ORG_FILE_NM'] ?: ''}">
 
+  <table>
+    <tr>
+      <th>프로젝트명</th>
+      <!-- null이면 빈칸 또는 '값 없음' 등으로 표시 가능 -->
+      <td>
+        <input type="text" name="pjtNm"
+               th:value="${pjt['PJT_NM'] ?: ''}" />
+      </td>
+    </tr>
 
-		<table>
-			<tr>
-				<th>프로젝트명</th>
-				<td><input type="text" name="pjtNm" th:value="${pjt.PJT_NM}"
-					required /></td>
-			</tr>
+    <tr>
+      <th>담당자</th>
+      <td>
+        <!-- 모델 키가 employeeid 인 듯하여 그대로 사용 -->
+        <input type="text" name="empNm"
+               th:value="${pjt['employeeId'] ?: ''}"
+               placeholder="담당자 이름 입력" />
+      </td>
+    </tr>
 
-			<tr>
-				<th>담당자</th>
-				<td><input type="text" name="empNm" th:value="${pjt.employeeid}" placeholder="담당자 이름 입력" /></td>
-			</tr>
-			<tr>
-				<th>기간</th>
-				<td>시작일: <input type="date" name="pjtBgngDt"
-					style="margin-right: 10px;" /> 종료일: <input type="date"
-					name="pjtEndDt" /></td>
-			</tr>
+    <tr>
+      <th>기간</th>
+      <td>
+        <!-- 날짜가 문자열이면 그대로, LocalDate면 아래 주석 참고 -->
+        시작일:
+        <input type="date" name="pjtBgngDt" style="margin-right:10px;"
+               th:value="${pjt['PJT_BGNG_DT'] ?: ''}" />
+        종료일:
+        <input type="date" name="pjtEndDt"
+               th:value="${pjt['PJT_END_DT'] ?: ''}" />
+        <!-- ✍️ 만약 LocalDate/LocalDateTime 이면:
+             th:value="${pjt['PJT_BGNG_DT'] != null ? #dates.format(pjt['PJT_BGNG_DT'], 'yyyy-MM-dd') : ''}" -->
+      </td>
+    </tr>
 
-			<tr>
-				<th>상태</th>
-				<td><select name="pjtSttsCd">
-						<option value="대기" th:selected="${pjt.PJT_STTS_CD == '대기'}">대기</option>
-						<option value="진행중" th:selected="${pjt.PJT_STTS_CD == '진행중'}">진행중</option>
-						<option value="완료" th:selected="${pjt.PJT_STTS_CD == '완료'}">완료</option>
-						<option value="반려" th:selected="${pjt.PJT_STTS_CD == '반려'}">반려</option>
-				</select></td>
-			</tr>
-			<tr>
-				<th>내용</th>
-				<td><textarea id="content" name="content"
-						th:text="${pjt['content']}"></textarea></td>
-			</tr>
-			<tr>
-				<th>결재자</th>
-				<td> <input type="text" name="TB_PJT_APR" th:value="${pjt['TB_PJT_APR']}"  placeholder="결재자 이름 입력" /></td>
-			</tr>
-			<tr>
-				<th>파일업로드</th>
-				<td><input type="file" name="uploadFile" id="uploadFile" />
-					<div id="fileName"
-						style="margin-top: 8px; color: #333; font-size: 14px; background-color: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
-					</div></td>
-			</tr>
-		</table>
-		<input type="hidden" name="approvers" id="approversInput" />
+    <tr>
+      <th>상태</th>
+      <td>
+        <!-- 상태가 null이면 '대기'가 선택되도록 처리 -->
+        <select name="pjtSttsCd">
+          <option value="대기"
+                  th:selected="${(pjt['PJT_STTS_CD'] ?: '대기') == '대기'}">대기</option>
+          <option value="진행중"
+                  th:selected="${(pjt['PJT_STTS_CD'] ?: '') == '진행중'}">진행중</option>
+          <option value="완료"
+                  th:selected="${(pjt['PJT_STTS_CD'] ?: '') == '완료'}">완료</option>
+          <option value="반려"
+                  th:selected="${(pjt['PJT_STTS_CD'] ?: '') == '반려'}">반려</option>
+        </select>
+      </td>
+    </tr>
 
-		<div class="button-row">
-			<button type="submit" class="save-btn">저장</button>
-			<button type="button" class="back-btn" onclick="history.back()">←
-				돌아가기</button>
-		</div>
-	</form>
+    <tr>
+      <th>내용</th>
+      <td>
+        <textarea id="content" name="content"
+                  th:text="${pjt['content'] ?: ''}"></textarea>
+      </td>
+    </tr>
+
+    <tr>
+      <th>결재자</th>
+      <td>
+        <input type="text" name="TB_PJT_APR"
+               th:value="${pjt['TB_PJT_APR'] ?: ''}"
+               placeholder="결재자 이름 입력" />
+      </td>
+    </tr>
+
+    <tr>
+      <th>파일업로드</th>
+      <td>
+        <input type="file" name="uploadFile" id="uploadFile" />
+        <div id="fileName"
+             th:text="${pjt['ORG_FILE_NM'] ?: '첨부된 파일 없음'}"
+             style="margin-top:8px;color:#333;font-size:14px;background-color:#f0f0f0;padding:6px 10px;border-radius:4px;">
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- null-safe -->
+  <input type="hidden" name="approvers" id="approversInput"
+         th:value="${pjt['approvers'] ?: ''}" />
+
+  <div class="button-row">
+    <button type="submit" class="save-btn">저장</button>
+    <button type="button" class="back-btn" onclick="history.back()">← 돌아가기</button>
+  </div>
+</form>
 	<script>
   const fileInput = document.getElementById('uploadFile');
   const fileNameDiv = document.getElementById('fileName');

@@ -22,5 +22,8 @@
 	<th:block th:replace="@{${mainUrl}}" />
 	<th:block th:replace="@{/layout/footer}"/>  
  </div>
+ 
+ <div th:replace="${mainUrl} :: content"></div>
+ 
 </body>
 </html>
