@@ -72,20 +72,35 @@ public class ScheduleDTO {
 	}
     
     
-    public LocalTime getStartTime() {
-        return startTime;
-    }
+//    public LocalTime getStartTime() {
+//        return startTime;
+//    }
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalTime getEndTime() {
-        return endTime;
-    }
+//    public LocalTime getEndTime() {
+//        return endTime;
+//    }
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
    
+    String getStartTime() {
+    	if (startTime != null) { // startTime이 Date 타입이라 가정
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            return sdf.format(startTime);
+        }
+        return "";
+    }
+    
+    String getEndTime() {
+    	if (endTime != null) { // startTime이 Date 타입이라 가정
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            return sdf.format(endTime);
+        }
+        return "";
+    }
 	//start_date DATETIME NOT NULL,                -- 일정 시작일
 	//end_date DATETIME NOT NULL,                  -- 일정 종료일
 	//cate VARCHAR(50) NOT NULL,              	 -- 일정 종류(종일 일정, 반복 일정)

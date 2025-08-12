@@ -12,7 +12,7 @@ public interface ScheduleMapper {
 
 	//일정 등록
 	@Insert("insert into schedule "+
-			"(title,    content,      cate,   start_date,   start_time,   end_date,   end_time, repeat_check,  alarm, holiday, created_at, employeeId) values "+
+			"(title,    content,      cate,   start_date,   start_time,   end_date,   end_time,  repeat_check,  holiday, alarm,  created_at, employeeId) values "+
 			"(#{title}, #{content}, #{cate}, #{startDate}, #{startTime}, #{endDate}, #{endTime}, #{repeatCheck} , #{holiday} , #{alarm} ,now(), #{employeeId} ) "
 			)
 	int insert(ScheduleDTO dto); 
@@ -24,5 +24,9 @@ public interface ScheduleMapper {
 		      AND end_date >= #{startDate} 
 		    ORDER BY start_date 
 		""")
-		List<ScheduleDTO> getScheduleListByMonth(ScheduleDTO dto);
+	List<ScheduleDTO> getScheduleListByMonth(ScheduleDTO dto);
+	
+	//일정 상세보기
+	@Select("SELECT * FROM schedule WHERE schedule_id = #{scheduleId}")
+	ScheduleDTO getScheduleDetail(ScheduleDTO dto);
 }

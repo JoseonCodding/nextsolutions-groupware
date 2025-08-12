@@ -30,6 +30,7 @@ public class ScheduleController {
 	@Autowired
 	ScheduleMapper mapper;
 	
+	//일정 메인 페이지
 	@RequestMapping
 	String showSchedulePage(HttpSession session, Model model, ScheduleDTO schDto) {
 
@@ -63,7 +64,7 @@ public class ScheduleController {
 
 	
 	
-	
+	//일정 등록
 	@GetMapping("/insert")
 	String insert(HttpSession session, Model model) {
 
@@ -84,5 +85,17 @@ public class ScheduleController {
 	    
 		return "redirect:/schedule";
 	}
+	
+	//일정 상세보기
+	@RequestMapping("/detail")
+	public String scheduleDetail(Model model, ScheduleDTO dto) {
+		
+		ScheduleDTO scheduleDetail = mapper.getScheduleDetail(dto);
+		model.addAttribute("scheduleDetail", scheduleDetail);
+		model.addAttribute("mainUrl", "schedule/detail");
+
+		return "navTap";
+	}
+
 	
 }
