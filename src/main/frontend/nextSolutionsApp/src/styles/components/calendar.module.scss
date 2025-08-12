@@ -1,0 +1,22 @@
+:global {
+  .fc {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px; // rounded-lg
+    overflow: hidden; // 내부 테이블이 모서리를 넘어가지 않게
+
+    .fc-scrollgrid {
+      border: none;
+      th:last-of-type,
+      td:last-of-type {
+        border-right-width: 0px;
+      }
+      tbody tr:last-of-type td {
+        border-bottom-width: 0px;
+      }
+      .fc-daygrid-day,
+      .fc-timegrid-slot {
+        border-color: oklch(87.2% 0.01 258.338); // border-gray-300
+      }
+    }
+  }
+}
