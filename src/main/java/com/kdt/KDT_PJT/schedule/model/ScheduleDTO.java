@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 
 import lombok.Data;
@@ -12,18 +13,38 @@ import lombok.Data;
 public class ScheduleDTO {
 
 
-	int scheduleId;
-    String title, cate, alarm, content;
-    Date startDate,endDate, createdAt,updatedAt,deleteDate;
+	int scheduleId, repeatCheck;
+    String title, cate, alarm, content, holiday;
+    Date startDate, endDate, createdAt, updatedAt, deleteDate;
     String employeeId;
+    Date startTime, endTime;
     
-
-    LocalDate startLocalDate;
+    LocalDate startLocalDate, now;
     LocalDate endLocalDate;
+    Integer firstDayOfWeek, year, month, lastDate;
+    
+    public void monthDays() {
+    	
+        now = LocalDate.now();
+        LocalDate firstDay = now.withDayOfMonth(1);
+        LocalDate lastDay = now.withDayOfMonth(now.lengthOfMonth());
+        
+        this.startDate = java.sql.Date.valueOf(firstDay);
+        this.endDate = java.sql.Date.valueOf(lastDay);
+        this.firstDayOfWeek = firstDay.getDayOfWeek().getValue();
+        
+        lastDate = Calendar.getInstance().getActualMaximum(Calendar.DATE);
+        
+        System.out.println("monthDays : "+ now);
+    }
 
     public void convertDatesToLocal() {
-        if (startDate != null) startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        if (endDate != null) endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        if (startDate != null) {
+        	startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        }
+        if (endDate != null) { 
+        	endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        }
     }
     
     public void setStartDateStr(String ttt) {
@@ -43,7 +64,38 @@ public class ScheduleDTO {
 			e.printStackTrace();
 		}
 	}
+    
+    public String getStartDateStr() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		return  sdf.format(startDate);
+		
+	}
+    
+    public String getEndDateStr() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		return  sdf.format(endDate);
+		
+	}
+    
    
+   
+    public String getStartTimeStr() {
+    	if (startTime != null) { 
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            return sdf.format(startTime);
+        }
+        return "";
+    }
+    
+    public String getEndTimeStr() {
+    	if (endTime != null) { 
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            return sdf.format(endTime);
+        }
+        return "";
+    }
 	//start_date DATETIME NOT NULL,                -- 일정 시작일
 	//end_date DATETIME NOT NULL,                  -- 일정 종료일
 	//cate VARCHAR(50) NOT NULL,              	 -- 일정 종류(종일 일정, 반복 일정)
