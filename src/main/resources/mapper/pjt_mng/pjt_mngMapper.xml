@@ -43,6 +43,7 @@
 
   <!-- 프로젝트 등록 -->
   <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+
     INSERT INTO TB_PJT_BASC (
       PJT_NM, employeeId, PJT_BGNG_DT, PJT_END_DT,
       PJT_STTS_CD, FRST_RGTR_ID, FRST_REG_DT,
@@ -63,7 +64,7 @@
 
   <!-- 프로젝트 상세 조회 -->
   <select id="getPjtDetail" parameterType="String" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
-    SELECT PJT_SN, PJT_NM, PJT_STTS_CD, employeeid, USE_YN,
+    SELECT PJT_SN, PJT_NM, PJT_STTS_CD, employeeId, USE_YN,
            FRST_RGTR_ID, FRST_REG_DT, LAST_MDFR_ID, LAST_MDFCN_DT,
            ATCH_FILE_SN, ORG_FILE_NM, PJT_BGNG_DT, PJT_END_DT, content
     FROM TB_PJT_BASC
