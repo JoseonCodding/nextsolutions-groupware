@@ -1,0 +1,363 @@
+{
+  "notices": [
+    {
+      "id": 1,
+      "title": "서버 점검 안내",
+      "author": "관리자",
+      "date": "2025-08-01",
+      "views": 120
+    },
+    {
+      "id": 2,
+      "title": "개발 환경 업데이트",
+      "author": "개발팀",
+      "date": "2025-08-02",
+      "views": 95
+    },
+    {
+      "id": 3,
+      "title": "사용자 매뉴얼 배포",
+      "author": "지원팀",
+      "date": "2025-08-03",
+      "views": 84
+    },
+    {
+      "id": 4,
+      "title": "시스템 장애 발생",
+      "author": "운영팀",
+      "date": "2025-08-04",
+      "views": 150
+    },
+    {
+      "id": 5,
+      "title": "비밀번호 변경 권장",
+      "author": "보안팀",
+      "date": "2025-08-05",
+      "views": 110
+    },
+    {
+      "id": 6,
+      "title": "프로젝트 기획 회의 일정",
+      "author": "기획팀",
+      "date": "2025-08-06",
+      "views": 98
+    },
+    {
+      "id": 7,
+      "title": "백업 서버 이전 예정",
+      "author": "기술팀",
+      "date": "2025-08-07",
+      "views": 130
+    },
+    {
+      "id": 8,
+      "title": "서비스 일시 중단 안내",
+      "author": "고객지원팀",
+      "date": "2025-08-08",
+      "views": 102
+    },
+    {
+      "id": 9,
+      "title": "신규 기능 추가 알림",
+      "author": "개발팀",
+      "date": "2025-08-09",
+      "views": 75
+    },
+    {
+      "id": 10,
+      "title": "여름 휴가 안내",
+      "author": "인사팀",
+      "date": "2025-08-10",
+      "views": 200
+    }
+  ],
+
+  "approval": [
+    {
+      "id": 1,
+      "formType": "연차신청서",
+      "title": "2025년 8월 연차 신청",
+      "date": "2025-08-01",
+      "status": "대기"
+    },
+    {
+      "id": 2,
+      "formType": "기안서",
+      "title": "2025년 프로젝트 예산 기안",
+      "date": "2025-08-02",
+      "status": "진행"
+    },
+    {
+      "id": 3,
+      "formType": "협조전",
+      "title": "2025년 행사 협조 요청",
+      "date": "2025-08-03",
+      "status": "반려"
+    },
+    {
+      "id": 4,
+      "formType": "연차신청서",
+      "title": "2025년 9월 연차 신청",
+      "date": "2025-08-04",
+      "status": "대기"
+    },
+    {
+      "id": 5,
+      "formType": "기안서",
+      "title": "2025년 인사 기안",
+      "date": "2025-08-05",
+      "status": "진행"
+    },
+    {
+      "id": 6,
+      "formType": "협조전",
+      "title": "2025년 기술 지원 협조 요청",
+      "date": "2025-08-06",
+      "status": "대기"
+    },
+    {
+      "id": 7,
+      "formType": "연차신청서",
+      "title": "2025년 10월 연차 신청",
+      "date": "2025-08-07",
+      "status": "반려"
+    },
+    {
+      "id": 8,
+      "formType": "기안서",
+      "title": "2025년 상반기 업무 기안",
+      "date": "2025-08-08",
+      "status": "진행"
+    },
+    {
+      "id": 9,
+      "formType": "협조전",
+      "title": "2025년 회의 자료 협조 요청",
+      "date": "2025-08-09",
+      "status": "대기"
+    },
+    {
+      "id": 10,
+      "formType": "연차신청서",
+      "title": "2025년 11월 연차 신청",
+      "date": "2025-08-10",
+      "status": "진행"
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "title": "2025년 상반기 프로젝트",
+      "progress": 80,
+      "startDate": "2025-01-01",
+      "endDate": "2025-06-30"
+    },
+    {
+      "id": 2,
+      "title": "2025년 하반기 프로젝트",
+      "progress": 60,
+      "startDate": "2025-07-01",
+      "endDate": "2025-12-31"
+    },
+    {
+      "id": 3,
+      "title": "웹사이트 리뉴얼",
+      "progress": 50,
+      "startDate": "2025-03-15",
+      "endDate": "2025-09-15"
+    },
+    {
+      "id": 4,
+      "title": "모바일 앱 개발",
+      "progress": 40,
+      "startDate": "2025-04-01",
+      "endDate": "2025-10-01"
+    },
+    {
+      "id": 5,
+      "title": "AI 기반 서비스 개발",
+      "progress": 30,
+      "startDate": "2025-05-01",
+      "endDate": "2025-11-01"
+    },
+    {
+      "id": 6,
+      "title": "클라우드 전환 프로젝트",
+      "progress": 20,
+      "startDate": "2025-06-01",
+      "endDate": "2025-12-01"
+    },
+    {
+      "id": 7,
+      "title": "디지털 마케팅 캠페인",
+      "progress": 90,
+      "startDate": "2025-02-01",
+      "endDate": "2025-08-01"
+    },
+    {
+      "id": 8,
+      "title": "고객 관리 시스템 개선",
+      "progress": 70,
+      "startDate": "2025-05-15",
+      "endDate": "2025-11-15"
+    },
+    {
+      "id": 9,
+      "title": "ERP 시스템 도입",
+      "progress": 50,
+      "startDate": "2025-03-01",
+      "endDate": "2025-09-01"
+    },
+    {
+      "id": 10,
+      "title": "인프라 구축 프로젝트",
+      "progress": 60,
+      "startDate": "2025-02-15",
+      "endDate": "2025-08-15"
+    }
+  ],
+  "schedules": [
+    {
+      "id": 1,
+      "type": "연차",
+      "title": "2025년 8월 1일 연차",
+      "start": "2025-08-01T00:00:00",
+      "end": "2025-08-01T23:59:59",
+      "description": "2025년 8월 1일에 연차를 사용합니다."
+    },
+    {
+      "id": 2,
+      "type": "연차",
+      "title": "2025년 8월 5일 연차",
+      "start": "2025-08-05T00:00:00",
+      "end": "2025-08-05T23:59:59",
+      "description": "2025년 8월 5일에 연차를 사용합니다."
+    },
+    {
+      "id": 3,
+      "type": "프로젝트",
+      "title": "웹사이트 리뉴얼 미팅",
+      "start": "2025-08-03T10:00:00",
+      "end": "2025-08-03T12:00:00",
+      "description": "웹사이트 리뉴얼 프로젝트 관련 미팅"
+    },
+    {
+      "id": 4,
+      "type": "프로젝트",
+      "title": "AI 기반 서비스 개발 팀 회의",
+      "start": "2025-08-07T14:00:00",
+      "end": "2025-08-07T16:00:00",
+      "description": "AI 기반 서비스 개발팀 회의"
+    },
+    {
+      "id": 5,
+      "type": "회사일정",
+      "title": "전사 회의",
+      "start": "2025-08-02T09:00:00",
+      "end": "2025-08-02T11:00:00",
+      "description": "전사 회의, 회사 전체와 관련된 일정"
+    },
+    {
+      "id": 6,
+      "type": "회사일정",
+      "title": "팀워크샵",
+      "start": "2025-08-10T13:00:00",
+      "end": "2025-08-10T17:00:00",
+      "description": "팀워크샵, 팀 단위의 워크샵 진행"
+    },
+    {
+      "id": 7,
+      "type": "회사일정",
+      "title": "고객사 미팅",
+      "start": "2025-08-12T15:00:00",
+      "end": "2025-08-12T17:00:00",
+      "description": "고객사와의 미팅"
+    },
+    {
+      "id": 8,
+      "type": "프로젝트",
+      "title": "모바일 앱 출시일",
+      "start": "2025-08-15T09:00:00",
+      "end": "2025-08-15T23:59:59",
+      "description": "모바일 앱 출시일"
+    },
+    {
+      "id": 9,
+      "type": "연차",
+      "title": "2025년 8월 20일 연차",
+      "start": "2025-08-20T00:00:00",
+      "end": "2025-08-20T23:59:59",
+      "description": "2025년 8월 20일에 연차를 사용합니다."
+    },
+    {
+      "id": 10,
+      "type": "프로젝트",
+      "title": "서버 점검 일정",
+      "start": "2025-08-25T00:00:00",
+      "end": "2025-08-25T06:00:00",
+      "description": "서버 점검 및 유지보수"
+    }
+  ],
+  "employees": [
+    {
+      "id": 1,
+      "name": "홍길동",
+      "position": "팀장",
+      "photo": "https://picsum.photos/150"
+    },
+    {
+      "id": 2,
+      "name": "김철수",
+      "position": "과장",
+      "photo": "https://picsum.photos/150"
+    },
+    {
+      "id": 3,
+      "name": "이영희",
+      "position": "대리",
+      "photo": "https://picsum.photos/150"
+    },
+    {
+      "id": 4,
+      "name": "박민수",
+      "position": "사원",
+      "photo": "https://picsum.photos/150"
+    },
+    {
+      "id": 5,
+      "name": "최지훈",
+      "position": "부장",
+      "photo": "https://picsum.photos/150"
+    },
+    {
+      "id": 6,
+      "name": "정지연",
+      "position": "사원",
+      "photo": "https://picsum.photos/150"
+    },
+    {
+      "id": 7,
+      "name": "김나래",
+      "position": "과장",
+      "photo": "https://picsum.photos/150"
+    },
+    {
+      "id": 8,
+      "name": "이수정",
+      "position": "팀장",
+      "photo": "https://picsum.photos/150"
+    },
+    {
+      "id": 9,
+      "name": "황도윤",
+      "position": "부장",
+      "photo": "https://picsum.photos/150"
+    },
+    {
+      "id": 10,
+      "name": "장희수",
+      "position": "대리",
+      "photo": "https://picsum.photos/150"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+const ArrowLIcon = ({ fillColor = 'fill-gray-500', size = '100%' }) => {
+  return (
+    <span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 -960 960 960"
+        width={size}
+        height={size}
+        className={fillColor}
+      >
+        <path d="M560-267.69 347.69-480 560-692.31 588.31-664l-184 184 184 184L560-267.69Z" />
+      </svg>
+    </span>
+  );
+};
+
+export default ArrowLIcon;
