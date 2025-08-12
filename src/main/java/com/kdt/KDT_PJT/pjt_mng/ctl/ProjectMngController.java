@@ -47,6 +47,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProjectMngController {
 
+	private static final Object offset = null;
+
 	@Autowired
 	private ProjectMngService projectMngService;
 
@@ -56,8 +58,16 @@ public class ProjectMngController {
 	// ✅ 프로젝트 목록 화면 조회 (검색어 유무에 따라 분기)
 	@GetMapping("/getPjtList")
 	public String getPjtList(@RequestParam(required = false, name = "keyword") String keyword,
-			HttpServletRequest request, Model model) {
+			HttpServletRequest request, Model model, HttpSession session) {
 
+
+	    
+	    
+
+	    
+	    EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
+	    System.out.println("getPjtList Called >>> employeeId = " + loginUser.getEmployeeId());
+		
 		// 🔍 검색어 로그 확인 (디버깅용)
 		System.out.println("getPjtList Called >>> keyword = " + keyword);
 
@@ -102,6 +112,16 @@ public class ProjectMngController {
 
 		// DB에서 PJT_STTS_CD가 '대기'인 개수 조회
 		int pendingCount = projectMngService.getPendingCount();
+		
+
+		
+	    int myProjectCount = projectMngService.countMyProjects(loginUser.getEmployeeId());
+	    int myApprovalTodoCount = projectMngService.countMyPendingApprovals(loginUser.getEmployeeId());
+				
+	    model.addAttribute("myProjectCount", myProjectCount);
+	    model.addAttribute("myApprovalTodoCount", myApprovalTodoCount);	
+
+		
 		model.addAttribute("pendingCount", pendingCount);
 
 		model.addAttribute("pjtList", list.getList()); // 현재 페이지 데이터
@@ -116,22 +136,31 @@ public class ProjectMngController {
 	public String getPjtList(HttpSession session, Model model,
 	                         @RequestParam(required = false) String keyword,
 	                         @RequestParam(required = false, defaultValue = "N") String my,
+	                         @RequestParam(required = false, defaultValue = "N") String approval,
 	                         @RequestParam(defaultValue = "1") int pageNum,
 	                         @RequestParam(defaultValue = "10") int pageSize) {
 
 	    String employeeId = (String) session.getAttribute("employeeId"); // 로그인 시 세팅해둔 값
-	    if (employeeId == null) employeeId = ""; // 안전
+	    if (employeeId == null) employeeId = "";   // 안전(일단주석처리)
 
 	    // 상단 카드 숫자
 	    int myProjectCount = projectMngService.countMyProjects(employeeId);
+	    int myApprovalTodoCount = projectMngService.countMyPendingApprovals(employeeId);
+	    
+	    // ✅ 여기서 offset 계산 (서비스 호출 전에!)
+	    if (pageNum < 1) pageNum = 1;
+	    int offset = (pageNum - 1) * pageSize;
+	    
 
 	    // 목록 파라미터
 	    Map<String, Object> param = new HashMap<>();
 	    param.put("keyword", keyword);
 	    param.put("employeeId", employeeId);
 	    param.put("myOnly", "Y".equalsIgnoreCase(my) ? 1 : 0);
-	    param.put("pageNum", pageNum);
+	    param.put("approvalOnly", "Y".equalsIgnoreCase(approval) ? 1 : 0); // ⬅ 추가
 	    param.put("pageSize", pageSize);
+	    param.put("offset", offset);
+
 
 	    List<CmmnMap> list = projectMngService.getProjectList(param);
 	    int total = projectMngService.getProjectListCount(param);
@@ -140,8 +169,11 @@ public class ProjectMngController {
 	    model.addAttribute("total", total);
 	    model.addAttribute("keyword", keyword);
 	    model.addAttribute("my", my);
+	    model.addAttribute("approval", approval); // ⬅ 추가(뷰에서 배지 표시용)
 
 	    model.addAttribute("myProjectCount", myProjectCount);
+	    model.addAttribute("myApprovalTodoCount", myApprovalTodoCount);
+
 	    model.addAttribute("mainUrl", "pjt_mng/pjt_list");
 	    return "home";
 	}

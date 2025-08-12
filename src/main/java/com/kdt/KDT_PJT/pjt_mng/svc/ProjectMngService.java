@@ -127,12 +127,15 @@ public class ProjectMngService {
 
 	public int countMyProjects(String employeeId) {
 		// TODO Auto-generated method stub
-		return 0;
+		return pjtMngMapper.countMyProjects(employeeId);
 	}
 
+	
 	public int countMyPendingApprovals(String employeeId) {
-		// TODO Auto-generated method stub
-		return 0;
+
+		if (employeeId == null || employeeId.isBlank())
+			return 0;
+		return pjtMngMapper.countMyPendingApprovals(employeeId);
 	}
 
 // ProjectMngService.java

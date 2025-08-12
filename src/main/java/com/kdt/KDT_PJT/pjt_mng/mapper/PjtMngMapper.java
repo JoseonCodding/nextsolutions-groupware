@@ -12,13 +12,31 @@ import java.util.Map;
 @Mapper
 public interface PjtMngMapper {
     List<CmmnMap> selectApproverCandidates();
-    int updateApprover(Map<String, Object> param);
-    
-    //내 프로젝트 갯수 조회
-
     List<CmmnMap> selectProjectList(@Param("param") Map<String, Object> param);
+    List<Map<String, Object>> searchProjectMngList(Map<String, Object> param);
+
+       
+  //메인 : 내가 참여한 프로젝트 관련
+    
+   
+   
+   
+      
+    @Select(" SELECT COUNT(*) FROM TB_PJT_BASC WHERE (USE_YN IS NULL OR USE_YN = 'Y') AND employeeId = #{employeeId}")
+    int countMyProjects(@Param("employeeId") String employeeId);
+    
+    
     int selectProjectListCount(@Param("param") Map<String, Object> param);
-    int countMyProjects1(@Param("empId") String empId);
+    int countMyProjects1(@Param("employeeId") String employeeId);
+    
+    
+    @Select("    SELECT COUNT(*)\r\n"
+    		+ "    FROM TB_PJT_BASC\r\n"
+    		+ "    WHERE (USE_YN IS NULL OR USE_YN = 'Y') "
+    		+ "      AND TB_PJT_APR = #{employeeId}")
+    int countMyPendingApprovals(@Param("employeeId") String employeeId);
+    int updateApprover(Map<String, Object> param);
+
 
    
    
@@ -46,9 +64,6 @@ public interface PjtMngMapper {
     CmmnMap selectPjtDetail(@Param("pjtSn") int pjtSn);
 
 
-   //메인 : 내가 참여한 프로젝트 관련
-   int countMyProjects(@org.apache.ibatis.annotations.Param("employeeId") String employeeId);
-   
    
 
 
