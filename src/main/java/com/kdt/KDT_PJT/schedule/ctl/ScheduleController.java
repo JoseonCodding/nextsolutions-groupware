@@ -1,7 +1,5 @@
 package com.kdt.KDT_PJT.schedule.ctl;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,19 +32,9 @@ public class ScheduleController {
 	@RequestMapping
 	String showSchedulePage(HttpSession session, Model model, ScheduleDTO schDto) {
 
-//		    LocalDate now = LocalDate.now();
-//		    LocalDate firstDay = now.withDayOfMonth(1);
-
-//		    LocalDate lastDay = now.withDayOfMonth(now.lengthOfMonth());
-//
-//		    Date startDate = java.sql.Date.valueOf(firstDay);
-//		    Date endDate = java.sql.Date.valueOf(lastDay);
-		
 		// DTO에 이번 달 시작일·종료일 세팅
 	    schDto.monthDays();
 		model.addAttribute("firstDayOfWeek", schDto.getFirstDayOfWeek());  // 1=월요일 ~ 7=일요일
-		
-		
 		
 	    List<ScheduleDTO> scheduleList = mapper.getScheduleListByMonth(schDto);
 	    
@@ -60,9 +48,6 @@ public class ScheduleController {
 		
 		return "navTap";
 	}
-
-
-	
 	
 	//일정 등록
 	@GetMapping("/insert")
@@ -80,7 +65,6 @@ public class ScheduleController {
 	    
 	    dto.setEmployeeId(loginUser.getEmployeeId());
 	    
-		// System.out.println("보여라"+loginUser.getEmployeeId());
 		mapper.insert(dto);
 	    
 		return "redirect:/schedule";
@@ -91,11 +75,10 @@ public class ScheduleController {
 	public String scheduleDetail(Model model, ScheduleDTO dto) {
 		
 		ScheduleDTO scheduleDetail = mapper.getScheduleDetail(dto);
-		model.addAttribute("scheduleDetail", scheduleDetail);
+		System.out.println("detail : "+scheduleDetail);
+		model.addAttribute("scd", scheduleDetail);
 		model.addAttribute("mainUrl", "schedule/detail");
 
 		return "navTap";
 	}
-
-	
 }

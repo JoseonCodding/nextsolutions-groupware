@@ -1,10 +1,8 @@
 package com.kdt.KDT_PJT.schedule.model;
 
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,11 +17,11 @@ public class ScheduleDTO {
     String title, cate, alarm, content, holiday;
     Date startDate, endDate, createdAt, updatedAt, deleteDate;
     String employeeId;
-    LocalTime startTime, endTime;
+    Date startTime, endTime;
     
     LocalDate startLocalDate, now;
     LocalDate endLocalDate;
-    Integer firstDayOfWeek, year, month, lastDate, startLocalDateNo, endLocalDateNo;
+    Integer firstDayOfWeek, year, month, lastDate;
     
     public void monthDays() {
     	
@@ -31,8 +29,6 @@ public class ScheduleDTO {
         LocalDate firstDay = now.withDayOfMonth(1);
         LocalDate lastDay = now.withDayOfMonth(now.lengthOfMonth());
         
-        
-
         this.startDate = java.sql.Date.valueOf(firstDay);
         this.endDate = java.sql.Date.valueOf(lastDay);
         this.firstDayOfWeek = firstDay.getDayOfWeek().getValue();
@@ -45,11 +41,9 @@ public class ScheduleDTO {
     public void convertDatesToLocal() {
         if (startDate != null) {
         	startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        	startLocalDateNo = startLocalDate.getDayOfMonth();
         }
         if (endDate != null) { 
         	endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        	endLocalDateNo = endLocalDate.getDayOfMonth();
         }
     }
     
@@ -71,31 +65,32 @@ public class ScheduleDTO {
 		}
 	}
     
+    public String getStartDateStr() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		return  sdf.format(startDate);
+		
+	}
     
-//    public LocalTime getStartTime() {
-//        return startTime;
-//    }
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
-    }
-
-//    public LocalTime getEndTime() {
-//        return endTime;
-//    }
-    public void setEndTime(LocalTime endTime) {
-        this.endTime = endTime;
-    }
+    public String getEndDateStr() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		return  sdf.format(endDate);
+		
+	}
+    
    
-    String getStartTime() {
-    	if (startTime != null) { // startTime이 Date 타입이라 가정
+   
+    public String getStartTimeStr() {
+    	if (startTime != null) { 
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             return sdf.format(startTime);
         }
         return "";
     }
     
-    String getEndTime() {
-    	if (endTime != null) { // startTime이 Date 타입이라 가정
+    public String getEndTimeStr() {
+    	if (endTime != null) { 
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             return sdf.format(endTime);
         }
