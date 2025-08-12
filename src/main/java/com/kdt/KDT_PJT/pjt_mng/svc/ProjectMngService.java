@@ -62,6 +62,35 @@ public class ProjectMngService {
    public List<CmmnMap> searchProjectMngList(String keyword) {
       return cmmnDao.selectList("com.kdt.mapper.pjt_mng.PjtMngMapper.searchProjectMngList", keyword);
    }
+   
+
+   public PageInfo<CmmnMap> getProjectListOrderByWriter(int pageNum, int pageSize, String keyword) {
+
+	      PageHelper.startPage(pageNum, pageSize);
+	      log.info("getProjectListOrderByWriter keyword(raw) = {}", keyword);
+	      List<CmmnMap> list = cmmnDao.selectList("com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.getProjectListOrderByWriter",
+	            keyword); // ② 페이징 걸린 상태로 select 실행
+	      return new PageInfo<>(list); // ③ PageInfo로 래핑
+	   }
+   
+   public PageInfo<CmmnMap> getProjectListOrderByProject(int pageNum, int pageSize, String keyword) {
+
+	      PageHelper.startPage(pageNum, pageSize);
+
+	      List<CmmnMap> list = cmmnDao.selectList("com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.getProjectListOrderByProject",
+	            keyword); // ② 페이징 걸린 상태로 select 실행
+	      return new PageInfo<>(list); // ③ PageInfo로 래핑
+	   }
+   
+   public PageInfo<CmmnMap> getProjectListOrderByStatus(int pageNum, int pageSize, String keyword) {
+
+	      PageHelper.startPage(pageNum, pageSize);
+
+	      List<CmmnMap> list = cmmnDao.selectList("com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.getProjectListOrderByStatus",
+	            keyword); // ② 페이징 걸린 상태로 select 실행
+	      return new PageInfo<>(list); // ③ PageInfo로 래핑
+	   }  
+
 
    // ✅ ✅ ✅ 정렬 + 페이징 + 검색 (신규)
    public List<CmmnMap> searchProjectPagedList(String keyword, String sortType, String order, int offset,
@@ -153,9 +182,14 @@ public class ProjectMngService {
       return pjtMngMapper.countMyProjects(employeeId);
    }
 
-   public List<CmmnMap> selectApproverCandidates() {
-      // TODO Auto-generated method stub
-      return null;
-   }
+	/**
+	 * 결재권자 목록 
+	 * @return
+	 */
+	public List<CmmnMap> selectApproverCandidates() {
+		// TODO Auto-generated method stub
+		return pjtMngMapper.selectApproverCandidates();
+	}
+
 
 }

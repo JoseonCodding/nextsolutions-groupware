@@ -76,22 +76,30 @@
 
 <!-- 🔧 정렬 + 검색: 오른쪽 나란히 -->
 <div class="toolbar-right">
+
   <!-- 정렬 드롭다운 -->
-  <select name="sortType" onchange="onSortChange(this)">
-    <option selected disabled>정렬</option>
-    <option value="team"    th:selected="${sortType == 'team'}">팀명</option>
-    <option value="writer"  th:selected="${sortType == 'writer'}">작성자명</option>
-    <option value="project" th:selected="${sortType == 'project'}">프로젝트명</option>
-  </select>
+
 
   <!-- 검색 form -->
-  <form action="/pjtMng/getPjtList" method="get" style="display:flex; align-items:center; gap:12px; margin:0;">
-    <input type="text" name="keyword" placeholder="프로젝트명, 담당자 검색" th:value="${keyword}">
-    <!-- 현재 정렬 유지하여 검색되도록 hidden -->
-    <input type="hidden" name="sortType" th:value="${sortType}">
-    <button type="submit" class="button">검색</button>
-  </form>
-</div>
+<form action="/pjtMng/getPjtList" method="get"
+      style="display:flex; align-items:center; gap:12px; margin:0;">
+
+  <select name="keywordType">
+    <option value="" disabled
+            th:selected="${#strings.isEmpty(keywordType)}">선택</option>
+
+    <option value="writer"  th:selected="${keywordType == 'writer'}">작성자명</option>
+    <option value="project" th:selected="${keywordType == 'project'}">프로젝트명</option>
+    <!-- ✅ 오타/대소문자 통일: keywordTypee → keywordType, Status → status -->
+    <option value="status"  th:selected="${keywordType == 'status'}">진행상태</option>
+  </select>
+
+  <input type="text" name="keyword" placeholder=""
+         th:value="${keyword}">
+
+  <button type="submit">검색</button>
+</form>
+	</div>
 
 <table>
   <thead>
@@ -112,7 +120,7 @@
       <td th:text="${pjt['employeeId']}">담당자</td>
       <td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>
       <td th:text="${pjt['PJT_BGNG_DT']}">시작일</td>
-      <td th:text="${pjt['PJT_END_DT']}">마감일</td>
+      <td th:text="${pjt['PJT_END_DT']}">종료일</td>
       <td>
         <button class="button btn-view"
                 th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
@@ -153,16 +161,8 @@
 </nav>
 
 <script>
-  // 정렬 변경 시 현재 keyword와 함께 목록 새로고침
-  function onSortChange(sel){
-    const sortType = sel.value;
-    const params = new URLSearchParams(window.location.search);
-    if(sortType) params.set('sortType', sortType);
-    // keyword 유지
-    const keywordInput = document.querySelector('input[name="keyword"]');
-    if (keywordInput && keywordInput.value) params.set('keyword', keywordInput.value);
-    window.location.href = '/pjtMng/getPjtList?' + params.toString();
-  }
+
+
 </script>
 
 

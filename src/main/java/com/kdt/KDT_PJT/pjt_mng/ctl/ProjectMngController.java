@@ -58,10 +58,21 @@ public class ProjectMngController {
    // ✅ 프로젝트 목록 화면 조회 (검색어 유무에 따라 분기)
    @GetMapping("/getPjtList")
    public String getPjtList(@RequestParam(required = false, name = "keyword") String keyword,
-         HttpServletRequest request, Model model, HttpSession session) {
+         HttpServletRequest request, Model model, HttpSession session
+         , @RequestParam(required = false, name = "keywordType") String keywordType) {
 
-
-       
+	   log.info("keywordType(raw) = {}", keywordType);
+	   log.info("keyword(raw) = {}", keyword);
+	    // ✅ 널/대소문자 정리
+	    String type = (keywordType == null) ? "" : keywordType.toLowerCase();
+	   // 선택값 유지 용
+	    if (keywordType == null) keywordType = "";
+	    
+	    
+	    
+	 // ✅ 선택값 유지용
+	    model.addAttribute("keywordType", type);
+	    model.addAttribute("keyword", keyword); // ← 입력칸 유지
        
 
        
@@ -88,6 +99,27 @@ public class ProjectMngController {
 
       // 리스트 가져오기
       PageInfo<CmmnMap> list = projectMngService.getProjectList(pageNum, pageSize, keyword);
+      
+      switch (keywordType) {
+      case "writer":
+    	  log.info(" sortType = writer ");
+    	  list = projectMngService.getProjectListOrderByWriter(pageNum, pageSize, keyword);
+          break;
+      case "project":
+    	  log.info(" sortType = project ");
+    	  list = projectMngService.getProjectListOrderByProject(pageNum, pageSize, keyword);
+          break;
+      case "status":
+    	  log.info(" sortType = status ");
+    	  list = projectMngService.getProjectListOrderByStatus(pageNum, pageSize, keyword);
+          break;
+      default:
+          // 기본 정렬(현재 쓰던 메서드)
+    	  list = projectMngService.getProjectList(pageNum, pageSize, keyword);
+      }
+      
+      
+      
       // ③ model에 값 담기
 
       if (list == null || list.getList() == null || list.getList().isEmpty()) {
@@ -230,19 +262,26 @@ public class ProjectMngController {
       model.addAttribute("mainUrl", "pjt_mng/pjt_reg_form");
       return "home";
 
+      
    }
 
-   @GetMapping("/pjtEditForm")
-   public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn, Model model) {
-      log.info("getPjtEditForm Called >>> {}", pjtSn);
 
-      CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
-      log.debug("DETAIL TB_PJT_APR={}", pjtDetail.get("TB_PJT_APR")); // 값 확인
+	@GetMapping("/pjtEditForm")
+	public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn, Model model) {
+		log.info("getPjtEditForm Called >>> {}", pjtSn);
+	    List<CmmnMap> approverList = projectMngService.selectApproverCandidates();
 
-      model.addAttribute("pjt", pjtDetail);
-      model.addAttribute("mainUrl", "pjt_mng/pjt_edit_form");
-      return "home";
-   }
+	    boolean isAdmin = true; // 임시로 항상 true로 설정 !!
+		
+		CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
+		log.debug("DETAIL TB_PJT_APR={}", pjtDetail.get("TB_PJT_APR")); // 값 확인
+		model.addAttribute("isAdmin", isAdmin);
+	    model.addAttribute("approverList", approverList);
+		model.addAttribute("pjt", pjtDetail);
+		model.addAttribute("mainUrl", "pjt_mng/pjt_edit_form");
+		return "home";
+	}
+
 
    @GetMapping("/pjtDetail")
    public String pjtDetail(@RequestParam("pjtSn") int pjtSn, Model model, HttpSession session) {

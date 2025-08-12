@@ -164,6 +164,50 @@
     </if>
   ORDER BY LAST_MDFCN_DT DESC
 </select>
+
+<select id="getProjectListOrderByWriter" 
+        parameterType="String" 
+        resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+SELECT *
+FROM TB_PJT_BASC b
+WHERE (b.USE_YN IS NULL OR b.USE_YN = 'Y')
+<if test="keyword != null and keyword != ''">
+  AND b.employeeId IN (
+      SELECT e.employeeId
+      FROM employee e
+      WHERE e.emp_nm LIKE CONCAT('%', #{keyword}, '%')
+  )
+</if>
+ORDER BY b.LAST_MDFCN_DT DESC
+  
+</select>
+
+<select id="getProjectListOrderByProject" 
+        parameterType="map" 
+        resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+        
+  SELECT *
+  FROM TB_PJT_BASC
+  WHERE (USE_YN IS NULL OR USE_YN = 'Y')
+    <if test="keyword != null and keyword != ''">
+      AND (PJT_NM LIKE CONCAT('%', #{keyword}, '%'))          
+    </if>
+  ORDER BY LAST_MDFCN_DT DESC
+</select>
+
+
+<select id="getProjectListOrderByStatus" 
+        parameterType="map" 
+        resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+        
+  SELECT *
+  FROM TB_PJT_BASC
+  WHERE (USE_YN IS NULL OR USE_YN = 'Y')
+    <if test="keyword != null and keyword != ''">
+      AND (PJT_STTS_CD LIKE CONCAT('%', #{keyword}, '%') )
+    </if>
+  ORDER BY LAST_MDFCN_DT DESC
+</select>
 </mapper>
 
 
