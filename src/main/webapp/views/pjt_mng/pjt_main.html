@@ -109,7 +109,7 @@
     <tr th:each="pjt, stat : ${pjtList}">
       <td th:text="${stat.index + 1}">1</td>
       <td th:text="${pjt['PJT_NM']}">프로젝트명</td>
-      <td th:text="${pjt['employeeid']}">담당자</td>
+      <td th:text="${pjt['employeeId']}">담당자</td>
       <td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>
       <td th:text="${pjt['PJT_BGNG_DT']}">시작일</td>
       <td th:text="${pjt['PJT_END_DT']}">마감일</td>

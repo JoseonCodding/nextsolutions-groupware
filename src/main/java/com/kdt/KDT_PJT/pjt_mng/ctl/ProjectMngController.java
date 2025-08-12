@@ -7,7 +7,9 @@ import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.jsoup.Jsoup;
@@ -32,6 +34,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
+import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.employee.svc.EmployeeService;
 import com.kdt.KDT_PJT.pjt_mng.svc.ProjectMngService;
 
@@ -44,6 +47,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProjectMngController {
 
+   private static final Object offset = null;
+
    @Autowired
    private ProjectMngService projectMngService;
 
@@ -53,8 +58,16 @@ public class ProjectMngController {
    // ✅ 프로젝트 목록 화면 조회 (검색어 유무에 따라 분기)
    @GetMapping("/getPjtList")
    public String getPjtList(@RequestParam(required = false, name = "keyword") String keyword,
-         HttpServletRequest request, Model model) {
+         HttpServletRequest request, Model model, HttpSession session) {
 
+
+       
+       
+
+       
+       EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
+       System.out.println("getPjtList Called >>> employeeId = " + loginUser.getEmployeeId());
+      
       // 🔍 검색어 로그 확인 (디버깅용)
       System.out.println("getPjtList Called >>> keyword = " + keyword);
 
@@ -99,6 +112,16 @@ public class ProjectMngController {
 
       // DB에서 PJT_STTS_CD가 '대기'인 개수 조회
       int pendingCount = projectMngService.getPendingCount();
+      
+
+      
+       int myProjectCount = projectMngService.countMyProjects(loginUser.getEmployeeId());
+       int myApprovalTodoCount = projectMngService.countMyPendingApprovals(loginUser.getEmployeeId());
+            
+       model.addAttribute("myProjectCount", myProjectCount);
+       model.addAttribute("myApprovalTodoCount", myApprovalTodoCount);   
+
+      
       model.addAttribute("pendingCount", pendingCount);
 
       model.addAttribute("pjtList", list.getList()); // 현재 페이지 데이터
@@ -108,19 +131,63 @@ public class ProjectMngController {
       return "home";
 
    }
-   
-   
-   
-   // 결재자 리스트 디비에 받아오는거 
+   // 내프로젝트만 눌러서 볼수 있는거 
+   @GetMapping("/pjtMng/pjtList")
+   public String getPjtList(HttpSession session, Model model,
+                            @RequestParam(required = false) String keyword,
+                            @RequestParam(required = false, defaultValue = "N") String my,
+                            @RequestParam(required = false, defaultValue = "N") String approval,
+                            @RequestParam(defaultValue = "1") int pageNum,
+                            @RequestParam(defaultValue = "10") int pageSize) {
+
+       String employeeId = (String) session.getAttribute("employeeId"); // 로그인 시 세팅해둔 값
+       if (employeeId == null) employeeId = "";   // 안전(일단주석처리)
+
+       // 상단 카드 숫자
+       int myProjectCount = projectMngService.countMyProjects(employeeId);
+       int myApprovalTodoCount = projectMngService.countMyPendingApprovals(employeeId);
+       
+       // ✅ 여기서 offset 계산 (서비스 호출 전에!)
+       if (pageNum < 1) pageNum = 1;
+       int offset = (pageNum - 1) * pageSize;
+       
+
+       // 목록 파라미터
+       Map<String, Object> param = new HashMap<>();
+       param.put("keyword", keyword);
+       param.put("employeeId", employeeId);
+       param.put("myOnly", "Y".equalsIgnoreCase(my) ? 1 : 0);
+       param.put("approvalOnly", "Y".equalsIgnoreCase(approval) ? 1 : 0); // ⬅ 추가
+       param.put("pageSize", pageSize);
+       param.put("offset", offset);
+
+
+       List<CmmnMap> list = projectMngService.getProjectList(param);
+       int total = projectMngService.getProjectListCount(param);
+
+       model.addAttribute("list", list);
+       model.addAttribute("total", total);
+       model.addAttribute("keyword", keyword);
+       model.addAttribute("my", my);
+       model.addAttribute("approval", approval); // ⬅ 추가(뷰에서 배지 표시용)
+
+       model.addAttribute("myProjectCount", myProjectCount);
+       model.addAttribute("myApprovalTodoCount", myApprovalTodoCount);
+
+       model.addAttribute("mainUrl", "pjt_mng/pjt_list");
+       return "home";
+   }
+
+
+   // 결재자 리스트 디비에 받아오는거
    @GetMapping("/project/edit")
    public String editProject(@RequestParam int pjtSn, Model model) {
-       CmmnMap pjt = projectMngService.getProjectWithApprover(pjtSn);
-       model.addAttribute("pjt", pjt);
-       return "pjt_mng/pjt_edit_form";
+      CmmnMap pjt = projectMngService.getProjectWithApprover(pjtSn);
+      model.addAttribute("pjt", pjt);
+      return "pjt_mng/pjt_edit_form";
    }
-   
-   
-   // 결재자 리스트 불러오는거  
+
+   // 결재자 리스트 불러오는거
    @Autowired
    private EmployeeService employeeService; // 팀원 EmployeeService 사용
 
@@ -129,16 +196,12 @@ public class ProjectMngController {
    // 프로젝트 등록 폼 열기
    @GetMapping("/project/register")
    public String projectRegisterForm(Model model) {
-       // 사원 목록 가져오기
-       model.addAttribute("employeeList", projectMngService.getApproverCandidates());
-       
-       // 등록 페이지로 이동
-       return "pjt_mng/pjt_reg_form";
+      // 사원 목록 가져오기
+      model.addAttribute("employeeList", projectMngService.getApproverCandidates());
+
+      // 등록 페이지로 이동
+      return "pjt_mng/pjt_reg_form";
    }
-   
-
-   
-
 
    @GetMapping("/list")
    public String showProjectList(@RequestParam(required = false) String keyword, Model model) {
@@ -153,12 +216,15 @@ public class ProjectMngController {
    @GetMapping("/getSavePjtForm")
    public String getSavePjtForm(HttpSession session, Model model) {
 
-      Object loginUser = session.getAttribute("loginUser");
+      EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
       boolean isAdmin = true; // 임시로 항상 true로 설정 !!
 
+       List<CmmnMap> approverList = projectMngService.selectApproverCandidates();
 
-      // isAdmin 값을 모델에 넣음
+      //isAdmin 값을 모델에 넣음
       model.addAttribute("isAdmin", isAdmin);
+      model.addAttribute("id", loginUser.getEmployeeId());
+       model.addAttribute("approverList", approverList);
 
       // 화면 이동
       model.addAttribute("mainUrl", "pjt_mng/pjt_reg_form");
@@ -168,41 +234,39 @@ public class ProjectMngController {
 
    @GetMapping("/pjtEditForm")
    public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn, Model model) {
-       log.info("getPjtEditForm Called >>> {}", pjtSn);
+      log.info("getPjtEditForm Called >>> {}", pjtSn);
 
-       CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
-       log.debug("DETAIL TB_PJT_APR={}", pjtDetail.get("TB_PJT_APR")); // 값 확인
+      CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
+      log.debug("DETAIL TB_PJT_APR={}", pjtDetail.get("TB_PJT_APR")); // 값 확인
 
-       model.addAttribute("pjt", pjtDetail);
-       model.addAttribute("mainUrl", "pjt_mng/pjt_edit_form");
-       return "home";
+      model.addAttribute("pjt", pjtDetail);
+      model.addAttribute("mainUrl", "pjt_mng/pjt_edit_form");
+      return "home";
    }
-   
-   @GetMapping("/pjtDetail")
-   public String pjtDetail(@RequestParam("pjtSn") int pjtSn, Model model) {
-          CmmnMap pjt = projectMngService.getPjtDetail(pjtSn);
-          log.debug("DETAIL pjtSn={}, TB_PJT_APR={}", pjtSn, pjt.get("TB_PJT_APR"));
-          log.debug("DETAIL keys={}", pjt.keySet());
-          model.addAttribute("pjt", pjt);
-          model.addAttribute("mainUrl", "pjt_mng/pjt_detail");
-          return "home";
-      }
-   
-   @PostMapping("/updateApprover")
-   public String updateApprover(@RequestParam("PJT_SN") int pjtSn,
-                                @RequestParam("TB_PJT_APR") String approver) {
-       CmmnMap param = new CmmnMap();
-       param.put("PJT_SN", pjtSn);
-       param.put("TB_PJT_APR", approver);
 
-       String queryId = "com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.updateApprover";
+   @GetMapping("/pjtDetail")
+   public String pjtDetail(@RequestParam("pjtSn") int pjtSn, Model model, HttpSession session) {
+
+      CmmnMap pjt = projectMngService.getPjtDetail(pjtSn);
+
+      log.debug("DETAIL pjtSn={}, TB_PJT_APR={}", pjtSn, pjt.get("TB_PJT_APR"));
+      log.debug("DETAIL keys={}", pjt.keySet());
+      model.addAttribute("pjt", pjt);
+      model.addAttribute("mainUrl", "pjt_mng/pjt_detail");
+      return "home";
+   }
+
+   @PostMapping("/updateApprover")
+   public String updateApprover(@RequestParam("PJT_SN") int pjtSn, @RequestParam("TB_PJT_APR") String approver) {
+      CmmnMap param = new CmmnMap();
+      param.put("PJT_SN", pjtSn);
+      param.put("TB_PJT_APR", approver);
+
+      String queryId = "com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.updateApprover";
       // cmmnDao.update(queryId, param);
 
-       return "redirect:/pjtMng/pjtDetail?pjtSn=" + pjtSn;
+      return "redirect:/pjtMng/pjtDetail?pjtSn=" + pjtSn;
    }
-
-   
-   
 
    @PostMapping("/pjtEditSave")
    public String saveEditedProject(@ModelAttribute CmmnMap pjtData, RedirectAttributes redirectAttributes) {
@@ -334,9 +398,8 @@ public class ProjectMngController {
       return ResponseEntity.ok().headers(headers).body(resource);
    }
 
-
    @PostMapping("/savePjtProc")
-   public String savePjtProc(Model model, @RequestParam("pjtNm") String pjtNm,
+   public String savePjtProc(HttpSession session, Model model, @RequestParam("pjtNm") String pjtNm,
          @RequestParam(value = "empNm", required = false) String empNm,
          @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
          @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
@@ -386,7 +449,10 @@ public class ProjectMngController {
          }
       }
 
+      EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+
       params.put("PJT_NM", pjtNm);
+      params.put("employeeId", loginUser.getEmployeeId());
       params.put("EMP_NM", empNm);
       params.put("PJT_BGNG_DT", pjtBgngDt);
       params.put("PJT_END_DT", pjtEndDt);
