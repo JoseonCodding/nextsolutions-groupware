@@ -11,13 +11,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.attend.di.Leave;
+import com.kdt.KDT_PJT.attend.model.AttendDTO;
 import com.kdt.KDT_PJT.attend.model.LeaveDTO;
 import com.kdt.KDT_PJT.attend.model.LeaveMapper;
 import com.kdt.KDT_PJT.attend.model.LeaveReqDTO;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.NoArgsConstructor;
 
@@ -106,17 +110,47 @@ public class LeaveController {
     
     //연차 관리(관리자용)
     @GetMapping("/leaveListMng")
-    public String leaveListMng(HttpSession session, Model model) {
+    public String leaveListMng(HttpSession session, Model model,
+    							HttpServletRequest request) {
         System.out.println("연차 관리자용");
         
         EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
         
+        int pageNum = 1;
+        int pageSize = 10;
+        try {
+            if (request.getParameter("pageNum") != null) {
+                pageNum = Integer.parseInt(request.getParameter("pageNum"));
+            }
+            if (request.getParameter("pageSize") != null) {
+                pageSize = Integer.parseInt(request.getParameter("pageSize"));
+            }
+        } catch (Exception e) {
+            // log.warn("페이지 번호 파싱 실패, 기본값 사용", e);
+        }
+        
+        // ✅ 여기서 페이징 시작
+        PageHelper.startPage(pageNum, pageSize);
+
+        // ✅ 하나의 경로로 조회 (필요 시 dto.workDate를 오늘 날짜로 채워 기본 동작 만들기)
         List<LeaveDTO> dto = mapper.mngLeaveList(); 
+
+        // ✅ PageInfo로 래핑
+        PageInfo<LeaveDTO> page = new PageInfo<>(dto);
+
+        // 뷰로 전달
+        model.addAttribute("page", page);           // 전체 페이징 메타데이터
+        model.addAttribute("mainData", page.getList()); // 현재 페이지 데이터
+        model.addAttribute("pageNum", pageNum);    // ✅ 현재 페이지
+        model.addAttribute("pageSize", pageSize);  // ✅ 페이지 크기
+        model.addAttribute("mainUrl", "attend/leave/leaveListMng");
+        
+  
         
     
         System.out.println("/attend/leave/leaveListMng : "+dto);
         
-        model.addAttribute("mainUrl", "attend/leave/leaveListMng");
+
         
         model.addAttribute("listMngData", dto);
         return "navTap"; 

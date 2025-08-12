@@ -43,9 +43,10 @@ public class AttendDTO {
 //	ADD COLUMN modification_reason VARCHAR(255) NULL;
 
 	 
-	public String getWorkDate() {
-       return checkInTime != null ? checkInTime.toLocalDate().toString() : "";
-	}
+    public String getWorkDate() {
+        // checkInTime이 있을 때만 yyyy-MM-dd 반환
+        return (checkInTime != null) ? checkInTime.toLocalDate().toString() : null;
+    }
 	
 	public String getWorkYear() {
 	    return checkInTime != null ? String.valueOf(checkInTime.toLocalDate().getYear()) : "";
@@ -56,10 +57,14 @@ public class AttendDTO {
 	}
 	
 	public void setWorkDate(String workDate) {
-		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		checkInTime  = LocalDateTime.parse(workDate+" 00:00:00", formatter);
-		System.out.println("setWorkDate 실행 : "+ workDate);
+	    if (workDate == null || workDate.isBlank()) {
+	        // 검색조건 미지정: checkInTime을 건드리지 않거나 null로 초기화
+	        this.checkInTime = null;
+	        return;
+	    }
+	    // "yyyy-MM-dd"만 받아서 자정으로 세팅
+	    this.checkInTime = LocalDate.parse(workDate).atStartOfDay();
+	    System.out.println("setWorkDate 실행 : " + workDate);
 	}
 
     public String getCheckInHourMinute() {
