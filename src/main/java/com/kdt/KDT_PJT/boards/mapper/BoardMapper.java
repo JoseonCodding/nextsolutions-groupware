@@ -30,7 +30,7 @@ public interface BoardMapper {
     		  FROM board_post p
     		  LEFT JOIN employee e ON employeeId = p.employee_id
     		  WHERE p.board_id = #{boardId}
-    		    AND p.is_deleted = 0
+    		    AND p.is_deleted = false
     		  ORDER BY COALESCE(p.updated_at, p.created_at) DESC, p.post_id DESC
     		  LIMIT #{limit} OFFSET #{offset}
     		  </script>
@@ -43,7 +43,7 @@ public interface BoardMapper {
     		         e.emp_nm AS empNm
     		  FROM board_post p
     		  LEFT JOIN employee e ON e.employeeId = p.employee_id
-    		  WHERE p.post_id = #{postId} AND p.is_deleted = FALSE
+    		  WHERE p.post_id = #{postId} AND p.is_deleted = false
     		""")
     		BoardDTO selectPostById(@Param("postId") Integer postId);
     
@@ -64,7 +64,7 @@ public interface BoardMapper {
             <script>
             SELECT p.*, e.emp_nm AS emp_nm FROM board_post p
     		LEFT JOIN employee e ON e.employeeId = p.employee_id
-            WHERE p.board_id=1 AND p.status='완료' AND p.is_deleted=FALSE
+            WHERE p.board_id=1 AND p.status='완료' AND p.is_deleted=false
             ORDER BY COALESCE(p.published_at,p.updated_at,p.created_at) DESC, p.post_id DESC
             LIMIT <choose><when test="limit != null">#{limit}</when><otherwise>10</otherwise></choose>
             OFFSET <choose><when test="offset != null">#{offset}</when><otherwise>0</otherwise></choose>
@@ -74,14 +74,14 @@ public interface BoardMapper {
     
     @Select("""
             SELECT COUNT(*) FROM board_post p
-            WHERE p.board_id=1 AND p.status='완료' AND p.is_deleted=FALSE
+            WHERE p.board_id=1 AND p.status='완료' AND p.is_deleted=false
           """)
           int noticeTotalCnt();
 
     // 공지 상세 (board_id=1, 완료만)
     @Select("""
            SELECT p.* FROM board_post p
-           WHERE p.post_id=#{postId} AND p.board_id=1 AND p.status='완료' AND p.is_deleted=FALSE
+           WHERE p.post_id=#{postId} AND p.board_id=1 AND p.status='완료' AND p.is_deleted=false
          """)
     BoardDTO findNoticeApprovedById(BoardDTO dto);
 
@@ -146,7 +146,7 @@ public interface BoardMapper {
             <script>
             SELECT p.*, e.emp_nm AS emp_nm FROM board_post p
     		LEFT JOIN employee e ON e.employeeId = p.employee_id
-            WHERE p.board_id=2 AND p.is_deleted=FALSE
+            WHERE p.board_id=2 AND p.is_deleted=false
             ORDER BY p.post_id DESC
             LIMIT <choose><when test="limit != null">#{limit}</when><otherwise>10</otherwise></choose>
             OFFSET <choose><when test="offset != null">#{offset}</when><otherwise>0</otherwise></choose>
@@ -154,7 +154,7 @@ public interface BoardMapper {
           """)
           List<BoardDTO> selectFreePosts(BoardDTO dto);
     
-    @Select("SELECT COUNT(*) FROM board_post p WHERE p.board_id=2 AND p.is_deleted=FALSE")
+    @Select("SELECT COUNT(*) FROM board_post p WHERE p.board_id=2 AND p.is_deleted=false")
     int freeTotalCnt();
 
     // 게시글 상세 조회
@@ -163,7 +163,7 @@ public interface BoardMapper {
                   p.title, p.content, p.created_at AS createdAt, p.updated_at AS updatedAt,
                   p.view_count AS viewCount, p.like_count AS likeCount, p.is_deleted AS isDeleted
            FROM board_post p
-           WHERE p.post_id = #{postId} AND p.is_deleted = FALSE
+           WHERE p.post_id = #{postId} AND p.is_deleted = false
          """)
     BoardDTO detail(BoardDTO dto);
 
@@ -172,7 +172,7 @@ public interface BoardMapper {
            INSERT INTO board_post
              (board_id, employee_id, title, content, created_at, view_count, like_count, is_deleted)
            VALUES
-             (#{boardId}, #{employeeId}, #{title}, #{content}, NOW(), 0, 0, 0)
+             (#{boardId}, #{employeeId}, #{title}, #{content}, NOW(), 0, 0, false)
          """)
          @Options(useGeneratedKeys = true, keyProperty = "postId", keyColumn = "post_id")
     int insert(BoardDTO dto);

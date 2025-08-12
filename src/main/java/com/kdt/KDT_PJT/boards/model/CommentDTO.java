@@ -13,5 +13,5 @@ public class CommentDTO {
     Long parentCommentId;
     String content;
     LocalDateTime createdAt;
-    //Boolean isDeleted;
+    Boolean isDeleted;
 }
