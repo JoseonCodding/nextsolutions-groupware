@@ -216,11 +216,12 @@ public class ProjectMngController {
 	@GetMapping("/getSavePjtForm")
 	public String getSavePjtForm(HttpSession session, Model model) {
 
-		Object loginUser = session.getAttribute("loginUser");
+		EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
 		boolean isAdmin = true; // 임시로 항상 true로 설정 !!
 
 		// isAdmin 값을 모델에 넣음
 		model.addAttribute("isAdmin", isAdmin);
+		model.addAttribute("id", loginUser.getEmployeeId());
 
 		// 화면 이동
 		model.addAttribute("mainUrl", "pjt_mng/pjt_reg_form");
