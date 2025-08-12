@@ -31,30 +31,32 @@ public class ScheduleController {
 	ScheduleMapper mapper;
 	
 	@RequestMapping
-	String showSchedulePage(HttpSession session,Model model) {
+	String showSchedulePage(HttpSession session, Model model, ScheduleDTO schDto) {
 
-		    LocalDate now = LocalDate.now();
-		    LocalDate firstDay = now.withDayOfMonth(1);
-		    model.addAttribute("firstDayOfWeek", firstDay.getDayOfWeek().getValue());  // 1=월요일 ~ 7=일요일
-		    LocalDate lastDay = now.withDayOfMonth(now.lengthOfMonth());
+//		    LocalDate now = LocalDate.now();
+//		    LocalDate firstDay = now.withDayOfMonth(1);
 
-		    Date startDate = java.sql.Date.valueOf(firstDay);
-		    Date endDate = java.sql.Date.valueOf(lastDay);
-
-		    List<ScheduleDTO> scheduleList = mapper.getScheduleListByMonth(
-		    		startDate,endDate);
-		    
-		    for (ScheduleDTO dto : scheduleList) {
-		        dto.convertDatesToLocal();
-		    }
-
-
-		    model.addAttribute("scheduleList", scheduleList);
-		    model.addAttribute("year", now.getYear());
-		    model.addAttribute("month", now.getMonthValue());
+//		    LocalDate lastDay = now.withDayOfMonth(now.lengthOfMonth());
+//
+//		    Date startDate = java.sql.Date.valueOf(firstDay);
+//		    Date endDate = java.sql.Date.valueOf(lastDay);
+		
+		// DTO에 이번 달 시작일·종료일 세팅
+	    schDto.monthDays();
+		model.addAttribute("firstDayOfWeek", schDto.getFirstDayOfWeek());  // 1=월요일 ~ 7=일요일
 		
 		
+		
+	    List<ScheduleDTO> scheduleList = mapper.getScheduleListByMonth(schDto);
+	    
+	    for (ScheduleDTO dto : scheduleList) {
+	        dto.convertDatesToLocal();
+	    }
+
+	    model.addAttribute("scheduleList", scheduleList);
 		model.addAttribute("mainUrl", "schedule/main");
+	    
+		
 		return "navTap";
 	}
 

@@ -1,11 +1,9 @@
 package com.kdt.KDT_PJT.schedule.model;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 
@@ -14,8 +12,8 @@ public interface ScheduleMapper {
 
 	//일정 등록
 	@Insert("insert into schedule "+
-			"(title, content, cate, start_date, end_date, created_at, employeeId) values "+
-			"(#{title}, #{content}, #{cate}, #{startDate}, #{endDate} ,now(), #{employeeId} ) "
+			"(title,    content,      cate,   start_date,   start_time,   end_date,   end_time, repeat_check,  alarm, holiday, created_at, employeeId) values "+
+			"(#{title}, #{content}, #{cate}, #{startDate}, #{startTime}, #{endDate}, #{endTime}, #{repeatCheck} , #{holiday} , #{alarm} ,now(), #{employeeId} ) "
 			)
 	int insert(ScheduleDTO dto); 
 	
@@ -26,8 +24,5 @@ public interface ScheduleMapper {
 		      AND end_date >= #{startDate} 
 		    ORDER BY start_date 
 		""")
-		List<ScheduleDTO> getScheduleListByMonth(
-		    @Param("startDate") Date startDate,
-		    @Param("endDate") Date endDate
-		);
+		List<ScheduleDTO> getScheduleListByMonth(ScheduleDTO dto);
 }

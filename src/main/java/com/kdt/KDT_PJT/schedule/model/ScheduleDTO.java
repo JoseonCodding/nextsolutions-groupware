@@ -1,9 +1,12 @@
 package com.kdt.KDT_PJT.schedule.model;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 
 import lombok.Data;
@@ -12,18 +15,42 @@ import lombok.Data;
 public class ScheduleDTO {
 
 
-	int scheduleId;
-    String title, cate, alarm, content;
-    Date startDate,endDate, createdAt,updatedAt,deleteDate;
+	int scheduleId, repeatCheck;
+    String title, cate, alarm, content, holiday;
+    Date startDate, endDate, createdAt, updatedAt, deleteDate;
     String employeeId;
+    LocalTime startTime, endTime;
     
-
-    LocalDate startLocalDate;
+    LocalDate startLocalDate, now;
     LocalDate endLocalDate;
+    Integer firstDayOfWeek, year, month, lastDate, startLocalDateNo, endLocalDateNo;
+    
+    public void monthDays() {
+    	
+        now = LocalDate.now();
+        LocalDate firstDay = now.withDayOfMonth(1);
+        LocalDate lastDay = now.withDayOfMonth(now.lengthOfMonth());
+        
+        
+
+        this.startDate = java.sql.Date.valueOf(firstDay);
+        this.endDate = java.sql.Date.valueOf(lastDay);
+        this.firstDayOfWeek = firstDay.getDayOfWeek().getValue();
+        
+        lastDate = Calendar.getInstance().getActualMaximum(Calendar.DATE);
+        
+        System.out.println("monthDays : "+ now);
+    }
 
     public void convertDatesToLocal() {
-        if (startDate != null) startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        if (endDate != null) endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        if (startDate != null) {
+        	startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        	startLocalDateNo = startLocalDate.getDayOfMonth();
+        }
+        if (endDate != null) { 
+        	endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        	endLocalDateNo = endLocalDate.getDayOfMonth();
+        }
     }
     
     public void setStartDateStr(String ttt) {
@@ -43,6 +70,21 @@ public class ScheduleDTO {
 			e.printStackTrace();
 		}
 	}
+    
+    
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
    
 	//start_date DATETIME NOT NULL,                -- 일정 시작일
 	//end_date DATETIME NOT NULL,                  -- 일정 종료일
