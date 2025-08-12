@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>커스텀 게시판 상세보기</title>
+  <style>
+    .like-btn{border:1px solid #ddd;border-radius:9999px;padding:.3rem .7rem;background:#fff}
+    .like-btn.liked{color:#e11d48;border-color:#e11d48}
+    .like-count{margin-left:.25rem;font-weight:600}
+    .comment-list{list-style:none;padding:0;margin:0}
+    .comment-item{padding:12px 0;position:relative}
+    .comment-item .meta{display:flex;gap:10px;align-items:center;color:#6b7280}
+    .comment-item .meta strong{color:#111827}
+    .comment-item .text{margin-top:4px}
+    .comment-item.is-reply{margin-left:28px}
+    .comment-item.is-reply::before{
+      content:"";position:absolute;left:-16px;top:18px;width:12px;height:12px;
+      border-left:2px solid #e5e7eb;border-bottom:2px solid #e5e7eb;border-bottom-left-radius:8px
+    }
+  </style>
+  <script>
+    document.addEventListener('click', function(e){
+      if (e.target.matches('.btn-reply')){
+        const id=e.target.getAttribute('data-target');
+        const form=document.getElementById(id);
+        if(form) form.style.display='block';
+      }
+      if (e.target.matches('.btn-cancel')){
+        const id=e.target.getAttribute('data-target');
+        const form=document.getElementById(id);
+        if(form) form.style.display='none';
+      }
+    });
+  </script>
+</head>
+<body>
+<div class="container">
+  <h2 th:text="${board.title}">게시글 제목</h2>
+
+  <!-- 상단 메타 -->
+  <div class="board-meta">
+    <span>작성자:
+      <strong th:text="${board.empNm} ?: ${board.employeeId}">작성자</strong>
+    </span>
+    <p>
+      <strong>작성일:</strong>
+      <span th:text="${board.createdAt != null ? #dates.format(board.createdAt, 'yyyy-MM-dd HH:mm') : '작성일 정보 없음'}"></span>
+    </p>
+    <span>조회: <strong th:text="${board.viewCount} ?: 0"></strong></span>
+    <span>좋아요: <strong th:text="${board.likeCount} ?: 0"></strong></span>
+  </div>
+
+  <!-- 좋아요 토글 -->
+  <div class="like-toggle" th:if="${board.boardId != null}">
+    <form th:action="@{/board/custom/{boardId}/like/toggle(boardId=${board.boardId})}" method="post">
+  		<input type="hidden" name="postId" th:value="${board.postId}" />
+  		<button type="submit" class="like-btn" th:classappend="${likedByMe} ? ' liked' : ''">
+    		<span th:text="${likedByMe} ? '♥' : '♡'">♡</span>
+    		<span>좋아요</span>
+  		</button>
+  			<span class="like-count" th:text="${board.likeCount}">0</span>
+	</form>
+  </div>
+
+  <hr/>
+
+  <!-- 본문 -->
+  <div class="board-content" th:utext="${board.content}">
+    게시글 내용이 여기에 표시됩니다.
+  </div>
+
+  <hr/>
+
+  <!-- 댓글 목록 -->
+  <div class="comments-section">
+    <h3>댓글 (<span th:text="${comments != null ? comments.size() : 0}">0</span>)</h3>
+    <ul class="comment-list">
+  <li th:each="c : ${comments}"
+      class="comment-item"
+      th:classappend="${c.parentCommentId} != null ? ' is-reply' : ''"
+      th:if="${c.isDeleted != true or (c.parentCommentId == null and c.hasChild == true)}">
+    <div class="meta">
+      <strong th:text="${c.empNm} ?: ${c.employeeId}">작성자</strong>
+      <span class="time"
+            th:if="${c.createdAt != null}"
+            th:text="${#dates.format(c.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+          
+      <!-- 답글 버튼: 부모 + 미삭제일 때만 -->
+      <button type="button" class="btn-reply"
+              th:if="${c.parentCommentId} == null and c.isDeleted != true"
+              th:attr="data-target=${'rf-' + c.commentId}">
+        답글쓰기
+      </button>
+
+          <!-- 댓글 삭제 버튼 -->
+	<form th:if="${c.isDeleted == null or c.isDeleted == false}"
+		  th:action="@{/board/custom/{boardId}/comment/delete(boardId=${board.boardId})}"
+      	  method="post" style="display:inline">
+  		<input type="hidden" name="commentId" th:value="${c.commentId}">
+  		<input type="hidden" name="postId" th:value="${c.postId}">
+  		<input type="submit" value="삭제">
+	</form>
+   </div>
+
+        <!-- 본문: 삭제된 댓글이면 라벨만 -->
+    <div class="text"
+         th:text="${(c.isDeleted == true and c.parentCommentId == null and c.hasChild == true)
+                     ? '[삭제된 댓글입니다]' : c.content}">
+      내용
+    </div>
+
+        <form th:id="${'rf-' + c.commentId}"
+        	  th:if="${c.parentCommentId} == null and (c.isDeleted == null or c.isDeleted == false)"
+      		  th:action="@{/board/custom/{boardId}/comment/reply(boardId=${board.boardId})}"
+      		  method="post" style="display:none">
+  		<input type="hidden" name="postId" th:value="${c.postId}">
+  		<input type="hidden" name="parentCommentId" th:value="${c.commentId}">
+          <textarea name="content" rows="3" placeholder="답글을 입력하세요" required></textarea>
+          <button type="submit">등록</button>
+          <button type="button" class="btn-cancel" th:attr="data-target=${'rf-' + c.commentId}">취소</button>
+        </form>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 댓글 입력폼 -->
+  <div class="comment-form" th:if="${board.boardId != null}">
+    <form th:action="@{/board/custom/{boardId}/comment/save(boardId=${board.boardId})}" method="post">
+  	  <input type="hidden" name="postId" th:value="${board.postId}">
+  	  <input type="hidden" name="parentCommentId" value="">
+      <textarea name="content" rows="3" placeholder="댓글을 입력하세요" required></textarea>
+      <button type="submit">등록</button>
+    </form>
+  </div>
+
+  <!-- 액션 -->
+  <div class="board-actions" style="margin-top:12px;">
+    <a th:href="@{/board/custom/{boardId}(boardId=${board.boardId})}" class="btn">목록으로</a>
+
+    <a class="btn"
+       th:if="${session.loginUser != null and #strings.equals(board.employeeId, session.loginUser.employeeId)}"
+       th:href="@{/board/custom/{boardId}/modify(boardId=${board.boardId}, postId=${board.postId})}">수정</a>
+
+    <a class="btn btn-danger"
+       th:if="${session.loginUser != null and (
+                 #strings.equals(board.employeeId, session.loginUser.employeeId)
+                 or #strings.equals(session.loginUser.employeeId, '20250002')
+               )}"
+       th:href="@{/board/custom/{boardId}/delete(boardId=${board.boardId}, postId=${board.postId})}"
+       th:onclick="|return confirm('게시글을 삭제하시겠습니까?');|">삭제</a>
+  </div>
+</div>
+</body>
+</html>

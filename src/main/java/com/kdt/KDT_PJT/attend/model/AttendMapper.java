@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 @Mapper
@@ -223,5 +224,27 @@ public interface AttendMapper {
        </script>
    """)
    List<AttendDTO> searchAttendList(AttendDTO dto);
+   
+   
+   
+   @Select("""
+	       <script>
+	       SELECT a.*, e.emp_nm 
+	       FROM attendance a
+	       JOIN employee e ON a.employeeId = e.employeeId
+	       WHERE 1=1
+	       <if test="workDate != null and workDate != ''">
+	           AND DATE(a.check_in_time) = #{workDate}
+	       </if>
+	       <if test="empNm != null and empNm != ''">
+	           AND e.emp_nm LIKE CONCAT('%', #{empNm}, '%')
+	       </if>
+	       <if test="modifiedBy != null and modifiedBy != ''">
+	           AND a.modified_by LIKE CONCAT('%', #{modifiedBy}, '%')
+	       </if>
+	       ORDER BY a.check_in_time DESC
+	       </script>
+	   """)
+   PageInfo<AttendDTO> searchAttendListPage(AttendDTO dto);
 
 }

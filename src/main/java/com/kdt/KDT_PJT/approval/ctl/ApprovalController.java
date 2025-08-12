@@ -2,18 +2,23 @@ package com.kdt.KDT_PJT.approval.ctl;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +41,13 @@ public class ApprovalController {
 	
 	@Autowired
 	ApprovalMapper approvalMapper;
+	
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	    dateFormat.setLenient(false);
+	    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+	}
     
 	@RequestMapping("/main")
 	public String approvalMain(
@@ -77,25 +89,25 @@ public class ApprovalController {
     	return "navTap";
     }
 	
-    @RequestMapping("/viewer")
-    public String approvalViewer(
-			    		Model model,
-			    		@RequestParam("docId") String docId,
-			            @RequestParam(name = "page", defaultValue = "1") int page,
-			            @RequestParam(name = "type", required = false) String type,
-			            @RequestParam(name = "status", required = false) String status) {
-    	
-    	ApprovalDTO approvalData = approvalMapper.view(docId);
-    
-    	model.addAttribute("approvalData", approvalData);
+	@RequestMapping("/viewer")
+	public String approvalViewer(
+	    Model model,
+	    RedirectAttributes redirectAttributes,
+	    @RequestParam("docId") String docId,
+	    @RequestParam(name = "page", defaultValue = "1") int page,
+	    @RequestParam(name = "type", required = false) String type,
+	    @RequestParam(name = "status", required = false) String status) {
 
-    	model.addAttribute("page", page);
-    	model.addAttribute("type", type);
-    	model.addAttribute("status", status);
-    	
-    	model.addAttribute("mainUrl", "approval/approvalViewer");
-    	return "navTap";
-    }
+	    ApprovalDTO approvalData = approvalMapper.view(docId, type, status);
+
+	    model.addAttribute("approvalData", approvalData);
+	    model.addAttribute("page", page);
+	    model.addAttribute("type", type);
+	    model.addAttribute("status", status);
+	    model.addAttribute("mainUrl", "approval/approvalViewer");
+
+	    return "navTap";
+	}
     
     @GetMapping("/downloadFile")
     public ResponseEntity<Resource> downloadFile(
@@ -124,12 +136,16 @@ public class ApprovalController {
 				        @RequestParam(name = "status", required = false) String status,
 				        @RequestParam(name = "docType") String docType) {
     	
+    	String pkId = docId.split("_")[1]; // prefix 제거 → 실제 PK 값
+    	
         if ("공지사항".equals(docType)) {
-            approvalMapper.deleteNotice(docId);
+            approvalMapper.deleteNotice(pkId);
         } else if ("연차".equals(docType)) {
-            approvalMapper.deleteLeave(docId);
+            approvalMapper.deleteLeave(pkId);
         } else if ("프로젝트".equals(docType)) {
-            approvalMapper.deleteProject(docId);
+            approvalMapper.deleteProject(pkId);
+        } else if ("근태".equals(docType)) {
+            approvalMapper.deleteAttendance(pkId);
         }
         
         int totalCount = approvalMapper.approvalCountAll(type, status);	// 게시글 DB 전체 개수 (필터기능 반영됨)
@@ -149,12 +165,13 @@ public class ApprovalController {
     @GetMapping("/edit")
     public String approvalEditForm(
     					Model model,
+    					RedirectAttributes redirectAttributes,
 				        @RequestParam("docId") String docId,
 				        @RequestParam(name = "page", defaultValue = "1") int page,
 				        @RequestParam(name = "type", required = false) String type,
 				        @RequestParam(name = "status", required = false) String status) {
     	
-    	ApprovalDTO editData = approvalMapper.view(docId);
+    	ApprovalDTO editData = approvalMapper.view(docId, type, status);
     	
     	model.addAttribute("editData", editData);
     	
@@ -203,15 +220,26 @@ public class ApprovalController {
         	;
 
         String safeContent = Jsoup.clean(rawContent, customSafelist);
-
+        
+        String pkId = editData.getDocId().split("_")[1]; // PK 추출
+        
         editData.setContent(safeContent);
+        
+        if ("연차".equals(docType) && editData.getTitle() != null) {
+            String prefix = "연차 사용신청 - ";
+            if (editData.getTitle().startsWith(prefix)) {
+                editData.setTitle(editData.getTitle().substring(prefix.length()));
+            }
+        }
 
         if ("공지사항".equals(docType)) {
-            approvalMapper.editNotice(editData);
+            approvalMapper.editNotice(pkId, editData);
         } else if ("연차".equals(docType)) {
-            approvalMapper.editLeave(editData);
+            approvalMapper.editLeave(pkId, editData);
         } else if ("프로젝트".equals(docType)) {
-            approvalMapper.editProject(editData);
+            approvalMapper.editProject(pkId, editData);
+        } else if ("근태".equals(docType)) {
+            approvalMapper.editAttendance(pkId, editData);
         }
 
         redirectAttributes.addAttribute("docId", editData.getDocId());
@@ -226,23 +254,26 @@ public class ApprovalController {
     public String approvalApprove(
         RedirectAttributes redirectAttributes,
         @RequestParam("docId") String docId,
-        @RequestParam(name = "page", defaultValue = "1") int page,
-        @RequestParam(name = "type", required = false) String type,
-        @RequestParam(name = "status", required = false) String status,
-        @RequestParam(name = "docType") String docType) {
+        @RequestParam("docType") String docType) {
 
-        if ("공지사항".equals(docType)) {
-            approvalMapper.updateStatusNotice(docId, "완료");
-        } else if ("연차".equals(docType)) {
-            approvalMapper.updateStatusLeave(docId, "완료");
-        } else if ("프로젝트".equals(docType)) {
-            approvalMapper.updateStatusProject(docId, "완료");
+        String pkId = docId.split("_")[1];
+
+        switch (docType) {
+            case "공지사항":
+                approvalMapper.updateStatusNotice(pkId, "완료");
+                break;
+            case "연차":
+                approvalMapper.updateStatusLeave(pkId, "완료");
+                break;
+            case "프로젝트":
+                approvalMapper.updateStatusProject(pkId, "완료");
+                break;
+            case "근태":
+                approvalMapper.updateStatusAttendance(pkId, "완료");
+                break;
         }
 
         redirectAttributes.addAttribute("docId", docId);
-        redirectAttributes.addAttribute("page", page);
-        redirectAttributes.addAttribute("type", type);
-        redirectAttributes.addAttribute("status", status);
 
         return "redirect:/approval/viewer";
     }
@@ -251,23 +282,26 @@ public class ApprovalController {
     public String approvalReject(
         RedirectAttributes redirectAttributes,
         @RequestParam("docId") String docId,
-        @RequestParam(name = "page", defaultValue = "1") int page,
-        @RequestParam(name = "type", required = false) String type,
-        @RequestParam(name = "status", required = false) String status,
-        @RequestParam(name = "docType") String docType) {
+        @RequestParam("docType") String docType) {
 
-        if ("공지사항".equals(docType)) {
-            approvalMapper.updateStatusNotice(docId, "반려");
-        } else if ("연차".equals(docType)) {
-            approvalMapper.updateStatusLeave(docId, "반려");
-        } else if ("프로젝트".equals(docType)) {
-            approvalMapper.updateStatusProject(docId, "반려");
+        String pkId = docId.split("_")[1];
+
+        switch (docType) {
+            case "공지사항":
+                approvalMapper.updateStatusNotice(pkId, "반려");
+                break;
+            case "연차":
+                approvalMapper.updateStatusLeave(pkId, "반려");
+                break;
+            case "프로젝트":
+                approvalMapper.updateStatusProject(pkId, "반려");
+                break;
+            case "근태":
+                approvalMapper.updateStatusAttendance(pkId, "반려");
+                break;
         }
 
         redirectAttributes.addAttribute("docId", docId);
-        redirectAttributes.addAttribute("page", page);
-        redirectAttributes.addAttribute("type", type);
-        redirectAttributes.addAttribute("status", status);
 
         return "redirect:/approval/viewer";
     }

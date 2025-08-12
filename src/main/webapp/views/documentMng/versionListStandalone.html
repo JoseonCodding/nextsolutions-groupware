@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>버전 목록 (독립)</title>
+<style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 6px; }
+    th { background: #eee; }
+</style>
+</head>
+<body>
+<h2>버전 목록</h2>
+<table>
+  <thead>
+    <tr>
+      <th>버전명</th>
+      <th>생성일</th>
+      <th>액션</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:if="${#lists.isEmpty(versionList)}">
+      <td colspan="3">저장된 버전이 없습니다.</td>
+    </tr>
+    <tr th:each="v : ${versionList}">
+      <td th:text="${v.versionName}"></td>
+      <td th:text="${v.versionCreatedAt}"></td>
+      <td>
+        <a th:href="@{/documentMng/standalone/versionDetail(versionId=${v.versionId})}">보기</a>
+        
+		<form th:action="@{/documentMng/standalone/restoreVersion}" method="post" style="display:inline;">
+		    <input type="hidden" name="versionId" th:value="${v.versionId}" />
+		    <input type="hidden" name="originalId" th:value="${v.originalId}" />
+		    <button type="submit" onclick="return confirm('해당 버전을 복원하시겠습니까?')">복원</button>
+		</form>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<script th:inline="javascript">
+    /* success 파라미터가 있으면 실행 */
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+        alert('버전을 성공적으로 복원했습니다!');
+    }
+</script>
+
+</body>
+</html>

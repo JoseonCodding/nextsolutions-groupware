@@ -166,22 +166,17 @@ button.save-btn:hover {
 
 	<h1>프로젝트 등록</h1>
 
-	<form th:action="@{/pjtMng/pjtSave}" method="post"
-		enctype="multipart/form-data" id="pjtRegForm">
+	<form action="/pjtMng/savePjtProc" method="post"
+		enctype="multipart/form-data">
 		<table>
 
 			<tr>
 				<th>프로젝트명</th>
-				<td><input type="text" name="PJT_NM" required /></td>
+				<td><input type="text" name="pjtNm" required /></td>
 			</tr>
 			<tr>
-<<<<<<< HEAD
-				<th>상태</th>
-				<td><input type="text" name="PJT_STTS"
-					placeholder="예: 진행중/완료 등" /></td>
-=======
 				<th>담당자</th>
-				<td><input type="text" name="employeeid" /></td>
+				<td><input type="text" name="employeeId" th:value="${id}" readonly /></td>
 			</tr>
 
 			<tr>
@@ -189,13 +184,8 @@ button.save-btn:hover {
 				<td>시작일: <input type="date" name="pjtBgngDt"
 					style="margin-right: 10px;" /> 종료일: <input type="date"
 					name="pjtEndDt" /></td>
->>>>>>> refs/remotes/origin/project_ar
 			</tr>
 			<tr>
-<<<<<<< HEAD
-				<th>담당자</th>
-				<td><input type="text" name="EMP_NM" placeholder="담당자 이름" /></td>
-=======
 				<th>상태</th>
 				<td><select name="pjtSttsCd">
 						<option value="대기"
@@ -205,171 +195,65 @@ button.save-btn:hover {
 						<option value="완료"
 							th:selected="${pjt != null and pjt.PJT_STTS_CD == '완료'}">완료</option>
 				</select></td>
->>>>>>> refs/remotes/origin/project_ar
 			</tr>
-<<<<<<< HEAD
-			<tr>
-				<th>시작일</th>
-				<td><input type="date" name="PJT_BGNG_DT"
-					style="margin-right: 10px;" /></td>
-			</tr>
-			<tr>
-				<th>종료일</th>
-
-				<td><input type="date" name="PJT_END_DT"
-					style="margin-right: 10px;" /></td>
-			</tr>
-			<tr>
-				<th>결재자</th>
-				<td><select class="approver-select" style="margin-right: 10px;">
-						<option value="">-- 결재자 선택 --</option>
-						<th:block th:each="ap : ${approverList}">
-							<option th:value="${ap.emp_seq}" th:text="${ap.emp_nm}"></option>
-						</th:block>
-				</select></td>
-			</tr>
-=======
->>>>>>> refs/remotes/origin/project_ar
 			<tr>
 				<th>내용</th>
-<<<<<<< HEAD
-				<td><input type="text" name="CONTENT" placeholder="프로젝트 설명" /></td>
-=======
 				<td><textarea id="content" name="content"></textarea></td>
->>>>>>> refs/remotes/origin/project_ar
 			</tr>
-<<<<<<< HEAD
-=======
 			<tr>
 				<th>결재자</th>
 				<td><input type="text" name="${pjt['TB_PJT_APR']}"
 					placeholder="결재자 이름 입력" /></td>
 			</tr>
->>>>>>> refs/remotes/origin/project_ar
 			<tr>
 				<th>파일업로드</th>
-				<td><input type="file" name="files" id="files"
-					class="form-control" multiple /> <!-- 선택한 파일명을 사용자에게 보여주는 영역 -->
-					<div id="fileList" style="margin-top: 8px;"></div></td>
+				<td><input type="file" name="uploadFile" id="uploadFile" />
+					<div id="fileName"
+						style="margin-top: 8px; color: #333; font-size: 14px; background-color: #f0f0f0; padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc; max-width: 300px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+					</div></td>
 			</tr>
 		</table>
 
 		<!-- 🔧 버튼 묶음 -->
 		<div class="button-row">
-<<<<<<< HEAD
-
-			<!-- ✅ 저장 직전, 결재자 hidden 값 세팅 위해 JS에서 submit 이벤트를 가로채 처리합니다. -->
-			<button type="submit" class="save-btn">프로젝트 저장</button>
-=======
 			<button type="submit" class="save-btn">프로젝트 저장</button>
 
->>>>>>> refs/remotes/origin/project_ar
 			<button type="button" class="back-btn" onclick="history.back()">←
 				목록으로 돌아가기</button>
 		</div>
-<<<<<<< HEAD
-
-		<!-- ✅ 페이지 스크립트: 파일명 표시 + 결재자 hidden 구성 -->
-		<script>
-	const filesInput = document.getElementById('files');
-	const fileListDiv = document.getElementById('fileList');
-
-	filesInput.addEventListener('change', () => {
-	    fileListDiv.innerHTML = ''; // 초기화
-	    const files = Array.from(filesInput.files || []);
-	    if (files.length === 0) return;
-	    files.forEach(f => {
-	      const pill = document.createElement('span');
-	      pill.className = 'file-pill';
-	      pill.textContent = f.name;
-	      fileListDiv.appendChild(pill);
-	    });
-	  });
-
-  <!-- 결재자 추가 스크립트
-     기본 select(approverSelect) 값 + 추가로 만든 select들을 모두 모아 hidden에 저장합니다. -->
-
-  const btnAddApprover = document.getElementById('btnAddApprover');
-  const wfContainer = document.getElementById('workflow-container');
-
-  btnAddApprover.addEventListener('click', () => {
-    const row = document.createElement('div');
-    row.className = 'workflow-step';
-    row.innerHTML = `
-      <select class="approver-select" style="margin-right:10px;">
-        <option value="">-- 결재자 선택 --</option>
-        <!-- 서버에서 옵션이 렌더링될 수 있도록 아래 두 줄은 그대로 둡니다 -->
-        <th:block th:each="ap : ${approverList}">
-          <option th:value="\${ap.emp_seq}" th:text="\${ap.emp_nm}"></option>
-        </th:block>
-      </select>
-      <button type="button" class="btn-del">X</button>
-    `;
-    wfContainer.appendChild(row);
-    row.querySelector('.btn-del').addEventListener('click', () => row.remove());
-  });
-
-  // ---------- submit 시 결재자 값 hidden에 모으기 ----------
-  const form = document.getElementById('pjtRegForm');
-  form.addEventListener('submit', () => {
-    const selects = document.querySelectorAll('.approver-select');
-    const values = [];
-    selects.forEach(sel => { if (sel.value) values.push(sel.value); });
-    document.getElementById('approversInput').value = values.join(',');
-    // ✨ 이제 백엔드에서 request.getParameter("approvers") 로 "1,5,8" 같은 문자열 수신 → 파싱해서 쓰면 됨.
-  });
-
-  // 💡 팁:
-  // - 이 페이지는 '등록' 화면이므로 PJT_SN hidden은 보통 필요없습니다(신규 생성 후 컨트롤러에서 PK 반환).
-  // - 수정 화면이라면 <input type="hidden" name="PJT_SN" th:value="${pjtSn}"> 를 추가하세요.
-</script>
-
-
-		<!--     <button type="button" onclick="removeApprover(this)">X</button>
-     `;
-
-    workflowContainer.appendChild(div);
-  }
-
-  function removeApprover(btn) {
-    btn.parentElement.remove();
-  }
-
- 
-	  steps.forEach(step => {
-	    const orderInput = step.querySelector('.approver-order');
-	    const select = step.querySelector('.approver-select');
-
-	    if (orderInput && select && select.value) {
-	      approvers.push({
-	        order: parseInt(orderInput.value),
-	        name: select.value
-	      });
-	    }
-	  });
-
-    document.getElementById('approversInput').value = names.join(',');
-  
-=======
 	</form>
->>>>>>> refs/remotes/origin/project_ar
 
 
 
 
-<<<<<<< HEAD
-    document.getElementById('approversInput').value = names.join(',');
-  } -->
-		</script>
-=======
 	<!-- 썸머노트용 JS -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script
 		src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		$('#content').summernote({
+			lang: 'ko-KR',
+			placeholder: '내용을 입력하세요',
+			tabsize: 2,
+			height: 300,
+			toolbar: [
+				['style', ['style']],
+				['font', ['bold', 'italic', 'underline', 'clear']],
+				['fontname', ['fontname']],
+				['fontsize', ['fontsize']],
+				['color', ['color']],
+				['para', ['ul', 'ol', 'paragraph']],
+				['height', ['height']],
+				['insert', ['picture', 'link', 'table']],
+				['view', ['fullscreen', 'codeview', 'help']]
+			]
+		});
+	});
+</script>
 
 
->>>>>>> refs/remotes/origin/project_ar
 </body>
 </html>

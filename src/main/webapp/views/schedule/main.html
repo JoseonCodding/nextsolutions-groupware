@@ -1,18 +1,93 @@
-<h3 th:text="${year} + '년 ' + ${month} + '월 일정'"></h3>
+<h3 th:text="${scheduleDTO.now.year} + '년 ' + ${scheduleDTO.now.monthValue} + '월 일정'"></h3>
 
+<script src="/js/jquery-3.7.1.min.js"></script>
+<script th:inline="javascript">
+	const arr = /*[[ ${scheduleList}]]*/;
+	const dto = /*[[ ${scheduleDTO}]]*/
+	//console.log(arr)
+	//console.log(dto)
+	
+	$(function(){
+           console.log("document ready!");    //축약형태로 사용 가능
+           
+
+			function dayScheduleGet(today){
+				
+				var res = []
+				for(const vv of arr){
+					if(vv.startLocalDate <= today && vv.endLocalDate >= today){
+						res.push(vv)
+					}
+				}
+				
+				return res
+			}
+           
+           function dateToStr(ddd){  // yyyy-MM-dd
+				var mm = ddd.getMonth()+1
+				if(mm<10){
+					mm = '0'+mm
+				}
+				var dd = ddd.getDate()
+				if(dd<10){
+					dd = '0'+dd
+				}
+				return ddd.getYear()+1900+"-"+mm+"-"+dd
+			}
+           
+           function monthDiaryView(){
+			  
+        	   var currDate = new Date()
+               $("#diary_body").empty();
+               var trLine = $("<tr></tr>")
+               $("#diary_body").append(trLine)
+
+               for(var i = 1; i <= dto.firstDayOfWeek;i++){
+            	   trLine.append($("<td></td>"));
+               }
+               for(var i = 1; i <= dto.lastDate;i++){
+
+            	   currDate.setDate(i);
+    				var td= $("<td></td>")
+    				var ttt = i;
+    				
+    				 //console.log(dateToStr(currDate))
+    				for(var vv of dayScheduleGet(dateToStr(currDate))){
+						var clickBox = "<a href='/schedule/detail?scheduleId="+vv.scheduleId+"'>"+vv.title+"</a>"
+
+						ttt += "<br/>"
+						ttt +=clickBox
+					}
+    				td.html(ttt)
+    				
+    				trLine.append(td)
+    				
+    				
+    				if(currDate.getDay()==6){
+    					trLine = $("<tr></tr>")
+    			        $("#diary_body").append(trLine);
+    				}
+    			}
+			}
+           
+           
+           monthDiaryView();
+           
+	})
+</script>
 <table border="">
     <thead>
         <tr>
             <th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="diary_body">
         <tr>
             <!-- 첫 주 공백 -->
-            <td th:colspan="${firstDayOfWeek - 1}"></td>
+            <td th:colspan="${(scheduleDTO.firstDayOfWeek ?: 1) - 1}"></td>
 
             <!-- 날짜 출력 -->
-            <th:block th:each="day : ${#numbers.sequence(1, T(java.time.YearMonth).of(year, month).lengthOfMonth())}">
+            <th:block th:each="day : ${#numbers.sequence(1, scheduleDTO.now.dayOfMonth)}">
                 <td>
                     <div th:text="${day}"></div>
 
@@ -23,13 +98,16 @@
                         <span th:text="${sc.title}"><br/></span>
                     </div>
                 </td>
-
-              	</tr><tr>
+                
+			</th:block>
+              	
            
-            </th:block>
+            
         </tr>
     </tbody>
 </table>
+
+
 
 <br />
 

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,12 +17,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
 import com.kdt.KDT_PJT.attend.model.AttendMapper;
 import com.kdt.KDT_PJT.attend.model.AttendMapper2;
+import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
@@ -42,7 +47,10 @@ public class AttendController {
 	
 	@Autowired
 	AttendMapper2 attendMapper2;
-
+	
+   // log 사용을 위함
+   private final Logger log = LoggerFactory.getLogger(getClass());
+   
 	//사용자 본인의 출퇴근 기록 (근태관리 메인 페이지)
     @GetMapping
     String showAttendancePage(HttpSession session, Model model,AttendDTO attendance) {
@@ -149,8 +157,30 @@ public class AttendController {
     
     @GetMapping("/attendList")
     public String attendListPage(AttendDTO dto,
-    	    Model model, HttpServletResponse resp) {
+    	    Model model, HttpServletResponse resp, HttpServletRequest request) {
+    	
+    	// 🔍 검색어 로그 확인 (디버깅용)
+        System.out.println("attendListPage Called >>> " );
+        
+     // ① 페이지 번호/사이즈 받아오기 (없으면 기본값)
+        int pageNum = 1;
+        int pageSize = 10;
 
+        try {
+           if (request.getParameter("pageNum") != null) {
+              pageNum = Integer.parseInt(request.getParameter("pageNum"));
+           }
+           if (request.getParameter("pageSize") != null) {
+              pageSize = Integer.parseInt(request.getParameter("pageSize"));
+           }
+        } catch (Exception e) {
+           log.warn("페이지 번호 파싱 실패, 기본값 사용");
+        }
+
+        
+        // 리스트 가져오기
+        PageInfo<AttendDTO> list = attendMapper.searchAttendListPage(dto);
+        
         // 검색 조건이 없으면 오늘 출근한 사람만 보여줌
         List<AttendDTO> attendList;
         if (dto.getWorkDate() == null && dto.getEmpNm() == null && dto.getModifiedBy() == null) {
