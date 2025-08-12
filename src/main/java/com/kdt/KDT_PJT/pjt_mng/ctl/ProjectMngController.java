@@ -235,10 +235,14 @@ public class ProjectMngController {
 	@GetMapping("/pjtEditForm")
 	public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn, Model model) {
 		log.info("getPjtEditForm Called >>> {}", pjtSn);
+	    List<CmmnMap> approverList = projectMngService.selectApproverCandidates();
 
+	    boolean isAdmin = true; // 임시로 항상 true로 설정 !!
+		
 		CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
 		log.debug("DETAIL TB_PJT_APR={}", pjtDetail.get("TB_PJT_APR")); // 값 확인
-
+		model.addAttribute("isAdmin", isAdmin);
+	    model.addAttribute("approverList", approverList);
 		model.addAttribute("pjt", pjtDetail);
 		model.addAttribute("mainUrl", "pjt_mng/pjt_edit_form");
 		return "home";

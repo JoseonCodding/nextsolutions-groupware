@@ -153,9 +153,13 @@ public class ProjectMngService {
 		return pjtMngMapper.countMyProjects(employeeId);
 	}
 
+	/**
+	 * 결재권자 목록 
+	 * @return
+	 */
 	public List<CmmnMap> selectApproverCandidates() {
 		// TODO Auto-generated method stub
-		return null;
+		return pjtMngMapper.selectApproverCandidates();
 	}
 
 }
