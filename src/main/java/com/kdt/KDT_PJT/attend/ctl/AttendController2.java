@@ -26,9 +26,7 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
@@ -48,8 +46,7 @@ public class AttendController2 {
     // === 1) 결재 신청 저장 ===
     @PostMapping("/save")
     public String attendSave(
-            @RequestParam("workDate") String workDate,                // yyyy-MM-dd
-            @RequestParam("title") String title,
+            @RequestParam("workDate") String workDate,                // yyyy-MM-dds
             @RequestParam("content") String content,
             @RequestParam(value = "actions", required = false) String[] actionsArr,
             HttpSession session,
@@ -73,10 +70,10 @@ public class AttendController2 {
         int inUpdated = 0, outUpdated = 0;
 
         if (actions.contains("IN")) {
-            inUpdated = attendMapper2.fixInByEmpAndDate(employeeId, workDate, now, title, content);
+            inUpdated = attendMapper2.fixInByEmpAndDate(employeeId, workDate, content);
         }
         if (actions.contains("OUT")) {
-            outUpdated = attendMapper2.fixOutByEmpAndDate(employeeId, workDate, now, title, content);
+            outUpdated = attendMapper2.fixOutByEmpAndDate(employeeId, workDate, content);
         }
 
         int total = inUpdated + outUpdated;

@@ -18,12 +18,13 @@ public class AttendDTO {
 	int workCnt;
 
 
-	private String stateType;
+	private String status;
 
 	private String modifiedBy;               // 수정자 ID
 	private LocalDateTime modifiedAt;        // 수정일시
 	private String modificationReason;      // 수정 사유
 	String startDay, endDay;	
+	
 
     // ✅ 페이징 파라미터 추가
     int limit = 0;
