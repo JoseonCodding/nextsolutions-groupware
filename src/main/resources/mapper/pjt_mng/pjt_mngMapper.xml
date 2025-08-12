@@ -115,7 +115,7 @@
 
   <!-- 내 참여 프로젝트 수 -->
   <select id="countMyProjects" parameterType="string" resultType="int">
-  /* com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.  */
+  /* com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper  */
     SELECT COUNT(*)
     FROM TB_PJT_BASC
     WHERE (USE_YN IS NULL OR USE_YN = 'Y')
