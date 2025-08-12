@@ -14,10 +14,11 @@ const useFetchWithUserId = (endpoint, paramName = 'userId') => {
 
   useEffect(() => {
     // 로그인 정보가 없으면 요청 안 함
+    /*
     if (!user?.id) {
       setLoading(false);
       return;
-    }
+    }*/
 
     let ignore = false;
 

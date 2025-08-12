@@ -1,10 +1,10 @@
 import Calendar from '../components/schedule/Calendar';
-import ProgressChart from '../components/project/ProgressChart';
-import ProgressChartDummy from '../components/project/ProgressChartDummy';
-import EmployeeProfile from '../components/profile/EmployeeProfile';
-import ScheduleAlert from '../components/alert/ScheduleAlert';
-import BoardList from '../components/board/BoardList';
-import ApprovalList from '../components/approval/ApprovalList';
+// import ProgressChart from '../components/project/ProgressChart';
+// import ProgressChartDummy from '../components/project/ProgressChartDummy';
+// import EmployeeProfile from '../components/profile/EmployeeProfile';
+// import ScheduleAlert from '../components/alert/ScheduleAlert';
+// import BoardList from '../components/board/BoardList';
+// import ApprovalList from '../components/approval/ApprovalList';
 import MoreButton from '../components/common/button/moreButton';
 import CalendarIcon from '../components/common/icon/CalendarIcon';
 import ProjectIcon from '../components/common/icon/ProjectIcon';
@@ -33,14 +33,14 @@ const MainPage = () => {
             <MoreButton href="/pjtMng/getPjtList" />
           </div>
           {/* <ProgressChart /> */}
-          <ProgressChartDummy />
+          {/* <ProgressChartDummy /> */}
         </div>
         <div className="flex flex-col gap-[20px] w-[300px] ">
           <div className="p-4 bg-white border border-gray-50 rounded-md shadow-xl">
-            <EmployeeProfile />
+            {/* <EmployeeProfile /> */}
           </div>
           <div className="p-4 bg-white border border-gray-50 rounded-md shadow-xl">
-            <ScheduleAlert />
+            {/* <ScheduleAlert /> */}
           </div>
         </div>
       </div>
@@ -53,7 +53,7 @@ const MainPage = () => {
             </div>
             <MoreButton href="/board/notice" />
           </div>
-          <BoardList />
+          {/* <BoardList /> */}
         </div>
         <div className="w-[620px] p-4 bg-white border border-gray-50 rounded-md shadow-xl">
           <div className="flex justify-between mb-4">
@@ -64,7 +64,7 @@ const MainPage = () => {
             <MoreButton href="/approval/main" />
           </div>
 
-          <ApprovalList />
+          {/* <ApprovalList /> */}
         </div>
       </div>
     </div>

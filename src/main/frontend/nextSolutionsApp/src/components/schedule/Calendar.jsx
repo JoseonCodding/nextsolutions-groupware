@@ -10,6 +10,7 @@ import ArrowRIcon from '../common/icon/ArrowRIcon';
 
 const Calendar = () => {
   const { data, loading, error } = useFetchWithUserId('/schedules');
+  console.log(data)
   const events = Array.isArray(data) ? data : [];
 
   const calendarRef = useRef(null);
