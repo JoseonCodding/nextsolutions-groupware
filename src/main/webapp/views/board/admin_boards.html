@@ -32,7 +32,7 @@
     input[type=text], select, textarea { width: 100%; padding: 10px; border:1px solid #cbd5e1; border-radius: 10px; background:#fff; }
     input[type=checkbox] { transform: scale(1.15); }
     .actions { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; justify-content: flex-start; }
-	.actions form { display: contents; }
+    .actions form { display: contents; }
 
     .btn { appearance: none; border: 1px solid #cbd5e1; background: #f8fafc; color: #3949ab; padding: 9px 14px; border-radius: 999px; cursor: pointer; transition: .15s; display: inline-flex; align-items: center; white-space: nowrap; }
     .btn:hover { filter: brightness(0.98); }
@@ -40,15 +40,14 @@
     .btn.primary:hover { background: var(--primary-600); border-color: var(--primary-600); }
     .btn.ghost { background: #3949ab; color: #f8fafc; }
 
-    .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+    .table-wrap { overflow: auto; border: 1px solid --border; border-radius: var(--radius); }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 10px 10px; border-bottom: 1px solid #edf2f7; text-align: left; }
     thead th { white-space: nowrap; font-weight: 700; color: #111827; background: var(--table-head); position: sticky; top: 0; z-index: 5; }
     tr:hover td { background: #fafaff; }
-    
+
     .td-actions {  position: relative; vertical-align: bottom; }
-	.btn-row { display: flex; gap: 6px; justify-content: flex-end; margin-top: 4px; }
-    
+    .btn-row { display: flex; gap: 6px; justify-content: flex-end; margin-top: 4px; }
 
     .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; border:1px solid #e5e7eb; }
     .badge.green { background:#ecfdf5; border-color:#a7f3d0; color:#065f46 }
@@ -83,14 +82,17 @@
             <label>게시판명 <span class="muted">*</span></label>
             <input type="text" name="boardName" required placeholder="예) 자유게시판">
           </div>
+
+          <!-- 변경: 접근 권한 → 체크박스 중복 선택 -->
           <div class="row">
-            <label>접근 권한</label>
-            <select name="accessRole">
-              <option value="USER">사용자 (USER)</option>
-              <option value="ADMIN">관리자 (ADMIN)</option>
-              <option value="NOTICE_MANAGER">공지담당자 (NOTICE_MANAGER)</option>
-            </select>
+            <label>접근 권한 (중복선택)</label>
+            <div class="actions" style="gap:16px">
+              <label><input type="checkbox" name="accessRoles" value="USER" checked> USER</label>
+              <label><input type="checkbox" name="accessRoles" value="ADMIN"> ADMIN</label>
+              <label><input type="checkbox" name="accessRoles" value="NOTICE_MANAGER"> NOTICE_MANAGER</label>
+            </div>
           </div>
+
           <div class="row">
             <label>댓글 사용</label>
             <input type="checkbox" name="useComment" checked>
@@ -124,37 +126,38 @@
             </thead>
             <tbody>
               <tr th:each="b : ${boards}">
-  <td th:text="${b.boardId}"></td>
-  <td><span th:text="${b.boardName}"></span></td>
-  <td><span th:text="${b.accessRole}"></span></td>
-  <td>
-    <span class="badge" th:classappend="${b.isActive} ? ' green' : ' red'" 
-          th:text="${b.isActive} ? '활성화' : '비활성화'"></span>
-  </td>
-  <td><span th:text="${#dates.format(b.createdAt, 'yyyy-MM-dd')}"></span></td>
-  <td class="td-actions">
-    <span th:text="${#dates.format(b.updatedAt, 'yyyy-MM-dd')}"></span>
-    <div class="btn-row">
-      <button class="btn" type="button"
-              th:disabled="${#strings.equalsIgnoreCase(b.boardType, 'NOTICE')}"
-              th:attr="
-                data-id=${b.boardId},
-                data-name=${b.boardName},
-                data-role=${b.accessRole},
-                data-cmt=${b.useComment},
-                data-like=${b.useLike}
-              "
-              onclick="openEdit(this)">수정</button>
+                <td th:text="${b.boardId}"></td>
+                <td><span th:text="${b.boardName}"></span></td>
+                <!-- 보기 좋게 CSV를 ' · '로 표시 -->
+                <td><span th:text="${#strings.replace(b.accessRole, ',', ' · ')}"></span></td>
+                <td>
+                  <span class="badge" th:classappend="${b.isActive} ? ' green' : ' red'"
+                        th:text="${b.isActive} ? '활성화' : '비활성화'"></span>
+                </td>
+                <td><span th:text="${#dates.format(b.createdAt, 'yyyy-MM-dd')}"></span></td>
+                <td class="td-actions">
+                  <span th:text="${#dates.format(b.updatedAt, 'yyyy-MM-dd')}"></span>
+                  <div class="btn-row">
+                    <button class="btn" type="button"
+                            th:disabled="${#strings.equalsIgnoreCase(b.boardType, 'NOTICE')}"
+                            th:attr="
+                              data-id=${b.boardId},
+                              data-name=${b.boardName},
+                              data-roles=${b.accessRole},
+                              data-cmt=${b.useComment},
+                              data-like=${b.useLike}
+                            "
+                            onclick="openEdit(this)">수정</button>
 
-      <form th:action="@{/admin/boards/toggle}" method="post">
-        <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
-        <input type="hidden" name="boardId" th:value="${b.boardId}" />
-        <input type="hidden" name="isActive" th:value="${!b.isActive}" />
-        <button class="btn ghost" th:text="${b.isActive} ? '비활성화' : '활성화'"></button>
-      </form>
-    </div>
-  </td>
-</tr>
+                    <form th:action="@{/admin/boards/toggle}" method="post">
+                      <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
+                      <input type="hidden" name="boardId" th:value="${b.boardId}" />
+                      <input type="hidden" name="isActive" th:value="${!b.isActive}" />
+                      <button class="btn ghost" th:text="${b.isActive} ? '비활성화' : '활성화'"></button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
 
             </tbody>
           </table>
@@ -180,14 +183,17 @@
         <label>게시판명</label>
         <input type="text" name="boardName" id="edit-boardName" required>
       </div>
+
+      <!-- 변경: 접근 권한 → 체크박스 중복 선택 -->
       <div class="row">
-        <label>접근 권한</label>
-        <select name="accessRole" id="edit-accessRole">
-          <option value="USER">사용자 (USER)</option>
-          <option value="ADMIN">관리자 (ADMIN)</option>
-          <option value="NOTICE_MANAGER">공지담당자 (NOTICE_MANAGER)</option>
-        </select>
+        <label>접근 권한 (중복선택)</label>
+        <div class="actions" style="gap:16px">
+          <label><input type="checkbox" name="accessRoles" value="USER" id="edit-role-user"> USER</label>
+          <label><input type="checkbox" name="accessRoles" value="ADMIN" id="edit-role-admin"> ADMIN</label>
+          <label><input type="checkbox" name="accessRoles" value="NOTICE_MANAGER" id="edit-role-nm"> NOTICE_MANAGER</label>
+        </div>
       </div>
+
       <div class="row">
         <label>댓글 사용</label>
         <input type="checkbox" name="useComment" id="edit-useComment">
@@ -211,13 +217,24 @@
     const dlg = document.getElementById('editDialog');
     const id = btn.getAttribute('data-id');
     const name = btn.getAttribute('data-name');
-    const role = btn.getAttribute('data-role');
+    const rolesCsv = (btn.getAttribute('data-roles') || '').split(',').map(s => s.trim()).filter(Boolean);
     const cmt = btn.getAttribute('data-cmt') === 'true';
     const like = btn.getAttribute('data-like') === 'true';
 
     document.getElementById('edit-boardId').value = id;
     document.getElementById('edit-boardName').value = name;
-    document.getElementById('edit-accessRole').value = role || 'USER';
+
+    // 권한 체크박스 초기화 & 프리셋
+    const roleUser = document.getElementById('edit-role-user');
+    const roleAdmin = document.getElementById('edit-role-admin');
+    const roleNm = document.getElementById('edit-role-nm');
+    [roleUser, roleAdmin, roleNm].forEach(el => el && (el.checked = false));
+    rolesCsv.forEach(r => {
+      if (r === 'USER' && roleUser) roleUser.checked = true;
+      if (r === 'ADMIN' && roleAdmin) roleAdmin.checked = true;
+      if (r === 'NOTICE_MANAGER' && roleNm) roleNm.checked = true;
+    });
+
     document.getElementById('edit-useComment').checked = cmt;
     document.getElementById('edit-useLike').checked = like;
 
