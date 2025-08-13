@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -84,6 +85,7 @@ public class LeaveController {
     	//  <--
     									//잔여연차 가져오기
     	List<LeaveDTO> restData = mapper.annualLeaveRest(loginUser); 
+
     	
     	model.addAttribute("restData", restData);
     	
@@ -92,7 +94,8 @@ public class LeaveController {
     }
  
     //연차 사용 신청(사용자용) 정보 보내기
-    @PostMapping("/insert") 
+    @PostMapping("/insert")
+    @Transactional
     public String insertReg(HttpSession session, Model model, LeaveReqDTO reqDto) {
     	
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
@@ -101,8 +104,10 @@ public class LeaveController {
     	reqDto.dataCalc();
     	System.out.println("연차 신청 페이지 : "+reqDto.getArr().size());
     	
+    	
+    	
     	for (LeaveDTO dto : reqDto.getArr()) {
-    		mapper.approvalList(dto); 
+    		mapper.approvalList(dto);
 		}
     	
     	return "redirect:/attend/leaveList";

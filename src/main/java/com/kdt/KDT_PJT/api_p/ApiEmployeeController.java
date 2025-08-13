@@ -26,7 +26,7 @@ public class ApiEmployeeController {
 		EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
 		
 		
-		System.out.println("/api/schedules 진입");
+		System.out.println("/api/employee 진입");
 		return loginUser;
 		
 		

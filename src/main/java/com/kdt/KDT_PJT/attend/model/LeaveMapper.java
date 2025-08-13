@@ -72,5 +72,16 @@ public interface LeaveMapper {
 		    """)
 	 void insertAutoLeave(LeaveDTO dto);
 
+	 
+	 
+	@Insert("<script> "+
+
+			"INSERT INTO schedule　(title, start_date, cate, content, created_at, updated_at, delete_date, employeeId, repeat_check)"+
+			"VALUES　('연차', ＃{usedDate｝, '종일', '개인사유', NOW(), NOW(), NOW(), ＃｛｝, '０' )"+
+		
+		"</script> "
+		)
+	 void insertLeaveRest(LeaveDTO dto);
+
 
 }
