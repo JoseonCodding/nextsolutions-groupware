@@ -28,26 +28,20 @@ public class DocumentController {
         this.documentMapper = documentMapper;
     }
 
-    @ModelAttribute("navUrl")
-    public String navUrl() {
-        return "document/documentNav";
-    }
-
-    @RequestMapping("/main")
-    public String documentMain(Model model) {
-        List<DocumentDTO> list = documentMapper.selectAll();
-        model.addAttribute("approvalData", list);
-        model.addAttribute("mainUrl", "document/documentMain");
-        return "home";
-    }
+	/*
+	 * @RequestMapping("/main") public String documentMain(Model model) {
+	 * List<DocumentDTO> list = documentMapper.selectAll();
+	 * model.addAttribute("approvalData", list); model.addAttribute("mainUrl",
+	 * "document/document_list"); return "home"; }
+	 */
     
-    @RequestMapping("/viewer")
-    public String documentViewer(@RequestParam("versionId") Long versionId, Model model) {
-        DocumentDTO dto = documentMapper.selectByVersionId(versionId);
-        model.addAttribute("doc", dto);
-        model.addAttribute("mainUrl", "document/documentViewer");
-        return "navTap";
-    }
+	/*
+	 * @RequestMapping("/viewer") public String
+	 * documentViewer(@RequestParam("versionId") Long versionId, Model model) {
+	 * DocumentDTO dto = documentMapper.selectByVersionId(versionId);
+	 * model.addAttribute("doc", dto); model.addAttribute("mainUrl",
+	 * "document/documentViewer"); return "navTap"; }
+	 */
     
     @GetMapping("/downloadFile")
     public ResponseEntity<Resource> downloadFile(@RequestParam("fileName") String fileName,

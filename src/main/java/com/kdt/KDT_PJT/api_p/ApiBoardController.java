@@ -23,7 +23,7 @@ public class ApiBoardController {
 
 
 	
-	@GetMapping("notices")
+	@GetMapping("/notices")
 	Object schedules(HttpSession sesson) {
 		BoardDTO dto = new BoardDTO();
 		int size = (dto.getSize()!=null && dto.getSize()>0) ? dto.getSize() : 5;
