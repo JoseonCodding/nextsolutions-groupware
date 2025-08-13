@@ -234,6 +234,7 @@ tr:hover {
 						th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
 						상세보기</button>
 					<button class="button btn-edit"
+					    th:if="${loginUserRole == '프로젝트'}"
 						th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''">
 						변경</button>
 				</td>
