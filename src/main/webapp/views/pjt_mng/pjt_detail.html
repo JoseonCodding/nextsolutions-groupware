@@ -77,17 +77,46 @@
    <tr><th>결재자</th><td th:text="${pjt['app_user']}"></td></tr>
     
     <tr>
-	  <th>첨부파일</th>
+	  <th rowspan="3">첨부파일</th>
 	  <td>
-	    <span th:if="${not #strings.isEmpty(pjt['ATCH_FILE_SN'])}">
-			<a th:href="@{'/pjtMng/downloadFile?fileName=' + ${pjt['ATCH_FILE_SN']} + '&orgName=' + ${pjt['ORG_FILE_NM']}}"
-			   th:text="${pjt['ORG_FILE_NM']}">첨부파일 다운로드</a>
+	    <span th:if="${not #strings.isEmpty(pjt['ATCH_FILE_SN1'])}">
+			<a th:href="@{'/pjtMng/downloadFile?fileName=' + ${pjt['ATCH_FILE_SN1']} + '&orgName=' + ${pjt['ORG_FILE_NM1']}}"
+			   th:text="${pjt['ORG_FILE_NM1']}">첨부파일 다운로드</a>
 	    </span>
-	    <span th:unless="${not #strings.isEmpty(pjt['ATCH_FILE_SN'])}">
+	    <span th:unless="${not #strings.isEmpty(pjt['ATCH_FILE_SN1'])}">
 	      첨부파일이 없습니다.
 	    </span>
 	  </td>
 	</tr>
+	
+	<tr>
+	
+	  <td>
+	    <span th:if="${not #strings.isEmpty(pjt['ATCH_FILE_SN2'])}">
+			<a th:href="@{'/pjtMng/downloadFile?fileName=' + ${pjt['ATCH_FILE_SN2']} + '&orgName=' + ${pjt['ORG_FILE_NM2']}}"
+			   th:text="${pjt['ORG_FILE_NM2']}">첨부파일 다운로드</a>
+	    </span>
+	    <span th:unless="${not #strings.isEmpty(pjt['ATCH_FILE_SN2'])}">
+	      첨부파일이 없습니다.
+	    </span>
+	  </td>
+	</tr>
+	
+	<tr>
+	
+	  <td>
+	    <span th:if="${not #strings.isEmpty(pjt['ATCH_FILE_SN3'])}">
+			<a th:href="@{'/pjtMng/downloadFile?fileName=' + ${pjt['ATCH_FILE_SN3']} + '&orgName=' + ${pjt['ORG_FILE_NM3']}}"
+			   th:text="${pjt['ORG_FILE_NM3']}">첨부파일 다운로드</a>
+	    </span>
+	    <span th:unless="${not #strings.isEmpty(pjt['ATCH_FILE_SN3'])}">
+	      첨부파일이 없습니다.
+	    </span>
+	  </td>
+	</tr>
+	
+	
+	
     <tr><th>등록일</th><td th:text="${pjt['FRST_REG_DT']}"></td></tr>
 	<tr>
 	

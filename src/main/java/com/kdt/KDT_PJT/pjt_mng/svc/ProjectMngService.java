@@ -92,6 +92,25 @@ public class ProjectMngService {
 	   }  
 
 
+   public PageInfo<CmmnMap> getProjectListMyProject(int pageNum, int pageSize, String keyword) {
+
+	      PageHelper.startPage(pageNum, pageSize);
+
+	      List<CmmnMap> list = cmmnDao.selectList("com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.getProjectListMyProject",
+	            keyword); // ② 페이징 걸린 상태로 select 실행
+	      return new PageInfo<>(list); // ③ PageInfo로 래핑
+	   }  
+   
+   public PageInfo<CmmnMap> getProjectListMyApprovalTodoCount(int pageNum, int pageSize, String keyword) {
+
+	      PageHelper.startPage(pageNum, pageSize);
+
+	      List<CmmnMap> list = cmmnDao.selectList("com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.getProjectListMyProject",
+	            keyword); // ② 페이징 걸린 상태로 select 실행
+	      return new PageInfo<>(list); // ③ PageInfo로 래핑
+	   }  
+   
+   
    // ✅ ✅ ✅ 정렬 + 페이징 + 검색 (신규)
    public List<CmmnMap> searchProjectPagedList(String keyword, String sortType, String order, int offset,
          int pageSize) {

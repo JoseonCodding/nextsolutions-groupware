@@ -28,13 +28,17 @@
     UPDATE TB_PJT_BASC
     SET 
         PJT_NM = #{PJT_NM},
-        employeeid = #{employeeid},
+        employeeid = #{employeeId},
         PJT_BGNG_DT = #{PJT_BGNG_DT},
         PJT_END_DT = #{PJT_END_DT},
         PJT_STTS_CD = #{PJT_STTS_CD},
         content = #{content},
-        ATCH_FILE_SN = #{ATCH_FILE_SN},
-        ORG_FILE_NM = #{ORG_FILE_NM},
+        ATCH_FILE_SN1 = #{ATCH_FILE_SN1},
+        ORG_FILE_NM1 = #{ORG_FILE_NM1},
+        ATCH_FILE_SN2 = #{ATCH_FILE_SN2},
+        ORG_FILE_NM2 = #{ORG_FILE_NM2},
+        ATCH_FILE_SN3 = #{ATCH_FILE_SN3},
+        ORG_FILE_NM3 = #{ORG_FILE_NM3},
         LAST_MDFCN_DT = #{LAST_MDFCN_DT},
         TB_PJT_APR = #{TB_PJT_APR},
         LAST_MDFR_ID = #{LAST_MDFR_ID}
@@ -44,20 +48,27 @@
   <!-- 프로젝트 등록 -->
   <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     INSERT INTO TB_PJT_BASC (
-      PJT_NM, employeeId, PJT_BGNG_DT, PJT_END_DT,
+      PJT_NM, employeeId,TB_PJT_APR, PJT_BGNG_DT, PJT_END_DT,
       PJT_STTS_CD, FRST_RGTR_ID, FRST_REG_DT,
-      content, ATCH_FILE_SN, ORG_FILE_NM
+      content, ATCH_FILE_SN1, ORG_FILE_NM1,
+      ATCH_FILE_SN2, ORG_FILE_NM2,
+      ATCH_FILE_SN3, ORG_FILE_NM3
     ) VALUES (
       #{PJT_NM},
       #{employeeId},
+       #{TB_PJT_APR},
       #{PJT_BGNG_DT},
       #{PJT_END_DT},
       '대기',
       'SYSTEM',
       #{FRST_REG_DT},
       #{content},
-      #{ATCH_FILE_SN},
-      #{ORG_FILE_NM}
+      #{ATCH_FILE_SN1},
+      #{ORG_FILE_NM1},
+      #{ATCH_FILE_SN2},
+      #{ORG_FILE_NM2},
+      #{ATCH_FILE_SN3},
+      #{ORG_FILE_NM3}
     )
   </insert>
 
@@ -65,7 +76,7 @@
   <select id="getPjtDetail" parameterType="String" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     SELECT PJT_SN, PJT_NM, PJT_STTS_CD, employeeid, USE_YN,
            FRST_RGTR_ID, FRST_REG_DT, LAST_MDFR_ID, LAST_MDFCN_DT,
-           ATCH_FILE_SN, ORG_FILE_NM, PJT_BGNG_DT, PJT_END_DT, content
+           ATCH_FILE_SN1, ORG_FILE_NM1, ATCH_FILE_SN2, ORG_FILE_NM2, ATCH_FILE_SN3, ORG_FILE_NM3, PJT_BGNG_DT, PJT_END_DT, content
     FROM TB_PJT_BASC
     WHERE PJT_SN = #{pjtSn}
   </select>
@@ -154,7 +165,8 @@
 <select id="searchProjectMngList" 
         parameterType="map" 
         resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
-        
+     
+     <!-- 게시글 리스트 최신순으로 정렬 -->   
   SELECT *
   FROM TB_PJT_BASC
   WHERE (USE_YN IS NULL OR USE_YN = 'Y')
@@ -162,7 +174,7 @@
       AND (PJT_NM LIKE CONCAT('%', #{keyword}, '%')
            OR employeeId LIKE CONCAT('%', #{keyword}, '%'))
     </if>
-  ORDER BY LAST_MDFCN_DT DESC
+    ORDER BY FRST_REG_DT DESC
 </select>
 
 <select id="getProjectListOrderByWriter" 
@@ -207,7 +219,41 @@ ORDER BY b.LAST_MDFCN_DT DESC
       AND (PJT_STTS_CD LIKE CONCAT('%', #{keyword}, '%') )
     </if>
   ORDER BY LAST_MDFCN_DT DESC
+  
+  
+  
 </select>
+
+
+<select id="getProjectListMyProject" 
+        parameterType="map" 
+        resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+        
+  SELECT *
+  FROM TB_PJT_BASC
+  WHERE (USE_YN IS NULL OR USE_YN = 'Y')
+    <if test="keyword != null and keyword != ''">
+      AND (employeeId LIKE CONCAT('%', #{keyword}, '%') )
+    </if>
+  ORDER BY LAST_MDFCN_DT DESC
+  
+</select>
+<!-- 결재자 -->
+<select id="getProjectListMyApprovalTodoCount" 
+        parameterType="map" 
+        resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+        
+  SELECT *
+  FROM TB_PJT_BASC
+  WHERE (USE_YN IS NULL OR USE_YN = 'Y')
+    <if test="keyword != null and keyword != ''">
+      AND (TB_PJT_APR LIKE CONCAT('%', #{keyword}, '%') )
+    </if>
+  ORDER BY LAST_MDFCN_DT DESC
+  
+</select>
+
+
 </mapper>
 
 
