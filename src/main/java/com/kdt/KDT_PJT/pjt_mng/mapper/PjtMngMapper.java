@@ -11,7 +11,11 @@ import java.util.Map;
 
 @Mapper
 public interface PjtMngMapper {
+	
+	
+	@Select(" SELECT * FROM team2_db.employee ")
     List<CmmnMap> selectApproverCandidates();
+	
     List<CmmnMap> selectProjectList(@Param("param") Map<String, Object> param);
     List<Map<String, Object>> searchProjectMngList(Map<String, Object> param);
 
