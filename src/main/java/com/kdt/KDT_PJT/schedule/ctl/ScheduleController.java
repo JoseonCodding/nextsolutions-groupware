@@ -35,7 +35,7 @@ public class ScheduleController {
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
 	    
 		schDto.setEmployeeId(loginUser.getEmployeeId());
-
+		
 		// DTO에 이번 달 시작일·종료일 세팅
 	    schDto.monthDays();
 		model.addAttribute("firstDayOfWeek", schDto.getFirstDayOfWeek());  // 1=월요일 ~ 7=일요일
@@ -97,7 +97,7 @@ public class ScheduleController {
 		return "navTap";
 	}
 	
-	//일정 수정 정보 보내기
+	
 	@PostMapping("/modify")
 	public String scheduleModifyReg(HttpSession session,Model model, ScheduleDTO dto) {
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
@@ -110,7 +110,7 @@ public class ScheduleController {
 		return "redirect:/schedule";
 	}
 	
-	//일정 수정 정보 보내기
+	//일정 삭제
 	@RequestMapping("/delete")
 	public String scheduledelete(HttpSession session, ScheduleDTO dto) {
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");

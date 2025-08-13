@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-
 @Mapper
 public interface ScheduleMapper {
 
@@ -59,5 +58,53 @@ public interface ScheduleMapper {
 		    WHERE schedule_id = #{scheduleId}
 		""")
 	int delete(ScheduleDTO dto);
+	
+    // 알림 발송 대상 조회
+    @Select("""
+    	    SELECT *, '1일전입니다' as msg FROM schedule
+			WHERE alarm = '알림' AND cate = '종일'
+			and ( 
+				(repeat_check = 0 AND CURDATE() = DATE_SUB(start_date, INTERVAL 1 DAY))
+			    or
+			    (CURDATE() >= DATE_SUB(start_date, INTERVAL 1 DAY) and (
+			        repeat_check = 1 
+			        or
+			        (repeat_check = 2 and weekday(CURDATE()) = weekday( DATE_SUB(start_date, INTERVAL 1 DAY))) 
+			        or
+			        (repeat_check = 3 and dayofmonth(CURDATE()) = dayofmonth( DATE_SUB(start_date, INTERVAL 1 DAY)) )
+			    )
+			   ) 
+			)
+			union 
+			SELECT *, '1시간전입니다' as msg FROM schedule
+			WHERE alarm = '알림' AND (cate != '종일' or cate is null) AND hour(start_time) = hour(DATE_ADD(NOW(), INTERVAL 1 HOUR))
+			and (repeat_check = 0
+			    or
+			    (CURDATE() >= start_date and (
+			        repeat_check = 1 
+			        or
+			        (repeat_check = 2 and weekday(CURDATE()) = weekday( start_date ) ) 
+			        or
+			        (repeat_check = 3 and dayofmonth(CURDATE()) = dayofmonth( start_date) )
+			    )
+			   ) 
+			)
+			ORDER BY start_date DESC, start_time DESC
+			LIMIT 10
+    	""")
+    List<ScheduleDTO> getActiveAllDayNotifications();
+    
 
+
+	// 알림 발송 완료 표시
+	@Update("""
+		    UPDATE schedule
+		    SET is_sent = 1,
+		        sent_at = NOW()
+		    WHERE schedule_id = #{scheduleId}
+		""")
+	void markNotificationAsSent(int scheduleId);
+
+  
+  
 }

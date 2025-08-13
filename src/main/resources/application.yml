@@ -56,6 +56,9 @@ spring:
   application:
     name: kdtpjt  # 스프링 애플리케이션 이름
 
+  jackson:
+    default-property-inclusion: NON_NULL
+
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml  # Mapper XML 파일 위치
   type-aliases-package: com.kdt.KDT_PJT.cmmn.map  # Alias 등록할 패키지 (예: CmmnMap)
