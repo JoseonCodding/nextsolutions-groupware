@@ -2,7 +2,7 @@
 <script th:inline="javascript">
 	const arr = /*[[ ${scheduleList}]]*/;
 	const dto = /*[[ ${scheduleDTO}]]*/
-	console.log(arr)
+	//console.log(arr)
 	//console.log(dto)
 	
 	$(function(){
@@ -33,12 +33,9 @@
 				return ddd.getYear()+1900+"-"+mm+"-"+dd
 			}
            
-           
-          
-           
-           
            function monthDiaryView(){
 
+				console.log("monthDiaryView() 실행")
         	   $("#diary_title").html(currDate.getYear()+1900+'년 '+(currDate.getMonth()+1) + '월 일정')
         	   currDate.setDate(1)
 
@@ -49,7 +46,7 @@
         	   
                $("#diary_body").empty();
         	   
-        	   
+        	   $("#diary_body").append("<tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr>");
                var trLine = $("<tr></tr>")
                $("#diary_body").append(trLine)
 
@@ -65,7 +62,7 @@
     				var td= $("<td></td>")
     				var ttt = i;
     				
-    				 console.log(dateToStr(currDate))
+    				 //console.log(dateToStr(currDate))
     				for(var vv of dayScheduleGet(dateToStr(currDate))){
 	
 						var clickBox = "<a href='/schedule/detail?scheduleId="+vv.scheduleId+"'>"+vv.title+"</a>"
@@ -87,6 +84,29 @@
     			}
 			}
            
+           
+           
+           
+           function weekDiaryView(){
+
+        	   console.log("weekDiaryView() 실행")
+
+        	   $("#diary_title").html(currDate.getYear()+1900+'년 '+(currDate.getMonth()+1) + '월 '+' 일정')
+        	   currDate.setDate(1)
+
+               var first = currDate.getDay()
+               currDate = new Date(currDate.getFullYear(),currDate.getMonth()+1,0)
+
+        		var last = currDate.getDate()
+        	   
+               $("#diary_body").empty();
+        	   
+        	   $("#diary_body").append("<tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr>");
+               var trLine = $("<tr></tr>")
+               $("#diary_body").append(trLine)
+        	   
+			}
+           
            var currDate = new Date();
            monthDiaryView();
            $("#prevMonth").click(function(){
@@ -101,31 +121,118 @@
 					monthDiaryView();
 			})
            
-	})
+	
+	
+	// 일정 보기 방식 : 월별, 주별, 일별
+	
+    let currentView = 'month'; // 기본 보기 방식
+
+    function setView(view) {
+        currentView = view;
+        $("#dayNav, #weekNav").hide(); // 일/주 네비 숨김
+        if (view === 'month') {
+        	 $("#dayNav, #weekNav").hide();
+            $("#dayNav, #weekNav").hide();
+        } else if (view === 'day') {
+            $("#dayNav").show();
+        } else if (view === 'week') {
+            $("#weekNav").show();
+        }
+        // 여기서 monthNav는 항상 보이도록 유지
+        $("#monthNav").show();
+    }
+
+    // 보기 전환 버튼 이벤트
+    $("#viewMonth").on("click", function() {
+        setView('month');
+        monthDiaryView(); // 월별 렌더
+    });
+    $("#viewWeek").on("click", function() {
+        setView('week');
+        weekDiaryView(); // 주별 렌더 함수
+    });
+    $("#viewDay").on("click", function() {
+        setView('day');
+        dayDiaryView(); // 일별 렌더 함수
+    });
+
+    // 초기 상태
+    setView('month');
+});
+
 </script>
 
 
 
 <h3 id="diary_title"></h3>
 
-<div>
+<div align="right">
+    <!-- 보기 전환 버튼 -->
+    <button id="viewMonth">월별</button>
+    <button id="viewWeek">주별</button>
+    <button id="viewDay">일별</button>
+</div>
+
+<!-- 월 이동 버튼 -->
+<div id="monthNav">
     <button id="prevMonth">이전달</button>
     <button id="nextMonth">다음달</button>
 </div>
 
+<!-- 주 이동 버튼 -->
+<div id="weekNav" align="center" style="display:none;">
+    <button id="prevWeek">이전주</button>
+    <button id="nextWeek">다음주</button>
+</div>
 
+<!-- 일 이동 버튼 -->
+<div id="dayNav" align="center" style="display:none;">
+    <button id="prevDay">전날</button>
+    <button id="nextDay">다음날</button>
+</div>
 
-<table border="">
+<!-- 월별 보기 -->
+<table border="" id="diary_body">
+</table>
+
+<!-- 주별 보기 -->
+<table>
     <thead>
         <tr>
-            <th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th>
+            <th>시간</th>
+            <th>25일</th>
+            <th>26일</th>
+            <th>27일</th>
+            <th>28일</th>
+            <th>29일</th>
+            <th>30일</th>
+            <th>01일</th>
         </tr>
     </thead>
-    <tbody id="diary_body"></tbody>
+    <tbody>
+        <!-- 시간대 반복 -->
+        <!-- 07:00~21:00까지 1시간 단위 -->
+        <!-- 필요시 JS로 반복 생성 가능 -->
+        <tr><td class="time">07:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">08:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">09:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">10:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">11:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">12:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">13:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">14:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">15:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">16:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">17:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">18:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">19:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">20:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="time">21:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
 </table>
 
 
-
+<!-- 일별 보기 -->
 <br />
 
 <!-- 권한자만 등록 버튼 보이도록 -->
