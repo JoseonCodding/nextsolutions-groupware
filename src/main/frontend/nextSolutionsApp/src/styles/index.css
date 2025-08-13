@@ -1,0 +1,8 @@
+@import 'tailwindcss';
+@import './noto-sans-korean.css';
+
+body {
+  font-family: 'Noto Sans Korean', 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+  /* background-color: #f3f6ff; */
+}
