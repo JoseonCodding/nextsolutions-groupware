@@ -1,3 +1,4 @@
+[[${scd}]]
 <!-- 일정 등록 -->
 <!-- 종일 일정에 체크할 시 시간 선택 비활성화 -->
 <script>
@@ -24,23 +25,23 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<form action="" method="post" >
+<form  method="post" th:object="${scd}">
 	<table border="" >
 		<tr>
 			<td colspan="3" align="center">
-				일정 등록<a th:href="@{/schedule}">닫힘</a>
+				일정 수정<a th:href="@{/schedule}">닫힘</a>
 			</td>	
 		</tr>
 		<tr >
 			<td colspan="3">
-				일정명<textarea name="title" cols="30" rows="1"></textarea>
+				일정명<textarea th:field="*{title}" cols="30" rows="1">[[*{title}]]</textarea>
 			</td>
 		</tr>
 		<tr >
 			<td colspan="3">
-				<input type="date" name="startDateStr" /><input type="time" name="startTime">
-				~ <input type="date" name="endDateStr" /><input type="time" name="endTime">
-				<input type="checkbox" name="cate" value="종일"/>종일일정
+				<input type="date" th:field="*{startDateStr}"/><input type="time" th:field="*{startTimeStr}">
+				~ <input type="date" th:field="*{endDateStr}"/><input type="time" th:field="*{endTimeStr}">
+				<input type="checkbox" th:field="*{cate}" value="종일"/>종일일정
 			</td>
 
 		</tr>
@@ -48,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			<td>
 				<span>반복일정 : </span>
 				<!-- 반복일정 옵션 -->
-				<select  name="repeatCheck" id="repeatCheck">
+				<select  th:field="*{repeatCheck}" id="repeatCheck">
 					<option value="0">반복 없음</option>
 					<option value="1">매일</option>
 					<option value="2">매주</option>
@@ -56,20 +57,20 @@ document.addEventListener("DOMContentLoaded", function () {
 				</select>
 			</td>
 			<td>
-				<input type="checkbox" name="holiday" value="휴무일"/>휴무일
+				<input type="checkbox" th:field="*{holiday}" value="휴무일"/>휴무일
 			</td>
 			<td>
-				<input type="checkbox" name="alarm" value="알림"/>알림 
+				<input type="checkbox"  th:field="*{alarm}" value="알림"/>알림 
 			</td>
 		</tr>
 		<tr >
 			<td colspan="3">
-				<textarea name="content" id="" cols="50" rows="30"></textarea>
+				<textarea name="content" id="" cols="50" rows="30">[[*{content}]]</textarea>
 			</td>
 		</tr>
 		<tr >
 			<td colspan="3" align="right">
-				<input type="submit" value="결재 신청"/>
+				<input type="submit" value="수정"/>
 			</td>
 		</tr>
 	</table>
