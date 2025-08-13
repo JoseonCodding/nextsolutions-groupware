@@ -14,4 +14,5 @@ public class CommentDTO {
     String content;
     LocalDateTime createdAt;
     Boolean isDeleted;
+    Boolean hasChild;
 }

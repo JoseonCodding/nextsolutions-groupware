@@ -51,14 +51,14 @@
 	        <td th:text="${doc.pjtEndDt} ?: 'Null'"></td>
 	    </tr>
 	    <tr>
-	        <th>ATCH_FILE_SN</th>
-	        <td th:text="${doc.atchFileSn} ?: 'Null'"></td>
-	        <th>ORG_FILE_NM</th>
+	        <th>ATCH_FILE_SN1</th>
+	        <td th:text="${doc.atchFileSn1} ?: 'Null'"></td>
+	        <th>ORG_FILE_NM1</th>
 	        <td>
-	            <a th:if="${doc.orgFileNm != null and doc.atchFileSn != null}"
-	               th:href="@{/documentMng/downloadFile(fileName=${doc.atchFileSn}, orgName=${doc.orgFileNm})}"
-	               th:text="${doc.orgFileNm}"></a>
-	            <span th:if="${doc.orgFileNm == null or doc.atchFileSn == null}">Null</span>
+	            <a th:if="${doc.orgFileNm1 != null and doc.atchFileSn1 != null}"
+	               th:href="@{/document/downloadFile(fileName=${doc.atchFileSn1}, orgName=${doc.orgFileNm1})}"
+	               th:text="${doc.orgFileNm1}"></a>
+	            <span th:if="${doc.orgFileNm1 == null or doc.atchFileSn1 == null}">Null</span>
 	        </td>
 	    </tr>
 	    <tr>

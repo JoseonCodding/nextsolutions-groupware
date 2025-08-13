@@ -1,4 +1,4 @@
-package com.kdt.KDT_PJT.documentMng.ctl;
+package com.kdt.KDT_PJT.document.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -15,39 +15,33 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.kdt.KDT_PJT.documentMng.mapper.DocumentMngMapper;
-import com.kdt.KDT_PJT.documentMng.model.DocumentMngDTO;
+import com.kdt.KDT_PJT.document.mapper.DocumentMapper;
+import com.kdt.KDT_PJT.document.model.DocumentDTO;
 
 @Controller
-@RequestMapping("/documentMng")
-public class DocumentMngCtl {
+@RequestMapping("/document")
+public class DocumentController {
+	
+    private final DocumentMapper documentMapper;
 
-    private final DocumentMngMapper documentMngMapper;
-
-    public DocumentMngCtl(DocumentMngMapper documentMngMapper) {
-        this.documentMngMapper = documentMngMapper;
+    public DocumentController(DocumentMapper documentMapper) {
+        this.documentMapper = documentMapper;
     }
 
-    @ModelAttribute("navUrl")
-    public String navUrl() {
-        return "documentMng/documentMngNav";
-    }
-
-    @RequestMapping("/main")
-    public String documentMngMain(Model model) {
-        List<DocumentMngDTO> list = documentMngMapper.selectAll();
-        model.addAttribute("approvalData", list);
-        model.addAttribute("mainUrl", "documentMng/documentMngMain");
-        return "navTap";
-    }
+	/*
+	 * @RequestMapping("/main") public String documentMain(Model model) {
+	 * List<DocumentDTO> list = documentMapper.selectAll();
+	 * model.addAttribute("approvalData", list); model.addAttribute("mainUrl",
+	 * "document/document_list"); return "home"; }
+	 */
     
-    @RequestMapping("/viewer")
-    public String documentViewer(@RequestParam("versionId") Long versionId, Model model) {
-        DocumentMngDTO dto = documentMngMapper.selectByVersionId(versionId);
-        model.addAttribute("doc", dto);
-        model.addAttribute("mainUrl", "documentMng/documentMngViewer");
-        return "navTap";
-    }
+	/*
+	 * @RequestMapping("/viewer") public String
+	 * documentViewer(@RequestParam("versionId") Long versionId, Model model) {
+	 * DocumentDTO dto = documentMapper.selectByVersionId(versionId);
+	 * model.addAttribute("doc", dto); model.addAttribute("mainUrl",
+	 * "document/documentViewer"); return "navTap"; }
+	 */
     
     @GetMapping("/downloadFile")
     public ResponseEntity<Resource> downloadFile(@RequestParam("fileName") String fileName,

@@ -27,15 +27,20 @@ public interface CommentMapper {
 
     // 삭제된 댓글도 포함해서 가져오기 (is_deleted 함께 반환)
     @Select("""
-    		  SELECT c.comment_id, c.post_id, c.employee_id, c.parent_comment_id,
-    		         c.content, c.created_at,
-    		         (c.is_deleted = 1)         AS is_deleted,
+    		  SELECT c.comment_id,
+    		         c.post_id,
+    		         c.employee_id,
+    		         c.parent_comment_id,
+    		         c.content,
+    		         c.created_at,
+    		         (c.is_deleted = 1) AS is_deleted,
     		         EXISTS (
-    		           SELECT 1 FROM board_comment r
+    		           SELECT 1
+    		           FROM board_comment r
     		           WHERE r.parent_comment_id = c.comment_id
     		             AND (r.is_deleted = 0 OR r.is_deleted IS NULL)
-    		         )                           AS has_child,
-    		         e.emp_nm AS emp_nm
+    		         )                          AS has_child,
+    		         e.emp_nm                   AS emp_nm
     		  FROM board_comment c
     		  LEFT JOIN employee e ON e.employeeId = c.employee_id
     		  WHERE c.post_id = #{postId}
@@ -47,11 +52,11 @@ public interface CommentMapper {
 
     // 단건 조회
     @Select("""
-    	    SELECT comment_id, post_id, employee_id, parent_comment_id, content, created_at, is_deleted
-    	    FROM board_comment
-    	    WHERE comment_id = #{commentId}
-    	  """)
-    int selectCommentById(CommentDTO dto);
+    		  SELECT comment_id, post_id, employee_id, parent_comment_id, content, created_at, is_deleted
+    		  FROM board_comment
+    		  WHERE comment_id = #{commentId}
+    		""")
+    CommentDTO selectCommentById(@Param("commentId") Long commentId);
     
     // 물리 삭제 → 소프트 삭제로 변경
     @Update("""
@@ -62,7 +67,7 @@ public interface CommentMapper {
     int deleteComment(CommentDTO dto);
 
 
-      // 댓글 수정?
+      // 댓글 수정
 //    @Update("UPDATE board_comment SET content = #{content} WHERE comment_id = #{commentId}")
 //    int updateCommentContent(@Param("commentId") Long commentId, @Param("content") String content);
 

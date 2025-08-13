@@ -18,7 +18,7 @@
     * { box-sizing: border-box; }
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, Arial, sans-serif; margin: 0; color: var(--ink); background: #f8fafc; }
     header { padding: 20px 0; position: sticky; top: 0; z-index: 10; color: #fff; background: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-    header h1 { margin: 0; font-size: 20px; }
+    header h1 { margin: 0; font-size: 20px; color: #fff }
     header .muted { color: rgba(255,255,255,0.9); }
     .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
 
@@ -52,6 +52,10 @@
     .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; border:1px solid #e5e7eb; }
     .badge.green { background:#ecfdf5; border-color:#a7f3d0; color:#065f46 }
     .badge.red { background:#fef2f2; border-color:#fecaca; color:#991b1b }
+    
+    .btn.danger { background:#ef4444; color:#fff; border-color:#ef4444; }
+	.btn.danger:hover { filter:brightness(.95); }
+    
 
     /* dialog */
     dialog { border:none; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.25); width: 640px; max-width: calc(100% - 32px); }
@@ -67,6 +71,9 @@
   <div class="container">
     <h1>게시판 관리자</h1>
     <p class="muted" style="margin:6px 0 0">게시판 생성/수정, 활성화 관리</p>
+    <a href="/board/notice" class="btn btn-primary" style="margin-top:8px;">
+      목록으로
+    </a>
   </div>
 </header>
 
@@ -155,6 +162,21 @@
                       <input type="hidden" name="isActive" th:value="${!b.isActive}" />
                       <button class="btn ghost" th:text="${b.isActive} ? '비활성화' : '활성화'"></button>
                     </form>
+                    
+                    <!-- 소프트삭제 (목록에서 사라짐) -->
+    <form th:action="@{/admin/boards/delete}" method="post">
+      <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
+      <input type="hidden" name="boardId" th:value="${b.boardId}" />
+      <button type="submit" class="btn danger"
+              onclick="return confirm('이 게시판을 정말 삭제하시겠습니까?');"
+              title="휴지통으로 이동">
+        <!-- trash icon -->
+        <svg viewBox="0 0 24 24" class="ico-trash" style="width:16px;height:16px;vertical-align:-2px">
+          <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 7h2v8h-2v-8Zm4 0h2v8h-2v-8ZM7 10h2v8H7v-8Z"/>
+        </svg>
+      </button>
+    </form>
+     
                   </div>
                 </td>
               </tr>
