@@ -102,8 +102,8 @@ public class ApprovalController {
 	    @RequestParam(name = "type", required = false) String type,
 	    @RequestParam(name = "status", required = false) String status) {
 
-	    ApprovalDTO approvalData = approvalMapper.view(docId, type, status);
-
+	    ApprovalDTO approvalData = approvalMapper.view(docId, type, status); 
+	    
 	    model.addAttribute("approvalData", approvalData);
 	    model.addAttribute("page", page);
 	    model.addAttribute("type", type);

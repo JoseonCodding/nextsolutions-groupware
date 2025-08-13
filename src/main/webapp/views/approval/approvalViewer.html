@@ -24,7 +24,7 @@
 			</tr>
 			<tr>
 				<td>기안일</td>
-				<td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/M/d hh:mm:ss')}"></td>
+				<td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/M/d HH:mm:ss')}"></td>
 			</tr>
 			<tr>
 				<td>문서번호</td>
@@ -74,6 +74,20 @@
 			</tr>
 		</table>
 	</div>
+	
+	<!-- (프로젝트) 제목 -->
+	<table th:if="${approvalData != null and approvalData.docType == '프로젝트'}" style="margin-top: 20px;" border="">
+	    <tr>
+	        <td>프로젝트 시작일</td>
+	        <td>
+	            <span th:text="${approvalData.pjtBgngDt != null ? #dates.format(approvalData.pjtBgngDt, 'yyyy-MM-dd') : '-'}"></span>
+	        </td>
+	        <td>프로젝트 종료일</td>
+	        <td>
+	            <span th:text="${approvalData.pjtEndDt != null ? #dates.format(approvalData.pjtEndDt, 'yyyy-MM-dd') : '-'}"></span>
+	        </td>
+	    </tr>
+	</table>
 
 	<!-- 내용 영역 -->
 	<!-- if 연차 -->
@@ -108,10 +122,6 @@
    	    <tr>
 	        <th>수정 사유</th>
 	        <td><div th:utext="${approvalData.modificationReason == null or approvalData.modificationReason.isEmpty() ? '내용이 없습니다' : approvalData.modificationReason}"></div></td>
-	    </tr>
-	    <tr>
-	        <th>수정자</th>
-	        <td><span th:text="${approvalData.modifiedBy != null ? approvalData.modifiedBy : '-'}"></span></td>
 	    </tr>
 	    <tr>
 	        <th>승인일자</th>
@@ -152,15 +162,17 @@
 	</a>
 	
 	<!-- 수정, 삭제 버튼 영역 -->
-	<div th:if="${approvalData == null ? '-' : approvalData.status =='대기'}">
-		<th:block th:if="${approvalData != null}">
-			<a th:href="@{/approval/edit(docId=${approvalData.docId} , page=${page}, type=${type}, status=${status})}">수정</a>
-		</th:block>
-		
-		<th:block th:if="${approvalData != null}">
-			<a th:href="@{/approval/delete(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status}, docType=${approvalData.docType})}"
-   				onclick="return confirm('삭제하면 복원할 수 없습니다.\n정말로 삭제하시겠습니까?');">삭제</a>
-		</th:block>
+	<div th:if="${approvalData != null and approvalData.status =='대기'}">
+	    
+	    <!-- 수정 버튼 -->
+	    <th:block th:if="${approvalData != null and approvalData.docType != '프로젝트'}">
+	        <a th:href="@{/approval/edit(docId=${approvalData.docId} , page=${page}, type=${type}, status=${status})}">수정</a>
+	    </th:block>
+	
+	    <th:block th:if="${approvalData != null}">
+	        <a th:href="@{/approval/delete(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status}, docType=${approvalData.docType})}"
+	           onclick="return confirm('삭제하면 복원할 수 없습니다.\n정말로 삭제하시겠습니까?');">삭제</a>
+	    </th:block>
 	</div>
 	
 	<!-- 승인, 반려 버튼 영역 -->

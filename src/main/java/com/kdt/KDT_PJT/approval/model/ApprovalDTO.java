@@ -8,7 +8,7 @@ import lombok.Data;
 public class ApprovalDTO {
 
 	String docId, docType, title, content, deptName, status, writer, empNm;
-	Date createdAt;
+	Date createdAt, pjtBgngDt, pjtEndDt;
 	
 	// 프로젝트 파일 첨부 전용 추가 필드
     String attachFileUuid;		// 파일 이름 난수화
