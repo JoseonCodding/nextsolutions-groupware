@@ -1,14 +1,14 @@
-package com.kdt.KDT_PJT.documentMng.mapper;
+package com.kdt.KDT_PJT.document.mapper;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
-import com.kdt.KDT_PJT.documentMng.model.DocumentMngDTO;
+import com.kdt.KDT_PJT.document.model.DocumentDTO;
 
 @Mapper
-public interface DocumentMngMapper {
+public interface DocumentMapper {
 
 	@Select("""
 		    SELECT 
@@ -29,7 +29,7 @@ public interface DocumentMngMapper {
 		    LEFT JOIN employee e ON v.employeeId = e.employeeId
 		    ORDER BY versionCreatedAt DESC
 		""")
-		List<DocumentMngDTO> selectAll();
+		List<DocumentDTO> selectAll();
 
     
     @Select("""
@@ -51,5 +51,5 @@ public interface DocumentMngMapper {
     	    LEFT JOIN employee e ON v.employeeId = e.employeeId
     	    WHERE v.version_id = #{versionId}
     	""")
-    	DocumentMngDTO selectByVersionId(Long versionId);
+    	DocumentDTO selectByVersionId(Long versionId);
 }

@@ -56,7 +56,7 @@
 	        <th>ORG_FILE_NM1</th>
 	        <td>
 	            <a th:if="${doc.orgFileNm1 != null and doc.atchFileSn1 != null}"
-	               th:href="@{/documentMng/downloadFile(fileName=${doc.atchFileSn1}, orgName=${doc.orgFileNm1})}"
+	               th:href="@{/document/downloadFile(fileName=${doc.atchFileSn1}, orgName=${doc.orgFileNm1})}"
 	               th:text="${doc.orgFileNm1}"></a>
 	            <span th:if="${doc.orgFileNm1 == null or doc.atchFileSn1 == null}">Null</span>
 	        </td>

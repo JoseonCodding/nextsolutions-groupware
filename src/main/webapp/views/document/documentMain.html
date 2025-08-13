@@ -26,7 +26,7 @@
 			<tr th:each="dto : ${approvalData}">
 			    <td th:text="${dto.originalId}"></td>
 			    <td>
-			        <a th:href="@{/documentMng/viewer(versionId=${dto.versionId})}"
+			        <a th:href="@{/document/viewer(versionId=${dto.versionId})}"
 			           th:text="${dto.pjtNm}"></a>
 			    </td>
 			    <td th:text="${dto.employeeName}"></td>

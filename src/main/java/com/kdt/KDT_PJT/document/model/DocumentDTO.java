@@ -1,11 +1,12 @@
-package com.kdt.KDT_PJT.documentMng.model;
+package com.kdt.KDT_PJT.document.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 import lombok.Data;
 
 @Data
-public class DocumentMngDTO {
+public class DocumentDTO {
     private Long versionId;        // PK 등 추가 필드가 있다면 포함
     private Long originalId;
     private String pjtNm;
