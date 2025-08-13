@@ -74,8 +74,8 @@ public class LoginController {
             session.setAttribute("loginUser", dto);
          
         	//return ResponseEntity.ok(dto);
-            //return "redirect:/rc";
-            return "redirect:/attend";
+            return "redirect:/rc";
+            //return "redirect:/attend";
         }
         
         //return ResponseEntity.status(401).body("로그인 필요");

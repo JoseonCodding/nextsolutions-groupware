@@ -1,0 +1,48 @@
+<!-- 일정 상세보기 -->
+    <h2>일정 상세보기</h2>
+	
+    <div>
+        <label>제목:</label>
+        <span th:text="${scd.title}"></span>
+    </div>
+    <div>
+        <label>내용:</label>
+        <p th:text="${scd.content}"></p>
+    </div>
+    <div>
+        <label></label>
+        <span th:text="${scd.cate}"></span>
+    </div>
+    <div>
+        <label>시작일:</label>
+        <span th:text="${scd.startDateStr}"></span>
+    </div>
+    <div>
+        <label>시작시간:</label>
+        <span th:text="${scd.startTimeStr}"></span>
+    </div>
+    <div>
+        <label>종료일:</label>
+        <span th:text="${scd.endDateStr}"></span>
+    </div>
+    <div>
+        <label>종료시간:</label>
+        <span th:text="${scd.endTimeStr}"></span>
+    </div>
+    <div>
+        <label>반복 여부:</label>
+        <span th:text="${scd.repeatCheck}"></span>
+    </div>
+    <div>
+        <label>휴일 여부:</label>
+        <span th:text="${scd.holiday}"></span>
+    </div>
+    <div>
+        <label>알람:</label>
+        <span th:text="${scd.alarm}"></span>
+    </div>
+
+
+
+
+

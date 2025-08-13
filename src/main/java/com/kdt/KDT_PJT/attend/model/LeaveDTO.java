@@ -44,8 +44,5 @@ public class LeaveDTO {
 			e.printStackTrace();
 		}
 	}
-	
-
-
-    
+  
 }

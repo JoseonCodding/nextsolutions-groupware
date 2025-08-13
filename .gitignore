@@ -38,4 +38,4 @@ out/
 /.apt_generated_tests/
 
 ### React ###
-/src/main/resources/static/
+#/src/main/resources/static/

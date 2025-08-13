@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>★문서관리 메인</title>
+    
+</head>
+<body>
+        <!-- 게시판 -->
+        <table>
+			<thead>
+			    <tr>
+			        <th>문서번호</th>
+			        <th>프로젝트명</th>
+			        <th>담당자</th>
+			        <th>진행상태</th>
+			        <th>시작일</th>
+			        <th>마감일</th>
+			        <th>버전</th>
+			        <th>버전 보기</th>
+			    </tr>
+			</thead>
+			<tbody>
+			<tr th:if="${#lists.isEmpty(approvalData)}">
+			    <td colspan="7">게시글이 없습니다.</td>
+			</tr>
+			<tr th:each="dto : ${approvalData}">
+			    <td th:text="${dto.originalId}"></td>
+			    <td>
+			        <a th:href="@{/documentMng/viewer(versionId=${dto.versionId})}"
+			           th:text="${dto.pjtNm}"></a>
+			    </td>
+			    <td th:text="${dto.employeeName}"></td>
+			    <td th:text="${dto.pjtSttsCd}"></td>
+			    <td th:text="${dto.pjtBgngDt}"></td>
+			    <td th:text="${dto.pjtEndDt}"></td>
+			    <td th:text="${dto.versionName}"></td>
+			    <td>
+			    	<a th:href="@{/documentMng/standalone/versions(originalId=${dto.originalId})}">버전 보기(독립)</a>
+
+			    </td>
+			</tr>
+			</tbody>
+        </table>
+        
+</body>
+</html>

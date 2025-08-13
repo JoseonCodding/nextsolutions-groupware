@@ -1,7 +1,5 @@
 package com.kdt.KDT_PJT.schedule.ctl;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,38 +28,28 @@ public class ScheduleController {
 	@Autowired
 	ScheduleMapper mapper;
 	
+	//일정 메인 페이지
 	@RequestMapping
-	String showSchedulePage(HttpSession session,Model model) {
+	String showSchedulePage(HttpSession session, Model model, ScheduleDTO schDto) {
 
-		    LocalDate now = LocalDate.now();
-		    LocalDate firstDay = now.withDayOfMonth(1);
-		    model.addAttribute("firstDayOfWeek", firstDay.getDayOfWeek().getValue());  // 1=월요일 ~ 7=일요일
-		    LocalDate lastDay = now.withDayOfMonth(now.lengthOfMonth());
-
-		    Date startDate = java.sql.Date.valueOf(firstDay);
-		    Date endDate = java.sql.Date.valueOf(lastDay);
-
-		    List<ScheduleDTO> scheduleList = mapper.getScheduleListByMonth(
-		    		startDate,endDate);
-		    
-		    for (ScheduleDTO dto : scheduleList) {
-		        dto.convertDatesToLocal();
-		    }
-
-
-		    model.addAttribute("scheduleList", scheduleList);
-		    model.addAttribute("year", now.getYear());
-		    model.addAttribute("month", now.getMonthValue());
+		// DTO에 이번 달 시작일·종료일 세팅
+	    schDto.monthDays();
+		model.addAttribute("firstDayOfWeek", schDto.getFirstDayOfWeek());  // 1=월요일 ~ 7=일요일
 		
-		
+	    List<ScheduleDTO> scheduleList = mapper.getScheduleListByMonth(schDto);
+	    
+	    for (ScheduleDTO dto : scheduleList) {
+	        dto.convertDatesToLocal();
+	    }
+
+	    model.addAttribute("scheduleList", scheduleList);
 		model.addAttribute("mainUrl", "schedule/main");
+	    
+		
 		return "navTap";
 	}
-
-
 	
-	
-	
+	//일정 등록
 	@GetMapping("/insert")
 	String insert(HttpSession session, Model model) {
 
@@ -77,10 +65,20 @@ public class ScheduleController {
 	    
 	    dto.setEmployeeId(loginUser.getEmployeeId());
 	    
-		// System.out.println("보여라"+loginUser.getEmployeeId());
 		mapper.insert(dto);
 	    
 		return "redirect:/schedule";
 	}
 	
+	//일정 상세보기
+	@RequestMapping("/detail")
+	public String scheduleDetail(Model model, ScheduleDTO dto) {
+		
+		ScheduleDTO scheduleDetail = mapper.getScheduleDetail(dto);
+		System.out.println("detail : "+scheduleDetail);
+		model.addAttribute("scd", scheduleDetail);
+		model.addAttribute("mainUrl", "schedule/detail");
+
+		return "navTap";
+	}
 }

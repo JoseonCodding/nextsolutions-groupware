@@ -14,6 +14,7 @@
 				    <option value="" th:selected="${type == null or type == ''}">결재 종류</option>
 				    <option value="프로젝트" th:selected="${type == '프로젝트'}">프로젝트</option>
 				    <option value="연차" th:selected="${type == '연차'}">연차</option>
+				    <option value="근태" th:selected="${type == '근태'}">근태</option>
 				    <option value="공지사항" th:selected="${type == '공지사항'}">공지사항</option>
 				</select>
 
@@ -41,8 +42,8 @@
                     <th style="width:200px;">기안일</th>
                     <th style="width:100px;">결재 종류</th>
                     <th>제목</th>
-                    <th style="width:100px;">부서</th>
                     <th style="width:100px;">작성자</th>
+                    <th style="width:100px;">부서</th>
                     <th style="width:100px;">결재 상태</th>
                 </tr>
             </thead>
@@ -59,8 +60,8 @@
 				    <td class="title">
 				    	<a th:href="@{/approval/viewer(docId=${dto.docId}, page=${page}, type=${type}, status=${status})}" th:text="${dto.title}"></a>
 				    </td>
+   				    <td th:text="${dto.writer}"></td>
 				    <td th:text="${dto.deptName}"></td>
-				    <td th:text="${dto.writer}"></td>
 				    <td th:text="${dto.status}"></td>
 				</tr>
             </tbody>
@@ -92,6 +93,6 @@
 		  <!-- Next 버튼 -->
 		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages}, type=${type}, status=${status})}">Next &#x203A;</a>
 		</nav>
-
+	
 </body>
 </html>
