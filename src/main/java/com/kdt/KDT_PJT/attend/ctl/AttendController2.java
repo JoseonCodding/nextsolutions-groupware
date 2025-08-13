@@ -110,18 +110,8 @@ public class AttendController2 {
             PdfWriter.getInstance(doc, os);
             doc.open();
 
-            // 1) 한글 폰트 임베드 (classpath/fonts/NotoSansKR-Regular.ttf 필요)
-            ClassPathResource fontRes = new ClassPathResource("fonts/NotoSansKR-Regular.ttf");
-            byte[] fontBytes;
-            try (java.io.InputStream fis = fontRes.getInputStream()) {
-                fontBytes = fis.readAllBytes();
-            }
-            BaseFont base = BaseFont.createFont(
-                    "NotoSansKR-Regular.ttf",
-                    BaseFont.IDENTITY_H,
-                    BaseFont.EMBEDDED,
-                    true, fontBytes, null
-            );
+            // 1) 한글 폰트 임베드 - 여러 경로에서 폰트 찾기
+            BaseFont base = getBaseFont();
 
             Font titleFont  = new Font(base, 16, Font.BOLD);
             Font headerFont = new Font(base, 10, Font.BOLD);
@@ -219,7 +209,40 @@ public class AttendController2 {
     private static String ns(String s){ return s==null ? "" : s; }
 
     
-   
+    // 폰트 로딩을 위한 헬퍼 메서드
+    private BaseFont getBaseFont() throws Exception {
+        // 여러 경로에서 폰트 파일 찾기
+        String[] fontPaths = {
+            "static/fonts/NotoSans-Regular.otf",
+            "fonts/NotoSans-Regular.otf",
+            "static/fonts/NotoSans-Regular.ttf",
+            "fonts/NotoSans-Regular.ttf"
+        };
+        
+        for (String fontPath : fontPaths) {
+            try {
+                ClassPathResource fontRes = new ClassPathResource(fontPath);
+                if (fontRes.exists()) {
+                    System.out.println("폰트 파일을 찾았습니다: " + fontPath);
+                    try (java.io.InputStream fis = fontRes.getInputStream()) {
+                        byte[] fontBytes = fis.readAllBytes();
+                        return BaseFont.createFont(
+                                fontPath.substring(fontPath.lastIndexOf('/') + 1),
+                                BaseFont.IDENTITY_H,
+                                BaseFont.EMBEDDED,
+                                true, fontBytes, null
+                        );
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("폰트 로딩 실패: " + fontPath + " - " + e.getMessage());
+            }
+        }
+        
+        // 모든 폰트 로딩 실패 시 기본 폰트 사용
+        System.out.println("기본 폰트를 사용합니다.");
+        return BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+    }
 
 }
 
