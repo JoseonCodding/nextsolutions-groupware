@@ -1,5 +1,6 @@
 package com.kdt.KDT_PJT.document.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -7,17 +8,28 @@ import lombok.Data;
 
 @Data
 public class DocumentDTO {
-    private Long versionId;        // PK 등 추가 필드가 있다면 포함
-    private Long originalId;
-    private String pjtNm;
-    private String employeeId;   
-    private String employeeName;   
-    private LocalDate pjtBgngDt;
-    private LocalDate pjtEndDt;
-    private String pjtSttsCd;
-    private String content;
-    private String atchFileSn1;     // ATCH_FILE_SN (UUID 파일명)
-    private String orgFileNm1;      // ORG_FILE_NM (원본 파일명)
-    private String versionName;
-    private LocalDateTime versionCreatedAt;
+	private Long pjtSn;
+	private String pjtNm;
+	private String pjtSttsCd;    // '대기' | '완료' 등
+	private String employeeId;
+	private String useYn;        // 'Y' 최신, 'N' 과거
+	private String frstRgtrId;
+	private LocalDateTime frstRegDt;
+	private String lastMdfrId;
+	private LocalDateTime lastMdfcnDt;
+	private LocalDate pjtBgngDt;
+	private LocalDate pjtEndDt;
+	private String tbPjtApr;
+	private String tbPjtBasccol;
+	private String docType;
+	private String content;
+	private Long atchFileSn1;
+	private String orgFileNm1;
+	private Long atchFileSn2;
+	private Long atchFileSn3;
+	private String orgFileNm2;
+	private String orgFileNm3;
+	private String tbPjtBasccol1;
+	private String gid;          // 버전군 식별자
+	private BigDecimal ver;      // ex) 1.0, 1.1
 }

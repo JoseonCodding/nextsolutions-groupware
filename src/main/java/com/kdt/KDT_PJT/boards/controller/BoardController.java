@@ -199,7 +199,7 @@ public class BoardController {
         EmployeeDto u = (EmployeeDto) session.getAttribute("loginUser");
         String me = (u != null) ? u.getEmployeeId() : null;
 
-        if ("20250002".equals(me)) {
+        if ("20250004".equals(me)) {
             boardMapper.adminDelete(postId);
         } else {
             BoardDTO dto = new BoardDTO();
@@ -416,7 +416,7 @@ public class BoardController {
         EmployeeDto u = (EmployeeDto) session.getAttribute("loginUser");
         String me = (u != null) ? u.getEmployeeId() : null;
 
-        if ("20250002".equals(me)) {
+        if ("20250004".equals(me)) {
             // 관리자: postId만으로 삭제
             boardMapper.adminDelete(postId);
         } else {
@@ -594,7 +594,7 @@ public class BoardController {
         EmployeeDto u = (EmployeeDto) session.getAttribute("loginUser");
         String me = (u != null) ? u.getEmployeeId() : null;
 
-        if ("20250002".equals(me)) {
+        if ("20250004".equals(me)) {
             // 관리자: postId만으로 삭제
             boardMapper.adminDelete(postId);
         } else {
