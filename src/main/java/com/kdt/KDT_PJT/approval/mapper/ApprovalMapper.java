@@ -3,6 +3,7 @@ package com.kdt.KDT_PJT.approval.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -157,7 +158,7 @@ public interface ApprovalMapper {
 		);
 
 
-	// 공지사항 + 연차 + 프로젝트 + 근태  DB 총 개수 세기 (docId:concat 방식으로 임시생성 -> 파라미터로 발사 가능)
+	// 공지사항 + 연차 + 프로젝트 + 근태  DB 총 개수 세기
 	@Select({
 		  "<script>",
 		  "SELECT COUNT(*) FROM (",
@@ -214,7 +215,7 @@ public interface ApprovalMapper {
 		);
 
 	
-	// 뷰어용 데이터 조회 (docId 접두어+PK 방식 적용)
+	// 뷰어용 데이터 조회
 	@Select({
 	    "<script>",
 	    "SELECT * FROM (",
@@ -236,7 +237,9 @@ public interface ApprovalMapper {
 	    "     NULL AS modifiedBy,",
 	    "     NULL AS modifiedAt,",
 	    "     NULL AS modificationReason,",
-	    "     NULL AS timeInout",
+	    "     NULL AS timeInout,",
+	    "	  NULL AS pjtBgngDt,",
+	    "     NULL AS pjtEndDt",
 	    "   FROM board_post b",
 	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
 	    "   WHERE b.board_id = 1",
@@ -261,7 +264,9 @@ public interface ApprovalMapper {
 	    "     NULL AS modifiedBy,",
 	    "     NULL AS modifiedAt,",
 	    "     NULL AS modificationReason,",
-	    "     NULL AS timeInout",
+	    "     NULL AS timeInout,",
+	    "	  NULL AS pjtBgngDt,",
+	    "     NULL AS pjtEndDt",
 	    "   FROM annual_leave l",
 	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
 	    "   WHERE l.state_type IS NOT NULL",
@@ -286,7 +291,9 @@ public interface ApprovalMapper {
 	    "     NULL AS modifiedBy,",
 	    "     NULL AS modifiedAt,",
 	    "     NULL AS modificationReason,",
-	    "     NULL AS timeInout",
+	    "     NULL AS timeInout,",
+	    "	  p.PJT_BGNG_DT AS pjtBgngDt,",
+	    "     p.PJT_END_DT AS pjtEndDt",
 	    "   FROM TB_PJT_BASC p",
 	    
 	    "   UNION ALL",
@@ -309,7 +316,9 @@ public interface ApprovalMapper {
 	    "     a.modified_by AS modifiedBy,",
 	    "     a.modified_at AS modifiedAt,",
 	    "     a.modification_reason AS modificationReason,",
-	    "     a.time_inout AS timeInout",
+	    "     a.time_inout AS timeInout,",
+	    "	  NULL AS pjtBgngDt,",
+	    "     NULL AS pjtEndDt",
 	    "   FROM attendance a",
 	    "   LEFT JOIN employee e ON a.employeeId = e.employeeId",
 	    "   <where>",
@@ -370,10 +379,11 @@ public interface ApprovalMapper {
 	int editAttendance(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 	
 	
-	// 결재 종류 별 승인or반려 메소드
+	// 공지사항 승인&반려 메서드
 	@Update("UPDATE board_post SET status=#{status} WHERE post_id=#{id}")
 	int updateStatusNotice(@Param("id") String id, @Param("status") String status);
-
+	
+	// 연차 승인&반려 메서드
 	@Update({
 	  "<script>",
 	  "UPDATE annual_leave",
@@ -383,15 +393,42 @@ public interface ApprovalMapper {
 	  "</script>"
 	})
 	int updateStatusLeave(@Param("id") String id, @Param("status") String status);
-
+	
+	// 프로젝트 승인&반려 메서드
 	@Update("UPDATE TB_PJT_BASC SET PJT_STTS_CD=#{status} WHERE PJT_SN=#{id}")
 	int updateStatusProject(@Param("id") String id, @Param("status") String status);
 	
-    // 근태 전용 반려 메서드 (timeInout 파라미터 없는 경우)
+	// 프로젝트 승인 시, 일정 테이블에 추가되는 메서드
+	@Insert("""
+		    INSERT INTO schedule (
+		        title,
+		        start_date,
+		        end_date,
+		        cate,
+		        content,
+		        created_at,
+		        employeeId,
+		        holiday
+		    )
+		    SELECT
+		        PJT_NM AS title,
+		        PJT_BGNG_DT AS start_date,
+		        PJT_END_DT AS end_date,
+		        '종일' AS cate,
+		        content AS content,
+		        FRST_REG_DT AS created_at,
+		        employeeId AS employeeId,
+		        '프로젝트' AS holiday
+		    FROM TB_PJT_BASC
+		    WHERE PJT_SN = #{id}
+		""")
+		int insertProjectSchedule(@Param("id") String projectId);
+	
+    // 근태 반려 메서드
     @Update("UPDATE attendance SET status = #{status} WHERE id = #{id}")
     int rejectAttendance(@Param("id") String id, @Param("status") String status);
 
-    // 근태 전용 승인 메서드 (timeInout 파라미터 있는 경우)
+    // 근태 승인 메서드
     @Update({
         "<script>",
         "UPDATE attendance",
@@ -409,7 +446,7 @@ public interface ApprovalMapper {
         "        check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
         "    </when>",
         "  </choose>",
-        "  , modified_at = CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul')",
+        "  , modified_at = NOW()",
         "</if>",
         "WHERE id = #{id}",
         "</script>"

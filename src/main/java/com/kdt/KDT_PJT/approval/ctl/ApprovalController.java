@@ -102,8 +102,8 @@ public class ApprovalController {
 	    @RequestParam(name = "type", required = false) String type,
 	    @RequestParam(name = "status", required = false) String status) {
 
-	    ApprovalDTO approvalData = approvalMapper.view(docId, type, status);
-
+	    ApprovalDTO approvalData = approvalMapper.view(docId, type, status); 
+	    
 	    model.addAttribute("approvalData", approvalData);
 	    model.addAttribute("page", page);
 	    model.addAttribute("type", type);
@@ -288,7 +288,8 @@ public class ApprovalController {
                 leaveMapper.insertScheduleRest(pkId);
                 break;
             case "프로젝트":
-                approvalMapper.updateStatusProject(pkId, "완료");
+                approvalMapper.updateStatusProject(pkId, "진행중");
+                approvalMapper.insertProjectSchedule(pkId);
                 break;
             case "근태":
                 ApprovalDTO attDto = approvalMapper.view(docId, null, null);
