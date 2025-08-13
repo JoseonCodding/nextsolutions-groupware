@@ -288,7 +288,8 @@ public class ApprovalController {
                 leaveMapper.insertScheduleRest(pkId);
                 break;
             case "프로젝트":
-                approvalMapper.updateStatusProject(pkId, "완료");
+                approvalMapper.updateStatusProject(pkId, "진행중");
+                approvalMapper.insertProjectSchedule(pkId);
                 break;
             case "근태":
                 ApprovalDTO attDto = approvalMapper.view(docId, null, null);

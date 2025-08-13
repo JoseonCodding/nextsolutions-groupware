@@ -78,19 +78,22 @@ public interface LeaveMapper {
 	 @Insert("""
 			 INSERT INTO schedule (
 			   title, start_date, end_date, cate, content,
-			   created_at, updated_at, employeeId, repeat_check
+			   created_at, updated_at, employeeId, repeat_check, holiday
 			 )
 			 SELECT
-			   '연차'                         AS title,
-			   al.used_date                  AS start_date,
-			   al.used_date                  AS end_date,
-			   '종일'                         AS cate,
-			   al.used_reason                AS content,
-			   NOW()                         AS created_at,
-			   NOW()                         AS updated_at,
-			   al.employeeId                 AS employeeId,   -- leave 주인에게 달력 생성
-			   0                             AS repeat_check  -- 컬럼이 숫자형이면 0, 문자면 '0'
+			   CONCAT(e.emp_nm, ' 연차')     AS title,          -- 사원명 + " 연차"
+			   al.used_date                 AS start_date,
+			   al.used_date                 AS end_date,
+			   '종일'                        AS cate,
+			   al.used_reason               AS content,
+			   NOW()                        AS created_at,
+			   NOW()                        AS updated_at,
+			   al.employeeId                AS employeeId,     -- 연차 주인의 캘린더 생성
+			   0                            AS repeat_check,   -- 숫자형이면 0, 문자형이면 '0'
+			   '연차'                        AS holiday
 			 FROM annual_leave al
+			 JOIN employee e
+			   ON al.employeeId = e.employeeId
 			 WHERE al.leave_id = #{pkId}
 			   AND al.used_date IS NOT NULL
 			 """)
