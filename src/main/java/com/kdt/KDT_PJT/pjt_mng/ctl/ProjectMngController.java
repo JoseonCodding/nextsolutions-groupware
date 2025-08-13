@@ -58,10 +58,21 @@ public class ProjectMngController {
    // ✅ 프로젝트 목록 화면 조회 (검색어 유무에 따라 분기)
    @GetMapping("/getPjtList")
    public String getPjtList(@RequestParam(required = false, name = "keyword") String keyword,
-         HttpServletRequest request, Model model, HttpSession session) {
+         HttpServletRequest request, Model model, HttpSession session
+         , @RequestParam(required = false, name = "keywordType") String keywordType) {
 
-
-       
+	   log.info("keywordType(raw) = {}", keywordType);
+	   log.info("keyword(raw) = {}", keyword);
+	    // ✅ 널/대소문자 정리
+	    String type = (keywordType == null) ? "" : keywordType.toLowerCase();
+	   // 선택값 유지 용
+	    if (keywordType == null) keywordType = "";
+	    
+	    
+	    
+	 // ✅ 선택값 유지용
+	    model.addAttribute("keywordType", type);
+	    model.addAttribute("keyword", ""); // ← 입력칸 유지
        
 
        
@@ -88,6 +99,39 @@ public class ProjectMngController {
 
       // 리스트 가져오기
       PageInfo<CmmnMap> list = projectMngService.getProjectList(pageNum, pageSize, keyword);
+      
+      switch (keywordType) {
+      case "writer":
+    	  log.info(" sortType = writer ");
+    	  list = projectMngService.getProjectListOrderByWriter(pageNum, pageSize, keyword);
+          break;
+      case "project":
+    	  log.info(" sortType = project ");
+    	  list = projectMngService.getProjectListOrderByProject(pageNum, pageSize, keyword);
+          break;
+      case "status":
+    	  log.info(" sortType = status ");
+    	  list = projectMngService.getProjectListOrderByStatus(pageNum, pageSize, keyword);
+          break;
+      case "my":
+    	  log.info(" sortType = my ");
+    	  keyword = loginUser.getEmployeeId();    	  
+    	  list = projectMngService.getProjectListMyProject(pageNum, pageSize, keyword);
+          break;     
+      case "app":
+    	  log.info(" sortType = app ");    	  
+    	  keyword = loginUser.getEmployeeId();    	  
+    	  list = projectMngService.getProjectListMyApprovalTodoCount(pageNum, pageSize, keyword);
+          break;         
+          
+          
+      default:
+          // 기본 정렬(현재 쓰던 메서드)
+    	  list = projectMngService.getProjectList(pageNum, pageSize, keyword);
+      }
+      
+      
+      
       // ③ model에 값 담기
 
       if (list == null || list.getList() == null || list.getList().isEmpty()) {
@@ -126,11 +170,18 @@ public class ProjectMngController {
 
       model.addAttribute("pjtList", list.getList()); // 현재 페이지 데이터
       model.addAttribute("pageInfo", list); // 페이징 정보
+      
+      // 권찬 받아오기
+      model.addAttribute("loginUserRole", loginUser.getRole());
 
       model.addAttribute("mainUrl", "pjt_mng/pjt_main");
       return "home";
 
    }
+   
+   
+   
+   
    // 내프로젝트만 눌러서 볼수 있는거 
    @GetMapping("/pjtMng/pjtList")
    public String getPjtList(HttpSession session, Model model,
@@ -230,19 +281,32 @@ public class ProjectMngController {
       model.addAttribute("mainUrl", "pjt_mng/pjt_reg_form");
       return "home";
 
+      
    }
 
-   @GetMapping("/pjtEditForm")
-   public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn, Model model) {
-      log.info("getPjtEditForm Called >>> {}", pjtSn);
 
-      CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
-      log.debug("DETAIL TB_PJT_APR={}", pjtDetail.get("TB_PJT_APR")); // 값 확인
+	@GetMapping("/pjtEditForm")
+	public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn, Model model, HttpSession session) {
+		log.info("getPjtEditForm Called >>> {}", pjtSn);
+	    List<CmmnMap> approverList = projectMngService.selectApproverCandidates();
+	    EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
+	    boolean isAdmin = true; // 임시로 항상 true로 설정 !!
+		
+	    //프로젝트 권한 체크 : 권한없는 사람이 접근했을때 막는거 
+	    if (!"프로젝트".equals(loginUser.getRole())) {
+	        model.addAttribute("errorMsg", "권한이 없습니다.");
+	        return "error/403"; // 접근 불가 페이지
+	    }
+	    
+		CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
+		log.debug("DETAIL TB_PJT_APR={}", pjtDetail.get("TB_PJT_APR")); // 값 확인
+		model.addAttribute("isAdmin", isAdmin);
+	    model.addAttribute("approverList", approverList);
+		model.addAttribute("pjt", pjtDetail);
+		model.addAttribute("mainUrl", "pjt_mng/pjt_edit_form");
+		return "home";
+	}
 
-      model.addAttribute("pjt", pjtDetail);
-      model.addAttribute("mainUrl", "pjt_mng/pjt_edit_form");
-      return "home";
-   }
 
    @GetMapping("/pjtDetail")
    public String pjtDetail(@RequestParam("pjtSn") int pjtSn, Model model, HttpSession session) {
@@ -299,15 +363,23 @@ public class ProjectMngController {
 
    @PostMapping("/updatePjtProc")
    public String updatePjtProc(@RequestParam("pjtSn") String pjtSn, @RequestParam("pjtNm") String pjtNm,
+		   @RequestParam(value = "employeeId", required = false) String employeeId,
+		   @RequestParam(value = "TB_PJT_APR", required = false) String TB_PJT_APR,
          @RequestParam(value = "empNm", required = false) String empNm,
          @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
          @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
          @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd,
          @RequestParam(value = "content", required = false) String content,
          @RequestParam(value = "approvers", required = false) String approvers,
-         @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile,
-         @RequestParam(value = "oldFileName", required = false) String oldFileName,
-         @RequestParam(value = "oldOrgFileName", required = false) String oldOrgFileName) {
+         @RequestParam(value = "uploadFile1", required = false) MultipartFile uploadFile1,
+         @RequestParam(value = "oldFileName1", required = false) String oldFileName1,
+         @RequestParam(value = "oldOrgFileName1", required = false) String oldOrgFileName1,
+         @RequestParam(value = "uploadFile2", required = false) MultipartFile uploadFile2,
+         @RequestParam(value = "oldFileName2", required = false) String oldFileName2,
+         @RequestParam(value = "oldOrgFileName2", required = false) String oldOrgFileName2,
+         @RequestParam(value = "uploadFile3", required = false) MultipartFile uploadFile3,
+         @RequestParam(value = "oldFileName3", required = false) String oldFileName3,
+         @RequestParam(value = "oldOrgFileName3", required = false) String oldOrgFileName3) {
 
       Safelist customSafelist = Safelist.basicWithImages()
             .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
@@ -326,7 +398,8 @@ public class ProjectMngController {
       CmmnMap params = new CmmnMap();
       params.put("PJT_SN", pjtSn);
       params.put("PJT_NM", pjtNm);
-      params.put("EMP_NM", empNm);
+      params.put("employeeId", employeeId);
+      params.put("TB_PJT_APR", TB_PJT_APR);
       params.put("PJT_BGNG_DT", pjtBgngDt);
       params.put("PJT_END_DT", pjtEndDt);
       params.put("PJT_STTS_CD", pjtSttsCd);
@@ -334,14 +407,14 @@ public class ProjectMngController {
       params.put("APPROVERS", approvers);
 
       String uploadDir = "C:/upload/";
-      String newFileName = oldFileName != null ? oldFileName : "";
-      String newOrgFileName = oldOrgFileName != null ? oldOrgFileName : "";
+      String newFileName = oldFileName1 != null ? oldFileName1 : "";
+      String newOrgFileName = oldOrgFileName1 != null ? oldOrgFileName1 : "";
 
-      if (uploadFile != null && !uploadFile.isEmpty()) {
-         String extension = uploadFile.getOriginalFilename()
-               .substring(uploadFile.getOriginalFilename().lastIndexOf("."));
+      if (uploadFile1 != null && !uploadFile1.isEmpty()) {
+         String extension = uploadFile1.getOriginalFilename()
+               .substring(uploadFile1.getOriginalFilename().lastIndexOf("."));
          newFileName = java.util.UUID.randomUUID().toString() + extension;
-         newOrgFileName = uploadFile.getOriginalFilename();
+         newOrgFileName = uploadFile1.getOriginalFilename();
 
          File dir = new File(uploadDir);
          if (!dir.exists())
@@ -350,10 +423,73 @@ public class ProjectMngController {
          File dest = new File(uploadDir + newFileName);
 
          try {
-            uploadFile.transferTo(dest);
+            uploadFile1.transferTo(dest);
             // 기존 파일 삭제
-            if (oldFileName != null && !oldFileName.isEmpty()) {
-               File prevFile = new File(uploadDir + oldFileName);
+            if (oldFileName1 != null && !oldFileName1.isEmpty()) {
+               File prevFile = new File(uploadDir + oldFileName1);
+               if (prevFile.exists())
+                  prevFile.delete();
+            }
+         } catch (Exception e) {
+            e.printStackTrace();
+         }
+      }
+      params.put("ATCH_FILE_SN1", newFileName);
+      params.put("ORG_FILE_NM1", newOrgFileName);
+      
+      
+      
+      newFileName = oldFileName2 != null ? oldFileName2 : "";
+      newOrgFileName = oldOrgFileName2 != null ? oldOrgFileName2 : "";
+
+      if (uploadFile2 != null && !uploadFile2.isEmpty()) {
+         String extension = uploadFile2.getOriginalFilename()
+               .substring(uploadFile2.getOriginalFilename().lastIndexOf("."));
+         newFileName = java.util.UUID.randomUUID().toString() + extension;
+         newOrgFileName = uploadFile2.getOriginalFilename();
+
+         File dir = new File(uploadDir);
+         if (!dir.exists())
+            dir.mkdirs();
+
+         File dest = new File(uploadDir + newFileName);
+
+         try {
+            uploadFile2.transferTo(dest);
+            // 기존 파일 삭제
+            if (oldFileName2 != null && !oldFileName2.isEmpty()) {
+               File prevFile = new File(uploadDir + oldFileName2);
+               if (prevFile.exists())
+                  prevFile.delete();
+            }
+         } catch (Exception e) {
+            e.printStackTrace();
+         }
+      }
+      params.put("ATCH_FILE_SN2", newFileName);
+      params.put("ORG_FILE_NM2", newOrgFileName);
+      
+      
+      newFileName = oldFileName3 != null ? oldFileName3 : "";
+      newOrgFileName = oldOrgFileName3 != null ? oldOrgFileName3 : "";
+
+      if (uploadFile3 != null && !uploadFile3.isEmpty()) {
+         String extension = uploadFile3.getOriginalFilename()
+               .substring(uploadFile3.getOriginalFilename().lastIndexOf("."));
+         newFileName = java.util.UUID.randomUUID().toString() + extension;
+         newOrgFileName = uploadFile3.getOriginalFilename();
+
+         File dir = new File(uploadDir);
+         if (!dir.exists())
+            dir.mkdirs();
+
+         File dest = new File(uploadDir + newFileName);
+
+         try {
+            uploadFile3.transferTo(dest);
+            // 기존 파일 삭제
+            if (oldFileName3 != null && !oldFileName3.isEmpty()) {
+               File prevFile = new File(uploadDir + oldFileName3);
                if (prevFile.exists())
                   prevFile.delete();
             }
@@ -362,8 +498,8 @@ public class ProjectMngController {
          }
       }
 
-      params.put("ATCH_FILE_SN", newFileName);
-      params.put("ORG_FILE_NM", newOrgFileName);
+      params.put("ATCH_FILE_SN3", newFileName);
+      params.put("ORG_FILE_NM3", newOrgFileName);
 
       // 마지막 수정일시 업데이트
       LocalDateTime now = LocalDateTime.now();
@@ -400,12 +536,15 @@ public class ProjectMngController {
 
    @PostMapping("/savePjtProc")
    public String savePjtProc(HttpSession session, Model model, @RequestParam("pjtNm") String pjtNm,
-         @RequestParam(value = "empNm", required = false) String empNm,
+         @RequestParam(value = "employeeId", required = false) String employeeId,
          @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
          @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
          @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd, // ✅ 추가된 부분
          @RequestParam(value = "content", required = false) String content,
-         @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile) {
+         @RequestParam(value = "TB_PJT_APR", required = false) String TB_PJT_APR,
+         @RequestParam(value = "uploadFile1", required = false) MultipartFile uploadFile1,
+         @RequestParam(value = "uploadFile2", required = false) MultipartFile uploadFile2,
+         @RequestParam(value = "uploadFile3", required = false) MultipartFile uploadFile3) {
 
       Safelist customSafelist = Safelist.basicWithImages()
             .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
@@ -423,14 +562,14 @@ public class ProjectMngController {
 
       CmmnMap params = new CmmnMap();
       log.info("pjtNm " + pjtNm);
-      log.info("empNm" + empNm);
+      log.info("employeeId" + employeeId);
       log.info("pjtBgngDt " + pjtBgngDt);
       log.info("pjtEndDt " + pjtEndDt);
 
       // 파일 업로드
-      if (uploadFile != null && !uploadFile.isEmpty()) {
-         String originalFileName = uploadFile.getOriginalFilename();
-         String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+      if (uploadFile1 != null && !uploadFile1.isEmpty()) {
+         String originalFileName1 = uploadFile1.getOriginalFilename();
+         String extension = originalFileName1.substring(originalFileName1.lastIndexOf("."));
          String uuidFileName = UUID.randomUUID().toString() + extension;
 
          String uploadDir = "C:/upload/";
@@ -441,19 +580,60 @@ public class ProjectMngController {
          File dest = new File(uploadDir + uuidFileName);
 
          try {
-            uploadFile.transferTo(dest);
-            params.put("ATCH_FILE_SN", uuidFileName);
-            params.put("ORG_FILE_NM", originalFileName);
+            uploadFile1.transferTo(dest);
+            params.put("ATCH_FILE_SN1", uuidFileName);
+            params.put("ORG_FILE_NM1", originalFileName1);
          } catch (IllegalStateException | IOException e) {
             e.printStackTrace();
          }
       }
+      if (uploadFile2 != null && !uploadFile2.isEmpty()) {
+          String originalFileName2 = uploadFile2.getOriginalFilename();
+          String extension = originalFileName2.substring(originalFileName2.lastIndexOf("."));
+          String uuidFileName = UUID.randomUUID().toString() + extension;
+
+          String uploadDir = "C:/upload/";
+          File dir = new File(uploadDir);
+          if (!dir.exists())
+             dir.mkdirs();
+
+          File dest = new File(uploadDir + uuidFileName);
+
+          try {
+             uploadFile2.transferTo(dest);
+             params.put("ATCH_FILE_SN2", uuidFileName);
+             params.put("ORG_FILE_NM2", originalFileName2);
+          } catch (IllegalStateException | IOException e) {
+             e.printStackTrace();
+          }
+       }
+      if (uploadFile3 != null && !uploadFile3.isEmpty()) {
+          String originalFileName3 = uploadFile3.getOriginalFilename();
+          String extension = originalFileName3.substring(originalFileName3.lastIndexOf("."));
+          String uuidFileName = UUID.randomUUID().toString() + extension;
+
+          String uploadDir = "C:/upload/";
+          File dir = new File(uploadDir);
+          if (!dir.exists())
+             dir.mkdirs();
+
+          File dest = new File(uploadDir + uuidFileName);
+
+          try {
+             uploadFile3.transferTo(dest);
+             params.put("ATCH_FILE_SN3", uuidFileName);
+             params.put("ORG_FILE_NM3", originalFileName3);
+          } catch (IllegalStateException | IOException e) {
+             e.printStackTrace();
+          }
+       }
 
       EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
 
+      params.put("TB_PJT_APR", TB_PJT_APR);
       params.put("PJT_NM", pjtNm);
-      params.put("employeeId", loginUser.getEmployeeId());
-      params.put("EMP_NM", empNm);
+      //params.put("employeeId", loginUser.getEmployeeId());
+      params.put("employeeId", employeeId);
       params.put("PJT_BGNG_DT", pjtBgngDt);
       params.put("PJT_END_DT", pjtEndDt);
       params.put("PJT_STTS_CD", pjtSttsCd);
