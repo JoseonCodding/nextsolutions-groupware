@@ -35,7 +35,8 @@ public interface ApprovalMapper {
 	    "     NULL AS checkOutTime,",
 	    "     NULL AS modifiedBy,",
 	    "     NULL AS modifiedAt,",
-	    "     NULL AS modificationReason",
+	    "     NULL AS modificationReason,",
+	    "     NULL AS timeInout",
 	    "   FROM board_post b",
 	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
 	    "   WHERE b.board_id = 1",
@@ -65,7 +66,8 @@ public interface ApprovalMapper {
 	    "     NULL AS checkOutTime,",
 	    "     NULL AS modifiedBy,",
 	    "     NULL AS modifiedAt,",
-	    "     NULL AS modificationReason",
+	    "     NULL AS modificationReason,",
+	    "     NULL AS timeInout",
 	    "   FROM annual_leave l",
 	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
 	    "   <where>",
@@ -89,15 +91,16 @@ public interface ApprovalMapper {
 	    "     '프로젝트부' AS deptName,",
 	    "     '박길동' AS writer,",
 	    "     p.FRST_REG_DT AS createdAt,",
-	    "     p.ATCH_FILE_SN AS attachFileUuid,",
-	    "     p.ORG_FILE_NM AS attachFileOrgName,",
+	    "     p.ATCH_FILE_SN1 AS attachFileUuid,",
+	    "     p.ORG_FILE_NM1 AS attachFileOrgName,",
 	    "     NULL AS leaveCreateDate,",
 	    "     NULL AS leaveUsedDate,",
 	    "     NULL AS checkInTime,",
 	    "     NULL AS checkOutTime,",
 	    "     NULL AS modifiedBy,",
 	    "     NULL AS modifiedAt,",
-	    "     NULL AS modificationReason",
+	    "     NULL AS modificationReason,",
+	    "     NULL AS timeInout",
 	    "   FROM TB_PJT_BASC p",
 	    "   <where>",
 	    "     <if test='type != null and type != \"\"'>",
@@ -127,7 +130,8 @@ public interface ApprovalMapper {
 	    "     a.check_out_time AS checkOutTime,",
 	    "     a.modified_by AS modifiedBy,",
 	    "     a.modified_at AS modifiedAt,",
-	    "     a.modification_reason AS modificationReason",
+	    "     a.modification_reason AS modificationReason,",
+	    "     a.time_inout AS timeInout",
 	    "   FROM attendance a",
 	    "   LEFT JOIN employee e ON a.employeeId = e.employeeId",
 	    "   <where>",
@@ -146,11 +150,11 @@ public interface ApprovalMapper {
 	    "</script>"
 	})
 	List<ApprovalDTO> approvalData(
-	    @Param("offset") int offset,
-	    @Param("size") int size,
-	    @Param("type") String type,
-	    @Param("status") String status
-	);
+		    @Param("offset") int offset,
+		    @Param("size") int size,
+		    @Param("type") String type,
+		    @Param("status") String status
+		);
 
 
 	// 공지사항 + 연차 + 프로젝트 + 근태  DB 총 개수 세기 (docId:concat 방식으로 임시생성 -> 파라미터로 발사 가능)
@@ -231,7 +235,8 @@ public interface ApprovalMapper {
 	    "     NULL AS checkOutTime,",
 	    "     NULL AS modifiedBy,",
 	    "     NULL AS modifiedAt,",
-	    "     NULL AS modificationReason",
+	    "     NULL AS modificationReason,",
+	    "     NULL AS timeInout",
 	    "   FROM board_post b",
 	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
 	    "   WHERE b.board_id = 1",
@@ -255,7 +260,8 @@ public interface ApprovalMapper {
 	    "     NULL AS checkOutTime,",
 	    "     NULL AS modifiedBy,",
 	    "     NULL AS modifiedAt,",
-	    "     NULL AS modificationReason",
+	    "     NULL AS modificationReason,",
+	    "     NULL AS timeInout",
 	    "   FROM annual_leave l",
 	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
 	    "   WHERE l.state_type IS NOT NULL",
@@ -271,15 +277,16 @@ public interface ApprovalMapper {
 	    "     '프로젝트부' AS deptName,",
 	    "     '박길동' AS writer,",
 	    "     p.FRST_REG_DT AS createdAt,",
-	    "     p.ATCH_FILE_SN AS attachFileUuid,",
-	    "     p.ORG_FILE_NM AS attachFileOrgName,",
+	    "     p.ATCH_FILE_SN1 AS attachFileUuid,",
+	    "     p.ORG_FILE_NM1 AS attachFileOrgName,",
 	    "     NULL AS leaveCreateDate,",
 	    "     NULL AS leaveUsedDate,",
 	    "     NULL AS checkInTime,",
 	    "     NULL AS checkOutTime,",
 	    "     NULL AS modifiedBy,",
 	    "     NULL AS modifiedAt,",
-	    "     NULL AS modificationReason",
+	    "     NULL AS modificationReason,",
+	    "     NULL AS timeInout",
 	    "   FROM TB_PJT_BASC p",
 	    
 	    "   UNION ALL",
@@ -301,17 +308,12 @@ public interface ApprovalMapper {
 	    "     a.check_out_time AS checkOutTime,",
 	    "     a.modified_by AS modifiedBy,",
 	    "     a.modified_at AS modifiedAt,",
-	    "     a.modification_reason AS modificationReason",
+	    "     a.modification_reason AS modificationReason,",
+	    "     a.time_inout AS timeInout",
 	    "   FROM attendance a",
 	    "   LEFT JOIN employee e ON a.employeeId = e.employeeId",
 	    "   <where>",
 	    "     a.status IS NOT NULL",
-	    "     <if test='type != null and type != \"\"'>",
-	    "       AND a.docType = #{type}",
-	    "     </if>",
-	    "     <if test='status != null and status != \"\"'>",
-	    "       AND a.status = #{status}",
-	    "     </if>",
 	    "   </where>",
 	    ") AS all_data",
 	    "WHERE docId = #{docId}",
@@ -339,7 +341,7 @@ public interface ApprovalMapper {
 	int deleteAttendance(@Param("id") String id);
 	
 	
-	// 결재 종류 별 수정 메소드 4개
+	// 결재 종류 별 수정 메소드
 	@Update("UPDATE board_post SET docType=#{dto.docType}, title=#{dto.title}, content=#{dto.content} WHERE post_id=#{id}")
 	int editNotice(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 
@@ -348,7 +350,7 @@ public interface ApprovalMapper {
 	    "UPDATE annual_leave",
 	    "SET docType = #{dto.docType},",
 	    "    create_reason = #{dto.title},",
-	    "    used_reason = #{dto.content},",  // 여기서 DTO의 content 필드 값이 used_reason에 들어감
+	    "    used_reason = #{dto.content},",
 	    "    used_date = #{dto.leaveUsedDate}",
 	    "WHERE leave_id = #{id}",
 	    "</script>"
@@ -358,11 +360,17 @@ public interface ApprovalMapper {
 	@Update("UPDATE TB_PJT_BASC SET docType=#{dto.docType}, PJT_NM=#{dto.title}, content=#{dto.content} WHERE PJT_SN=#{id}")
 	int editProject(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 	
-	@Update("UPDATE attendance SET docType=#{dto.docType}, check_in_time=#{dto.checkInTime}, check_out_time=#{dto.checkOutTime}, modified_by=#{dto.modifiedBy}, modified_at=#{dto.modifiedAt}, modification_reason=#{dto.modificationReason} WHERE id=#{id}")
+	@Update(
+			"UPDATE attendance "
+			+ "SET docType=#{dto.docType}, "
+			+	"modification_reason=#{dto.content}, "
+			+	"time_inout=#{dto.timeInout} "
+			+ "WHERE "
+			+	 "id=#{id}")
 	int editAttendance(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 	
 	
-	// 결재 종류 별 승인or반려 메소드 4개
+	// 결재 종류 별 승인or반려 메소드
 	@Update("UPDATE board_post SET status=#{status} WHERE post_id=#{id}")
 	int updateStatusNotice(@Param("id") String id, @Param("status") String status);
 
@@ -379,19 +387,35 @@ public interface ApprovalMapper {
 	@Update("UPDATE TB_PJT_BASC SET PJT_STTS_CD=#{status} WHERE PJT_SN=#{id}")
 	int updateStatusProject(@Param("id") String id, @Param("status") String status);
 	
-	@Update({
-	    "<script>",
-	    "UPDATE attendance",
-	    "SET status = #{status}",
-	    "<if test='status == \"완료\"'>",
-	    "   , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00')",
-	    "   , check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
-	    "   , modified_at = CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul')",
-	    "</if>",
-	    "WHERE id = #{id}",
-	    "</script>"
-	})
-	int updateStatusAttendance(@Param("id") String id, @Param("status") String status);
+    // 근태 전용 반려 메서드 (timeInout 파라미터 없는 경우)
+    @Update("UPDATE attendance SET status = #{status} WHERE id = #{id}")
+    int rejectAttendance(@Param("id") String id, @Param("status") String status);
+
+    // 근태 전용 승인 메서드 (timeInout 파라미터 있는 경우)
+    @Update({
+        "<script>",
+        "UPDATE attendance",
+        "SET status = #{status}",
+        "<if test='status == \"완료\"'>",
+        "  <choose>",
+        "    <when test='timeInout == \"출근\"'>",
+        "      , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00')",
+        "    </when>",
+        "    <when test='timeInout == \"퇴근\"'>",
+        "      , check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
+        "    </when>",
+        "    <when test='timeInout == \"출퇴근\"'>",
+        "      , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00'),",
+        "        check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
+        "    </when>",
+        "  </choose>",
+        "  , modified_at = CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul')",
+        "</if>",
+        "WHERE id = #{id}",
+        "</script>"
+    })
+    int approveAttendance(@Param("id") String id, @Param("status") String status, @Param("timeInout") String timeInout);
+
 
 
 
