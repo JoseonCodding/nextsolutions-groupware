@@ -111,20 +111,20 @@ public class BoardAdminController {
         return "redirect:/admin/boards";
     }
 
-    // 삭제(실제 스키마엔 is_deleted가 없으므로 비활성화로 대체하는 걸 권장)
+    // 삭제(소프트): 관리자 목록에서도 사라지게
     @PostMapping("/delete")
-    public String delete(@PathVariable Integer boardId) {
+    public String delete(@RequestParam("boardId") Integer boardId) {
         BoardDTO dto = boardMapper.selectBoardById(boardId);
         if (dto == null) return "redirect:/admin/boards";
-
-        // 권장: 비활성화로 대체
-        boardMapper.updateBoardActive(boardId, 0);
-
-        // 물리 삭제가 꼭 필요하면 별도 메서드에서 외래키 제약/자식데이터 고려해 구현
-        // boardMapper.deleteBoard(boardId);
-
+        boardMapper.softDeleteBoard(boardId);
         return "redirect:/admin/boards";
     }
+    
+    @GetMapping("/delete")
+    public String deleteGet(@RequestParam("boardId") Integer boardId) {
+        return delete(boardId);
+    }
+
 
     /* =========================
        3) 조회수 통계 (옵션)

@@ -28,17 +28,33 @@ public interface BoardMapper {
     String findBoardTypeById(@Param("boardId") Integer boardId);
     
     @Select("""
-    		  <script>
-    		  SELECT p.post_id, p.board_id, p.employee_id, p.title, p.content,
-    		         p.created_at, p.updated_at, p.view_count, p.like_count, p.is_deleted,
-    		         e.emp_nm AS empNm
-    		  FROM board_post p
-    		  LEFT JOIN employee e ON employeeId = p.employee_id
-    		  WHERE p.board_id = #{boardId}
-    		    AND p.is_deleted = false
-    		  ORDER BY COALESCE(p.updated_at, p.created_at) DESC, p.post_id DESC
-    		  LIMIT #{limit} OFFSET #{offset}
-    		  </script>
+    		<script>
+    		SELECT p.post_id, p.board_id, p.employee_id, p.title, p.content,
+    		       p.created_at, p.updated_at, p.view_count, p.like_count, p.is_deleted,
+    		       e.emp_nm AS empNm
+    		FROM board_post p
+    		LEFT JOIN employee e ON e.employeeId = p.employee_id
+    		WHERE p.board_id = #{boardId}
+    		  AND p.is_deleted = false
+    		  <if test="keyword != null and keyword != ''">
+    		    AND (
+    		      p.title LIKE CONCAT('%', #{keyword}, '%')
+    		      OR e.emp_nm LIKE CONCAT('%', #{keyword}, '%')
+    		    )
+    		  </if>
+    		<choose>
+    		  <when test="sort != null and sort.toLowerCase() == 'views'">
+    		    ORDER BY p.view_count DESC, p.post_id DESC
+    		  </when>
+    		  <when test="sort != null and sort.toLowerCase() == 'likes'">
+    		    ORDER BY p.like_count DESC, p.post_id DESC
+    		  </when>
+    		  <otherwise>
+    		    ORDER BY COALESCE(p.updated_at, p.created_at) DESC, p.post_id DESC
+    		  </otherwise>
+    		</choose>
+    		LIMIT #{limit} OFFSET #{offset}
+    		</script>
     		""")
     		List<BoardDTO> selectCustomPosts(BoardDTO dto);
     
@@ -54,11 +70,21 @@ public interface BoardMapper {
     
     // 총 건수
     @Select("""
-      SELECT COUNT(*)
-      FROM board_post
-      WHERE board_id = #{boardId} AND is_deleted = FALSE
-    """)
-    int customTotalCnt(@Param("boardId") Integer boardId);
+    		<script>
+    		SELECT COUNT(*)
+    		FROM board_post p
+    		LEFT JOIN employee e ON e.employeeId = p.employee_id
+    		WHERE p.board_id = #{boardId}
+    		  AND p.is_deleted = false
+    		  <if test="keyword != null and keyword != ''">
+    		    AND (
+    		      p.title LIKE CONCAT('%', #{keyword}, '%')
+    		      OR e.emp_nm LIKE CONCAT('%', #{keyword}, '%')
+    		    )
+    		  </if>
+    		</script>
+    		""")
+    int customTotalCnt(BoardDTO dto);
 
 
 
@@ -66,22 +92,53 @@ public interface BoardMapper {
     /// ========= 공지(보드=1) =========
     // 공지 목록 (완료만) - 페이징
     @Select("""
-            <script>
-            SELECT p.*, e.emp_nm AS emp_nm FROM board_post p
+    		<script>
+    		SELECT p.*, e.emp_nm AS emp_nm
+    		FROM board_post p
     		LEFT JOIN employee e ON e.employeeId = p.employee_id
-            WHERE p.board_id=1 AND p.status='완료' AND p.is_deleted=false
-            ORDER BY COALESCE(p.published_at,p.updated_at,p.created_at) DESC, p.post_id DESC
-            LIMIT <choose><when test="limit != null">#{limit}</when><otherwise>10</otherwise></choose>
-            OFFSET <choose><when test="offset != null">#{offset}</when><otherwise>0</otherwise></choose>
-            </script>
-          """)
-          List<BoardDTO> selectNoticePosts(BoardDTO dto);
+    		WHERE p.board_id = 1
+    		  AND p.status = '완료'
+    		  AND p.is_deleted = false
+    		  <if test="keyword != null and keyword != ''">
+    		    AND (
+    		      p.title LIKE CONCAT('%', #{keyword}, '%')
+    		      OR e.emp_nm LIKE CONCAT('%', #{keyword}, '%')
+    		    )
+    		  </if>
+    		<choose>
+    		  <when test="sort != null and sort.toLowerCase() == 'views'">
+    		    ORDER BY p.view_count DESC, p.post_id DESC
+    		  </when>
+    		  <when test="sort != null and sort.toLowerCase() == 'likes'">
+    		    ORDER BY p.like_count DESC, p.post_id DESC
+    		  </when>
+    		  <otherwise>
+    		    ORDER BY COALESCE(p.published_at, p.updated_at, p.created_at) DESC, p.post_id DESC
+    		  </otherwise>
+    		</choose>
+    		LIMIT <choose><when test="limit != null">#{limit}</when><otherwise>10</otherwise></choose>
+    		OFFSET <choose><when test="offset != null">#{offset}</when><otherwise>0</otherwise></choose>
+    		</script>
+    		""")
+    		List<BoardDTO> selectNoticePosts(BoardDTO dto);
     
     @Select("""
-            SELECT COUNT(*) FROM board_post p
-            WHERE p.board_id=1 AND p.status='완료' AND p.is_deleted=false
-          """)
-          int noticeTotalCnt();
+    		<script>
+    		SELECT COUNT(*)
+    		FROM board_post p
+    		LEFT JOIN employee e ON e.employeeId = p.employee_id
+    		WHERE p.board_id = 1
+    		  AND p.status = '완료'
+    		  AND p.is_deleted = false
+    		  <if test="keyword != null and keyword != ''">
+    		    AND (
+    		      p.title LIKE CONCAT('%', #{keyword}, '%')
+    		      OR e.emp_nm LIKE CONCAT('%', #{keyword}, '%')
+    		    )
+    		  </if>
+    		</script>
+    		""")
+    int noticeTotalCnt(BoardDTO dto);
 
     // 공지 상세 (board_id=1, 완료만)
     @Select("""
@@ -148,19 +205,51 @@ public interface BoardMapper {
     /// ========= 자유(보드=2) =========
     // 자유 목록
     @Select("""
-            <script>
-            SELECT p.*, e.emp_nm AS emp_nm FROM board_post p
+    		<script>
+    		SELECT p.*, e.emp_nm AS emp_nm
+    		FROM board_post p
     		LEFT JOIN employee e ON e.employeeId = p.employee_id
-            WHERE p.board_id=2 AND p.is_deleted=false
-            ORDER BY p.post_id DESC
-            LIMIT <choose><when test="limit != null">#{limit}</when><otherwise>10</otherwise></choose>
-            OFFSET <choose><when test="offset != null">#{offset}</when><otherwise>0</otherwise></choose>
-            </script>
-          """)
-          List<BoardDTO> selectFreePosts(BoardDTO dto);
+    		WHERE p.board_id = 2
+    		  AND p.is_deleted = false
+    		  <if test="keyword != null and keyword != ''">
+    		    AND (
+    		      p.title LIKE CONCAT('%', #{keyword}, '%')
+    		      OR e.emp_nm LIKE CONCAT('%', #{keyword}, '%')
+    		    )
+    		  </if>
+    		<choose>
+    		  <when test="sort != null and sort.toLowerCase() == 'views'">
+    		    ORDER BY p.view_count DESC, p.post_id DESC
+    		  </when>
+    		  <when test="sort != null and sort.toLowerCase() == 'likes'">
+    		    ORDER BY p.like_count DESC, p.post_id DESC
+    		  </when>
+    		  <otherwise>
+    		    ORDER BY COALESCE(p.updated_at, p.created_at) DESC, p.post_id DESC
+    		  </otherwise>
+    		</choose>
+    		LIMIT <choose><when test="limit != null">#{limit}</when><otherwise>10</otherwise></choose>
+    		OFFSET <choose><when test="offset != null">#{offset}</when><otherwise>0</otherwise></choose>
+    		</script>
+    		""")
+    		List<BoardDTO> selectFreePosts(BoardDTO dto);
     
-    @Select("SELECT COUNT(*) FROM board_post p WHERE p.board_id=2 AND p.is_deleted=false")
-    int freeTotalCnt();
+    @Select("""
+    		<script>
+    		SELECT COUNT(*)
+    		FROM board_post p
+    		LEFT JOIN employee e ON e.employeeId = p.employee_id
+    		WHERE p.board_id = 2
+    		  AND p.is_deleted = false
+    		  <if test="keyword != null and keyword != ''">
+    		    AND (
+    		      p.title LIKE CONCAT('%', #{keyword}, '%')
+    		      OR e.emp_nm LIKE CONCAT('%', #{keyword}, '%')
+    		    )
+    		  </if>
+    		</script>
+    		""")
+    int freeTotalCnt(BoardDTO dto);
 
     // 게시글 상세 조회
     @Select("""
@@ -238,8 +327,9 @@ public interface BoardMapper {
     // 전체 목록 (관리자 화면)
     @Select("""
         SELECT board_id, board_name, board_type, access_role,
-               use_comment, use_like, is_active, created_at, updated_at
+               use_comment, use_like, is_active, is_deleted, created_at, updated_at
         FROM board_board
+        WHERE is_deleted = false
         ORDER BY board_id DESC
     """)
     List<BoardDTO> selectBoards();
@@ -247,9 +337,9 @@ public interface BoardMapper {
     // 활성 탭용
     @Select("""
         SELECT board_id, board_name, board_type, access_role,
-               use_comment, use_like, is_active, created_at, updated_at
+               use_comment, use_like, is_active, is_deleted, created_at, updated_at
         FROM board_board
-        WHERE is_active = TRUE
+        WHERE is_active = TRUE AND is_deleted = false
         ORDER BY board_id ASC
     """)
     List<BoardDTO> selectActiveBoards();
@@ -257,7 +347,7 @@ public interface BoardMapper {
     // 단건 조회
     @Select("""
         SELECT board_id, board_name, board_type, access_role,
-               use_comment, use_like, is_active, created_at, updated_at
+               use_comment, use_like, is_active, is_deleted, created_at, updated_at
         FROM board_board
         WHERE board_id = #{boardId}
     """)
@@ -266,9 +356,9 @@ public interface BoardMapper {
     // 생성: NOTICE/FREE는 미리 있으니 커스텀만 생성
     @Insert("""
         INSERT INTO board_board
-          (board_name, board_type, access_role, use_comment, use_like, is_active, created_at, updated_at)
+          (board_name, board_type, access_role, use_comment, use_like, is_active, is_deleted, created_at, updated_at)
         VALUES
-          (#{boardName}, 'CUSTOM', #{accessRole}, #{useComment}, #{useLike}, TRUE, NOW(), NOW())
+          (#{boardName}, 'CUSTOM', #{accessRole}, #{useComment}, #{useLike}, TRUE, FALSE, NOW(), NOW())
     """)
     @Options(useGeneratedKeys = true, keyProperty = "boardId")
     int insertBoard(BoardDTO b);
@@ -306,6 +396,16 @@ public interface BoardMapper {
     @Update("UPDATE board_board SET is_active = #{active} WHERE board_id = #{boardId}")
     int updateBoardActive(@Param("boardId") Integer boardId, @Param("active") Integer active);
     
+    // 소프트 삭제
+    @Update("""
+    		  UPDATE board_board
+    		     SET is_deleted = TRUE,
+    		         is_active  = FALSE,
+    		         updated_at = NOW()
+    		   WHERE board_id = #{boardId}
+    		""")
+    		int softDeleteBoard(@Param("boardId") Integer boardId);
+
     // (옵션) 통계
     @Select("""
       SELECT s.stat_id, s.board_id, b.board_name, s.view_date, s.view_count

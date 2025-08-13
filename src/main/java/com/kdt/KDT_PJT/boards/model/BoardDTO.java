@@ -21,6 +21,10 @@ public class BoardDTO {
     private Integer viewCount;    // 조회수
     private Integer likeCount;    // 좋아요 수
     private boolean isDeleted;    // 삭제 여부
+    
+    /* ===== 목록 필터/정렬용 추가 ===== */
+    private String keyword;   // 제목/작성자 통합 검색어
+    private String sort;      // newest | views | likes
 
     /* ===== 전자결재 연계 ===== */
     private String docType;       // 문서 종류 (ex: 프로젝트, 공지사항, 근태)
@@ -69,6 +73,7 @@ public class BoardDTO {
     public boolean useCommentOrFalse() { return Boolean.TRUE.equals(useComment); }
     public boolean useLikeOrFalse()    { return Boolean.TRUE.equals(useLike); }
     public boolean isActiveOrFalse()   { return Boolean.TRUE.equals(isActive); }
+    public boolean isDeletedOrFalse()  { return Boolean.TRUE.equals(isDeleted); }
 
     /* ===== accessRole(String CSV) ↔ accessRoles(List) 싱크 ===== */
     /** CSV 직접 세팅 시 캐시 무효화 + 정규화 */
@@ -132,5 +137,16 @@ public class BoardDTO {
         // 필요 시 소문자/대문자 정규화 원하면 아래 한 줄 사용
         // this.boardType = (boardType == null) ? null : boardType.toLowerCase(Locale.ROOT);
     }
+
+    // 선택: 잘못된 키 들어오면 기본값 보정
+    public String sortOrDefault() {
+        if (sort == null) return "newest";
+        switch (sort.toLowerCase()) {
+            case "views": return "views";
+            case "likes": return "likes";
+            default: return "newest";
+        }
+    }
+
 
 }

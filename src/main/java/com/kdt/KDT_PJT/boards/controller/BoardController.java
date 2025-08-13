@@ -59,10 +59,10 @@ public class BoardController {
         dto.setBoardId(boardId);
         dto.setLimit(size);
         dto.setOffset((page-1)*size);
+        dto.setSort(dto.sortOrDefault());
 
         List<BoardDTO> boards = boardMapper.selectCustomPosts(dto);
-
-        int total = boardMapper.customTotalCnt(boardId);
+        int total = boardMapper.customTotalCnt(dto);
         int totalPages = Math.max(1, (int)Math.ceil(total/(double)size));
 
         int win = 5;
@@ -74,6 +74,8 @@ public class BoardController {
         var loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser != null) me = loginUser.getEmployeeId();
 
+        model.addAttribute("keyword", dto.getKeyword());
+        model.addAttribute("sort", dto.getSort());
         model.addAttribute("board", boardMeta); // 현재 보드 정보
         model.addAttribute("canWrite", boardMeta != null && boardMeta.canWriteBy(me));
         model.addAttribute("boards", boards);
@@ -290,9 +292,10 @@ public class BoardController {
         int page = (dto.getPage()!=null && dto.getPage()>0) ? dto.getPage() : 1;
         dto.setLimit(size);
         dto.setOffset((page-1)*size);
+        dto.setSort(dto.sortOrDefault());
 
         var boards = boardMapper.selectNoticePosts(dto);
-        int total   = boardMapper.noticeTotalCnt();
+        int total   = boardMapper.noticeTotalCnt(dto);
         int totalPages = (int)Math.ceil(total /(double) size);
 
         int win = 5;
@@ -312,6 +315,10 @@ public class BoardController {
         model.addAttribute("size", size);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+        
+        model.addAttribute("keyword", dto.getKeyword());
+        model.addAttribute("sort", dto.getSort());
+        
         model.addAttribute("activeBoard", "notice");
         model.addAttribute("mainUrl", "board/notice_list");
         return "home";
@@ -437,7 +444,7 @@ public class BoardController {
 
         List<BoardDTO> boards = boardMapper.selectFreePosts(dto);
 
-        int total = boardMapper.freeTotalCnt();
+        int total = boardMapper.freeTotalCnt(dto);
         int totalPages = Math.max(1, (int)Math.ceil(total/(double)size));
 
         int win = 5;
