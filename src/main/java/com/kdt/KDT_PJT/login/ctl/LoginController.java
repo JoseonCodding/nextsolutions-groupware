@@ -59,19 +59,13 @@ public class LoginController {
                                @RequestParam("password") String password,
                                HttpSession session) {
 
-        CmmnMap user = loginService.login(employeeId, password);
+        EmployeeDto user = loginService.login(employeeId, password);
 
         //System.out.println("ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ " +user.getString("employeeId"));
         
         if (user != null) {
-        	
-        	EmployeeDto dto = new EmployeeDto();
-        	 // 필요한 값만 세션에 저장
-        	dto.setEmployeeId(user.getString("employeeId"));
-        	dto.setEmpNm(user.getString("empNm"));
-        	dto.setRole(user.getString("role"));
-       
-            session.setAttribute("loginUser", dto);
+
+            session.setAttribute("loginUser", user);
          
         	//return ResponseEntity.ok(dto);
             return "redirect:/rc";
