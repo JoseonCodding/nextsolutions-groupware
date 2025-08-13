@@ -1,8 +1,14 @@
 package com.kdt.KDT_PJT.schedule.ctl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -97,7 +103,7 @@ public class ScheduleController {
 		return "navTap";
 	}
 	
-	//일정 수정 정보 보내기
+	
 	@PostMapping("/modify")
 	public String scheduleModifyReg(HttpSession session,Model model, ScheduleDTO dto) {
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
@@ -110,7 +116,7 @@ public class ScheduleController {
 		return "redirect:/schedule";
 	}
 	
-	//일정 수정 정보 보내기
+	//일정 삭제
 	@RequestMapping("/delete")
 	public String scheduledelete(HttpSession session, ScheduleDTO dto) {
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");

@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-
 @Mapper
 public interface ScheduleMapper {
 
@@ -59,5 +58,33 @@ public interface ScheduleMapper {
 		    WHERE schedule_id = #{scheduleId}
 		""")
 	int delete(ScheduleDTO dto);
+	
+    // 알림 발송 대상 조회
+    @Select("""
+    	    SELECT * FROM schedule
+    	    WHERE alarm = '알림' 
+            and ( repeat_check = 0 
+    	          AND (
+    	          ((cate != '종일' or cate is null) AND hour(start_time) = hour(DATE_ADD(NOW(), INTERVAL 1 HOUR))
+								 AND start_date = CURDATE() )
+    	        OR
+    	          (cate = '종일' AND CURDATE() = DATE_SUB(start_date, INTERVAL 1 DAY))
+				)
+            )
+    		ORDER BY start_date DESC, start_time DESC
+    		LIMIT 10
+    	""")
+    List<ScheduleDTO> getActiveNotifications();
 
+	// 알림 발송 완료 표시
+	@Update("""
+		    UPDATE schedule
+		    SET is_sent = 1,
+		        sent_at = NOW()
+		    WHERE schedule_id = #{scheduleId}
+		""")
+	void markNotificationAsSent(int scheduleId);
+
+  
+  
 }

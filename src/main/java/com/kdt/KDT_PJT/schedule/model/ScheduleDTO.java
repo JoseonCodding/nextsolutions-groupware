@@ -14,12 +14,12 @@ import lombok.Data;
 public class ScheduleDTO {
 
 
-	int scheduleId, repeatCheck;
+	int scheduleId, repeatCheck, isSent;
     String title, cate, alarm, content, holiday;
     Date startDate, endDate, createdAt, updatedAt, deleteDate;
     String employeeId;
     //Date startTime, endTime;
-    Time startTime, endTime;
+    Time startTime, endTime, sentAt;
     
     LocalDate startLocalDate, now;
     LocalDate endLocalDate;

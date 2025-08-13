@@ -1,25 +1,48 @@
 <!-- 일정 등록 -->
-<!-- 종일 일정에 체크할 시 시간 선택 비활성화 -->
+<!-- 휴무일 선택 시 종일 일정에 자동 체크, 종일 일정에 체크할 시 시간 선택 비활성화 -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const allDayCheckbox = document.querySelector('input[name="cate"][value="종일"]');
+    const holidayCheckbox = document.querySelector('input[name="holiday"]');
+    const repeatSelect = document.getElementById("repeatCheck");
     const startTimeInput = document.querySelector('input[name="startTime"]');
     const endTimeInput = document.querySelector('input[name="endTime"]');
 
+    
     function toggleTimeInputs() {
+		// 종일 일정 체크 여부(true/false) 확인
         const isAllDay = allDayCheckbox.checked;
+      	// 종일 이면 시작, 종료 시간 비활성화
         startTimeInput.disabled = isAllDay;
         endTimeInput.disabled = isAllDay;
         
+        // 종일이면 값도 초기화(빈 값)
         if (isAllDay) {
             startTimeInput.value = "";
             endTimeInput.value = "";
         }
     }
 
+ 	// 휴무일 체크 시 처리
+    holidayCheckbox.addEventListener("change", function () {
+        if (holidayCheckbox.checked) {
+            // 종일 일정 자동 체크
+            allDayCheckbox.checked = true;
+            // 반복일정 비활성화
+            repeatSelect.disabled = true;
+            repeatSelect.value = "0"; // '반복 없음'으로 설정
+        } else {
+            // 종일 일정 해제
+            allDayCheckbox.checked = false;
+            // 반복일정 활성화
+            repeatSelect.disabled = false;
+        }
+        toggleTimeInputs();
+    });
+ 
     allDayCheckbox.addEventListener("change", toggleTimeInputs);
 
-    // 페이지 로드 시 초기 상태 설정
+    // 페이지 로드 시 초기 상태 
     toggleTimeInputs();
 });
 </script>
