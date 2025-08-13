@@ -20,6 +20,7 @@ import com.kdt.KDT_PJT.employee.mapper.EmployeeMapper;
 import com.kdt.KDT_PJT.employee.svc.EmployeeService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class EmployeeController {
@@ -36,9 +37,16 @@ public class EmployeeController {
     /** 사원 목록 페이지 */
     @GetMapping("/employee/list")
     public String employeeList(@RequestParam(required = false, name = "keyword") String keyword
-    							,HttpServletRequest request
+    							,HttpServletRequest request, HttpSession session
     							,Model model) {
     	
+    	EmployeeDto user = (EmployeeDto) session.getAttribute("loginUser");
+    	
+    	  // 로그인 안 했거나 사번이 20250006이 아니면 접근 차단
+        if (user == null || !"20250006".equals(user.getEmployeeId())) {
+            return "redirect:/access-denied"; // 권한 없음 페이지로 이동
+        }
+  
 	    // 🔍 검색어 로그 확인 (디버깅용)
 	   System.out.println("getPjtList Called >>> keyword = " + keyword);
 	   

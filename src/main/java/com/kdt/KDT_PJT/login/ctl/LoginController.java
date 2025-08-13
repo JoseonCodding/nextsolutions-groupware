@@ -37,11 +37,11 @@ public class LoginController {
 //        //System.out.println("ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ " +user.getString("employeeId"));
 //        
 //        if (user != null) {
-//        	
-//        	EmployeeDto dto = new EmployeeDto();
-//        	 // 필요한 값만 세션에 저장
-//        	dto.setEmployeeId(user.getString("employeeId"));
-//        	dto.setEmpNm(user.getString("empNm"));
+//           
+//           EmployeeDto dto = new EmployeeDto();
+//            // 필요한 값만 세션에 저장
+//           dto.setEmployeeId(user.getString("employeeId"));
+//           dto.setEmpNm(user.getString("empNm"));
 //       
 //            session.setAttribute("loginUser", dto);
 //         
@@ -61,13 +61,13 @@ public class LoginController {
 
         EmployeeDto user = loginService.login(employeeId, password);
 
-        System.out.println("loginProcess " +user);
+        //System.out.println("ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ " +user.getString("employeeId"));
         
         if (user != null) {
 
             session.setAttribute("loginUser", user);
          
-        	//return ResponseEntity.ok(dto);
+           //return ResponseEntity.ok(dto);
             return "redirect:/rc";
             //return "redirect:/attend";
         }
@@ -89,4 +89,3 @@ public class LoginController {
         return "redirect:/login";
     }
 }
-
