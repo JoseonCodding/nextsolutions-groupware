@@ -28,7 +28,7 @@
     UPDATE TB_PJT_BASC
     SET 
         PJT_NM = #{PJT_NM},
-        employeeid = #{employeeid},
+        employeeId = #{employeeId},
         PJT_BGNG_DT = #{PJT_BGNG_DT},
         PJT_END_DT = #{PJT_END_DT},
         PJT_STTS_CD = #{PJT_STTS_CD},
@@ -63,7 +63,7 @@
 
   <!-- 프로젝트 상세 조회 -->
   <select id="getPjtDetail" parameterType="String" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
-    SELECT PJT_SN, PJT_NM, PJT_STTS_CD, employeeid, USE_YN,
+    SELECT PJT_SN, PJT_NM, PJT_STTS_CD, employeeId, USE_YN,
            FRST_RGTR_ID, FRST_REG_DT, LAST_MDFR_ID, LAST_MDFCN_DT,
            ATCH_FILE_SN, ORG_FILE_NM, PJT_BGNG_DT, PJT_END_DT, content
     FROM TB_PJT_BASC
@@ -164,6 +164,7 @@
     </if>
   ORDER BY LAST_MDFCN_DT DESC
 </select>
+
 </mapper>
 
 

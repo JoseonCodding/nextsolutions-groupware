@@ -190,7 +190,8 @@ public class ApprovalController {
         @RequestParam(name = "page", defaultValue = "1") int page,
         @RequestParam(name = "type", required = false) String type,
         @RequestParam(name = "status", required = false) String status,
-        @RequestParam(name = "docType") String docType) {
+        @RequestParam(name = "docType") String docType,
+        @RequestParam(name = "actions", required = false) List<String> actions) {
         
     	String rawContent = editData.getContent();
 
@@ -232,6 +233,18 @@ public class ApprovalController {
             }
         }
 
+        if ("근태".equals(docType)) {
+            if (actions != null && !actions.isEmpty()) {
+                if (actions.contains("IN") && actions.contains("OUT")) {
+                    editData.setTimeInout("출퇴근");
+                } else if (actions.contains("IN")) {
+                    editData.setTimeInout("출근");
+                } else if (actions.contains("OUT")) {
+                    editData.setTimeInout("퇴근");
+                }
+            }
+        }
+
         if ("공지사항".equals(docType)) {
             approvalMapper.editNotice(pkId, editData);
         } else if ("연차".equals(docType)) {
@@ -269,7 +282,8 @@ public class ApprovalController {
                 approvalMapper.updateStatusProject(pkId, "완료");
                 break;
             case "근태":
-                approvalMapper.updateStatusAttendance(pkId, "완료");
+                ApprovalDTO attDto = approvalMapper.view(docId, null, null);
+                approvalMapper.approveAttendance(pkId, "완료", attDto.getTimeInout());
                 break;
         }
 
@@ -297,7 +311,7 @@ public class ApprovalController {
                 approvalMapper.updateStatusProject(pkId, "반려");
                 break;
             case "근태":
-                approvalMapper.updateStatusAttendance(pkId, "반려");
+                approvalMapper.rejectAttendance(pkId, "반려");
                 break;
         }
 
