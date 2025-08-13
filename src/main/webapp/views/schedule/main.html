@@ -67,21 +67,8 @@
     				
     				 console.log(dateToStr(currDate))
     				for(var vv of dayScheduleGet(dateToStr(currDate))){
-<<<<<<< HEAD
-
-    					if(vv.holiday=='일정' || vv.holiday=='휴무일'){
-    						var clickBox = "<a href='/schedule/detail?scheduleId="+vv.scheduleId+"'>"+vv.title+"</a>"
-    					}else if(vv.holiday=='프로젝트' ){
-    						var clickBox = "<a href='/pjtMng/pjtDetail?pjtSn="+vv.scheduleId+"'>"+vv.title+"</a>"
-						}else{
-							var clickBox = vv.title
-						}
-
-						
-=======
 	
 						var clickBox = "<a href='/schedule/detail?scheduleId="+vv.scheduleId+"'>"+vv.title+"</a>"
->>>>>>> refs/heads/chaso
 
 						
 						ttt += "<br/>"
