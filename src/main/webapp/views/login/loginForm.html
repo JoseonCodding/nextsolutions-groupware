@@ -4,33 +4,64 @@
 <meta charset="UTF-8">
 <title>넥스트 솔루션즈 - 로그인</title>
 <style>
-    body { font-family: 'Noto Sans KR', sans-serif; background-color: #f5f6fa; margin: 0; padding: 0; }
-    .login-container { width: 100%; max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    h1 { text-align: center; margin-bottom: 30px; color: #2c3e50; }
-    label { display: block; margin: 10px 0 5px; font-weight: bold; }
-    input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 15px; }
-    button { width: 100%; padding: 12px; background-color: #4a90e2; border: none; border-radius: 4px; color: white; font-size: 16px; cursor: pointer; }
-    button:hover { background-color: #357abd; }
+  body { font-family: 'Noto Sans KR', sans-serif; background-color: #f5f6fa; margin: 0; padding: 0; }
+  .login-container { width: 100%; max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  h1 { text-align: center; margin-bottom: 30px; color: #2c3e50; }
+  label { display: block; margin: 10px 0 5px; font-weight: bold; }
+  input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 15px; }
+  button { width: 100%; padding: 12px; background-color: #4a90e2; border: none; border-radius: 4px; color: white; font-size: 16px; cursor: pointer; }
+  button:hover { background-color: #357abd; }
 </style>
 </head>
 <body>
 <div class="login-container">
-    <h1>넥스트 솔루션즈</h1>
+  <h1>넥스트 솔루션즈</h1>
 
-    <form action="/login/process" method="post">
-        <label for="employeeId">아이디</label>
-        <input type="text" id="employeeId" name="employeeId" placeholder="아이디" required>
+  <form action="/login/process" method="post" id="loginForm">
+    <label for="employeeId">아이디</label>
+    <input
+      type="text"
+      id="employeeId"
+      name="employeeId"
+      placeholder="사번 입력"
+      required
+      inputmode="numeric"
+      maxlength="8"
+      pattern="[0-9]{8}"
+      title="아이디는 숫자 8자리여야 합니다."
+      autocomplete="username"
+    />
 
-        <label for="password">비밀번호</label>
-        <input type="password" id="password" name="password" placeholder="비밀번호" required>
+    <label for="password">비밀번호</label>
+    <input type="password" id="password" name="password" placeholder="비밀번호" required autocomplete="current-password"/>
 
-        <button type="submit">로그인</button>
-    </form>
+    <button type="submit">로그인</button>
+  </form>
 </div>
 
-<!-- 로그인 실패 시 alert 띄우기 -->
+<!-- 로그인 실패 시 alert -->
 <script th:if="${param.error}">
-    alert("사번과 비밀번호가 맞지 않습니다. 다시 입력해주세요.");
+  alert("사번과 비밀번호가 맞지 않습니다. 다시 입력해주세요.");
+</script>
+
+<!-- 숫자 8자리 강제 스크립트 -->
+<script>
+  const idEl = document.getElementById('employeeId');
+  const form = document.getElementById('loginForm');
+
+  // 입력 중 비숫자 제거 + 8자리 제한
+  idEl.addEventListener('input', () => {
+    idEl.value = idEl.value.replace(/\D/g, '').slice(0, 8);
+  });
+
+  // 제출 시 최종 확인
+  form.addEventListener('submit', (e) => {
+    if (!/^\d{8}$/.test(idEl.value)) {
+      alert('아이디는 숫자 8자리여야 합니다.');
+      idEl.focus();
+      e.preventDefault();
+    }
+  });
 </script>
 
 </body>
