@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
+import com.kdt.KDT_PJT.attend.model.LeaveMapper;
 
 @Controller
 @RequestMapping("/approval")
@@ -41,6 +43,8 @@ public class ApprovalController {
 	
 	@Autowired
 	ApprovalMapper approvalMapper;
+	@Autowired
+	LeaveMapper leaveMapper;
 	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
@@ -190,7 +194,8 @@ public class ApprovalController {
         @RequestParam(name = "page", defaultValue = "1") int page,
         @RequestParam(name = "type", required = false) String type,
         @RequestParam(name = "status", required = false) String status,
-        @RequestParam(name = "docType") String docType) {
+        @RequestParam(name = "docType") String docType,
+        @RequestParam(name = "actions", required = false) List<String> actions) {
         
     	String rawContent = editData.getContent();
 
@@ -232,6 +237,18 @@ public class ApprovalController {
             }
         }
 
+        if ("근태".equals(docType)) {
+            if (actions != null && !actions.isEmpty()) {
+                if (actions.contains("IN") && actions.contains("OUT")) {
+                    editData.setTimeInout("출퇴근");
+                } else if (actions.contains("IN")) {
+                    editData.setTimeInout("출근");
+                } else if (actions.contains("OUT")) {
+                    editData.setTimeInout("퇴근");
+                }
+            }
+        }
+
         if ("공지사항".equals(docType)) {
             approvalMapper.editNotice(pkId, editData);
         } else if ("연차".equals(docType)) {
@@ -251,12 +268,16 @@ public class ApprovalController {
     }
     
     @PostMapping("/approve")
+    @Transactional
     public String approvalApprove(
         RedirectAttributes redirectAttributes,
         @RequestParam("docId") String docId,
         @RequestParam("docType") String docType) {
 
         String pkId = docId.split("_")[1];
+        
+        
+        System.out.println("pkId : " + pkId);
 
         switch (docType) {
             case "공지사항":
@@ -264,12 +285,14 @@ public class ApprovalController {
                 break;
             case "연차":
                 approvalMapper.updateStatusLeave(pkId, "완료");
+                leaveMapper.insertScheduleRest(pkId);
                 break;
             case "프로젝트":
                 approvalMapper.updateStatusProject(pkId, "완료");
                 break;
             case "근태":
-                approvalMapper.updateStatusAttendance(pkId, "완료");
+                ApprovalDTO attDto = approvalMapper.view(docId, null, null);
+                approvalMapper.approveAttendance(pkId, "완료", attDto.getTimeInout());
                 break;
         }
 
@@ -297,7 +320,7 @@ public class ApprovalController {
                 approvalMapper.updateStatusProject(pkId, "반려");
                 break;
             case "근태":
-                approvalMapper.updateStatusAttendance(pkId, "반려");
+                approvalMapper.rejectAttendance(pkId, "반려");
                 break;
         }
 

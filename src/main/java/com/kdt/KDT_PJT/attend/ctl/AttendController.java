@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
@@ -130,84 +131,46 @@ public class AttendController {
     }
 
     
-    //근태 관리자 페이지(출퇴근 변경이력 포함)
-//    @GetMapping("/attendList")
-//    public String attendListPage(Model model) {
-//        List<AttendDTO> attendList = service.getAttendData();
-//        model.addAttribute("mainData", attendList);
-//        model.addAttribute("mainUrl", "attend/attendList");
-//        return "navTap"; 
-//    }
-   
- // 근태 관리자 페이지 - 검색 기능 포함
-	/*
-	 * @GetMapping("/attendList") public String attendListPage(AttendDTO dto, Model
-	 * model) {
-	 * 
-	 * // 검색 조건이 없으면 오늘 출근한 사람만 보여줌 List<AttendDTO> attendList; if
-	 * (dto.getWorkDate() == null && dto.getEmpNm() == null && dto.getModifiedBy()
-	 * == null) { attendList = attendMapper.getTodayAttendList(); } else {
-	 * 
-	 * System.out.println("attendListPage2 : "+dto); attendList =
-	 * attendMapper.searchAttendList(dto); }
-	 * 
-	 * model.addAttribute("mainData", attendList); model.addAttribute("mainUrl",
-	 * "attend/attendList"); return "navTap"; }
-	 */
     
     @GetMapping("/attendList")
     public String attendListPage(AttendDTO dto,
-    	    Model model, HttpServletResponse resp, HttpServletRequest request) {
-    	
-    	// 🔍 검색어 로그 확인 (디버깅용)
-        System.out.println("attendListPage Called >>> " );
-        
-     // ① 페이지 번호/사이즈 받아오기 (없으면 기본값)
+                                 Model model,
+                                 HttpServletRequest request) {
+
         int pageNum = 1;
         int pageSize = 10;
-
         try {
-           if (request.getParameter("pageNum") != null) {
-              pageNum = Integer.parseInt(request.getParameter("pageNum"));
-           }
-           if (request.getParameter("pageSize") != null) {
-              pageSize = Integer.parseInt(request.getParameter("pageSize"));
-           }
+            if (request.getParameter("pageNum") != null) {
+                pageNum = Integer.parseInt(request.getParameter("pageNum"));
+            }
+            if (request.getParameter("pageSize") != null) {
+                pageSize = Integer.parseInt(request.getParameter("pageSize"));
+            }
         } catch (Exception e) {
-           log.warn("페이지 번호 파싱 실패, 기본값 사용");
+            // log.warn("페이지 번호 파싱 실패, 기본값 사용", e);
         }
 
-        
-        // 리스트 가져오기
-        PageInfo<AttendDTO> list = attendMapper.searchAttendListPage(dto);
-        
-        // 검색 조건이 없으면 오늘 출근한 사람만 보여줌
-        List<AttendDTO> attendList;
-        if (dto.getWorkDate() == null && dto.getEmpNm() == null && dto.getModifiedBy() == null) {
-            attendList = attendMapper.getTodayAttendList();
-        } else {
-        	
-        	System.out.println("attendListPage2 : "+dto);
-            attendList = attendMapper.searchAttendList(dto);
-        }
+        // ✅ 여기서 페이징 시작
+        PageHelper.startPage(pageNum, pageSize);
 
-        model.addAttribute("mainData", attendList);
+        // ✅ 하나의 경로로 조회 (필요 시 dto.workDate를 오늘 날짜로 채워 기본 동작 만들기)
+        List<AttendDTO> rows = attendMapper.searchAttendListPage(dto);
+
+        // ✅ PageInfo로 래핑
+        PageInfo<AttendDTO> page = new PageInfo<>(rows);
+
+        // 뷰로 전달
+        model.addAttribute("page", page);           // 전체 페이징 메타데이터
+        model.addAttribute("mainData", page.getList()); // 현재 페이지 데이터
+        model.addAttribute("criteria", dto);       // ✅ 검색 조건 바인딩
+        model.addAttribute("pageNum", pageNum);    // ✅ 현재 페이지
+        model.addAttribute("pageSize", pageSize);  // ✅ 페이지 크기
         model.addAttribute("mainUrl", "attend/attendList");
         
-        // ✅ attendMapper → attendMapper2 로 변경
-	
-		/*
-		 * List<AttendDTO> list = attendMapper2.searchAttendListHistoryPaged(dto);
-		 * 
-		 * String fileBase = "attendance_changes"; String encoded =
-		 * URLEncoder.encode(fileBase, StandardCharsets.UTF_8);
-		 * resp.setContentType(MediaType.APPLICATION_PDF_VALUE);
-		 * resp.setHeader("Content-Disposition", "attachment; filename=\"" + encoded +
-		 * ".pdf\""); writePdf(list, resp);
-		 */
-        
+
+
         return "navTap";
-    } 
+    }
     
 
 } // ← 클래스 닫기

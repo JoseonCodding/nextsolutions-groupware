@@ -1,0 +1,77 @@
+[[${scd}]]
+<!-- 일정 등록 -->
+<!-- 종일 일정에 체크할 시 시간 선택 비활성화 -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const allDayCheckbox = document.querySelector('input[name="cate"][value="종일"]');
+    const startTimeInput = document.querySelector('input[name="startTime"]');
+    const endTimeInput = document.querySelector('input[name="endTime"]');
+
+    function toggleTimeInputs() {
+        const isAllDay = allDayCheckbox.checked;
+        startTimeInput.disabled = isAllDay;
+        endTimeInput.disabled = isAllDay;
+        
+        if (isAllDay) {
+            startTimeInput.value = "";
+            endTimeInput.value = "";
+        }
+    }
+
+    allDayCheckbox.addEventListener("change", toggleTimeInputs);
+
+    // 페이지 로드 시 초기 상태 설정
+    toggleTimeInputs();
+});
+</script>
+
+<form  method="post" th:object="${scd}">
+	<table border="" >
+		<tr>
+			<td colspan="3" align="center">
+				일정 수정<a th:href="@{/schedule}">닫힘</a>
+			</td>	
+		</tr>
+		<tr >
+			<td colspan="3">
+				일정명<textarea th:field="*{title}" cols="30" rows="1">[[*{title}]]</textarea>
+			</td>
+		</tr>
+		<tr >
+			<td colspan="3">
+				<input type="date" th:field="*{startDateStr}"/><input type="time" th:field="*{startTimeStr}">
+				~ <input type="date" th:field="*{endDateStr}"/><input type="time" th:field="*{endTimeStr}">
+				<input type="checkbox" th:field="*{cate}" value="종일"/>종일일정
+			</td>
+
+		</tr>
+		<tr>
+			<td>
+				<span>반복일정 : </span>
+				<!-- 반복일정 옵션 -->
+				<select  th:field="*{repeatCheck}" id="repeatCheck">
+					<option value="0">반복 없음</option>
+					<option value="1">매일</option>
+					<option value="2">매주</option>
+					<option value="3">매달</option>
+				</select>
+			</td>
+			<td>
+				<input type="checkbox" th:field="*{holiday}" value="휴무일"/>휴무일
+			</td>
+			<td>
+				<input type="checkbox"  th:field="*{alarm}" value="알림"/>알림 
+			</td>
+		</tr>
+		<tr >
+			<td colspan="3">
+				<textarea name="content" id="" cols="50" rows="30">[[*{content}]]</textarea>
+			</td>
+		</tr>
+		<tr >
+			<td colspan="3" align="right">
+				<input type="submit" value="수정"/>
+			</td>
+		</tr>
+	</table>
+</form> 

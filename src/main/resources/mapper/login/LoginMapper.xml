@@ -6,12 +6,14 @@
 <mapper namespace="com.kdt.KDT_PJT.login.mapper.LoginMapper">
 
     <!-- 로그인: 아이디 + 비밀번호로 사용자 조회 -->
-    <select id="getUserByIdAndPassword" parameterType="CmmnMap" resultType="CmmnMap">
+    <select id="getUserByIdAndPassword" parameterType="CmmnMap" resultType="com.kdt.KDT_PJT.cmmn.map.EmployeeDto">
         SELECT emp_seq,
-               employeeId AS employeeId,  -- alias 맞추기
-               password,
+               employeeId, 
                active,
-               emp_nm AS empNm             -- alias 맞추기
+               deptName,
+               position,
+               role,
+               emp_nm        
         FROM employee
         WHERE employeeId = #{employeeId}
           AND password = #{password}

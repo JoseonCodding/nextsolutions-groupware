@@ -83,8 +83,10 @@
 			<a th:href="@{'/pjtMng/downloadFile?fileName=' + ${pjt['ATCH_FILE_SN1']} + '&orgName=' + ${pjt['ORG_FILE_NM1']}}"
 			   th:text="${pjt['ORG_FILE_NM1']}">첨부파일 다운로드</a>
 	    </span>
+
 	    <span th:unless="${not #strings.isEmpty(pjt['ATCH_FILE_SN1'])}">
 	      첨부파일이 없습니다.
+
 	    </span>
 	  </td>
 	</tr>

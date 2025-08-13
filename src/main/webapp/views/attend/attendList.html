@@ -19,46 +19,7 @@
     <input type="hidden" name="page" value="1"/>
 </form>
 
-<!-- 페이저: #numbers 사용 금지, 안전 파싱 -->
-<div th:with="
-      pRaw=${page}, sRaw=${size}, tpRaw=${totalPages},
-      p=${(pRaw==null or pRaw=='') ? 1 : (pRaw instanceof T(java.lang.Number) ? pRaw.intValue() : T(java.lang.Integer).parseInt(pRaw))},
-      s=${(sRaw==null or sRaw=='') ? 10 : (sRaw instanceof T(java.lang.Number) ? sRaw.intValue() : T(java.lang.Integer).parseInt(sRaw))},
-      tp=${(tpRaw==null or tpRaw=='') ? 0 : (tpRaw instanceof T(java.lang.Number) ? tpRaw.intValue() : T(java.lang.Integer).parseInt(tpRaw))},
-      prev=${p>1 ? p-1 : 1},
-      next=${p<tp ? p+1 : tp}
-    "
-    style="margin-top:10px; display:flex; gap:6px; align-items:center;">
 
-  <a th:href="@{/attend/attendList/search(startDay=${startDay},endDay=${endDay},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=1,size=${s})}"
-     th:classappend="${p == 1} ? 'disabled'">« 처음</a>
-
-  <a th:href="@{/attend/attendList/search(startDay=${startDay},endDay=${endDay},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=${prev},size=${s})}"
-     th:classappend="${p == 1} ? 'disabled'">‹ 이전</a>
-
-  <span th:text="${p} + ' / ' + ${tp}"></span>
-
-  <a th:href="@{/attend/attendList/search(startDay=${startDay},endDay=${endDay},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=${(next>0?next:1)},size=${s})}"
-     th:classappend="${p == tp or tp == 0} ? 'disabled'">다음 ›</a>
-
-  <a th:href="@{/attend/attendList/search(startDay=${startDay},endDay=${endDay},empNm=${empNm},modifiedBy=${modifiedBy},stateType=${stateType},page=${(tp>0?tp:1)},size=${s})}"
-     th:classappend="${p == tp or tp == 0} ? 'disabled'">끝 »</a>
-
-  <!-- 페이지 크기 변경 -->
-  <form method="get" th:action="@{/attend/attendList/search}" style="margin-left:auto;">
-    <input type="hidden" name="startDay" th:value="${startDay}">
-    <input type="hidden" name="endDay" th:value="${endDay}">
-    <input type="hidden" name="empNm" th:value="${empNm}">
-    <input type="hidden" name="modifiedBy" th:value="${modifiedBy}">
-    <input type="hidden" name="stateType" th:value="${stateType}">
-    <select name="size" onchange="this.form.submit()">
-      <option th:selected="${s == 10}" value="10">10</option>
-      <option th:selected="${s == 20}" value="20">20</option>
-      <option th:selected="${s == 50}" value="50">50</option>
-    </select>
-    <input type="hidden" name="page" value="1"/>
-  </form>
-</div>
 
   <!-- 목록 그리드 -->
   <table border="">
@@ -85,6 +46,88 @@
       </tr>
     </tbody>
   </table>
+
+
+
+<!-- 페이징 요약 -->
+<div style="margin:16px 0; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+  <div>
+    <strong th:text="${page.total}">0</strong>건 /
+    <span th:text="${page.pageNum}">1</span> /
+    <span th:text="${page.pages}">1</span>페이지
+  </div>
+
+  <!-- 페이지 크기 선택 -->
+  <form method="get" action="/attend/attendList" style="display:flex; align-items:center; gap:6px;">
+    <input type="hidden" name="pageNum" th:value="${page.pageNum}" />
+    <input type="hidden" name="workDate" th:value="${param.workDate}" />
+    <input type="hidden" name="empNm" th:value="${param.empNm}" />
+    <input type="hidden" name="modifiedBy" th:value="${param.modifiedBy}" />
+
+    <label>페이지 크기
+      <select name="pageSize" onchange="this.form.submit()">
+        <option th:value="10" th:selected="${page.pageSize==10}">10</option>
+        <option th:value="20" th:selected="${page.pageSize==20}">20</option>
+        <option th:value="30" th:selected="${page.pageSize==30}">30</option>
+        <option th:value="50" th:selected="${page.pageSize==50}">50</option>
+      </select>
+    </label>
+  </form>
 </div>
+
+
+<!-- 페이징 UI 영역 -->
+<div class="container mt-4 text-center">
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+
+      <!-- 이전 페이지 -->
+      <li class="page-item" th:if="${page.hasPreviousPage}">
+        <a class="page-link"
+           th:href="@{/attend/attendList(
+             pageNum=${page.prePage},
+             pageSize=${page.pageSize},
+             workDate=${criteria.workDate},
+             empNm=${criteria.empNm},
+             modifiedBy=${criteria.modifiedBy}
+           )}"
+           aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+
+      <!-- 숫자 페이지 -->
+      <li th:each="i : ${#numbers.sequence(page.navigateFirstPage, page.navigateLastPage)}"
+          th:classappend="${i == page.pageNum} ? 'active'">
+        <a class="page-link"
+           th:href="@{/attend/attendList(
+             pageNum=${i},
+             pageSize=${page.pageSize},
+             workDate=${criteria.workDate},
+             empNm=${criteria.empNm},
+             modifiedBy=${criteria.modifiedBy}
+           )}"
+           th:text="${i}">1</a>
+      </li>
+
+      <!-- 다음 페이지 -->
+      <li class="page-item" th:if="${page.hasNextPage}">
+        <a class="page-link"
+           th:href="@{/attend/attendList(
+             pageNum=${page.nextPage},
+             pageSize=${page.pageSize},
+             workDate=${criteria.workDate},
+             empNm=${criteria.empNm},
+             modifiedBy=${criteria.modifiedBy}
+           )}"
+           aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+
+    </ul>
+  </nav>
+</div>
+
 
 
