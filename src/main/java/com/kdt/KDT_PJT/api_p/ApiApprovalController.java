@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
-import com.kdt.KDT_PJT.employee.mapper.EmployeeMapper;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -21,9 +20,6 @@ public class ApiApprovalController {
 	@Autowired
 	ApprovalMapper approvalMapper;
 	
-	
-
-	
 	@GetMapping("approval")
 	Object schedules(HttpSession session) {
 		
@@ -31,7 +27,7 @@ public class ApiApprovalController {
 		String type = null;
 		String status = null;
 		int page = 1;
-		int size = 10;	// 페이지 당 표시될 게시글 개수
+		int size = 5;	// 페이지 당 표시될 게시글 개수
     	int offset = (page - 1) * size;	// 페이지 마다 표시되는 게시글의 시작점 (ex.1페이지:0~9번, 2페이지:10~19번...)
     	int totalCount = approvalMapper.approvalCountAll(type, status);	// 게시글 DB 전체 개수
     	int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
@@ -49,14 +45,10 @@ public class ApiApprovalController {
     	if (totalPages == 0) {endPage = 1;}
     	
     	List<ApprovalDTO> approvalData = approvalMapper.approvalData(offset, size, type, status);
-
-    	
 		
-		
-		System.out.println("/api/approval 진입 : "+approvalData);
+		System.out.println("/api/approval 진입 : "+ approvalData);
 		return approvalData;
-		
-		
+
 	}
 	
 }
