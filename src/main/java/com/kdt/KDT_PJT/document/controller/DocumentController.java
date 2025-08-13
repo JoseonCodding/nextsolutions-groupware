@@ -1,4 +1,4 @@
-package com.kdt.KDT_PJT.document.ctl;
+package com.kdt.KDT_PJT.document.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
