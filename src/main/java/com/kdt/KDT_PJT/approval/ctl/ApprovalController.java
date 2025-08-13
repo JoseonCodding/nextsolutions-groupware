@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
+import com.kdt.KDT_PJT.attend.model.LeaveMapper;
 
 @Controller
 @RequestMapping("/approval")
@@ -41,6 +43,8 @@ public class ApprovalController {
 	
 	@Autowired
 	ApprovalMapper approvalMapper;
+	@Autowired
+	LeaveMapper leaveMapper;
 	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
@@ -264,12 +268,16 @@ public class ApprovalController {
     }
     
     @PostMapping("/approve")
+    @Transactional
     public String approvalApprove(
         RedirectAttributes redirectAttributes,
         @RequestParam("docId") String docId,
         @RequestParam("docType") String docType) {
 
         String pkId = docId.split("_")[1];
+        
+        
+        System.out.println("pkId : " + pkId);
 
         switch (docType) {
             case "공지사항":
@@ -277,6 +285,7 @@ public class ApprovalController {
                 break;
             case "연차":
                 approvalMapper.updateStatusLeave(pkId, "완료");
+                leaveMapper.insertScheduleRest(pkId);
                 break;
             case "프로젝트":
                 approvalMapper.updateStatusProject(pkId, "완료");

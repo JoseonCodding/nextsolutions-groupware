@@ -8,13 +8,12 @@
     <!-- 로그인: 아이디 + 비밀번호로 사용자 조회 -->
     <select id="getUserByIdAndPassword" parameterType="CmmnMap" resultType="com.kdt.KDT_PJT.cmmn.map.EmployeeDto">
         SELECT emp_seq,
-               employeeId,  -- alias 맞추기
-               password,
+               employeeId, 
                active,
                deptName,
                position,
                role,
-               emp_nm            -- alias 맞추기
+               emp_nm        
         FROM employee
         WHERE employeeId = #{employeeId}
           AND password = #{password}

@@ -61,7 +61,7 @@ public class LoginController {
 
         EmployeeDto user = loginService.login(employeeId, password);
 
-        //System.out.println("ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ " +user.getString("employeeId"));
+        System.out.println("loginProcess " +user);
         
         if (user != null) {
 
