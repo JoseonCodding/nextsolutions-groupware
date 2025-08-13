@@ -55,7 +55,7 @@
 				              id="summernote" name="content" th:text="*{content}"></textarea>
 				
 				    <!-- if 연차 -->
-				    <table th:if="${editData.docType != '프로젝트' and editData.docType == '연차'}"
+				    <table th:if="${editData.docType == '연차'}"
 				           border="1" style="margin-top:10px; border-collapse:collapse; width:100%; background-color:#fffde4;">
 				        <tr>
 				            <th>연차 발생일</th>
@@ -73,16 +73,48 @@
 				            </td>
 				        </tr>
 				        <tr>
-				            <th>사용 이유</th>
+				            <th>사유</th>
 				            <td>
 				                <textarea name="content" rows="5" style="width:95%;" th:text="${editData.content}"></textarea>
 				            </td>
 				        </tr>
 				    </table>
 				
-				    <!-- if not 프로젝트 & 연차 -->
-				    <textarea th:if="${editData.docType != '프로젝트' and editData.docType != '연차'}"
+				    <!-- if 공지사항 -->
+				    <textarea th:if="${editData.docType == '공지사항'}"
 				              name="content" rows="5" style="width: 100%;" th:text="*{content}"></textarea>
+				              
+					<!-- if 근태 -->
+			        <table th:if="${editData.docType == '근태'}"
+			               border="1" style="margin-top:10px; border-collapse:collapse; width:100%; background-color:#f0faff;">
+			            <tr>
+			                <th style="width:20%;">수정 항목</th>
+			                <td>
+						        <div style="display:flex; gap:28px; align-items:center; flex-wrap:wrap; justify-content:center;">
+						          <label style="display:flex; align-items:center; gap:8px; font-size:16px;">
+						            <input class="action-one" type="checkbox" name="actions" value="IN" />
+						            정상출근
+						          </label>
+						          <label style="display:flex; align-items:center; gap:8px; font-size:16px;">
+						            <input class="action-one" type="checkbox" name="actions" value="OUT" />
+						            정상퇴근
+						          </label>
+						        </div>
+			                </td>
+			            </tr>
+			            <tr>
+			                <th>출근일</th>
+			                <td>
+								<span th:text="${editData.checkInTime != null ? #dates.format(editData.checkInTime, 'yyyy년 MM월 dd일') : '-'}"></span>
+			                </td>
+			            </tr>
+			            <tr>
+			                <th>수정 사유</th>
+			                <td>
+			                    <textarea name="content" rows="5" style="width:95%;" th:text="${editData.content}"></textarea>
+			                </td>
+			            </tr>
+			        </table>
 				
 				</td>
             </tr>
@@ -127,5 +159,17 @@
       });
     });
     </script>
+    
+    <!-- (근태) 체크박스 미선택 방지 JS -->
+    <script th:inline="javascript">
+	document.querySelector("form").addEventListener("submit", function(e) {
+	    const checkboxes = document.querySelectorAll(".action-one");
+	    const checked = Array.from(checkboxes).some(cb => cb.checked);
+	    if (!checked) {
+	        e.preventDefault();
+	        alert("수정 항목을 최소 1개 이상 선택하세요.");
+	    }
+	});
+	</script>
 </body>
 </html>
