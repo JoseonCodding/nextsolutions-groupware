@@ -232,8 +232,9 @@ tr:hover {
 				<td>
 					<button class="button btn-view"
 						th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
-						상세보기</button>
+						상세보기</button>   <!-- 아래 : 프로젝트 권한있는 사람에게만 버튼이 보임  -->
 					<button class="button btn-edit"
+					    th:if="${loginUserRole == '프로젝트'}" 
 						th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''">
 						변경</button>
 				</td>
@@ -264,6 +265,7 @@ tr:hover {
 	</nav>
 
 	<script>
+	
 		
 	</script>
 	
