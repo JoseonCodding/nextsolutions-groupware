@@ -20,7 +20,6 @@ public interface AttendMapper2 {
       check_in_time       = STR_TO_DATE(CONCAT(#{workDate}, ' 09:00:00'), '%Y-%m-%d %H:%i:%s'),
       modification_reason = #{modificationReason},
       approval_date       = IFNULL(CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul'), NOW()),
-      modified_at         = IFNULL(CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul'), NOW()),
       modified_by         = (SELECT emp_nm FROM employee WHERE employeeId = #{employeeId}),
       `status`            = '대기',
       `time_inout`         = CASE
@@ -43,7 +42,6 @@ public interface AttendMapper2 {
       check_out_time      = STR_TO_DATE(CONCAT(#{workDate}, ' 18:00:00'), '%Y-%m-%d %H:%i:%s'),
       modification_reason = #{modificationReason},
       approval_date       = IFNULL(CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul'), NOW()),
-      modified_at         = IFNULL(CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul'), NOW()),
       modified_by         = (SELECT emp_nm FROM employee WHERE employeeId = #{employeeId}),
       `status`            = '대기',
       `time_inout`         = CASE

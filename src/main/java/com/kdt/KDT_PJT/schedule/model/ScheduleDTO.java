@@ -1,5 +1,6 @@
 package com.kdt.KDT_PJT.schedule.model;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -17,11 +18,12 @@ public class ScheduleDTO {
     String title, cate, alarm, content, holiday;
     Date startDate, endDate, createdAt, updatedAt, deleteDate;
     String employeeId;
-    Date startTime, endTime;
+    //Date startTime, endTime;
+    Time startTime, endTime;
     
     LocalDate startLocalDate, now;
     LocalDate endLocalDate;
-    Integer firstDayOfWeek, year, month, lastDate;
+    Integer firstDayOfWeek, year, month, lastDate, startLocalDateNo, endLocalDateNo;
     
     public void monthDays() {
     	
@@ -41,9 +43,11 @@ public class ScheduleDTO {
     public void convertDatesToLocal() {
         if (startDate != null) {
         	startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        	startLocalDateNo = startLocalDate.getDayOfMonth();
         }
         if (endDate != null) { 
         	endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        	endLocalDateNo = endLocalDate.getDayOfMonth();
         }
     }
     
@@ -65,6 +69,7 @@ public class ScheduleDTO {
 		}
 	}
     
+
     public String getStartDateStr() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
@@ -76,11 +81,8 @@ public class ScheduleDTO {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
 		return  sdf.format(endDate);
-		
 	}
-    
-   
-   
+
     public String getStartTimeStr() {
     	if (startTime != null) { 
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -88,6 +90,19 @@ public class ScheduleDTO {
         }
         return "";
     }
+    
+    public void setStartTimeStr(String ttt) {
+        if (ttt != null && !ttt.isEmpty()) {
+            this.startTime = Time.valueOf(ttt + ":00"); // "HH:mm" → "HH:mm:ss"
+        }
+    }
+
+    public void setEndTimeStr(String ttt) {
+        if (ttt != null && !ttt.isEmpty()) {
+            this.endTime = Time.valueOf(ttt + ":00");
+        }
+    }
+
     
     public String getEndTimeStr() {
     	if (endTime != null) { 

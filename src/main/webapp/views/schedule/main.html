@@ -4,7 +4,7 @@
 <script th:inline="javascript">
 	const arr = /*[[ ${scheduleList}]]*/;
 	const dto = /*[[ ${scheduleDTO}]]*/
-	//console.log(arr)
+	console.log(arr)
 	//console.log(dto)
 	
 	$(function(){
@@ -53,7 +53,16 @@
     				
     				 //console.log(dateToStr(currDate))
     				for(var vv of dayScheduleGet(dateToStr(currDate))){
-						var clickBox = "<a href='/schedule/detail?scheduleId="+vv.scheduleId+"'>"+vv.title+"</a>"
+
+    					if(vv.holiday=='일정' || vv.holiday=='휴무일'){
+    						var clickBox = "<a href='/schedule/detail?scheduleId="+vv.scheduleId+"'>"+vv.title+"</a>"
+    					}else if(vv.holiday=='프로젝트' ){
+    						var clickBox = "<a href='/pjtMng/pjtDetail?pjtSn="+vv.scheduleId+"'>"+vv.title+"</a>"
+						}else{
+							var clickBox = vv.title
+						}
+
+						
 
 						ttt += "<br/>"
 						ttt +=clickBox
@@ -111,7 +120,6 @@
 
 <br />
 
-
-<a th:href="@{/schedule/insert}">일정 등록</a>
-
+<!-- 권한자만 등록 버튼 보이도록 -->
+<a th:if="${session.loginUser.role == null}" th:href="@{/schedule/insert}">일정 등록</a>
 

@@ -227,7 +227,7 @@ public interface AttendMapper {
    
    
    
-   @Select("""
+ /*  @Select("""
 	       <script>
 	       SELECT a.*, e.emp_nm 
 	       FROM attendance a
@@ -245,6 +245,27 @@ public interface AttendMapper {
 	       ORDER BY a.check_in_time DESC
 	       </script>
 	   """)
-   PageInfo<AttendDTO> searchAttendListPage(AttendDTO dto);
+   PageInfo<AttendDTO> searchAttendListPage(AttendDTO dto);*/
+   
+   @Select("""
+	        <script>
+	        SELECT a.*, e.emp_nm
+	        FROM attendance a
+	        JOIN employee e ON a.employeeId = e.employeeId
+	        WHERE 1=1
+	        <if test="workDate != null and workDate != ''">
+	            AND a.check_in_time &gt;= STR_TO_DATE(CONCAT(#{workDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')
+	            AND a.check_in_time &lt;  DATE_ADD(STR_TO_DATE(CONCAT(#{workDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 DAY)
+	        </if>
+	        <if test="empNm != null and empNm != ''">
+	            AND e.emp_nm LIKE CONCAT('%', #{empNm}, '%')
+	        </if>
+	        <if test="modifiedBy != null and modifiedBy != ''">
+	            AND a.modified_by LIKE CONCAT('%', #{modifiedBy}, '%')
+	        </if>
+	        ORDER BY a.check_in_time DESC
+	        </script>
+	    """)
+	    List<AttendDTO> searchAttendListPage(AttendDTO dto);
 
 }

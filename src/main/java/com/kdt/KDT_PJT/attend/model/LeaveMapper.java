@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
@@ -71,6 +72,29 @@ public interface LeaveMapper {
 		        VALUES (#{employeeId}, CURRENT_DATE, '발생', '전월 근무율 80% 이상 자동 부여')
 		    """)
 	 void insertAutoLeave(LeaveDTO dto);
+
+	 
+	 
+	 @Insert("""
+			 INSERT INTO schedule (
+			   title, start_date, end_date, cate, content,
+			   created_at, updated_at, employeeId, repeat_check
+			 )
+			 SELECT
+			   '연차'                         AS title,
+			   al.used_date                  AS start_date,
+			   al.used_date                  AS end_date,
+			   '종일'                         AS cate,
+			   al.used_reason                AS content,
+			   NOW()                         AS created_at,
+			   NOW()                         AS updated_at,
+			   al.employeeId                 AS employeeId,   -- leave 주인에게 달력 생성
+			   0                             AS repeat_check  -- 컬럼이 숫자형이면 0, 문자면 '0'
+			 FROM annual_leave al
+			 WHERE al.leave_id = #{pkId}
+			   AND al.used_date IS NOT NULL
+			 """)
+			 int insertScheduleRest(@Param("pkId") String pkId);
 
 
 }
