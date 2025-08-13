@@ -1,14 +1,8 @@
 package com.kdt.KDT_PJT.schedule.ctl;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +35,7 @@ public class ScheduleController {
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
 	    
 		schDto.setEmployeeId(loginUser.getEmployeeId());
-
+		
 		// DTO에 이번 달 시작일·종료일 세팅
 	    schDto.monthDays();
 		model.addAttribute("firstDayOfWeek", schDto.getFirstDayOfWeek());  // 1=월요일 ~ 7=일요일

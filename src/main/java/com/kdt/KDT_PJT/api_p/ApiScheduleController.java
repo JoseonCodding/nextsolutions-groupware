@@ -38,7 +38,7 @@ public class ApiScheduleController {
 
     @GetMapping("schedulealert")	
     Object sendNotifications(HttpSession sesson) {
-    	 List<ScheduleDTO> res = mapper.getActiveNotifications();
+    	List<ScheduleDTO> res = mapper.getActiveAllDayNotifications();
     	System.out.println("/api/schedulealert 진입"+res);
     	
         return res;

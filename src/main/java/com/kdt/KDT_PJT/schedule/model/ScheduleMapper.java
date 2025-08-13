@@ -61,20 +61,40 @@ public interface ScheduleMapper {
 	
     // 알림 발송 대상 조회
     @Select("""
-    	    SELECT * FROM schedule
-    	    WHERE alarm = '알림' 
-            and ( repeat_check = 0 
-    	          AND (
-    	          ((cate != '종일' or cate is null) AND hour(start_time) = hour(DATE_ADD(NOW(), INTERVAL 1 HOUR))
-								 AND start_date = CURDATE() )
-    	        OR
-    	          (cate = '종일' AND CURDATE() = DATE_SUB(start_date, INTERVAL 1 DAY))
-				)
-            )
-    		ORDER BY start_date DESC, start_time DESC
-    		LIMIT 10
+    	    SELECT *, '1일전입니다' as msg FROM schedule
+			WHERE alarm = '알림' AND cate = '종일'
+			and ( 
+				(repeat_check = 0 AND CURDATE() = DATE_SUB(start_date, INTERVAL 1 DAY))
+			    or
+			    (CURDATE() >= DATE_SUB(start_date, INTERVAL 1 DAY) and (
+			        repeat_check = 1 
+			        or
+			        (repeat_check = 2 and weekday(CURDATE()) = weekday( DATE_SUB(start_date, INTERVAL 1 DAY))) 
+			        or
+			        (repeat_check = 3 and dayofmonth(CURDATE()) = dayofmonth( DATE_SUB(start_date, INTERVAL 1 DAY)) )
+			    )
+			   ) 
+			)
+			union 
+			SELECT *, '1시간전입니다' as msg FROM schedule
+			WHERE alarm = '알림' AND (cate != '종일' or cate is null) AND hour(start_time) = hour(DATE_ADD(NOW(), INTERVAL 1 HOUR))
+			and (repeat_check = 0
+			    or
+			    (CURDATE() >= start_date and (
+			        repeat_check = 1 
+			        or
+			        (repeat_check = 2 and weekday(CURDATE()) = weekday( start_date ) ) 
+			        or
+			        (repeat_check = 3 and dayofmonth(CURDATE()) = dayofmonth( start_date) )
+			    )
+			   ) 
+			)
+			ORDER BY start_date DESC, start_time DESC
+			LIMIT 10
     	""")
-    List<ScheduleDTO> getActiveNotifications();
+    List<ScheduleDTO> getActiveAllDayNotifications();
+    
+
 
 	// 알림 발송 완료 표시
 	@Update("""
