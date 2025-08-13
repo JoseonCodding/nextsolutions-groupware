@@ -121,7 +121,7 @@
 	</table>
 
 	
-	<!-- if not 근태 /연차 -->
+	<!-- if 프로젝트, 공지사항 -->
 	<div th:unless="${approvalData != null and (approvalData.docType == '연차' or approvalData.docType == '근태')}"
 	     style="border:1px solid; margin-top: 20px; background-color: aqua; padding:10px;"
 	     th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">

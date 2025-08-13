@@ -15,8 +15,8 @@ public class DocumentMngDTO {
     private LocalDate pjtEndDt;
     private String pjtSttsCd;
     private String content;
-    private String atchFileSn;     // ATCH_FILE_SN (UUID 파일명)
-    private String orgFileNm;      // ORG_FILE_NM (원본 파일명)
+    private String atchFileSn1;     // ATCH_FILE_SN (UUID 파일명)
+    private String orgFileNm1;      // ORG_FILE_NM (원본 파일명)
     private String versionName;
     private LocalDateTime versionCreatedAt;
 }

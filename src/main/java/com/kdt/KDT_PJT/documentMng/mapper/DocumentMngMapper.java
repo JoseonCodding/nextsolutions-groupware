@@ -21,8 +21,8 @@ public interface DocumentMngMapper {
 		        PJT_END_DT AS pjtEndDt,
 		        PJT_STTS_CD AS pjtSttsCd,
 		        content,
-		        ATCH_FILE_SN AS atchFileSn,
-		        ORG_FILE_NM AS orgFileNm,
+		        ATCH_FILE_SN1 AS atchFileSn1,
+		        ORG_FILE_NM1 AS orgFileNm1,
 		        versionName,
 		        versionCreatedAt
 		    FROM TB_PJT_BASC_VERSION v
@@ -43,8 +43,8 @@ public interface DocumentMngMapper {
     	        PJT_END_DT AS pjtEndDt,
     	        PJT_STTS_CD AS pjtSttsCd,
     	        content,
-    	        ATCH_FILE_SN AS atchFileSn,
-    	        ORG_FILE_NM AS orgFileNm,
+    	        ATCH_FILE_SN1 AS atchFileSn1,
+    	        ORG_FILE_NM1 AS orgFileNm1,
     	        versionName,
     	        versionCreatedAt
     	    FROM TB_PJT_BASC_VERSION v
