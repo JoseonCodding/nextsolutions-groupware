@@ -2,6 +2,7 @@ package com.kdt.KDT_PJT.employee.ctl;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +43,10 @@ public class EmployeeController {
     	
     	EmployeeDto user = (EmployeeDto) session.getAttribute("loginUser");
     	
-    	  // 로그인 안 했거나 사번이 20250006이 아니면 접근 차단
-        if (user == null || !"20250006".equals(user.getEmployeeId())) {
-            return "redirect:/access-denied"; // 권한 없음 페이지로 이동
-        }
+    	Set<String> allowedIds = Set.of("20250006", "20250001");
+    	if (user == null || !allowedIds.contains(user.getEmployeeId())) {
+    	    return "redirect:/access-denied";
+    	}
   
 	    // 🔍 검색어 로그 확인 (디버깅용)
 	   System.out.println("getPjtList Called >>> keyword = " + keyword);
