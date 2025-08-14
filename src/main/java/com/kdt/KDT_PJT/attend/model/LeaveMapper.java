@@ -58,7 +58,7 @@ public interface LeaveMapper {
 	//연차 사용 신청
 	@Insert("<script> "+
 
-				"update annual_leave set approval_date = CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul'), used_reason = #{usedReason} ,"+
+				"update annual_leave set approval_date = NOW(), used_reason = #{usedReason} ,"+
 				" used_date=  #{usedDate} , state_type = '대기' where leave_id = #{leaveId} "+
 			
 			"</script> "
