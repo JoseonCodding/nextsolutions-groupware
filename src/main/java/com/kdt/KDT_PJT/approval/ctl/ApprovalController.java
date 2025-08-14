@@ -147,6 +147,7 @@ public class ApprovalController {
 	    }
 
 	    // 4. 정상 데이터 모델에 담기
+	    model.addAttribute("loginUser", loginUser);
 	    model.addAttribute("approvalData", approvalData);
 	    model.addAttribute("page", page);
 	    model.addAttribute("type", type);
@@ -186,33 +187,53 @@ public class ApprovalController {
             @RequestParam(name = "status", required = false) String status) {
 
         HttpSession session = request.getSession(false);
-        EmployeeDto loginUser = (session != null) ? (EmployeeDto) session.getAttribute("loginUser") : null;
-        if (loginUser == null) return "redirect:/login?error=auth";
+        EmployeeDto loginUser = (session != null) ?
+            (EmployeeDto) session.getAttribute("loginUser") : null;
 
+        if (loginUser == null) {
+            return "redirect:/login?error=auth";
+        }
+
+        // 권한 필터 포함 단건 조회
         ApprovalDTO doc = approvalMapper.view(
             docId, loginUser.getRole(), loginUser.getEmployeeId(), type, status
         );
-        if (doc == null) return "redirect:/approval/main?error=forbidden";
-        
-        // 작성자 본인만 삭제 허용
+
+        if (doc == null) {
+            return "redirect:/approval/main?error=forbidden"; // 문서 없음 or 권한 없음
+        }
+
+        // 작성자 본인만 삭제 가능
         if (!loginUser.getEmployeeId().equals(doc.getWriterId())) {
             return "redirect:/approval/main?error=forbidden";
         }
 
         String pkId = docId.split("_")[1];
-        String docType = doc.getDocType();
 
-        if ("공지사항".equals(docType)) approvalMapper.deleteNotice(pkId);
-        else if ("연차".equals(docType)) approvalMapper.deleteLeave(pkId);
-        else if ("프로젝트".equals(docType)) approvalMapper.deleteProject(pkId);
-        else if ("근태".equals(docType)) approvalMapper.deleteAttendance(pkId);
+        // 공지사항 / 프로젝트만 소프트 삭제 실행
+        if ("공지사항".equals(doc.getDocType())) {
+            approvalMapper.softDeleteNotice(pkId);
+        } else if ("프로젝트".equals(doc.getDocType())) {
+            approvalMapper.softDeleteProject(pkId);
+        } else {
+            return "redirect:/approval/main?error=deleteNotAllowed";
+        }
 
-        // ===== 페이지 재계산 로직(기존 코드) =====
-        // ...
+        // 삭제 이후 페이지 재계산 (role, employeeId 포함)
+        int size = 10;
+        int totalCount = approvalMapper.approvalCountByRole(
+            loginUser.getRole(), type, status, loginUser.getEmployeeId()
+        );
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+        int deletePage = page > totalPages ? totalPages : page;
+        if (totalPages == 0) deletePage = 1;
+
+        redirectAttributes.addAttribute("page", deletePage);
+        redirectAttributes.addAttribute("type", type == null ? "" : type);
+        redirectAttributes.addAttribute("status", status == null ? "" : status);
 
         return "redirect:/approval/main";
     }
-
 
     
     @GetMapping("/edit")
