@@ -6,120 +6,362 @@
 	//console.log(dto)
 	
 	$(function(){
-           console.log("document ready!");    //축약형태로 사용 가능
-           
+          console.log("document ready!");    //축약형태로 사용 가능
+          
+          
+     //// 일정 1개 화면에 보이고 링크걸기
+          function scheduleOneView(schOne){
+   			return "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"'>"+schOne.title+"</a><br/>"
+   	   }
+          
+		// 월별에서 사용하는 일별 일정 가져오기
+		function dayScheduleGet(today){
+			
+			var res = []
+			for(const vv of arr){
+				if(vv.startLocalDate <= today && vv.endLocalDate >= today){
+					res.push(vv)
+				}
+			}
+			
+			return res
+		}
+        
+          
+          //시간일정 가져오기
+		function timeScheduleGet(today, pTime){
+			
+			var res = []
+			for(const vv of arr){
 
-			function dayScheduleGet(today){
+				var stT = eval(vv.startTimeStr.substr(0,2))
+				var endT = eval(vv.endTimeStr.substr(0,2))
+				//console.log(pTime,stT, endT)
+				if( vv.cate!="종일" && 
+						vv.startLocalDate <= today && vv.endLocalDate >= today 
+						&& stT <= pTime && endT >= pTime
+							
+				){
+					res.push(vv)
+				}
+			}
+			
+			return res
+		}
+		
+		//종일일정 가져오기
+		function allTimeScheduleGet(today){
+			
+			var res = []
+			for(const vv of arr){
+
+
+				if( vv.cate =="종일" && 
+						vv.startLocalDate <= today && vv.endLocalDate >= today 
+							
+				){
+					res.push(vv)
+				}
+			}
+			
+			return res
+		}
+          
+		
+		
+          function dateToStr(ddd){  // yyyy-MM-dd
+			var mm = ddd.getMonth()+1
+			if(mm<10){
+				mm = '0'+mm
+			}
+			var dd = ddd.getDate()
+			if(dd<10){
+				dd = '0'+dd
+			}
+			return ddd.getYear()+1900+"-"+mm+"-"+dd
+		}
+          
+          // 날짜(일번호)에 대한 일정 가져오기
+          function oneDayToSchTd(i){
+       	   
+       	   monthFirst.setDate(i);
+			var td= $("<td></td>")
+			var ttt = i;
+			
+			 //console.log(dateToStr(monthFirst))
+			for(var vv of dayScheduleGet(dateToStr(monthFirst))){
+
+				ttt +=scheduleOneView(vv)
 				
-				var res = []
-				for(const vv of arr){
-					if(vv.startLocalDate <= today && vv.endLocalDate >= today){
-						res.push(vv)
-					}
-				}
+			}
+			 
+			td.html(ttt)
+			
+			return td;
+		}
+          
+          function monthDiaryView(){
+
+			console.log("monthDiaryView() 실행")
+       	   $("#diary_title").html(monthFirst.getYear()+1900+'년 '+(monthFirst.getMonth()+1) + '월 일정')
+       	   monthFirst.setDate(1)
+
+              var first = monthFirst.getDay()
+              monthFirst = new Date(monthFirst.getFullYear(),monthFirst.getMonth()+1,0)
+
+       		var last = monthFirst.getDate()
+       	   
+              $("#diary_body").empty();
+       	   
+       	   $("#diary_body").append("<tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr>");
+              var trLine = $("<tr></tr>")
+              $("#diary_body").append(trLine)
+
+              // 첫 주 공백
+              for(var i = 1; i <= first;i++){
+           	   trLine.append($("<td></td>"));
+              }
+	       
+              for(var i = 1; i <= last;i++){
+
+           	   
+   				trLine.append(oneDayToSchTd(i))
+   				
+   				
+   				if(monthFirst.getDay()==6){  // 토요일
+   					trLine = $("<tr></tr>")
+   			        $("#diary_body").append(trLine);
+   				}
+   			}
+		}
+          
+          
+       const weekTitle = "일월화수목금토"
+       
+       
+       
+       
+           
+          
+       function weekDiaryView(){
+		  
+		   
+		   nowWeek = weekOfMonth(weekFirst);
+       	   console.log("weekDiaryView() 실행:"+nowWeek)
+
+       	   $("#diary_title").html(weekFirst.getYear()+1900+'년 '+(weekFirst.getMonth()+1) + '월 '+nowWeek+'주 일정')
+
+       	   
+              weekFirst = getSundayOfWeek(weekFirst)
+              var weekArr = [];
+       	   
+       	   for(var i = weekFirst.getDate(); i <weekFirst.getDate()+7;i++){
+				weekArr.push(new Date(weekFirst.getYear()+1900,weekFirst.getMonth(),i) )
+			}
+       	   
+       	    //console.log(weekArr)
+
+       	   
+              $("#diary_body").empty();
+       	   
+       	   var title = $("<tr><th>시간</th></tr>")
+       	   for(var dd of weekArr){
+				title.append($("<th>"+dd.getDate()+"일("+weekTitle[dd.getDay()]+")</th>"))
+		   }
+       	   
+       	   
+       	   $("#diary_body").append(title);
+       	   
+       	   
+       	   title = $("<tr><th>종일</th></tr>")
+       	   for(var dd of weekArr){
+       		   var ttdd = $("<td></td>")
 				
-				return res
+				var ttt = ""
+				//주_일_시간의 일정 가져오기
+   			    for(vv of   allTimeScheduleGet(dateToStr(dd))){
+
+   			    	ttt +=scheduleOneView(vv)
+   			    }
+					
+
+				 ttdd.html(ttt)
+				 title.append(ttdd)
+		   }
+       	   
+       	   
+       	   $("#diary_body").append(title);
+       	   
+       	   for(var i = 7 ; i <= 21; i++){
+
+       		   var trLine = $("<tr><td>"+i+":00</td></tr>")
+       		   
+       		   for(var dd of weekArr){
+
+					var ttdd = $("<td></td>")
+					
+					var ttt = ""
+					//주_일_시간의 일정 가져오기
+       			    for(vv of   timeScheduleGet(dateToStr(dd), i)){
+
+				
+						ttt +=scheduleOneView(vv)
+       			    }
+					
+
+					 ttdd.html(ttt)
+  					 trLine.append(ttdd)
+  			   	}
+       		   
+       		   $("#diary_body").append(trLine)
 			}
-           
-           function dateToStr(ddd){  // yyyy-MM-dd
-				var mm = ddd.getMonth()+1
-				if(mm<10){
-					mm = '0'+mm
-				}
-				var dd = ddd.getDate()
-				if(dd<10){
-					dd = '0'+dd
-				}
-				return ddd.getYear()+1900+"-"+mm+"-"+dd
-			}
-           
-           function monthDiaryView(){
 
-				console.log("monthDiaryView() 실행")
-        	   $("#diary_title").html(currDate.getYear()+1900+'년 '+(currDate.getMonth()+1) + '월 일정')
-        	   currDate.setDate(1)
+		}
+          
+         
+          
+          function dayDiaryView(){
+    		  
+   		   
+   		   
+          	   console.log("dayDiaryView() 실행:")
 
-               var first = currDate.getDay()
-               currDate = new Date(currDate.getFullYear(),currDate.getMonth()+1,0)
+          	   $("#diary_title").html(dayOne.getYear()+1900+'년 '+(dayOne.getMonth()+1) + '월 '+dayOne.getDate()+'일 일정')
 
-        		var last = currDate.getDate()
-        	   
-               $("#diary_body").empty();
-        	   
-        	   $("#diary_body").append("<tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr>");
-               var trLine = $("<tr></tr>")
-               $("#diary_body").append(trLine)
+          	           	   
+                 $("#diary_body").empty();
+          	   
+          	   var title = $("<tr><th>시간</th><th>"+dayOne.getDate()+"일("+weekTitle[dayOne.getDay()]+")</th></tr>")
+          	      
+          	   
+          	   $("#diary_body").append(title);
+          	   
+          	   
+          	   title = $("<tr><th>종일</th></tr>")
+          	   var ttdd = $("<td></td>")
+   				
+   				var ttt = ""
+   				//주_일_시간의 일정 가져오기
+      			    for(vv of   allTimeScheduleGet(dateToStr(dayOne))){
 
-               // 첫 주 공백
-               for(var i = 1; i <= first;i++){
-            	   trLine.append($("<td></td>"));
-               }
-		       
-               for(var i = 1; i <= last;i++){
+      			    	ttt +=scheduleOneView(vv)
+      			    }
+   					
 
-            	   currDate.setDate(i);
-            	   
-    				var td= $("<td></td>")
-    				var ttt = i;
-    				
-    				 //console.log(dateToStr(currDate))
-    				for(var vv of dayScheduleGet(dateToStr(currDate))){
-	
-						var clickBox = "<a href='/schedule/detail?scheduleId="+vv.scheduleId+"'>"+vv.title+"</a>"
+   				 ttdd.html(ttt)
+   				 title.append(ttdd)
+   		      
+          	   $("#diary_body").append(title);
+          	   
+          	   for(var i = 7 ; i <= 21; i++){
 
-						
-						ttt += "<br/>"
-						ttt +=clickBox
-						
-					}
-    				 
-    				td.html(ttt)
-    				trLine.append(td)
-    				
-    				
-    				if(currDate.getDay()==6){  // 토요일
-    					trLine = $("<tr></tr>")
-    			        $("#diary_body").append(trLine);
-    				}
-    			}
-			}
-           
-           
-           
-           
-           function weekDiaryView(){
+          		   var trLine = $("<tr><td>"+i+":00</td></tr>")
+          		   
+          		  
 
-        	   console.log("weekDiaryView() 실행")
+   					var ttdd = $("<td></td>")
+   					
+   					var ttt = ""
+   					//주_일_시간의 일정 가져오기
+       			    for(vv of   timeScheduleGet(dateToStr(dayOne), i)){
 
-        	   $("#diary_title").html(currDate.getYear()+1900+'년 '+(currDate.getMonth()+1) + '월 '+' 일정')
-        	   currDate.setDate(1)
+       			    	ttt +=scheduleOneView(vv)
+       			    }
+   					
 
-               var first = currDate.getDay()
-               currDate = new Date(currDate.getFullYear(),currDate.getMonth()+1,0)
+   					 ttdd.html(ttt)
+     				trLine.append(ttdd)
+     			   	
+          		   
+          		   $("#diary_body").append(trLine)
+   			}
 
-        		var last = currDate.getDate()
-        	   
-               $("#diary_body").empty();
-        	   
-        	   $("#diary_body").append("<tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr>");
-               var trLine = $("<tr></tr>")
-               $("#diary_body").append(trLine)
-        	   
-			}
-           
-           var currDate = new Date();
-           monthDiaryView();
-           $("#prevMonth").click(function(){
-   	   		currDate.setDate(1)
-				currDate.setMonth(currDate.getMonth()-1)
+   		}
+          
+          
+          
+          
+          
+          $("#prevMonth").click(function(){
+			if(currentView=='month'){
+				monthFirst.setDate(1)
+				monthFirst.setMonth(monthFirst.getMonth()-1)
 				monthDiaryView();
-			})
+			}else if(currentView=='week'){
+
+				weekFirst.setMonth(weekFirst.getMonth()-1)
+       	   		
+				weekDiaryView();
+				
+			}else if(currentView=='day'){
+				dayOne.setMonth(dayOne.getMonth()-1)
+				dayDiaryView();
+			}
+  	   		
+		})
+          
+          $("#nextMonth").click(function(){
+       	   		
+       	   		
+       	   	if(currentView=='month'){
+	       	   	monthFirst.setDate(1)
+				monthFirst.setMonth(monthFirst.getMonth()+1)
+				monthDiaryView();
+			}else if(currentView=='week'){
+
+				weekFirst.setMonth(weekFirst.getMonth()+1)
+       	   		
+				weekDiaryView();
+				
+			}else if(currentView=='day'){
+				dayOne.setMonth(dayOne.getMonth()+1)
+				dayDiaryView();
+			}
+       	   		
+       	   		
+		})
+		
+		$("#prevWeek").click(function(){
+			weekFirst.setDate(weekFirst.getDate()-7)
+       	   		
+			 weekDiaryView();
+		})
+		$("#nextWeek").click(function(){
+			weekFirst.setDate(weekFirst.getDate()+7)
+       	   		
+			 weekDiaryView();
+		})
+		$("#prevDay").click(function(){
+			dayOne.setDate(dayOne.getDate()-1)
+       	   		
+			 dayDiaryView();
+		})
+		$("#nextDay").click(function(){
+			dayOne.setDate(dayOne.getDate()+1)
+       	   		
+			 dayDiaryView();
+		})
+		
+			
+	function weekOfMonth(schDate ) {
+		const weekStartDay = 0
+	    const firstDay = new Date(schDate.getFullYear(), schDate.getMonth(), 1);
+	    const dayOfMonth = schDate.getDate();
+	    const firstDayWeek = firstDay.getDay();
+	
+	    const offset = (firstDayWeek - weekStartDay + 7) % 7;
+	    return Math.ceil((dayOfMonth + offset) / 7);
+	}
            
-           $("#nextMonth").click(function(){
-        	   		currDate.setDate(1)
-					currDate.setMonth(currDate.getMonth()+1)
-					monthDiaryView();
-			})
+           
+     function getSundayOfWeek(dd) {
+   	    const day = dd.getDay(); // 0: 일요일, 1: 월요일 ...
+   	    const diff = 0 - day; // 이번 주 일요일로 이동
+   	    const sunday = new Date(dd);
+   	    sunday.setDate(dd.getDate() + diff);
+   	    //console.log("getSundayOfWeek : ", sunday)
+   	    return sunday;
+   	}
            
 	
 	
@@ -132,7 +374,7 @@
         $("#dayNav, #weekNav").hide(); // 일/주 네비 숨김
         if (view === 'month') {
         	 $("#dayNav, #weekNav").hide();
-            $("#dayNav, #weekNav").hide();
+            
         } else if (view === 'day') {
             $("#dayNav").show();
         } else if (view === 'week') {
@@ -145,16 +387,25 @@
     // 보기 전환 버튼 이벤트
     $("#viewMonth").on("click", function() {
         setView('month');
+        monthFirst= new Date();
         monthDiaryView(); // 월별 렌더
     });
     $("#viewWeek").on("click", function() {
         setView('week');
+        weekFirst = new Date();
         weekDiaryView(); // 주별 렌더 함수
     });
     $("#viewDay").on("click", function() {
         setView('day');
+        dayOne = new Date()
         dayDiaryView(); // 일별 렌더 함수
     });
+    
+    
+    var monthFirst = new Date();
+    var weekFirst = null 
+    var dayOne = null
+    monthDiaryView();
 
     // 초기 상태
     setView('month');
@@ -195,44 +446,8 @@
 <table border="" id="diary_body">
 </table>
 
-<!-- 주별 보기 -->
-<table>
-    <thead>
-        <tr>
-            <th>시간</th>
-            <th>25일</th>
-            <th>26일</th>
-            <th>27일</th>
-            <th>28일</th>
-            <th>29일</th>
-            <th>30일</th>
-            <th>01일</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- 시간대 반복 -->
-        <!-- 07:00~21:00까지 1시간 단위 -->
-        <!-- 필요시 JS로 반복 생성 가능 -->
-        <tr><td class="time">07:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">08:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">09:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">10:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">11:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">12:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">13:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">14:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">15:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">16:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">17:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">18:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">19:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">20:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td class="time">21:00</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-    </tbody>
-</table>
 
 
-<!-- 일별 보기 -->
 <br />
 
 <!-- 권한자만 등록 버튼 보이도록 -->
