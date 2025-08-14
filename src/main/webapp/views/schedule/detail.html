@@ -45,7 +45,7 @@
     </div>
 <!-- employId가 일치하거나 권한자만 수정,삭제 버튼 보이도록 -->
 																<!-- 추후 권한자(role) 적용시키기 -->
-<a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == null }" th:href="@{|/schedule/modify?scheduleId=${scd.scheduleId}|}">수정</a>
-<a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == null }" th:href="@{|/schedule/delete?scheduleId=${scd.scheduleId}|}">삭제</a>																
+<a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '근태' or session.loginUser.role == '대표'}" th:href="@{|/schedule/modify?scheduleId=${scd.scheduleId}|}">수정</a>
+<a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '근태' or session.loginUser.role == '대표'}" th:href="@{|/schedule/delete?scheduleId=${scd.scheduleId}|}">삭제</a>																
 
 
