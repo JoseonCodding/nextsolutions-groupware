@@ -16,39 +16,46 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/api")
 public class ApiApprovalController {
-	
-	@Autowired
-	ApprovalMapper approvalMapper;
-	
-	@GetMapping("approval")
-	Object schedules(HttpSession session) {
-		
-		EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
-		String type = null;
-		String status = null;
-		int page = 1;
-		int size = 5;	// 페이지 당 표시될 게시글 개수
-    	int offset = (page - 1) * size;	// 페이지 마다 표시되는 게시글의 시작점 (ex.1페이지:0~9번, 2페이지:10~19번...)
-    	int totalCount = approvalMapper.approvalCountAll(type, status);	// 게시글 DB 전체 개수
-    	int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
-    	int blockSize = 5;	// 페이지네이션에 나타낼 페이지 개수
-    	int startPage, endPage;
-    	
-    	startPage = Math.max(1,  page - 2);	// 페이지네이션에 나타낼 페이지의 첫 페이지 값
-    	endPage = Math.min(totalPages, startPage + blockSize - 1);	// 페이지네이션에 나타낼 페이지의 끝 페이지 값
-		
-    	if ((endPage - startPage + 1) < blockSize && (endPage == totalPages || startPage == 1)) {
-    	    startPage = Math.max(1, endPage - blockSize + 1);
-    	}
-    	
-    	// 필터에 해당하는 게시글이 없는 경우 endPage=0이 되는 상황 방지 
-    	if (totalPages == 0) {endPage = 1;}
-    	
-    	List<ApprovalDTO> approvalData = approvalMapper.approvalData(offset, size, type, status);
-		
-		System.out.println("/api/approval 진입 : "+ approvalData);
-		return approvalData;
 
-	}
-	
+    @Autowired
+    private ApprovalMapper approvalMapper;
+
+    @GetMapping("approval")
+    public Object schedules(HttpSession session) {
+
+        // 1. 로그인 유저 확인
+        EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            // 로그인 안 함 → 빈 리스트 리턴
+            return List.of();
+        }
+
+        // 2. 파라미터 세팅
+        String role = loginUser.getRole();
+        String employeeId = loginUser.getEmployeeId();
+        String type = null;   // API에선 type 필터 없음
+        String status = null; // 상태 필터 없음
+        int page = 1;
+        int size = 5; // 최신글 5개
+        int offset = (page - 1) * size;
+
+        // 3. 총 개수
+        int totalCount = approvalMapper.approvalCountByRole(role, type, status, employeeId);
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+
+        // 4. 데이터 조회
+        List<ApprovalDTO> approvalData =
+                approvalMapper.approvalDataByRole(offset, size, role, type, status, employeeId);
+
+        // 5. React에서 바로 받도록 데이터만 반환
+        return approvalData;
+
+        // 또는 페이지 정보까지 줄 경우:
+        // return Map.of(
+        //     "totalCount", totalCount,
+        //     "totalPages", totalPages,
+        //     "data", approvalData
+        // );
+    }
+
 }

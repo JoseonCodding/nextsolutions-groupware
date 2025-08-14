@@ -122,42 +122,49 @@ button.save-btn:hover {
 	background-color: #0056b3;
 }
 
+/* 버튼 묶음: 가운데 정렬 */
 .button-row {
-	display: flex;
-	justify-content: center; /* 가운데 정렬 */
-	gap: 10px; /* 버튼 간격 */
-	margin-top: 30px;
+  display: flex;
+  justify-content: center;  /* 가로 가운데 정렬 */
+  align-items: center;      /* 세로 가운데 맞춤 */
+  gap: 12px;                /* 버튼 사이 간격 */
+  margin-top: 30px;
+   width: 100%;  
 }
 
+/* 공통 버튼 스타일 */
 .button-row button {
-	width: 200px;
-	height: 45px;
-	font-size: 16px;
-	border: none;
-	border-radius: 6px;
-	cursor: pointer;
-	transition: background-color 0.2s;
+ margin: 0;  
+  width: 200px;
+  height: 45px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-/* 저장 버튼 스타일 */
+/* 저장 버튼 */
 .button-row .save-btn {
-	background-color: #28a745;
-	color: white;
+  background-color: #28a745;
+  color: white;
 }
-
 .button-row .save-btn:hover {
-	background-color: #218838;
+  background-color: #218838;
+  transform: scale(1.03);
 }
 
-/* 돌아가기 버튼 스타일 */
+/* 돌아가기 버튼 */
 .button-row .back-btn {
-	background-color: #4a90e2;
-	color: white;
+  background-color: #4a90e2;
+  color: white;
+}
+.button-row .back-btn:hover {
+  background-color: #357abd;
+  transform: scale(1.03);
 }
 
-.button-row .back-btn:hover {
-	background-color: #357abd;
-}
 </style>
 </head>
 
@@ -236,10 +243,9 @@ button.save-btn:hover {
 
 		<!-- 🔧 버튼 묶음 -->
 		<div class="button-row">
-			<button type="submit" class="save-btn">프로젝트 저장</button>
-
-			<button type="button" class="back-btn" onclick="history.back()">←
+		<button type="button" class="back-btn" onclick="history.back()">←
 				목록으로 돌아가기</button>
+			<button type="submit" class="save-btn">프로젝트 저장</button>
 		</div>
 	</form>
 
@@ -299,25 +305,26 @@ button.save-btn:hover {
 	</script>
 
 <script>
+//유효성 검사 항목 
 function validateForm() {
   const form = document.forms[0];
 
-  // 1) 프로젝트명: 1~20자, 공백·특수문자 불가
+// 1) 프로젝트명: 1~25자, 공백 허용, 특수문자 불가
   const name = form.pjtNm.value.trim();
-  if (!/^[가-힣A-Za-z0-9]{1,20}$/.test(name)) {
-    alert("프로젝트명은 공백·특수문자 없이 1~20자여야 합니다.");
+  if (!/^[가-힣A-Za-z0-9\s]{1,25}$/.test(name)) {
+    alert("프로젝트명은 공백 가능, 특수문자 없이 1~25자여야 합니다.");
     form.pjtNm.focus();
     return false;
   }
 
-  // 2) 담당자 ID
+  // 2) 담당자 
   const emp = form.employeeId.value.trim();
   if (!/^[A-Za-z0-9]{4,50}$/.test(emp)) {
     alert("담당자 ID는 영문/숫자 4~50자여야 합니다.");
     form.employeeId.focus();
     return false;
   }
-//3) 기간
+//3) 기간 (시작일,종료일)
   const start = form.pjtBgngDt.value;
   const end = form.pjtEndDt.value;
 
@@ -328,7 +335,7 @@ function validateForm() {
     return false;
   }
 
-  // 날짜 비교
+  // 3-1) 날짜 비교
   const startDate = new Date(start);
   const endDate = new Date(end);
 
@@ -337,21 +344,24 @@ function validateForm() {
     form.pjtEndDt.focus();
     return false;
   }
-
-  // 4) 진행상태
+//4) 상태(대기,진행중,종료)
   const stts = form.pjtSttsCd.value;
   if (!["대기","진행중","완료"].includes(stts)) {
     alert("진행상태를 선택하세요.");
     form.pjtSttsCd.focus();
     return false;
   }
-  // 5) 내용
-  const content = form.pjtCn.value.trim();
-  if (!content) {
+  
+//5) 내용 (Summernote 전용 검사)
+  const contentHtml = $('#pjtCn').summernote('code'); // HTML 전체
+  const contentText = contentHtml.replace(/<[^>]*>/g, '').trim(); // HTML 태그 제거 후 텍스트만
+
+  if (!contentText) {
     alert("내용을 입력하세요.");
-    form.pjtCn.focus();
-    return false;
+    $('#pjtCn').summernote('focus'); // 에디터로 포커스 이동
+    return false; // 폼 전송 차단
   }
+
 
   // 6) 결재자
   const appr = form.approverId.value;

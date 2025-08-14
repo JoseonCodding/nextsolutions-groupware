@@ -26,6 +26,9 @@ public class ApprovalDTO {
     Date modifiedAt;           // 수정 일자
     String modificationReason; // 수정 사유
     String timeInout; 			// 수정 항목 (출근,퇴근,출퇴근)
-
+    
+    // 권한처리 중 추가됨 (용도 몰?루)
+    String writerId;
+    
     
 }
