@@ -11,7 +11,16 @@
           
      //// 일정 1개 화면에 보이고 링크걸기
           function scheduleOneView(schOne){
-   			return "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"'>"+schOne.title+"</a><br/>"
+        	  var clickBox = ""
+   					
+			if(schOne.holiday=='일정' || schOne.holiday=='휴무일'){
+				clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"'>"+schOne.title+"</a>"
+			}else if(schOne.holiday=='프로젝트' ){
+				clickBox = "<a href='/pjtMng/pjtDetail?pjtSn="+schOne.scheduleId+"'>"+schOne.title+"</a>"
+			}else{
+				clickBox = schOne.title
+			}
+        	  return clickBox+"<br/>"
    	   }
           
 		// 월별에서 사용하는 일별 일정 가져오기
