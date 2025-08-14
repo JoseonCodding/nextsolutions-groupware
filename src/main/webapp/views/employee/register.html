@@ -58,7 +58,7 @@
 <div class="container">
     <h2>사원 등록</h2>
     
-    <form action="/employee/register" method="post" enctype="multipart/form-data">
+    <form id="employeeForm" action="/employee/register" method="post" enctype="multipart/form-data">
 
         <table>
             <tr>
@@ -100,14 +100,70 @@
                     </select>
                 </td>
             </tr>
-            <tr>
-                <td>사진 업로드</td>
-                <td colspan="3"><input type="file" name="photo"></td>
-            </tr>
         </table>
 
         <button type="submit" class="save-btn">등록 완료</button>
     </form>
 </div>
+
+<script>
+document.getElementById('employeeForm').addEventListener('submit', function(e) {
+    const empId = this.employeeId.value.trim();
+    const pw = this.password.value.trim();
+    const name = this.empNm.value.trim();
+    const phone = this.phone.value.trim();
+    const birth = this.birth.value;
+    const hireDate = this.hireDate.value;
+    const role = this.role.value;
+
+    // 사번: 숫자만, 최소 4자리
+    if (!/^\d{4,}$/.test(empId)) {
+        alert("사번은 숫자만 4자리 이상 입력하세요.");
+        this.employeeId.focus();
+        e.preventDefault();
+        return;
+    }
+
+    // 비밀번호: 최소 6자
+    if (pw.length < 6) {
+        alert("비밀번호는 최소 6자 이상 입력하세요.");
+        this.password.focus();
+        e.preventDefault();
+        return;
+    }
+
+    // 이름: 2글자 이상
+    if (name.length < 2) {
+        alert("이름은 2글자 이상 입력하세요.");
+        this.empNm.focus();
+        e.preventDefault();
+        return;
+    }
+
+    // 휴대폰 번호 형식
+    if (phone && !/^010-\d{4}-\d{4}$/.test(phone)) {
+        alert("휴대폰 번호는 010-1234-5678 형식으로 입력하세요.");
+        this.phone.focus();
+        e.preventDefault();
+        return;
+    }
+
+    // 날짜 유효성: 입사일이 생일보다 빠르면 안됨
+    if (birth && hireDate && new Date(hireDate) < new Date(birth)) {
+        alert("입사일은 생년월일 이후여야 합니다.");
+        this.hireDate.focus();
+        e.preventDefault();
+        return;
+    }
+
+    // 권한 선택 확인
+    if (!role) {
+        alert("권한을 선택하세요.");
+        this.role.focus();
+        e.preventDefault();
+    }
+});
+</script>
+
 </body>
 </html>
