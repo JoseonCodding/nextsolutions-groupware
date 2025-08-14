@@ -1,3 +1,8 @@
+/*
+ * WebConfig 이거 사용 안함 
+ * 여기말고 \kdt9_team2\src\main\java\com\kdt\KDT_PJT\config 경로에 있음
+ */
+
 //package com.kdt.KDT_PJT.cmmn.config;
 //
 //import org.springframework.context.annotation.Bean;

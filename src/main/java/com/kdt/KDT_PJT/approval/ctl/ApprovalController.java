@@ -29,6 +29,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 import com.kdt.KDT_PJT.attend.model.LeaveMapper;
+import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/approval")
@@ -55,43 +59,56 @@ public class ApprovalController {
     
 	@RequestMapping("/main")
 	public String approvalMain(
-						Model model, // 데이터 보관용 (컨트롤러>모델>뷰)
-						@RequestParam(name = "page", defaultValue = "1") int page, // 현재 페이지 번호
-						@RequestParam(name = "type", required = false) String type,
-						@RequestParam(name = "status", required = false) String status) {
-		
-		int size = 10;	// 페이지 당 표시될 게시글 개수
-    	int offset = (page - 1) * size;	// 페이지 마다 표시되는 게시글의 시작점 (ex.1페이지:0~9번, 2페이지:10~19번...)
-    	int totalCount = approvalMapper.approvalCountAll(type, status);	// 게시글 DB 전체 개수
-    	int totalPages = (int) Math.ceil((double) totalCount / size);	// 전체 페이지 수 ('전체 게시글÷페이지당 게시글 수'를 '올림' 처리) 
-    	int blockSize = 5;	// 페이지네이션에 나타낼 페이지 개수
-    	int startPage, endPage;
-    	
-    	startPage = Math.max(1,  page - 2);	// 페이지네이션에 나타낼 페이지의 첫 페이지 값
-    	endPage = Math.min(totalPages, startPage + blockSize - 1);	// 페이지네이션에 나타낼 페이지의 끝 페이지 값
-		
-    	if ((endPage - startPage + 1) < blockSize && (endPage == totalPages || startPage == 1)) {
-    	    startPage = Math.max(1, endPage - blockSize + 1);
-    	}
-    	
-    	// 필터에 해당하는 게시글이 없는 경우 endPage=0이 되는 상황 방지 
-    	if (totalPages == 0) {endPage = 1;}
-    	
-    	List<ApprovalDTO> approvalData = approvalMapper.approvalData(offset, size, type, status);
+	        Model model,
+	        HttpServletRequest request,
+	        @RequestParam(name = "page", defaultValue = "1") int page,
+	        @RequestParam(name = "type", required = false) String type,
+	        @RequestParam(name = "status", required = false) String status) {
 
-    	model.addAttribute("approvalData", approvalData);
-    	
-    	model.addAttribute("page", page);
-    	model.addAttribute("totalPages", totalPages);
-    	model.addAttribute("startPage", startPage);
-    	model.addAttribute("endPage", endPage);
-    	
-    	model.addAttribute("type", type);
-    	model.addAttribute("status", status);
-    	
-    	model.addAttribute("mainUrl", "approval/approvalMain");
-    	return "navTap";
-    }
+	    HttpSession session = request.getSession(false);
+	    EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+
+	    List<ApprovalDTO> approvalData;
+	    int totalPages;
+	    int startPage;
+	    int endPage;
+	    int size = 10;
+
+	    if (loginUser == null || !"대표".equals(loginUser.getRole())) {
+	        // 대표가 아니면 빈 리스트 + 페이징 값 기본 세팅
+	        approvalData = List.of();
+	        totalPages = 0;
+	        startPage = 1;
+	        endPage = 1;
+	    } else {
+	        int offset = (page - 1) * size;
+	        int totalCount = approvalMapper.approvalCountAll(type, status);
+
+	        totalPages = (int) Math.ceil((double) totalCount / size);
+	        startPage = Math.max(1, page - 2);
+	        endPage = Math.min(totalPages, startPage + 4);
+
+	        if ((endPage - startPage + 1) < 5 && (endPage == totalPages || startPage == 1)) {
+	            startPage = Math.max(1, endPage - 4);
+	        }
+	        if (totalPages == 0) endPage = 1;
+
+	        approvalData = approvalMapper.approvalData(offset, size, type, status);
+	    }
+
+	    model.addAttribute("approvalData", approvalData);
+	    model.addAttribute("page", page);
+	    model.addAttribute("totalPages", totalPages);
+	    model.addAttribute("startPage", startPage);
+	    model.addAttribute("endPage", endPage);
+	    model.addAttribute("type", type);
+	    model.addAttribute("status", status);
+	    model.addAttribute("mainUrl", "approval/approvalMain");
+
+	    return "navTap";
+	}
+
+
 	
 	@RequestMapping("/viewer")
 	public String approvalViewer(
