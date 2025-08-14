@@ -9,7 +9,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class AdminOnlyInterceptor implements HandlerInterceptor {
 
-    private static final String MASTER_ID = "20250002";
+    private static final String MASTER_ID = "20250004";
 
     @Override
     public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {

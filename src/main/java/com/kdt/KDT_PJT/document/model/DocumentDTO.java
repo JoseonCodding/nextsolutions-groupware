@@ -8,28 +8,21 @@ import lombok.Data;
 
 @Data
 public class DocumentDTO {
-	private Long pjtSn;
-	private String pjtNm;
-	private String pjtSttsCd;    // '대기' | '완료' 등
-	private String employeeId;
-	private String useYn;        // 'Y' 최신, 'N' 과거
-	private String frstRgtrId;
-	private LocalDateTime frstRegDt;
-	private String lastMdfrId;
-	private LocalDateTime lastMdfcnDt;
-	private LocalDate pjtBgngDt;
-	private LocalDate pjtEndDt;
-	private String tbPjtApr;
-	private String tbPjtBasccol;
-	private String docType;
-	private String content;
-	private Long atchFileSn1;
-	private String orgFileNm1;
-	private Long atchFileSn2;
-	private Long atchFileSn3;
-	private String orgFileNm2;
-	private String orgFileNm3;
-	private String tbPjtBasccol1;
-	private String gid;          // 버전군 식별자
-	private BigDecimal ver;      // ex) 1.0, 1.1
+	private Long pjtSn;                   // 프로젝트 번호(행 PK)
+	  private String pjtNm;               // 프로젝트명
+	  private String pjtSttsCd;           // '대기' | '완료'
+	  private String employeeId;          // 사번
+	  private String empNm;               // 사원명 (테이블에 없으면 조인으로 매핑)
+	  private LocalDateTime frstRegDt;    // 등록일
+	  private String content;             // 내용
+	  // 첨부
+	  private Long atchFileSn1;
+	  private String orgFileNm1;
+	  private Long atchFileSn2;
+	  private Long atchFileSn3;
+	  private String orgFileNm2;
+	  private String orgFileNm3;
+
+	  private String gid;                 // 버전군 식별자
+	  private BigDecimal ver;             // 1.0, 1.1 ...
 }
