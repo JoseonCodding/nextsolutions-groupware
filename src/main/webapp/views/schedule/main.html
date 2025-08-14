@@ -236,5 +236,6 @@
 <br />
 
 <!-- 권한자만 등록 버튼 보이도록 -->
-<a th:if="${session.loginUser.role == null}" th:href="@{/schedule/insert}">일정 등록</a>
+<a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
+   th:href="@{/schedule/insert}">일정 등록</a>
 

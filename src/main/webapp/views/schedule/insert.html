@@ -6,9 +6,11 @@
         const allDayCheckbox = document.querySelector('input[name="cate"][value="종일"]');
         const holidayCheckbox = document.querySelector('input[name="holiday"]');
         const repeatSelect   = document.getElementById("repeatCheck");
-        const startTimeInput = document.querySelector('input[name="startTime"]');
-        const endTimeInput   = document.querySelector('input[name="endTime"]');
+        const startTimeInput = document.querySelector('input[name="startTimeStr"]');
+        const endTimeInput   = document.querySelector('input[name="endTimeStr"]');
         const endDateInput   = document.querySelector('input[name="endDateStr"]');
+        const startDateInput = document.querySelector('input[name="startDateStr"]');
+
 
         function applyState() {
             const isDaily  = repeatSelect.value === "1";
@@ -26,8 +28,8 @@
                 // 종료일/종료시간 비활성화 및 초기화
                 endDateInput.disabled = true;
                 endDateInput.value = "";
-                endTimeInput.disabled = true;
-                endTimeInput.value = "";
+                //endTimeInput.disabled = true;
+                //endTimeInput.value = "";
 
                 // 시작시간은 사용 가능
                 startTimeInput.disabled = false;
@@ -36,6 +38,7 @@
                 // 매일 아님 → 다시 활성화
                 allDayCheckbox.disabled = false;
                 holidayCheckbox.disabled = false;
+                
             }
 
             // 2) 휴무일 체크 시: 종일 자동 체크 + 반복 선택 비활성화(반복 없음으로 고정)
@@ -59,6 +62,14 @@
             // 매일이 아니므로 종료일은 사용 가능
             endDateInput.disabled = false;
         }
+        
+     	// 시작일 변경 시 종료일 최소값 제한
+        startDateInput.addEventListener("change", function() {
+            endDateInput.min = startDateInput.value;
+            if (endDateInput.value && endDateInput.value < startDateInput.value) {
+                endDateInput.value = startDateInput.value;
+            }
+        });
 
         // 이벤트 바인딩
         holidayCheckbox.addEventListener("change", applyState);
@@ -68,9 +79,8 @@
         // 초기 상태 반영
         applyState();
     });
+    
     </script>
-
-</script>
 
 <form action="" method="post" >
 	<table border="" >
@@ -86,8 +96,12 @@
 		</tr>
 		<tr >
 			<td colspan="3">
-				<input type="date" name="startDateStr" /><input type="time" name="startTime">
-				~ <input type="date" name="endDateStr" /><input type="time" name="endTime">
+				시작:
+				<input type="date" name="startDateStr" /><input type="time" name="startTimeStr" step="600">
+				~ 
+				종료:
+				<input type="date" name="endDateStr" /><input type="time" name="endTimeStr" step="600">
+
 				<input type="checkbox" name="cate" value="종일"/>종일일정
 			</td>
 

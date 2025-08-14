@@ -12,10 +12,17 @@ import org.apache.ibatis.annotations.Update;
 public interface ScheduleMapper {
 
 	//일정 등록
-	@Insert("insert into schedule "+
-			"(title,    content,      cate,   start_date,   start_time,   end_date,   end_time,  repeat_check,  holiday, alarm,  created_at, employeeId) values "+
-			"(#{title}, #{content}, #{cate}, #{startDate}, #{startTime}, #{endDate}, #{endTime}, #{repeatCheck} , #{holiday} , #{alarm} ,now(), #{employeeId} ) "
-			)
+	@Insert("""
+		    INSERT INTO schedule
+		    (title, content, cate, start_date, start_time, end_date, end_time, repeat_check, holiday, alarm, created_at, employeeId)
+		    VALUES
+		    (#{title}, #{content}, #{cate}, #{startDate}, #{startTime}, #{endDate}, #{endTime}, #{repeatCheck},
+		     CASE 
+		        WHEN #{holiday} IS NULL OR #{holiday} = '' THEN '일정'
+		        ELSE #{holiday}
+		     END,
+		     #{alarm}, NOW(), #{employeeId})
+		""")
 	int insert(ScheduleDTO dto); 
 	
 	@Select("""
