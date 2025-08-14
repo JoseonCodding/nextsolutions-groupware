@@ -22,6 +22,7 @@ public class DocumentDTO {
 	  private String atchFileSn3;
 	  private String orgFileNm2;
 	  private String orgFileNm3;
+	  private String vers;
 
 	  private String gid;                 // 버전군 식별자
 	  private BigDecimal ver;             // 1.0, 1.1 ...

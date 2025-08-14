@@ -17,16 +17,13 @@ public interface DocumentMapper {
 
 	// 목록
 	@Select("""
-	  SELECT t.*, e.emp_nm AS empNm
-	  FROM TB_PJT_BASC t
-	  JOIN ( SELECT gid, MAX(ver) AS ver
-	         FROM TB_PJT_BASC
-	         WHERE PJT_STTS_CD='완료'
-	         GROUP BY gid ) m
-	    ON m.gid=t.gid AND m.ver=t.ver
-	  LEFT JOIN employee e ON e.employeeId=t.employeeId
-	  WHERE (#{isAdmin}=TRUE OR t.employeeId=#{employeeId})
-	  ORDER BY t.FRST_REG_DT DESC
+	select t1.*, vers, emp_nm from TB_PJT_BASC t1,
+	(select gid, group_concat(ver SEPARATOR ',') as vers, max(ver) as max_ver  from TB_PJT_BASC
+	group by gid) t2, employee
+	where t1.gid = t2.gid and t1.ver = t2.max_ver and t1.PJT_STTS_CD = '진행중'
+	and t1.employeeId = employee.employeeId
+    and (#{isAdmin}=TRUE OR t1.employeeId=#{employeeId})
+	  order by t1.FRST_REG_DT DESC
 	  LIMIT #{limit} OFFSET #{offset}
 	""")
 	List<DocumentDTO> findDocsForManage(@Param("employeeId") String employeeId,

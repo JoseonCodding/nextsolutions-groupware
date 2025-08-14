@@ -29,7 +29,7 @@
             </td>
             <td th:text="${doc.empNm}"></td>
             <td th:text="${#temporals.format(doc.frstRegDt, 'yyyy-MM-dd')}"></td>
-            <td th:text="'v ' + ${doc.ver}"></td>
+            <td th:text="'v ' + ${doc.vers}"></td>
             <td>
                 <a th:if="${doc.orgFileNm1 != null}"
                    th:href="@{/document/download(path=${doc.atchFileSn1}, fileName=${doc.orgFileNm1})}"
