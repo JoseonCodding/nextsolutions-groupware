@@ -77,8 +77,8 @@ public interface ApprovalMapper {
 	    "     p.PJT_NM AS title,",
 	    "     p.content AS content,",
 	    "     p.PJT_STTS_CD AS status,",
-	    "     '프로젝트부' AS deptName,",
-	    "     '박길동' AS writer,",
+	    "     e.deptName AS deptName,",
+	    "     e.emp_nm AS writer,",
 	    "     p.employeeId AS writerId,",
 	    "     p.FRST_REG_DT AS createdAt,",
 	    "     p.ATCH_FILE_SN1 AS attachFileUuid,",
@@ -92,6 +92,7 @@ public interface ApprovalMapper {
 	    "     NULL AS modificationReason,",
 	    "     NULL AS timeInout",
 	    "   FROM TB_PJT_BASC p",
+	    "   LEFT JOIN employee e ON p.employeeId = e.employeeId",
 
 	    "   UNION ALL",
 
@@ -494,9 +495,9 @@ public interface ApprovalMapper {
 	    "     p.PJT_NM AS title,",
 	    "     p.content AS content,",
 	    "     p.PJT_STTS_CD AS status,",
-	    "     '프로젝트부' AS deptName,",
-	    "     '박길동' AS writer,",
-	    "     p.employeeId AS writerId,",
+	    "     e.deptName AS deptName,",
+	    "     e.emp_nm AS writer,",
+	    "     e.employeeId AS writerId,",
 	    "     p.FRST_REG_DT AS createdAt,",
 	    "     p.ATCH_FILE_SN1 AS attachFileUuid, p.ORG_FILE_NM1 AS attachFileOrgName,",
 	    "     NULL AS leaveCreateDate, NULL AS leaveUsedDate,",
@@ -505,6 +506,7 @@ public interface ApprovalMapper {
 	    "     NULL AS modificationReason, NULL AS timeInout,",
 	    "     p.PJT_BGNG_DT AS pjtBgngDt, p.PJT_END_DT AS pjtEndDt",
 	    "   FROM TB_PJT_BASC p",
+	    "   LEFT JOIN employee e ON p.employeeId = e.employeeId",
 
 	    "   UNION ALL",
 

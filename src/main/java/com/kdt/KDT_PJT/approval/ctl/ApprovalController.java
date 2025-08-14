@@ -193,6 +193,11 @@ public class ApprovalController {
             docId, loginUser.getRole(), loginUser.getEmployeeId(), type, status
         );
         if (doc == null) return "redirect:/approval/main?error=forbidden";
+        
+        // 작성자 본인만 삭제 허용
+        if (!loginUser.getEmployeeId().equals(doc.getWriterId())) {
+            return "redirect:/approval/main?error=forbidden";
+        }
 
         String pkId = docId.split("_")[1];
         String docType = doc.getDocType();
@@ -228,6 +233,11 @@ public class ApprovalController {
         );
         if (editData == null) return "redirect:/approval/main?error=forbidden";
 
+        // 작성자 본인만 수정 폼 접근 허용
+        if (!loginUser.getEmployeeId().equals(editData.getWriterId())) {
+            return "redirect:/approval/main?error=forbidden";
+        }
+
         model.addAttribute("editData", editData);
         model.addAttribute("page", page);
         model.addAttribute("type", type);
@@ -235,6 +245,7 @@ public class ApprovalController {
         model.addAttribute("mainUrl", "approval/approvalEditForm");
         return "navTap";
     }
+
 
 
     
@@ -257,6 +268,11 @@ public class ApprovalController {
             editData.getDocId(), loginUser.getRole(), loginUser.getEmployeeId(), type, status
         );
         if (current == null) return "redirect:/approval/main?error=forbidden";
+
+        // 작성자 본인만 수정 허용
+        if (!loginUser.getEmployeeId().equals(current.getWriterId())) {
+            return "redirect:/approval/main?error=forbidden";
+        }
 
         // 이하 기존 sanitize/가공 및 UPDATE 그대로 유지
         String rawContent = editData.getContent();
