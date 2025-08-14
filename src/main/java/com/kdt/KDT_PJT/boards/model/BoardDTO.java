@@ -56,8 +56,8 @@ public class BoardDTO {
     public static final String ROLE_ADMIN           = "ADMIN";
     public static final String ROLE_NOTICE_MANAGER  = "NOTICE_MANAGER";
 
-    public static final String ADMIN_EMP_ID         = "20250002";
-    public static final String NOTICE_MANAGER_EMP_ID= "20250003";
+    public static final String ADMIN_EMP_ID         = "20250004";
+    public static final String NOTICE_MANAGER_EMP_ID= "20250007";
 
     /* ===== 편의 메서드 ===== */
     public String getContentBr() {
