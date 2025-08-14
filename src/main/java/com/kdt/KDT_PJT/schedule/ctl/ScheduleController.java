@@ -1,5 +1,6 @@
 package com.kdt.KDT_PJT.schedule.ctl;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,8 @@ public class ScheduleController {
 
 	    model.addAttribute("scheduleList", scheduleList);
 		model.addAttribute("mainUrl", "schedule/main");
-	    
+		
+
 		return "navTap";
 	}
 	
