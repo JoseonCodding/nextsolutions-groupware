@@ -14,7 +14,7 @@ public interface LeaveMapper {
 
 	//annual_leave (연차) 테이블에서 가져오기
 	@Select("select * from annual_leave where employeeId = #{employeeId};")
-	List<LeaveDTO> annualLeave(); 
+	List<LeaveDTO> annualLeave(EmployeeDto dto); 
 	
 	//annual_leave 테이블에서 사용가능한 연차 가져오기
 	@Select("select * from annual_leave where employeeId = #{employeeId} and leave_type='발생'  and (state_type is null or state_type = '반려')")
