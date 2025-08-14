@@ -3,219 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <title>문서관리</title>
-  <style>
-    :root {
-      --bg:#f7f9fc; --border:#dcdcdc; --muted:#6b7280; --text:#111827; --primary:#3b82f6; --success:#16a34a; --warn:#f59e0b; --danger:#ef4444; --neutral:#64748b;
-    }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; color:#111; }
-
-    /* 상단 탭/네비게이션 */
-    .board-nav { background-color:var(--bg); padding:10px 20px; border-bottom:1px solid var(--border); }
-    .board-nav ul { list-style:none; padding:0; margin:0; display:flex; align-items:center; }
-    .board-nav ul li { margin-right:30px; }
-    .board-nav ul li a { text-decoration:none; font-weight:700; color:#666; padding:8px 12px; border-bottom:2px solid transparent; transition:all .2s; }
-    .board-nav ul li.active a { color:#000; border-bottom:2px solid #2c3e50; }
-    .board-nav ul li.admin { margin-left:auto; }
-    .board-nav ul li.admin a { color:#6b7280; font-weight:700; }
-    .board-nav ul li.admin a:hover { color:#111827; }
-    .ico-gear { width:16px; height:16px; vertical-align:-2px; fill:currentColor; }
-
-    .container { max-width:1200px; margin:20px auto; padding:0 16px; }
-
-    /* 컨트롤 영역 */
-    .controls { display:flex; gap:12px; flex-wrap:wrap; justify-content:space-between; align-items:center; margin:16px 0 20px; }
-    .controls .left, .controls .right { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-    .controls input[type="text"], .controls input[type="date"], .controls select { padding:6px 8px; border:1px solid #ddd; border-radius:6px; }
-    .controls button, .btn { padding:7px 12px; border:1px solid #ddd; border-radius:6px; background:#fff; cursor:pointer; }
-    .btn-primary { background:var(--primary); border-color:var(--primary); color:#fff; }
-
-    /* 상태 탭 */
-    .status-tabs { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
-    .status-tabs a { text-decoration:none; color:#555; padding:6px 10px; border-radius:20px; border:1px solid #e5e7eb; transition: background .2s,border .2s,color .2s; }
-    .status-tabs a.active { background:#eff6ff; border-color:var(--primary); color:#1d4ed8; font-weight:700; }
-
-    /* 테이블 */
-    table { width:100%; border-collapse:collapse; }
-    thead { background:#f5f5f5; }
-    th, td { padding:10px; border-bottom:1px solid #e5e7eb; }
-    td.center, th.center { text-align:center; }
-    td.right, th.right { text-align:right; }
-
-    /* 상태 배지 */
-    .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:700; }
-    .badge-pending { background:#eef2ff; color:#3730a3; }
-    .badge-progress { background:#fff7ed; color:#9a3412; }
-    .badge-done { background:#ecfdf5; color:#065f46; }
-    .badge-reject { background:#fef2f2; color:#991b1b; }
-
-    .file-ind { display:inline-flex; align-items:center; gap:4px; color:var(--neutral); font-size:12px; }
-    .file-ind svg { width:14px; height:14px; }
-
-    .pagination { display:flex; gap:6px; align-items:center; justify-content:center; margin:20px 0; }
-    .pagination a, .pagination span { padding:4px 8px; border-radius:4px; text-decoration:none; color:#111; border:1px solid transparent; }
-    .pagination a:hover { border-color:#e5e7eb; }
-    .pagination .active { font-weight:700; border:1px solid var(--primary); background:#eff6ff; }
-    .pagination .disabled { pointer-events:none; opacity:.4; }
-
-    .muted { color:var(--muted); }
-  </style>
 </head>
 <body>
+	<!-- resources/templates/document/document_list.html -->
+<div class="document-list">
+    <h2>문서 관리</h2>
 
-<!-- 상단 네비(기존 게시판 네비 스타일 재사용) -->
-<div class="board-nav">
-  <ul>
-    <li th:each="b : ${docBoards}" th:classappend="${activeBoardId} == ${b.boardId} ? 'active'">
-      <a th:href="@{/docs/{boardId}(boardId=${b.boardId})}" th:text="${b.boardName}">문서</a>
-    </li>
-    <!-- 관리자 전용 메뉴 -->
-    <li class="admin" th:if="${isAdmin}">
-      <a th:href="@{/admin/docs}">
-        <svg viewBox="0 0 24 24" class="ico-gear"><path d="M12 8.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Zm8.1 3.2c0-.4 0-.8-.1-1.2l2-1.5-2-3.5-2.4.7a7.7 7.7 0 0 0-2.1-1.2L15 2h-6l-.5 2.3a7.7 7.7 0 0 0-2.1 1.2l-2.4-.7-2 3.5 2 1.5c0 .4-.1.8-.1 1.2s0 .8.1 1.2l-2 1.5 2 3.5 2.4-.7c.6.5 1.3.9 2.1 1.2L9 22h6l.5-2.3c.8-.3 1.5-.7 2.1-1.2l2.4.7 2-3.5-2-1.5c.1-.4.1-.8.1-1.2Z"/></svg>
-        문서설정
-      </a>
-    </li>
-  </ul>
-</div>
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>NO</th>
+            <th>프로젝트명</th>
+            <th>담당자</th>
+            <th>등록일</th>
+            <th>버전</th>
+            <th>첨부</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- approvalData: DocumentDTO 리스트 -->
+        <tr th:each="doc : ${approvalData}">
+            <td th:text="${doc.pjtSn}"></td>
+            <td>
+            	<a th:href="@{/document/detail(gid=${doc.gid}, ver=${doc.ver})}" th:text="${doc.pjtNm}"></a>
+            </td>
+            <td th:text="${doc.empNm}"></td>
+            <td th:text="${#temporals.format(doc.frstRegDt, 'yyyy-MM-dd')}"></td>
+            <td th:text="'v ' + ${doc.ver}"></td>
+            <td>
+                <a th:if="${doc.orgFileNm1 != null}"
+                   th:href="@{/document/download(path=${doc.atchFileSn1}, fileName=${doc.orgFileNm1})}"
+                   th:text="${doc.orgFileNm1}"></a>
+                <br th:if="${doc.orgFileNm2 != null}"/>
+                <a th:if="${doc.orgFileNm2 != null}"
+                   th:href="@{/document/download(path=${doc.atchFileSn2}, fileName=${doc.orgFileNm2})}"
+                   th:text="${doc.orgFileNm2}"></a>
+                <br th:if="${doc.orgFileNm3 != null}"/>
+                <a th:if="${doc.orgFileNm3 != null}"
+                   th:href="@{/document/download(path=${doc.atchFileSn3}, fileName=${doc.orgFileNm3})}"
+                   th:text="${doc.orgFileNm3}"></a>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(approvalData)}">
+            <td colspan="9" class="text-center">등록된 문서가 없습니다.</td>
+        </tr>
+        </tbody>
+    </table>
 
-<div class="container">
-
-  <!-- 필터 바: 소유/상태/기간/검색/정렬 -->
-  <div class="controls">
-    <div class="left">
-      <!-- 소유 필터: 관리자만 노출 (내 문서/전체 문서) -->
-      <form th:action="@{/docs}" method="get" id="ownerForm">
-        <input type="hidden" name="status" th:value="${status}">
-        <input type="hidden" name="keyword" th:value="${keyword}">
-        <input type="hidden" name="sort" th:value="${sort}">
-        <input type="hidden" name="size" th:value="${size}">
-        <input type="hidden" name="page" value="1">
-        <select name="mine" th:if="${isAdmin}" th:value="${mine}" onchange="document.getElementById('ownerForm').submit()">
-          <option value="true" th:selected="${mine}">내 문서</option>
-          <option value="false" th:selected="${!mine}">전체 문서</option>
-        </select>
-      </form>
-
-      <!-- 상태 탭 (전체/대기/진행중/완료/반려) -->
-      <div class="status-tabs">
-        <a th:classappend="${status}=='all' ? 'active'" th:href="@{/docs(status='all', page=1, size=${size}, sort=${sort}, keyword=${keyword}, mine=${mine})}">전체</a>
-        <a th:classappend="${status}=='PENDING' ? 'active'" th:href="@{/docs(status='PENDING', page=1, size=${size}, sort=${sort}, keyword=${keyword}, mine=${mine})}">대기</a>
-        <a th:classappend="${status}=='IN_PROGRESS' ? 'active'" th:href="@{/docs(status='IN_PROGRESS', page=1, size=${size}, sort=${sort}, keyword=${keyword}, mine=${mine})}">진행중</a>
-        <a th:classappend="${status}=='DONE' ? 'active'" th:href="@{/docs(status='DONE', page=1, size=${size}, sort=${sort}, keyword=${keyword}, mine=${mine})}">완료</a>
-        <a th:classappend="${status}=='REJECTED' ? 'active'" th:href="@{/docs(status='REJECTED', page=1, size=${size}, sort=${sort}, keyword=${keyword}, mine=${mine})}">반려</a>
-      </div>
+    <!-- 페이징 -->
+    <div class="pagination">
+        <ul class="pagination">
+            <li th:classappend="${page <= 1} ? 'disabled'">
+                <a th:href="@{/document/main(page=${page-1}, size=${size})}">&laquo; 이전</a>
+            </li>
+            <li>
+                <span th:text="${page} + ' / ' + ${totalPages}"></span>
+            </li>
+            <li th:classappend="${page >= totalPages} ? 'disabled'">
+                <a th:href="@{/document/main(page=${page+1}, size=${size})}">다음 &raquo;</a>
+            </li>
+        </ul>
     </div>
-
-    <div class="right">
-      <!-- 기간 필터 -->
-      <form th:action="@{/docs}" method="get" id="dateForm" style="display:flex; gap:8px; align-items:center;">
-        <input type="hidden" name="status" th:value="${status}">
-        <input type="hidden" name="keyword" th:value="${keyword}">
-        <input type="hidden" name="sort" th:value="${sort}">
-        <input type="hidden" name="size" th:value="${size}">
-        <input type="hidden" name="page" value="1">
-        <label class="muted">기간</label>
-        <input type="date" name="from" th:value="${from}">
-        <span class="muted">~</span>
-        <input type="date" name="to" th:value="${to}">
-        <button type="submit" class="btn">적용</button>
-      </form>
-
-      <!-- 정렬: 변경 즉시 적용 -->
-      <form th:action="@{/docs}" method="get" id="sortForm">
-        <input type="hidden" name="status" th:value="${status}">
-        <input type="hidden" name="keyword" th:value="${keyword}">
-        <input type="hidden" name="from" th:value="${from}">
-        <input type="hidden" name="to" th:value="${to}">
-        <input type="hidden" name="size" th:value="${size}">
-        <input type="hidden" name="page" value="1">
-        <select name="sort" th:value="${sort}" onchange="document.getElementById('sortForm').submit()">
-          <option value="newest" th:selected="${sort}=='newest'">최신등록순</option>
-          <option value="beginAsc" th:selected="${sort}=='beginAsc'">시작일 빠른순</option>
-          <option value="endAsc" th:selected="${sort}=='endAsc'">종료일 빠른순</option>
-          <option value="title" th:selected="${sort}=='title'">제목순</option>
-        </select>
-        <noscript><button type="submit">정렬 적용</button></noscript>
-      </form>
-
-      <!-- 검색: 제목/작성자 -->
-      <form th:action="@{/docs}" method="get" style="display:flex; gap:8px;">
-        <input type="text" name="keyword" th:value="${keyword}" placeholder="제목/작성자 검색">
-        <input type="hidden" name="status" th:value="${status}">
-        <input type="hidden" name="sort" th:value="${sort}">
-        <input type="hidden" name="size" th:value="${size}">
-        <input type="hidden" name="page" value="1">
-        <button type="submit" class="btn">검색</button>
-      </form>
-
-      <!-- 작성 버튼 (권한 보유자만) -->
-      <a th:if="${canCreate}" th:href="@{/docs/write}" class="btn btn-primary">문서 작성</a>
-    </div>
-  </div>
-
-  <!-- 목록 테이블 -->
-  <table class="board-table">
-    <thead>
-      <tr>
-        <th class="center" style="width:70px;">NO</th>
-        <th>제목</th>
-        <th class="center" style="width:120px;">상태</th>
-        <th class="center" style="width:90px;">버전</th>
-        <th class="center" style="width:120px;">작성자</th>
-        <th class="center" style="width:220px;">기간</th>
-        <th class="center" style="width:150px;">등록일</th>
-        <th class="center" style="width:80px;">첨부</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr th:each="d, stat : ${docs}">
-        <td class="center" th:text="${stat.count}">1</td>
-        <td>
-          <a th:href="@{/docs/detail(pjtSn=${d.pjtSn})}" th:text="${d.pjtNm}">문서제목</a>
-          <div class="muted" style="font-size:12px; margin-top:4px;" th:if="${d.aprDocNo != null}">결재문서번호: <span th:text="${d.aprDocNo}"></span></div>
-        </td>
-        <td class="center">
-          <span th:switch="${d.pjtSttsCd}">
-            <span th:case="'PENDING'" class="badge badge-pending">대기</span>
-            <span th:case="'IN_PROGRESS'" class="badge badge-progress">진행중</span>
-            <span th:case="'DONE'" class="badge badge-done">완료</span>
-            <span th:case="'REJECTED'" class="badge badge-reject">반려</span>
-            <span th:case="*" class="badge">-</span>
-          </span>
-        </td>
-        <td class="center" th:text="${d.latestVersion != null ? d.latestVersion : 1}">1</td>
-        <td class="center" th:text="${d.empNm}">홍길동</td>
-        <td class="center" th:text="${#temporals.format(d.pjtBgngDt, 'yyyy-MM-dd')} + ' ~ ' + ${#temporals.format(d.pjtEndDt, 'yyyy-MM-dd')}">2025-08-12 ~ 2025-08-27</td>
-        <td class="center" th:text="${d.createdAt != null ? #dates.format(d.createdAt, 'yyyy-MM-dd HH:mm') : ''}"></td>
-        <td class="center">
-          <span class="file-ind" th:if="${d.fileCount != null and d.fileCount > 0}">
-            <svg viewBox="0 0 24 24"><path d="M14.5 2h-9A1.5 1.5 0 0 0 4 3.5v17A1.5 1.5 0 0 0 5.5 22h13A1.5 1.5 0 0 0 20 20.5v-13L14.5 2Zm0 1.5 4 4h-4v-4ZM7 11h10v1.5H7V11Zm0 3h10v1.5H7V14Zm0-6h5v1.5H7V8Z"/></svg>
-            <span th:text="${d.fileCount}">2</span>
-          </span>
-          <span class="muted" th:if="${d.fileCount == null || d.fileCount == 0}">-</span>
-        </td>
-      </tr>
-      <tr th:if="${#lists.isEmpty(docs)}">
-        <td colspan="8" style="padding:90px; text-align:center; color:#999;">등록된 문서가 없습니다.</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!-- 페이지네이션 -->
-  <div class="pagination">
-    <a th:classappend="${page==1} ? ' disabled'" th:href="@{/docs(page=1,size=${size},status=${status},sort=${sort},keyword=${keyword},from=${from},to=${to},mine=${mine})}">&laquo;</a>
-    <a th:classappend="${page==1} ? ' disabled'" th:href="@{/docs(page=${page>1?page-1:1},size=${size},status=${status},sort=${sort},keyword=${keyword},from=${from},to=${to},mine=${mine})}">&lsaquo;</a>
-
-    <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
-      <a th:if="${p!=page}" th:href="@{/docs(page=${p},size=${size},status=${status},sort=${sort},keyword=${keyword},from=${from},to=${to},mine=${mine})}" th:text="${p}"></a>
-      <span th:if="${p==page}" th:text="${p}" class="active"></span>
-    </span>
-
-    <a th:classappend="${page==totalPages} ? ' disabled'" th:href="@{/docs(page=${page<totalPages?page+1:totalPages},size=${size},status=${status},sort=${sort},keyword=${keyword},from=${from},to=${to},mine=${mine})}">&rsaquo;</a>
-    <a th:classappend="${page==totalPages} ? ' disabled'" th:href="@{/docs(page=${totalPages},size=${size},status=${status},sort=${sort},keyword=${keyword},from=${from},to=${to},mine=${mine})}">&raquo;</a>
-  </div>
-
 </div>
-
+	
 </body>
 </html>
