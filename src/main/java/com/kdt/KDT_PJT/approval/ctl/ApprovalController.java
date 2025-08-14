@@ -74,13 +74,23 @@ public class ApprovalController {
 	    int endPage;
 	    int size = 10;
 
-	    if (loginUser == null || !"대표".equals(loginUser.getRole())) {
-	        // 대표가 아니면 빈 리스트 + 페이징 값 기본 세팅
+	    // 0. 로그인 체크
+	    if (loginUser == null) {
+	        // 비로그인 → 빈 결과 반환
 	        approvalData = List.of();
 	        totalPages = 0;
 	        startPage = 1;
 	        endPage = 1;
 	    } else {
+	        String role = loginUser.getRole();
+
+	        // 1. role별 type 강제 지정
+	        if (!"대표".equals(role)) {
+	            // 대표가 아닌 경우, 강제로 type 설정
+	            type = role; // 예: role 이 '프로젝트'면 type='프로젝트'
+	        }
+
+	        // 2. 페이징 계산
 	        int offset = (page - 1) * size;
 	        int totalCount = approvalMapper.approvalCountAll(type, status);
 
@@ -93,20 +103,23 @@ public class ApprovalController {
 	        }
 	        if (totalPages == 0) endPage = 1;
 
+	        // 3. SQL 조회
 	        approvalData = approvalMapper.approvalData(offset, size, type, status);
 	    }
 
+	    // 4. 모델 셋업
 	    model.addAttribute("approvalData", approvalData);
 	    model.addAttribute("page", page);
 	    model.addAttribute("totalPages", totalPages);
 	    model.addAttribute("startPage", startPage);
 	    model.addAttribute("endPage", endPage);
-	    model.addAttribute("type", type);
+	    model.addAttribute("type", type);     // role이 반영된 type
 	    model.addAttribute("status", status);
 	    model.addAttribute("mainUrl", "approval/approvalMain");
 
 	    return "navTap";
 	}
+
 
 
 	
