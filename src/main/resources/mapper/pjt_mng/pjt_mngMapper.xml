@@ -18,7 +18,7 @@
     <where>
       <if test="keyword != null and keyword != ''">
         (PJT_NM LIKE CONCAT('%', #{keyword}, '%') 
-         OR employeeid LIKE CONCAT('%', #{keyword}, '%'))
+         OR employeeId LIKE CONCAT('%', #{keyword}, '%'))
       </if>
     </where>
   </select>
@@ -172,10 +172,29 @@
   WHERE (USE_YN IS NULL OR USE_YN = 'Y')
     <if test="keyword != null and keyword != ''">
       AND (PJT_NM LIKE CONCAT('%', #{keyword}, '%')
-           OR employeeId LIKE CONCAT('%', #{keyword}, '%'))
+           OR employeeId = #{keyword})
     </if>
     ORDER BY FRST_REG_DT DESC
 </select>
+
+
+<select id="searchProjectMngMyApprovalList" 
+        parameterType="map" 
+        resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+     
+     <!-- 게시글 리스트 최신순으로 정렬 -->   
+  SELECT *
+  FROM TB_PJT_BASC
+  WHERE (USE_YN IS NULL OR USE_YN = 'Y')
+    <if test="keyword != null and keyword != ''">
+      AND (PJT_NM LIKE CONCAT('%', #{keyword}, '%')
+           OR TB_PJT_APR = #{employeeId} )
+    </if>
+    ORDER BY FRST_REG_DT DESC
+</select>
+
+
+
 
 <select id="getProjectListOrderByWriter" 
         parameterType="String" 

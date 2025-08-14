@@ -115,9 +115,6 @@ input, select {
 				<td><input type="text" name="pjtNm"
 					th:value="${pjt['PJT_NM'] ?: ''}" /></td>
 			</tr>
-
-
-
 			<tr>
 				<th>담당자</th>
 				<td>
@@ -126,8 +123,6 @@ input, select {
 					placeholder="담당자 이름 입력" />
 				</td>
 			</tr>
-
-
 			<tr>
 				<th>기간</th>
 				<td>
@@ -138,7 +133,6 @@ input, select {
              th:value="${pjt['PJT_BGNG_DT'] != null ? #dates.format(pjt['PJT_BGNG_DT'], 'yyyy-MM-dd') : ''}" -->
 				</td>
 			</tr>
-
 			<tr>
 				<th>상태</th>
 				<td>
@@ -171,8 +165,7 @@ input, select {
 						</option>
 				</select></td>
 			</tr>
-
-
+			
 			<tr>
 				<th rowspan="3">파일업로드</th>
 				<td><input type="file" name="uploadFile1" id="uploadFile1" />
@@ -180,14 +173,12 @@ input, select {
 						style="margin-top: 8px; color: #333; font-size: 14px; background-color: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
 					</div></td>
 			</tr>
-			
 			<tr>
 				<td><input type="file" name="uploadFile2" id="uploadFile2" />
 					<div id="fileName" th:text="${pjt['ORG_FILE_NM2'] ?: '첨부된 파일 없음'}"
 						style="margin-top: 8px; color: #333; font-size: 14px; background-color: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
 					</div></td>
 			</tr>
-			
 			<tr>
 				<td><input type="file" name="uploadFile3" id="uploadFile3" />
 					<div id="fileName" th:text="${pjt['ORG_FILE_NM3'] ?: '첨부된 파일 없음'}"
@@ -202,9 +193,10 @@ input, select {
 			th:value="${pjt['approvers'] ?: ''}" />
 
 		<div class="button-row">
-			<button type="submit" class="save-btn">저장</button>
-			<button type="button" class="back-btn" onclick="history.back()">←
+		<button type="button" class="back-btn" onclick="history.back()">←
 				돌아가기</button>
+			<button type="submit" class="save-btn">저장</button>
+			
 		</div>
 	</form>
 
