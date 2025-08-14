@@ -122,6 +122,11 @@ public class ProjectMngController {
     	  log.info(" sortType = app ");    	  
     	  keyword = loginUser.getEmployeeId();    	  
     	  list = projectMngService.getProjectListMyApprovalTodoCount(pageNum, pageSize, keyword);
+          break;
+      case "myApproval":
+    	  log.info(" sortType = myApproval ");    	  
+    	  keyword = loginUser.getEmployeeId();    	  
+    	  list = projectMngService.getProjectMyApprovalList(pageNum, pageSize, keyword, loginUser.getEmployeeId());
           break;         
           
           

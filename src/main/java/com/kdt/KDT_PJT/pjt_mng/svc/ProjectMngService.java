@@ -132,11 +132,33 @@ public class ProjectMngService {
    public PageInfo<CmmnMap> getProjectList(int pageNum, int pageSize, String keyword) {
 
       PageHelper.startPage(pageNum, pageSize);
+      
+      
+      Map<String, Object> param = new HashMap<>();
+      param.put("keyword", keyword);
+      
+      
 
       List<CmmnMap> list = cmmnDao.selectList("com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.searchProjectMngList",
-            keyword); // ② 페이징 걸린 상태로 select 실행
+    		  param ); // ② 페이징 걸린 상태로 select 실행
       return new PageInfo<>(list); // ③ PageInfo로 래핑
    }
+   
+   
+   public PageInfo<CmmnMap> getProjectMyApprovalList(int pageNum, int pageSize, String keyword, String employeeId) {
+
+	      PageHelper.startPage(pageNum, pageSize);
+	      
+	      
+	      Map<String, Object> param = new HashMap<>();
+	      param.put("keyword", keyword);
+	      param.put("employeeId", employeeId);
+	      param.put("pageSize", pageSize);
+
+	      List<CmmnMap> list = cmmnDao.selectList("com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.searchProjectMngMyApprovalList",
+	    		  param ); // ② 페이징 걸린 상태로 select 실행
+	      return new PageInfo<>(list); // ③ PageInfo로 래핑
+	   }
 
    // DB 전체 개수 조회
    public int getTotalCount() {
