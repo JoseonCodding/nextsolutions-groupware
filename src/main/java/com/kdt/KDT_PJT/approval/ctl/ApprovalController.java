@@ -208,7 +208,7 @@ public class ApprovalController {
             return "redirect:/approval/main?error=forbidden";
         }
 
-        String pkId = docId.split("_")[1];
+        String pkId = docId.split("-")[1];
 
         // 공지사항만 소프트 삭제 실행
         if ("공지사항".equals(doc.getDocType())) {

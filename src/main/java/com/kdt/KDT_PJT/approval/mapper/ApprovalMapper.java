@@ -19,7 +19,7 @@ public interface ApprovalMapper {
 	    "<script>",
 	    "SELECT * FROM (",
 	    "   SELECT ",
-	    "     CONCAT('notice_', b.post_id) AS docId,",
+	    "     CONCAT('notice-', b.post_id) AS docId,",
 	    "     '공지사항' AS docType,",
 	    "     b.title AS title,",
 	    "     b.content AS content,",
@@ -45,7 +45,7 @@ public interface ApprovalMapper {
 	    "   UNION ALL",
 
 	    "   SELECT",
-	    "     CONCAT('leave_', l.leave_id) AS docId,",
+	    "     CONCAT('leave-', l.leave_id) AS docId,",
 	    "     '연차' AS docType,",
 	    "     CONCAT('연차 사용신청 - ', l.create_reason) AS title,",
 	    "     l.used_reason AS content,",
@@ -71,7 +71,7 @@ public interface ApprovalMapper {
 	    "   UNION ALL",
 
 	    "   SELECT",
-	    "     CONCAT('project_', p.PJT_SN) AS docId,",
+	    "     CONCAT('project-', p.PJT_SN) AS docId,",
 	    "     '프로젝트' AS docType,",
 	    "     p.PJT_NM AS title,",
 	    "     p.content AS content,",
@@ -96,7 +96,7 @@ public interface ApprovalMapper {
 	    "   UNION ALL",
 
 	    "   SELECT",
-	    "     CONCAT('attendance_', a.id) AS docId,",
+	    "     CONCAT('attendance-', a.id) AS docId,",
 	    "     '근태' AS docType,",
 	    "     '근태 수정 신청' AS title,",
 	    "     a.modification_reason AS content,",
@@ -165,7 +165,7 @@ public interface ApprovalMapper {
 	    "<script>",
 	    "SELECT COUNT(*) FROM (",
 	    // ──────────────── 공지사항
-	    "   SELECT CONCAT('notice_', b.post_id) AS docId, '공지사항' AS docType, e.employeeId AS writerId, b.status",
+	    "   SELECT CONCAT('notice-', b.post_id) AS docId, '공지사항' AS docType, e.employeeId AS writerId, b.status",
 	    "     FROM board_post b",
 	    "     LEFT JOIN employee e ON b.employee_id = e.employeeId",
 	    "    WHERE b.board_id = 1 AND b.is_deleted = 0",
@@ -173,7 +173,7 @@ public interface ApprovalMapper {
 	    "   UNION ALL",
 
 	    // ──────────────── 연차
-	    "   SELECT CONCAT('leave_', l.leave_id) AS docId, '연차' AS docType, e.employeeId AS writerId, l.state_type AS status",
+	    "   SELECT CONCAT('leave-', l.leave_id) AS docId, '연차' AS docType, e.employeeId AS writerId, l.state_type AS status",
 	    "     FROM annual_leave l",
 	    "     LEFT JOIN employee e ON l.employeeId = e.employeeId",
 	    "    WHERE l.state_type IS NOT NULL",
@@ -181,13 +181,13 @@ public interface ApprovalMapper {
 	    "   UNION ALL",
 
 	    // ──────────────── 프로젝트
-	    "   SELECT CONCAT('project_', p.PJT_SN) AS docId, '프로젝트' AS docType, p.employeeId AS writerId, p.PJT_STTS_CD AS status",
+	    "   SELECT CONCAT('project-', p.PJT_SN) AS docId, '프로젝트' AS docType, p.employeeId AS writerId, p.PJT_STTS_CD AS status",
 	    "     FROM TB_PJT_BASC p",
 
 	    "   UNION ALL",
 
 	    // ──────────────── 근태
-	    "   SELECT CONCAT('attendance_', a.id) AS docId, '근태' AS docType, e.employeeId AS writerId, a.status",
+	    "   SELECT CONCAT('attendance-', a.id) AS docId, '근태' AS docType, e.employeeId AS writerId, a.status",
 	    "     FROM attendance a",
 	    "     LEFT JOIN employee e ON a.employeeId = e.employeeId",
 	    "    WHERE a.status IS NOT NULL",
@@ -237,7 +237,7 @@ public interface ApprovalMapper {
 
 	    // ───── 공지사항
 	    "   SELECT ",
-	    "     CONCAT('notice_', b.post_id) AS docId,",
+	    "     CONCAT('notice-', b.post_id) AS docId,",
 	    "     '공지사항' AS docType,",
 	    "     b.title AS title,",
 	    "     b.content AS content,",
@@ -267,7 +267,7 @@ public interface ApprovalMapper {
 
 	    // ───── 연차
 	    "   SELECT",
-	    "     CONCAT('leave_', l.leave_id) AS docId,",
+	    "     CONCAT('leave-', l.leave_id) AS docId,",
 	    "     '연차' AS docType,",
 	    "     CONCAT('연차 사용신청 - ', l.create_reason) AS title,",
 	    "     l.used_reason AS content,",
@@ -297,7 +297,7 @@ public interface ApprovalMapper {
 
 	    // ───── 프로젝트
 	    "   SELECT",
-	    "     CONCAT('project_', p.PJT_SN) AS docId,",
+	    "     CONCAT('project-', p.PJT_SN) AS docId,",
 	    "     '프로젝트' AS docType,",
 	    "     p.PJT_NM AS title,",
 	    "     p.content AS content,",
@@ -326,7 +326,7 @@ public interface ApprovalMapper {
 
 	    // ───── 근태
 	    "   SELECT",
-	    "     CONCAT('attendance_', a.id) AS docId,",
+	    "     CONCAT('attendance-', a.id) AS docId,",
 	    "     '근태' AS docType,",
 	    "     '근태 수정 신청' AS title,",
 	    "     a.modification_reason AS content,",
