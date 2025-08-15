@@ -90,4 +90,6 @@ public interface DocumentMapper {
     SET t.pjt_stts_cd = '완료'
   """)
   int markApprovedLatest(@Param("gid") String gid);
+
+ 
 }
