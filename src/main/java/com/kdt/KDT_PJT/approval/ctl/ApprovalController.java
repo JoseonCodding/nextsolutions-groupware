@@ -427,7 +427,13 @@ public class ApprovalController {
         else if ("대기".equals(currentStatus) && isResponsibleRole(docType, role)) {
             updateStatusCommon(docType, pkId, "진행중", doc.getTimeInout(), currentStatus);
         } else if ("진행중".equals(currentStatus) && "대표".equals(role)) {
+            // 상태를 완료로 업데이트
             updateStatusCommon(docType, pkId, "완료", doc.getTimeInout(), currentStatus);
+
+            // ✅ 프로젝트가 완료로 승인되면 일정 추가
+            if ("프로젝트".equals(docType)) {
+                approvalMapper.insertProjectSchedule(pkId);
+            }
         } else {
             return "redirect:/approval/main?error=forbidden";
         }

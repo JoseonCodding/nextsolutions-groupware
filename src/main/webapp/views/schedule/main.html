@@ -23,7 +23,7 @@
             if(schOne.holiday=='일정' || schOne.holiday=='휴무일'){
                 clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"'>"+schOne.title+"</a>";
             }else if(schOne.holiday=='프로젝트' ){
-                clickBox = "<a href='/pjtMng/pjtDetail?pjtSn="+schOne.scheduleId+"'>"+schOne.title+"</a>";
+                clickBox = "<a href='/pjtMng/pjtDetail?pjtSn="+ schOne.pjtSn +"'>"+schOne.title+"</a>";
             }else{
                 clickBox = schOne.title;
             }

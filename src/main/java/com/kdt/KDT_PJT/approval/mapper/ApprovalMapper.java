@@ -493,7 +493,8 @@ public interface ApprovalMapper {
 		        content,
 		        created_at,
 		        employeeId,
-		        holiday
+		        holiday,
+		        PJT_SN
 		    )
 		    SELECT
 		        PJT_NM AS title,
@@ -503,7 +504,8 @@ public interface ApprovalMapper {
 		        content AS content,
 		        FRST_REG_DT AS created_at,
 		        employeeId AS employeeId,
-		        '프로젝트' AS holiday
+		        '프로젝트' AS holiday,
+		        PJT_SN
 		    FROM TB_PJT_BASC
 		    WHERE PJT_SN = #{id}
 		""")
