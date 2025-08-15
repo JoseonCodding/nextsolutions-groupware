@@ -217,6 +217,7 @@ tr:hover {
 				<th>진행상태</th>
 				<th>시작일</th>
 				<th>종료일</th>
+				<th>결재자</th>
 				<th>비고</th>
 			</tr>
 		</thead>
@@ -229,6 +230,7 @@ tr:hover {
 				<td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>
 				<td th:text="${pjt['PJT_BGNG_DT']}">시작일</td>
 				<td th:text="${pjt['PJT_END_DT']}">종료일</td>
+				<td th:text="${pjt['TB_PJT_APR']}">결재자</td>
 				<td>
 					<button class="button btn-view"
 						th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">

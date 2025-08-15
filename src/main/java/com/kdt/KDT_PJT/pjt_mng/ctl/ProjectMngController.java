@@ -26,9 +26,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -369,11 +371,54 @@ public class ProjectMngController {
       }
    }
 
+// 파일의 버전관리 
+//  
+//   @PostMapping("/file/{pjtSn}/update")
+//   public String updateFile(@PathVariable("pjtSn") Long pjtSn,
+//                            @RequestParam(required = false) MultipartFile file,
+//                            @RequestParam(required = false) String changeSummary,
+//                            @RequestParam(required = false) String contentTxt,
+//                            @SessionAttribute("loginUserId") String loginUserId) {
+//
+//       // 1) 최신 버전 가져오기
+//       int latestVer = projectMngService.findLatestVerByPjtSn(pjtSn);
+//       int nextVer = latestVer + 1;
+//
+//       // 2) 파일 저장 (없으면 null)
+//       Long atchFileSn = null;
+//       if (file != null && !file.isEmpty()) {
+//           // 기존 파일 업로드 로직 재사용
+//           atchFileSn = saveFileAndReturnSn(file, loginUserId);
+//       }
+//
+//       // 3) INSERT 파라미터 구성
+//       Map<String, Object> param = new HashMap<>();
+//       param.put("pjtSn", pjtSn);
+//       param.put("ver", nextVer);
+//       param.put("atchFileSn", atchFileSn);
+//       param.put("changeSummary", changeSummary);
+//       param.put("contentTxt", contentTxt);
+//       param.put("rgtrId", loginUserId);
+//
+//       // 4) 새 버전 INSERT
+//       projectMngService.insertNewVersion(param);
+//
+//       return "redirect:/doc/manage?pjtSn=" + pjtSn;
+//   }
+
+   
+   private Long saveFileAndReturnSn(MultipartFile file, String loginUserId) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+
    @PostMapping("/updatePjtProc")
    public String updatePjtProc(@RequestParam("pjtSn") String pjtSn, @RequestParam("pjtNm") String pjtNm,
 		   @RequestParam(value = "employeeId", required = false) String employeeId,
 		   @RequestParam(value = "TB_PJT_APR", required = false) String TB_PJT_APR,
          @RequestParam(value = "empNm", required = false) String empNm,
+         @RequestParam(value = "ver", required = false) Integer ver,
          @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
          @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
          @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd,
@@ -387,8 +432,10 @@ public class ProjectMngController {
          @RequestParam(value = "oldOrgFileName2", required = false) String oldOrgFileName2,
          @RequestParam(value = "uploadFile3", required = false) MultipartFile uploadFile3,
          @RequestParam(value = "oldFileName3", required = false) String oldFileName3,
-         @RequestParam(value = "oldOrgFileName3", required = false) String oldOrgFileName3) {
-
+         @RequestParam(value = "oldOrgFileName3", required = false) String oldOrgFileName3)
+   {
+	   
+   
       Safelist customSafelist = Safelist.basicWithImages()
             .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
             .addAttributes("table", "style", "border", "cellpadding", "cellspacing")
@@ -404,6 +451,7 @@ public class ProjectMngController {
       log.info("updatePjtProc Called >>> " + pjtSn);
 
       CmmnMap params = new CmmnMap();
+      params.put("ver", ver);
       params.put("PJT_SN", pjtSn);
       params.put("PJT_NM", pjtNm);
       params.put("employeeId", employeeId);
@@ -417,6 +465,8 @@ public class ProjectMngController {
       String uploadDir = "C:/upload/";
       String newFileName = oldFileName1 != null ? oldFileName1 : "";
       String newOrgFileName = oldOrgFileName1 != null ? oldOrgFileName1 : "";
+
+      // 업로드 할 수 있는  파일 갯수 1~3까지 
 
       if (uploadFile1 != null && !uploadFile1.isEmpty()) {
          String extension = uploadFile1.getOriginalFilename()
@@ -446,10 +496,10 @@ public class ProjectMngController {
       params.put("ORG_FILE_NM1", newOrgFileName);
       
       
-      
       newFileName = oldFileName2 != null ? oldFileName2 : "";
       newOrgFileName = oldOrgFileName2 != null ? oldOrgFileName2 : "";
 
+      
       if (uploadFile2 != null && !uploadFile2.isEmpty()) {
          String extension = uploadFile2.getOriginalFilename()
                .substring(uploadFile2.getOriginalFilename().lastIndexOf("."));
@@ -480,6 +530,7 @@ public class ProjectMngController {
       
       newFileName = oldFileName3 != null ? oldFileName3 : "";
       newOrgFileName = oldOrgFileName3 != null ? oldOrgFileName3 : "";
+      
 
       if (uploadFile3 != null && !uploadFile3.isEmpty()) {
          String extension = uploadFile3.getOriginalFilename()
@@ -509,13 +560,27 @@ public class ProjectMngController {
       params.put("ATCH_FILE_SN3", newFileName);
       params.put("ORG_FILE_NM3", newOrgFileName);
 
+      
       // 마지막 수정일시 업데이트
       LocalDateTime now = LocalDateTime.now();
       String formatted = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
       params.put("LAST_MDFCN_DT", formatted);
       params.put("LAST_MDFR_ID", "SYSTEM"); // 임시
-
-      projectMngService.updatePjtProc(params);
+      
+     
+      CmmnMap pjt = projectMngService.getPjtDetailForVersion(pjtSn);
+      
+      
+      
+      if(pjtSttsCd.equals("진행중")) {
+    	  params.put("ver", ver+1);
+    	  params.put("gid", pjtSn);
+    	  projectMngService.savePjtProcForVersion(params);      
+      }else {
+    	  projectMngService.updatePjtProc(params); 
+      }
+      
+     
 
       return "redirect:/pjtMng/pjtDetail?pjtSn=" + pjtSn;
    }
@@ -573,6 +638,7 @@ public class ProjectMngController {
       log.info("employeeId" + employeeId);
       log.info("pjtBgngDt " + pjtBgngDt);
       log.info("pjtEndDt " + pjtEndDt);
+      
 
       // 파일 업로드
       if (uploadFile1 != null && !uploadFile1.isEmpty()) {

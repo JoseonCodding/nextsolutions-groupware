@@ -67,6 +67,20 @@ public interface PjtMngMapper {
          + "    and TB_PJT_BASC.TB_PJT_APR = e2.employeeid ")
     CmmnMap selectPjtDetail(@Param("pjtSn") int pjtSn);
 
+   
+   @Select("select TB_PJT_BASC.* , e1.emp_nm as reg_user, e2.emp_nm as app_user "
+	         + "    FROM TB_PJT_BASC, employee e1,  employee e2 "
+	         + "    WHERE PJT_SN = #{pjtSn}"
+	         + "    and TB_PJT_BASC.employeeid = e1.employeeid "
+	         + "    and TB_PJT_BASC.TB_PJT_APR = e2.employeeid ")
+	CmmnMap getPjtDetailForVersion(@Param("pjtSn") String pjtSn);
+
+   // 파일 버전관리 
+   @Mapper
+   public interface ProjectMngMapper {
+       int findLatestVerByPjtSn(Long pjtSn);
+       int insertNewVersion(Map<String, Object> param);
+   }
 
    
 

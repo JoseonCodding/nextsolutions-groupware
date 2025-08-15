@@ -49,7 +49,7 @@
   <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     INSERT INTO TB_PJT_BASC (
       PJT_NM, employeeId,TB_PJT_APR, PJT_BGNG_DT, PJT_END_DT,
-      PJT_STTS_CD, FRST_RGTR_ID, FRST_REG_DT,
+      PJT_STTS_CD,  FRST_REG_DT,
       content, ATCH_FILE_SN1, ORG_FILE_NM1,
       ATCH_FILE_SN2, ORG_FILE_NM2,
       ATCH_FILE_SN3, ORG_FILE_NM3
@@ -60,7 +60,7 @@
       #{PJT_BGNG_DT},
       #{PJT_END_DT},
       '대기',
-      'SYSTEM',
+
       #{FRST_REG_DT},
       #{content},
       #{ATCH_FILE_SN1},
@@ -69,6 +69,37 @@
       #{ORG_FILE_NM2},
       #{ATCH_FILE_SN3},
       #{ORG_FILE_NM3}
+    )
+  </insert>
+  
+    <!-- 프로젝트 등록 -->
+  <insert id="savePjtProcForVersion" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+    INSERT INTO TB_PJT_BASC (
+      PJT_NM, employeeId,TB_PJT_APR, PJT_BGNG_DT, PJT_END_DT,
+      PJT_STTS_CD,  FRST_REG_DT,
+      content, ATCH_FILE_SN1, ORG_FILE_NM1,
+      ATCH_FILE_SN2, ORG_FILE_NM2,
+      ATCH_FILE_SN3, ORG_FILE_NM3,
+      ver, gid, USE_YN
+    ) VALUES (
+      #{PJT_NM},
+      #{employeeId},
+       #{TB_PJT_APR},
+      #{PJT_BGNG_DT},
+      #{PJT_END_DT},
+      #{PJT_STTS_CD},
+
+      #{FRST_REG_DT},
+      #{content},
+      #{ATCH_FILE_SN1},
+      #{ORG_FILE_NM1},
+      #{ATCH_FILE_SN2},
+      #{ORG_FILE_NM2},
+      #{ATCH_FILE_SN3},
+      #{ORG_FILE_NM3},
+      #{ver},
+      #{gid},
+       'N'
     )
   </insert>
 
@@ -141,9 +172,7 @@
       AND TB_PJT_APR = #{employeeId}
   </select>
 
-  <!-- ===============================
-       3. 결재자 / 기타 조회
-       =============================== -->
+  
 
   <!-- 작성자명 드롭다운 -->
   <select id="selectApproverCandidates" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
@@ -268,9 +297,24 @@ ORDER BY b.LAST_MDFCN_DT DESC
     <if test="keyword != null and keyword != ''">
       AND (TB_PJT_APR LIKE CONCAT('%', #{keyword}, '%') )
     </if>
-  ORDER BY LAST_MDFCN_DT DESC
-  
+  ORDER BY LAST_MDFCN_DT DESC  
 </select>
+
+ <!-- 파일의 버전관리 -->
+ <select id="findLatestVerByPjtSn" parameterType="long" resultType="int">
+    SELECT COALESCE(MAX(ver), 0)
+    FROM TB_PJT_BASC
+    WHERE pjt_sn = #{pjtSn}
+</select>
+
+<!-- 새 버전 추가 -->
+<insert id="insertNewVersion" parameterType="map">
+    INSERT INTO TB_PJT_BASC
+    (pjt_sn, ver, atch_file_sn, change_summary, content_txt, frst_rgtr_id, frst_reg_dt)
+    VALUES
+    (#{pjtSn}, #{ver}, #{atchFileSn}, #{changeSummary}, #{contentTxt}, #{rgtrId}, NOW())
+</insert>
+
 
 </mapper>
 
