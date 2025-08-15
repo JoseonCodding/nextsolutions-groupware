@@ -80,7 +80,8 @@
 				<td>결재 종류</td>
 				<td th:text="${approvalData == null ? '-' : approvalData.docType}"></td>
 				<td>결재 상태</td>
-				<td th:text="${approvalData == null ? '-' : approvalData.status}"></td>
+				<td th:style="${approvalData != null and approvalData.status == '반려' ? 'color:red;' : ''}"
+					th:text="${approvalData == null ? '-' : approvalData.status}"></td>
 			</tr>
 			<tr>
 				<td>제목</td>
@@ -184,17 +185,22 @@
 	</div>
 
 	<!-- 승인 & 반려 버튼 영역 -->
-	<div th:if="${approvalData != null and (
-	              (approvalData.status == '대기' and 
-	               ((approvalData.docType == '공지사항' and loginUser.role == '게시판') or
-	                (approvalData.docType == '연차' and loginUser.role == '근태') or
-	                (approvalData.docType == '프로젝트' and loginUser.role == '프로젝트') or
-	                (approvalData.docType == '근태' and loginUser.role == '근태')
-	               )
-	              ) 
-	              or 
-	              (approvalData.status == '진행중' and loginUser.role == '대표')
-	            )}">
+	<div th:if="${
+	    (approvalData.docType == '근태' and approvalData.status == '대기'
+	     and (loginUser.role == '대표' or loginUser.role == '근태'))
+	    or
+	    (approvalData.docType != '근태' and (
+	         (approvalData.status == '대기' and
+	           ((approvalData.docType == '공지사항' and loginUser.role == '게시판') or
+	            (approvalData.docType == '연차' and loginUser.role == '근태') or
+	            (approvalData.docType == '프로젝트' and loginUser.role == '프로젝트')
+	           )
+	         )
+	         or
+	         (approvalData.status == '진행중' and loginUser.role == '대표')
+	       )
+	    )
+	}">
 	    <!-- 승인 버튼 -->
 	    <form th:action="@{/approval/approve}" method="post" style="display: inline;">
 	        <input type="hidden" name="docId" th:value="${approvalData.docId}" />
