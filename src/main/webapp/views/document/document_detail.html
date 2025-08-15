@@ -11,7 +11,7 @@
   <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:12px;">
     <h2 th:text="${doc.pjtNm}">프로젝트명</h2>
     <span style="padding:2px 8px; border-radius:12px; background:#eef; font-size:12px;"
-          th:text="'v ' + ${doc.ver}">v 1.0</span>
+          th:text="${doc.ver != null ? 'v ' + doc.ver : 'v -'}">v 1.0</span>
     <span style="padding:2px 8px; border-radius:12px; background:#efe; font-size:12px; margin-left:auto;"
           th:text="${doc.pjtSttsCd}">완료</span>
   </div>
@@ -38,31 +38,29 @@
   <div style="margin-bottom:16px;">
     <h4 style="margin:0 0 8px;">첨부파일</h4>
     <ul style="margin:0; padding-left:18px;">
-      <li th:if="${doc.orgFileNm1 != null}">
-        <a th:href="@{/document/download(path=${doc.atchFileSn1}, fileName=${doc.orgFileNm1})}"
-           th:text="${doc.orgFileNm1}">파일1</a>
-      </li>
-      <li th:if="${doc.orgFileNm2 != null}">
-        <a th:href="@{/document/download(path=${doc.atchFileSn2}, fileName=${doc.orgFileNm2})}"
-           th:text="${doc.orgFileNm2}">파일2</a>
-      </li>
-      <li th:if="${doc.orgFileNm3 != null}">
-        <a th:href="@{/document/download(path=${doc.atchFileSn3}, fileName=${doc.orgFileNm3})}"
-           th:text="${doc.orgFileNm3}">파일3</a>
-      </li>
-      <li th:if="${doc.orgFileNm1 == null and doc.orgFileNm2 == null and doc.orgFileNm3 == null}">
-        첨부 없음
-      </li>
+      <li th:if="${!#strings.isEmpty(doc.orgFileNm1)}">
+  <a th:href="@{/document/download(path=${doc.atchFileSn1}, fileName=${doc.orgFileNm1})}"
+     th:text="${doc.orgFileNm1}">파일1</a>
+</li>
+<li th:if="${!#strings.isEmpty(doc.orgFileNm2)}"> ... </li>
+<li th:if="${!#strings.isEmpty(doc.orgFileNm3)}"> ... </li>
+
+<li th:if="${#strings.isEmpty(doc.orgFileNm1) and
+           #strings.isEmpty(doc.orgFileNm2) and
+           #strings.isEmpty(doc.orgFileNm3)}">
+  첨부 없음
+</li>
+
     </ul>
   </div>
 
   <!-- 내용 -->
-  <div style="margin-bottom:20px;">
-    <h4 style="margin:0 0 8px;">내용</h4>
-    <!-- 안전하게 개행 유지 -->
-    <pre style="white-space:pre-wrap; border:1px solid #eee; padding:12px; border-radius:8px; background:#fafafa;"
-         th:utext="${doc.content}">내용</pre>
-  </div>
+<div style="margin-bottom:20px;">
+  <h4 style="margin:0 0 8px;">내용</h4>
+  <div style="border:1px solid #eee; padding:12px; border-radius:8px; background:#fafafa;"
+       th:utext="${doc.content}"></div>
+</div>
+
 
   <!-- 액션 -->
   <div style="display:flex; gap:8px;">

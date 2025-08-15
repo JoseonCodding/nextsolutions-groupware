@@ -1,88 +1,7 @@
-
-//package com.kdt.KDT_PJT.document.controller;
-//
-//import java.io.UnsupportedEncodingException;
-//import java.net.URLEncoder;
-//import java.util.List;
-//
-//import org.springframework.core.io.FileSystemResource;
-//import org.springframework.core.io.Resource;
-//import org.springframework.http.HttpHeaders;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.ui.Model;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.ModelAttribute;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
-//
-//import com.kdt.KDT_PJT.document.mapper.DocumentMapper;
-//import com.kdt.KDT_PJT.document.model.DocumentDTO;
-//
-//@Controller
-//@RequestMapping("/document")
-//public class DocumentController {
-//
-//    private final DocumentMapper documentMapper;
-//
-//    public DocumentController(DocumentMapper documentMapper) {
-//        this.documentMapper = documentMapper;
-//    }
-//
-//
-//	@RequestMapping("/main") public String documentMain(Model model) {
-//	List<DocumentDTO> list = documentMapper.selectAll();
-//	model.addAttribute("approvalData", list); model.addAttribute("mainUrl",
-//	"document/document_list"); return "home"; }
-//
-//
-//
-//	@RequestMapping("/viewer") public String
-//	documentViewer(@RequestParam("versionId") Long versionId, Model model) {
-//	DocumentDTO dto = documentMapper.selectByVersionId(versionId);
-//	model.addAttribute("doc", dto); model.addAttribute("mainUrl",
-//	"document/documentViewer"); return "navTap"; }
-//
-//
-//    @GetMapping("/downloadFile")
-//    public ResponseEntity<Resource> downloadFile(@RequestParam("fileName") String fileName,
-//                                                 @RequestParam("orgName") String orgName) {
-//        try {
-//            String path = "C:/upload/" + fileName;
-//            Resource resource = new FileSystemResource(path);
-//
-//            if (!resource.exists()) {
-//                return ResponseEntity.notFound().build();
-//            }
-//
-//            String encodedOrgName = URLEncoder.encode(orgName, "UTF-8").replaceAll("\\+", " ");
-//
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedOrgName + "\"");
-//            headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-//            headers.add("Content-Transfer-Encoding", "binary");
-//
-//            return ResponseEntity.ok().headers(headers).body(resource);
-//
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//            return ResponseEntity.internalServerError().build();
-//        }
-//    }
-//
-//
-//
-//}
-
 package com.kdt.KDT_PJT.document.controller;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -101,7 +20,7 @@ public class DocumentController {
 
     private final DocumentMapper documentMapper;
 
-    /** 문서관리 메인: '완료' 상태의 최신 버전 목록 */
+    /** 문서관리 메인: gid별 최신 버전 목록 (상태: 진행중/완료) */
     @GetMapping("/main")
     public String documentMain(Model model,
                                HttpSession session,
@@ -114,25 +33,26 @@ public class DocumentController {
         String employeeId = loginUser.getEmployeeId();
         boolean isAdmin = isAdmin(employeeId);
 
-        int limit = Math.max(1, size);
+        int limit  = Math.max(1, size);
         int offset = Math.max(0, (Math.max(1, page) - 1) * limit);
 
         List<DocumentDTO> list = documentMapper.findDocsForManage(employeeId, isAdmin, limit, offset);
-        int total = documentMapper.countDocsForManage(employeeId, isAdmin); // Mapper에 구현되어 있어야 함
+        int total = documentMapper.countDocsForManage(employeeId, isAdmin);
         int totalPages = Math.max(1, (int) Math.ceil(total / (double) limit));
 
-        model.addAttribute("approvalData", list);
+        model.addAttribute("approvalData", list);  // 기존 뷰에서 사용하는 키 유지
         model.addAttribute("page", page);
         model.addAttribute("size", size);
+        model.addAttribute("total", total);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("mainUrl", "document/document_list");
         return "home";
     }
 
-    /** 문서 상세보기: ver 없으면 '완료' 최신버전으로 */
+    /** 문서 상세보기: ver 없으면 해당 gid의 '진행중/완료' 최신버전 */
     @GetMapping("/detail")
-    public String documentDetail(@RequestParam(name = "gid") String gid,
-                                 @RequestParam(name = "ver", required = false) BigDecimal ver,
+    public String documentDetail(@RequestParam(value = "gid") String gid,
+            					 @RequestParam(value = "ver", required = false) Integer ver,
                                  Model model,
                                  HttpSession session) {
 
@@ -144,7 +64,7 @@ public class DocumentController {
 
         DocumentDTO doc = (ver != null)
                 ? documentMapper.findByGidAndVer(gid, ver)
-                : documentMapper.findLatestApprovedByGid(gid); // Mapper에 구현되어 있어야 함
+                : documentMapper.findLatestApprovedByGid(gid); // mapper가 진행중/완료 최신 1건 반환
 
         if (doc == null) return "redirect:/document/main";
         if (!isAdmin && !me.equals(doc.getEmployeeId())) return "redirect:/document/main";
@@ -154,22 +74,26 @@ public class DocumentController {
         return "home";
     }
 
-    /** 버전 목록 보기: 본인/관리자만 */
+    /** 버전 목록: 같은 gid의 모든 버전 (소유자 또는 관리자만 접근) */
     @GetMapping("/versions")
-    public String versionList(@RequestParam(name = "gid") String gid, Model model, HttpSession session) {
+    public String versionList(@RequestParam("gid") String gid, Model model, HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) return "redirect:/login";
 
         String me = loginUser.getEmployeeId();
         boolean isAdmin = isAdmin(me);
 
-        // 소유자 검증을 위해 대표 한 건 로딩(없으면 목록 비움 처리)
+        // 소유자 확인(최신 문서 기준으로 빠르게 거르기)
         DocumentDTO latest = documentMapper.findLatestApprovedByGid(gid);
-        if (latest != null && !isAdmin && !me.equals(latest.getEmployeeId())) return "redirect:/document/main";
+        if (latest != null && !isAdmin && !me.equals(latest.getEmployeeId())) {
+            // 최신이 내 것이 아니더라도, 과거 버전에 내 소유가 있을 수 있으니 전체 버전 확인
+            List<DocumentDTO> versionsTmp = documentMapper.findVersions(gid);
+            boolean allowedTmp = versionsTmp.stream().anyMatch(v -> me.equals(v.getEmployeeId()));
+            if (!allowedTmp) return "redirect:/document/main";
+        }
 
         List<DocumentDTO> versions = documentMapper.findVersions(gid);
-        boolean allowed = isAdmin(me) || versions.stream()
-            .anyMatch(v -> me.equals(v.getEmployeeId()));
+        boolean allowed = isAdmin || versions.stream().anyMatch(v -> me.equals(v.getEmployeeId()));
         if (!allowed) return "redirect:/document/main";
 
         model.addAttribute("gid", gid);
@@ -178,12 +102,13 @@ public class DocumentController {
         return "home";
     }
 
-    /** 버전 목록 상세 (직접 ver 지정) */
+    /** 버전 상세: 지정 ver 1건 (소유자 또는 관리자만 접근) */
     @GetMapping("/version")
-    public String versionView(@RequestParam(name = "gid") String gid,
-                              @RequestParam(name = "ver") BigDecimal ver,
+    public String versionView(@RequestParam("gid") String gid,
+            				  @RequestParam("ver") Integer ver,
                               Model model,
                               HttpSession session) {
+
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) return "redirect:/login";
 
@@ -199,23 +124,9 @@ public class DocumentController {
         return "home";
     }
 
-    /** 파일 다운로드 (path는 저장경로/키, fileName은 표시명) */
-    @GetMapping("/download")
-    public ResponseEntity<Resource> download(@RequestParam(name = "path") String path,
-                                             @RequestParam(name = "fileName") String fileName) {
-        FileSystemResource resource = new FileSystemResource(path);
-        if (!resource.exists() || !resource.isReadable()) {
-            return ResponseEntity.notFound().build();
-        }
-        String encoded = java.net.URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encoded)
-                .body(resource);
-    }
-
-    /** 관리자 사번 판별 */
+    /** 관리자 사번 판별 (업무 규칙 반영) */
     private boolean isAdmin(String employeeId) {
-        return "20250005".equals(employeeId) || "20250001".equals(employeeId);
+        return "20250001".equals(employeeId)   // 대표
+            || "20250005".equals(employeeId);  // 문서 관리자
     }
 }
-

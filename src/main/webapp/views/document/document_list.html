@@ -5,66 +5,79 @@
   <title>문서관리</title>
 </head>
 <body>
-	<!-- resources/templates/document/document_list.html -->
 <div class="document-list">
-    <h2>문서 관리</h2>
+  <h2>문서 관리</h2>
 
-    <table class="table table-bordered table-hover">
-        <thead>
-        <tr>
-            <th>NO</th>
-            <th>프로젝트명</th>
-            <th>담당자</th>
-            <th>등록일</th>
-            <th>버전</th>
-            <th>첨부</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- approvalData: DocumentDTO 리스트 -->
-        <tr th:each="doc : ${approvalData}">
-            <td th:text="${doc.pjtSn}"></td>
-            <td>
-            	<a th:href="@{/document/detail(gid=${doc.gid}, ver=${doc.ver})}" th:text="${doc.pjtNm}"></a>
-            </td>
-            <td th:text="${doc.empNm}"></td>
-            <td th:text="${#temporals.format(doc.frstRegDt, 'yyyy-MM-dd')}"></td>
-            <td th:text="'v ' + ${doc.vers}"></td>
-            <td>
-                <a th:if="${doc.orgFileNm1 != null}"
-                   th:href="@{/document/download(path=${doc.atchFileSn1}, fileName=${doc.orgFileNm1})}"
-                   th:text="${doc.orgFileNm1}"></a>
-                <br th:if="${doc.orgFileNm2 != null}"/>
-                <a th:if="${doc.orgFileNm2 != null}"
-                   th:href="@{/document/download(path=${doc.atchFileSn2}, fileName=${doc.orgFileNm2})}"
-                   th:text="${doc.orgFileNm2}"></a>
-                <br th:if="${doc.orgFileNm3 != null}"/>
-                <a th:if="${doc.orgFileNm3 != null}"
-                   th:href="@{/document/download(path=${doc.atchFileSn3}, fileName=${doc.orgFileNm3})}"
-                   th:text="${doc.orgFileNm3}"></a>
-            </td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(approvalData)}">
-            <td colspan="9" class="text-center">등록된 문서가 없습니다.</td>
-        </tr>
-        </tbody>
-    </table>
+  <table class="table table-bordered table-hover">
+    <thead>
+    <tr>
+      <th>NO</th>
+      <th>프로젝트명</th>
+      <th>담당자</th>
+      <th>등록일</th>
+      <th>버전</th>
+      <th>첨부</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- approvalData: List<DocumentDTO> -->
+    <tr th:each="doc : ${approvalData}">
+      <!-- NO = gid (같은 문서 그룹 고정 번호) -->
+      <td th:text="${doc.gid}"></td>
 
-    <!-- 페이징 -->
-    <div class="pagination">
-        <ul class="pagination">
-            <li th:classappend="${page <= 1} ? 'disabled'">
-                <a th:href="@{/document/main(page=${page-1}, size=${size})}">&laquo; 이전</a>
-            </li>
-            <li>
-                <span th:text="${page} + ' / ' + ${totalPages}"></span>
-            </li>
-            <li th:classappend="${page >= totalPages} ? 'disabled'">
-                <a th:href="@{/document/main(page=${page+1}, size=${size})}">다음 &raquo;</a>
-            </li>
-        </ul>
-    </div>
+      <!-- 제목 클릭 시 항상 최신 상세로 (ver 파라미터 생략) -->
+      <td>
+        <a th:href="@{/document/detail(gid=${doc.gid})}"
+           th:text="${doc.pjtNm}"></a>
+      </td>
+
+      <td th:text="${doc.empNm}"></td>
+      <td th:text="${#temporals.format(doc.frstRegDt, 'yyyy-MM-dd')}"></td>
+
+      <!-- 버전: v {ver} -->
+      <td>
+        <span th:text="'v ' + (${doc.ver} ?: '-')"></span>
+      </td>
+
+      <!-- 첨부: 빈 문자열도 제외 -->
+      <td>
+        <a th:if="${!#strings.isEmpty(doc.orgFileNm1)}"
+           th:href="@{/document/download(path=${doc.atchFileSn1}, fileName=${doc.orgFileNm1})}"
+           th:text="${doc.orgFileNm1}"></a>
+
+        <br th:if="${!#strings.isEmpty(doc.orgFileNm2)}"/>
+        <a th:if="${!#strings.isEmpty(doc.orgFileNm2)}"
+           th:href="@{/document/download(path=${doc.atchFileSn2}, fileName=${doc.orgFileNm2})}"
+           th:text="${doc.orgFileNm2}"></a>
+
+        <br th:if="${!#strings.isEmpty(doc.orgFileNm3)}"/>
+        <a th:if="${!#strings.isEmpty(doc.orgFileNm3)}"
+           th:href="@{/document/download(path=${doc.atchFileSn3}, fileName=${doc.orgFileNm3})}"
+           th:text="${doc.orgFileNm3}"></a>
+      </td>
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(approvalData)}">
+      <!-- 컬럼 수 = 6 -->
+      <td colspan="6" class="text-center">등록된 문서가 없습니다.</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!-- 페이징 -->
+  <div class="pagination">
+    <ul class="pagination">
+      <li th:classappend="${page <= 1} ? 'disabled'">
+        <a th:href="@{/document/main(page=${page-1}, size=${size})}">&laquo; 이전</a>
+      </li>
+      <li>
+        <span th:text="${page} + ' / ' + ${totalPages}"></span>
+      </li>
+      <li th:classappend="${page >= totalPages} ? 'disabled'">
+        <a th:href="@{/document/main(page=${page+1}, size=${size})}">다음 &raquo;</a>
+      </li>
+    </ul>
+  </div>
 </div>
-	
 </body>
 </html>
