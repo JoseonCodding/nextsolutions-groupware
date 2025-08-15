@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.attend.di.Leave;
-import com.kdt.KDT_PJT.attend.model.AttendDTO;
 import com.kdt.KDT_PJT.attend.model.LeaveDTO;
 import com.kdt.KDT_PJT.attend.model.LeaveMapper;
 import com.kdt.KDT_PJT.attend.model.LeaveReqDTO;
@@ -62,12 +61,13 @@ public class LeaveController {
         System.out.println("연차 관리 페이지");
         
         LeaveDTO dto = mapper.getAnnualLeaveOne(loginUser); 
+        List<LeaveDTO> dtoList = mapper.annualLeave(loginUser); 
         System.out.println("/attend/leave : "+dto);
         // 홈에서 뜨는 화면 연결
         model.addAttribute("mainUrl", "attend/leave/leaveList");
         
         model.addAttribute("listData", dto);
-        
+        model.addAttribute("detailData", dtoList);
         
         return "navTap"; 
     }

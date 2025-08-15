@@ -5,17 +5,17 @@
 	<table border="">
 		<tr align="center">
 			<td>연차 사용 신청<a th:href="@{/attend/leaveList}">닫힘</a></td>
-			
-			<tr th:each="dto, vv:${restData}">
+		</tr>
+		<tr th:each="dto, vv:${restData}">
 			<td>
 				<input type="checkbox" th:name="|arr[${vv.index}].useChk|" value="true"/>
 				<span th:text="${dto.createReason}"/> 
 				<input type="text" th:name="|arr[${vv.index}].leaveId|" th:value="${dto.leaveId}"/>
-				<input type="date" th:name="|arr[${vv.index}].usedDateStr|" value="2025-08-07" />
-				</td>
-			</tr>
-			
+				<input type="date" th:name="|arr[${vv.index}].usedDateStr|" value="" />
+			</td>
 		</tr>
+			
+		
 		<tr colspan="2">
 			<td>연차사유
 			<textarea name="reason" id="" cols="30" rows="1">개인 사유</textarea></td>
