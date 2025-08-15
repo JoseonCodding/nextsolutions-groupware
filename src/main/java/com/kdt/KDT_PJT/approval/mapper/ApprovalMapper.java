@@ -92,7 +92,6 @@ public interface ApprovalMapper {
 	    "     NULL AS timeInout",
 	    "   FROM TB_PJT_BASC p",
 	    "   LEFT JOIN employee e ON p.employeeId = e.employeeId",
-	    "	WHERE p.is_deleted = 0",
 
 	    "   UNION ALL",
 
@@ -183,7 +182,7 @@ public interface ApprovalMapper {
 
 	    // ──────────────── 프로젝트
 	    "   SELECT CONCAT('project_', p.PJT_SN) AS docId, '프로젝트' AS docType, p.employeeId AS writerId, p.PJT_STTS_CD AS status",
-	    "     FROM TB_PJT_BASC p WHERE p.is_deleted = 0",
+	    "     FROM TB_PJT_BASC p",
 
 	    "   UNION ALL",
 
@@ -308,7 +307,6 @@ public interface ApprovalMapper {
 	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName",
 	    "   FROM TB_PJT_BASC p",
 	    "   LEFT JOIN employee e ON p.employeeId = e.employeeId",
-	    "   WHERE p.is_deleted = 0",
 
 	    "   UNION ALL",
 
@@ -392,11 +390,6 @@ public interface ApprovalMapper {
 	// 공지사항 소프트 삭제
 	@Update("UPDATE board_post SET is_deleted = 1 WHERE post_id = #{id}")
 	int softDeleteNotice(@Param("id") String id);
-
-	// 프로젝트 소프트 삭제
-	@Update("UPDATE TB_PJT_BASC SET is_deleted = 1 WHERE PJT_SN = #{id}")
-	int softDeleteProject(@Param("id") String id);
-	
 	
 	// 공지사항 수정
 	@Update("UPDATE board_post SET docType=#{dto.docType}, title=#{dto.title}, content=#{dto.content} WHERE post_id=#{id}")
