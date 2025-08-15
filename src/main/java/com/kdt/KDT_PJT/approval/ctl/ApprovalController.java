@@ -316,7 +316,7 @@ public class ApprovalController {
         String safeContent = Jsoup.clean(rawContent, customSafelist);
         editData.setContent(safeContent);
 
-        String pkId = editData.getDocId().split("_")[1];
+        String pkId = editData.getDocId().split("-")[1];
 
         if ("연차".equals(docType) && editData.getTitle() != null) {
             String prefix = "연차 사용신청 - ";
@@ -401,7 +401,7 @@ public class ApprovalController {
         );
         if (doc == null) return "redirect:/approval/main?error=forbidden";
 
-        String pkId = docId.split("_")[1];
+        String pkId = docId.split("-")[1];
         String docType = doc.getDocType();
         String currentStatus = doc.getStatus();
         String role = loginUser.getRole();
@@ -442,7 +442,7 @@ public class ApprovalController {
         );
         if (doc == null) return "redirect:/approval/main?error=forbidden";
 
-        String pkId = docId.split("_")[1].trim();
+        String pkId = docId.split("-")[1].trim();
         int pk = Integer.parseInt(pkId); // attendance.id가 INT인 경우
         String docType = doc.getDocType();
         String currentStatus = doc.getStatus();
