@@ -17,7 +17,6 @@ public interface AttendMapper2 {
     @Update("""
     UPDATE attendance
     SET
-      check_in_time       = STR_TO_DATE(CONCAT(#{workDate}, ' 09:00:00'), '%Y-%m-%d %H:%i:%s'),
       modification_reason = #{modificationReason},
       approval_date       = NOW(),
       modified_by         = (SELECT emp_nm FROM employee WHERE employeeId = #{employeeId}),
@@ -39,7 +38,6 @@ public interface AttendMapper2 {
     @Update("""
     UPDATE attendance
     SET
-      check_out_time      = STR_TO_DATE(CONCAT(#{workDate}, ' 18:00:00'), '%Y-%m-%d %H:%i:%s'),
       modification_reason = #{modificationReason},
       approval_date       = NOW(),
       modified_by         = (SELECT emp_nm FROM employee WHERE employeeId = #{employeeId}),
