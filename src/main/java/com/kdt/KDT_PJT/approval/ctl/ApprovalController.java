@@ -57,12 +57,6 @@ public class ApprovalController {
 	    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
 	}
 	
-	private String[] splitDocId(String docId) {
-	    if (docId == null) return null;
-	    String[] parts = docId.split("-");
-	    return parts.length == 2 ? parts : null;
-	}
-    
 	@RequestMapping("/main")
 	public String approvalMain(
 	        Model model,
@@ -370,23 +364,9 @@ public class ApprovalController {
                     approvalMapper.insertProjectSchedule(pkId);
                 }
             }
-
             default -> { /* no-op */ }
         }
     }
-
-
-    // 역할과 문서 타입 매칭 확인
-    private boolean isResponsibleRole(String docType, String role) {
-        return switch (docType) {
-            case "공지사항" -> "게시판".equals(role);
-            case "연차" -> "근태".equals(role);
-            case "프로젝트" -> "프로젝트".equals(role);
-            case "근태" -> "근태".equals(role);
-            default -> false;
-        };
-    }
-
     
     @PostMapping("/approve")
     @Transactional
@@ -429,26 +409,22 @@ public class ApprovalController {
             if (updated == 0) return "redirect:/approval/main?error=notUpdated";
             leaveMapper.insertScheduleRest(pkId);
         }
-        // 공지사항: 담당자 → 진행중, 대표 → 완료 (기존 유지)
+        // 공지사항: 게시판 단독 결재 → '대기' -> '완료'
         else if ("공지사항".equals(docType)) {
             if ("대기".equals(currentStatus) && "게시판".equals(role)) {
-                updateStatusCommon(docType, pkId, "진행중", doc.getTimeInout(), currentStatus);
-            } else if ("진행중".equals(currentStatus) && "대표".equals(role)) {
                 updateStatusCommon(docType, pkId, "완료", doc.getTimeInout(), currentStatus);
             } else {
                 return "redirect:/approval/main?error=forbidden";
             }
         }
-        // 프로젝트: 중간결재자만 승인 가능, '대기' -> '진행중'
+        // 프로젝트: 중간결재자만 승인 가능, '대기' -> '진행중' 외에는 모두 차단
         else if ("프로젝트".equals(docType)) {
             if ("대기".equals(currentStatus) && "프로젝트".equals(role)) {
                 approvalMapper.updateStatusProject(pkId, "진행중", currentStatus);
             } else {
+                // '진행중' 포함 그 외 상태는 전부 차단
                 return "redirect:/approval/main?error=forbidden";
             }
-        }
-        else {
-            return "redirect:/approval/main?error=forbidden";
         }
 
         redirectAttributes.addAttribute("docId", docId);
@@ -499,27 +475,25 @@ public class ApprovalController {
             int updated = approvalMapper.rejectLeave(pk, "반려", role);
             if (updated == 0) return "redirect:/approval/main?error=notUpdated";
         }
-        // 공지사항: 담당자/대표 반려 (기존 유지)
+        // 공지사항: 게시판 단독 반려 → '대기' -> '반려'
         else if ("공지사항".equals(docType)) {
             if ("대기".equals(currentStatus) && "게시판".equals(role)) {
-                updateStatusCommon(docType, pkId, "반려", doc.getTimeInout(), currentStatus);
-            } else if ("진행중".equals(currentStatus) && "대표".equals(role)) {
                 updateStatusCommon(docType, pkId, "반려", doc.getTimeInout(), currentStatus);
             } else {
                 return "redirect:/approval/main?error=forbidden";
             }
         }
-        // 프로젝트: 중간결재자만 반려 가능, '대기' -> '반려'
+
+        // 프로젝트: 중간결재자만 반려 가능, '대기' -> '반려' 외에는 모두 차단
         else if ("프로젝트".equals(docType)) {
             if ("대기".equals(currentStatus) && "프로젝트".equals(role)) {
                 approvalMapper.updateStatusProject(pkId, "반려", currentStatus);
             } else {
+                // '진행중' 포함 그 외 상태는 전부 차단
                 return "redirect:/approval/main?error=forbidden";
             }
         }
-        else {
-            return "redirect:/approval/main?error=forbidden";
-        }
+
 
         redirectAttributes.addAttribute("docId", docId);
         return "redirect:/approval/viewer";

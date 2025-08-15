@@ -458,21 +458,19 @@ public interface ApprovalMapper {
 	@Update({
 	    "<script>",
 	    "UPDATE board_post",
-	    "SET status = #{status}",
-	    "<choose>",
-	    "  <when test='status == \"진행중\"'> , firstSign = NOW() </when>",
-	    "  <when test='status == \"완료\"'> , secondSign = NOW() </when>",
-	    "  <when test='status == \"반려\"'>",
-	    "    <if test='currentStatus == \"대기\"'> , firstSign = NOW() </if>",
-	    "    <if test='currentStatus == \"진행중\"'> , secondSign = NOW() </if>",
-	    "  </when>",
-	    "</choose>",
+	    "SET status = #{status},",
+	    "    firstSign = CASE ",
+	    "                 WHEN #{status} IN ('완료','반려') AND firstSign IS NULL THEN NOW()",
+	    "                 ELSE firstSign",
+	    "               END",
 	    "WHERE post_id = #{id}",
+	    "  AND status = #{currentStatus}",
 	    "</script>"
 	})
 	int updateStatusNotice(@Param("id") String id,
 	                       @Param("status") String status,
 	                       @Param("currentStatus") String currentStatus);
+
 	
 	// 프로젝트 승인 & 반려
 	@Update({
