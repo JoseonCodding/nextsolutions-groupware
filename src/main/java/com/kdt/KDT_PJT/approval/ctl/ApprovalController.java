@@ -353,6 +353,37 @@ public class ApprovalController {
         redirectAttributes.addAttribute("status", status);
         return "redirect:/approval/viewer";
     }
+    
+    // 문서 타입별 상태 변경 공통 처리
+    private void updateStatusCommon(String docType, String pkId, String newStatus, String timeInout, String currentStatus) {
+        switch (docType) {
+            case "공지사항" -> approvalMapper.updateStatusNotice(pkId, newStatus, currentStatus);
+            case "연차" -> {
+                approvalMapper.updateStatusLeave(pkId, newStatus, currentStatus);
+                if ("완료".equals(newStatus)) {
+                    leaveMapper.insertScheduleRest(pkId); // 연차 완료 시 일정 등록
+                }
+            }
+            case "프로젝트" -> {
+                approvalMapper.updateStatusProject(pkId, newStatus, currentStatus);
+                if ("진행중".equals(newStatus) || "완료".equals(newStatus)) {
+                    approvalMapper.insertProjectSchedule(pkId);
+                }
+            }
+            case "근태" -> approvalMapper.approveAttendance(pkId, newStatus, timeInout, currentStatus);
+        }
+    }
+
+    // 역할과 문서 타입 매칭 확인
+    private boolean isResponsibleRole(String docType, String role) {
+        return switch (docType) {
+            case "공지사항" -> "게시판".equals(role);
+            case "연차" -> "근태".equals(role);
+            case "프로젝트" -> "프로젝트".equals(role);
+            case "근태" -> "근태".equals(role);
+            default -> false;
+        };
+    }
 
     
     @PostMapping("/approve")
@@ -373,18 +404,17 @@ public class ApprovalController {
 
         String pkId = docId.split("_")[1];
         String docType = doc.getDocType();
-        String currentStatus = doc.getStatus(); // 현재 상태
+        String currentStatus = doc.getStatus();
         String role = loginUser.getRole();
 
-        // 1단계: '대기' 상태에서 담당자가 승인하면 '진행중'으로
+        // 1단계: '대기' 상태에서 담당자가 승인 → 진행중
         if ("대기".equals(currentStatus) && isResponsibleRole(docType, role)) {
-            updateStatusCommon(docType, pkId, "진행중", doc.getTimeInout());
+            updateStatusCommon(docType, pkId, "진행중", doc.getTimeInout(), currentStatus);
         }
-        // 2단계: '진행중' 상태에서 대표가 승인하면 '완료'로
+        // 2단계: '진행중' 상태에서 대표가 승인 → 완료
         else if ("진행중".equals(currentStatus) && "대표".equals(role)) {
-            updateStatusCommon(docType, pkId, "완료", doc.getTimeInout());
+            updateStatusCommon(docType, pkId, "완료", doc.getTimeInout(), currentStatus);
         }
-        // 그 외는 승인 권한 없음
         else {
             return "redirect:/approval/main?error=forbidden";
         }
@@ -392,44 +422,6 @@ public class ApprovalController {
         redirectAttributes.addAttribute("docId", docId);
         return "redirect:/approval/viewer";
     }
-
-    /**
-     * 문서 타입별 상태 변경 공통 처리
-     */
-    private void updateStatusCommon(String docType, String pkId, String newStatus, String timeInout) {
-        switch (docType) {
-            case "공지사항" -> approvalMapper.updateStatusNotice(pkId, newStatus);
-            case "연차" -> {
-                approvalMapper.updateStatusLeave(pkId, newStatus);
-                // 진행중 → 특별 처리 없음 / 완료 → Mapper 조건에 따라 leave_type 변경
-                if ("완료".equals(newStatus)) {
-                    leaveMapper.insertScheduleRest(pkId);
-                }
-            }
-            case "프로젝트" -> {
-                approvalMapper.updateStatusProject(pkId, newStatus);
-                if ("진행중".equals(newStatus) || "완료".equals(newStatus)) {
-                    approvalMapper.insertProjectSchedule(pkId);
-                }
-            }
-            case "근태" -> approvalMapper.approveAttendance(pkId, newStatus, timeInout);
-        }
-    }
-
-    /**
-     * 문서 타입과 role 매칭 여부
-     */
-    private boolean isResponsibleRole(String docType, String role) {
-        return switch (docType) {
-            case "공지사항" -> "게시판".equals(role);
-            case "연차" -> "근태".equals(role);
-            case "프로젝트" -> "프로젝트".equals(role);
-            case "근태" -> "근태".equals(role);
-            default -> false;
-        };
-    }
-
-
 
     @PostMapping("/reject")
     @Transactional
@@ -454,13 +446,12 @@ public class ApprovalController {
 
         // 1단계: '대기' 상태에서 담당자가 반려
         if ("대기".equals(currentStatus) && isResponsibleRole(docType, role)) {
-            updateRejectStatus(docType, pkId);
+            updateStatusCommon(docType, pkId, "반려", doc.getTimeInout(), currentStatus);
         }
         // 2단계: '진행중' 상태에서 대표가 반려
         else if ("진행중".equals(currentStatus) && "대표".equals(role)) {
-            updateRejectStatus(docType, pkId);
+            updateStatusCommon(docType, pkId, "반려", doc.getTimeInout(), currentStatus);
         }
-        // 그 외는 반려 권한 없음
         else {
             return "redirect:/approval/main?error=forbidden";
         }
@@ -468,21 +459,5 @@ public class ApprovalController {
         redirectAttributes.addAttribute("docId", docId);
         return "redirect:/approval/viewer";
     }
-
-    /**
-     * 반려 상태 변경 공통 처리
-     */
-    private void updateRejectStatus(String docType, String pkId) {
-        switch (docType) {
-            case "공지사항" -> approvalMapper.updateStatusNotice(pkId, "반려");
-            case "연차" -> approvalMapper.updateStatusLeave(pkId, "반려");
-            case "프로젝트" -> approvalMapper.updateStatusProject(pkId, "반려");
-            case "근태" -> approvalMapper.rejectAttendance(pkId, "반려");
-        }
-    }
-
-
-
-
 
 }

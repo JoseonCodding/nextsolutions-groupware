@@ -31,6 +31,7 @@ public class ApprovalDTO {
     String writerId;
     String approverName;
     String managerName;
-    
+    Date firstSign;    // 1차 결재 날짜
+    Date secondSign;    // 2차 결재 날짜
     
 }

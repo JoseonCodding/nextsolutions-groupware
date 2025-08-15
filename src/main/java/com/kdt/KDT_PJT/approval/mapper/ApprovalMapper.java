@@ -253,6 +253,8 @@ public interface ApprovalMapper {
 	    "     NULL AS modifiedBy, NULL AS modifiedAt,",
 	    "     NULL AS modificationReason, NULL AS timeInout,",
 	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt,",
+	    "	  b.firstSign AS firstSign,",
+	    "	  b.secondSign AS secondSign,",
 	    "     (SELECT emp_nm FROM employee WHERE role = '게시판' LIMIT 1) AS approverName,",
 	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName",
 	    "   FROM board_post b",
@@ -278,6 +280,8 @@ public interface ApprovalMapper {
 	    "     NULL AS modifiedBy, NULL AS modifiedAt,",
 	    "     NULL AS modificationReason, NULL AS timeInout,",
 	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt,",
+	    "	  l.firstSign AS firstSign,",
+	    "	  l.secondSign AS secondSign,",
 	    "     (SELECT emp_nm FROM employee WHERE role = '근태' LIMIT 1) AS approverName,",
 	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName",
 	    "   FROM annual_leave l",
@@ -303,6 +307,8 @@ public interface ApprovalMapper {
 	    "     NULL AS modifiedBy, NULL AS modifiedAt,",
 	    "     NULL AS modificationReason, NULL AS timeInout,",
 	    "     p.PJT_BGNG_DT AS pjtBgngDt, p.PJT_END_DT AS pjtEndDt,",
+	    "	  p.firstSign AS firstSign,",
+	    "	  p.secondSign AS secondSign,",
 	    "     (SELECT emp_nm FROM employee WHERE role = '프로젝트' LIMIT 1) AS approverName,",
 	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName",
 	    "   FROM TB_PJT_BASC p",
@@ -327,6 +333,8 @@ public interface ApprovalMapper {
 	    "     a.modified_by AS modifiedBy, a.modified_at AS modifiedAt,",
 	    "     a.modification_reason AS modificationReason, a.time_inout AS timeInout,",
 	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt,",
+	    "	  a.firstSign AS firstSign,",
+	    "	  a.secondSign AS secondSign,",
 	    "     (SELECT emp_nm FROM employee WHERE role = '근태' LIMIT 1) AS approverName,",
 	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName",
 	    "   FROM attendance a",
@@ -406,7 +414,7 @@ public interface ApprovalMapper {
 	    "</script>"
 	})
 	
-	// 공지사항 연차
+	// 연차 수정
 	int editLeave(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 
 	// 프로젝트 수정
@@ -425,23 +433,66 @@ public interface ApprovalMapper {
 	
 	
 	// 공지사항 승인 & 반려
-	@Update("UPDATE board_post SET status=#{status} WHERE post_id=#{id}")
-	int updateStatusNotice(@Param("id") String id, @Param("status") String status);
+	@Update({
+	    "<script>",
+	    "UPDATE board_post",
+	    "SET status = #{status}",
+	    "<choose>",
+	    "  <when test='status == \"진행중\"'> , firstSign = NOW() </when>",
+	    "  <when test='status == \"완료\"'> , secondSign = NOW() </when>",
+	    "  <when test='status == \"반려\"'>",
+	    "    <if test='currentStatus == \"대기\"'> , firstSign = NOW() </if>",
+	    "    <if test='currentStatus == \"진행중\"'> , secondSign = NOW() </if>",
+	    "  </when>",
+	    "</choose>",
+	    "WHERE post_id = #{id}",
+	    "</script>"
+	})
+	int updateStatusNotice(@Param("id") String id,
+	                       @Param("status") String status,
+	                       @Param("currentStatus") String currentStatus);
 	
 	// 연차 승인 & 반려
 	@Update({
-	  "<script>",
-	  "UPDATE annual_leave",
-	  "SET state_type = #{status}",
-	  "<if test=\"status == '완료'\">, leave_type = '사용'</if>",
-	  "WHERE leave_id = #{id}",
-	  "</script>"
+	    "<script>",
+	    "UPDATE annual_leave",
+	    "SET state_type = #{status}",
+	    "<if test='status == \"완료\"'> , leave_type = '사용' </if>",
+	    "<choose>",
+	    "  <when test='status == \"진행중\"'> , firstSign = NOW() </when>",
+	    "  <when test='status == \"완료\"'> , secondSign = NOW() </when>",
+	    "  <when test='status == \"반려\"'>",
+	    "    <if test='currentStatus == \"대기\"'> , firstSign = NOW() </if>",
+	    "    <if test='currentStatus == \"진행중\"'> , secondSign = NOW() </if>",
+	    "  </when>",
+	    "</choose>",
+	    "WHERE leave_id = #{id}",
+	    "</script>"
 	})
-	int updateStatusLeave(@Param("id") String id, @Param("status") String status);
+	int updateStatusLeave(@Param("id") String id,
+	                      @Param("status") String status,
+	                      @Param("currentStatus") String currentStatus);
 	
 	// 프로젝트 승인 & 반려
-	@Update("UPDATE TB_PJT_BASC SET PJT_STTS_CD=#{status} WHERE PJT_SN=#{id}")
-	int updateStatusProject(@Param("id") String id, @Param("status") String status);
+	@Update({
+	    "<script>",
+	    "UPDATE TB_PJT_BASC",
+	    "SET PJT_STTS_CD = #{status}",
+	    "<choose>",
+	    "  <when test='status == \"진행중\"'> , firstSign = NOW() </when>",
+	    "  <when test='status == \"완료\"'> , secondSign = NOW() </when>",
+	    "  <when test='status == \"반려\"'>",
+	    "    <if test='currentStatus == \"대기\"'> , firstSign = NOW() </if>",
+	    "    <if test='currentStatus == \"진행중\"'> , secondSign = NOW() </if>",
+	    "  </when>",
+	    "</choose>",
+	    "WHERE PJT_SN = #{id}",
+	    "</script>"
+	})
+	int updateStatusProject(@Param("id") String id,
+	                        @Param("status") String status,
+	                        @Param("currentStatus") String currentStatus);
+
 	
 	// 프로젝트 승인 시, 일정 테이블에 추가
 	@Insert("""
@@ -473,11 +524,18 @@ public interface ApprovalMapper {
     @Update("UPDATE attendance SET status = #{status} WHERE id = #{id}")
     int rejectAttendance(@Param("id") String id, @Param("status") String status);
 
-    // 근태 승인 
     @Update({
         "<script>",
         "UPDATE attendance",
         "SET status = #{status}",
+        "<choose>",
+        "  <when test='status == \"진행중\"'> , firstSign = NOW() </when>",
+        "  <when test='status == \"완료\"'> , secondSign = NOW() </when>",
+        "  <when test='status == \"반려\"'>",
+        "    <if test='currentStatus == \"대기\"'> , firstSign = NOW() </if>",
+        "    <if test='currentStatus == \"진행중\"'> , secondSign = NOW() </if>",
+        "  </when>",
+        "</choose>",
         "<if test='status == \"완료\"'>",
         "  <choose>",
         "    <when test='timeInout == \"출근\"'>",
@@ -490,13 +548,16 @@ public interface ApprovalMapper {
         "      , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00'),",
         "        check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
         "    </when>",
-        "  </choose>",
-        "  , modified_at = NOW()",
+        "  </choose>,",
+        "  modified_at = NOW()",
         "</if>",
         "WHERE id = #{id}",
         "</script>"
     })
-    int approveAttendance(@Param("id") String id, @Param("status") String status, @Param("timeInout") String timeInout);
+    int approveAttendance(@Param("id") String id,
+                          @Param("status") String status,
+                          @Param("timeInout") String timeInout,
+                          @Param("currentStatus") String currentStatus);
 
 
 
