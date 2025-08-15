@@ -39,23 +39,12 @@ public class ApiApprovalController {
         int size = 5; // 최신글 5개
         int offset = (page - 1) * size;
 
-        // 3. 총 개수
-        int totalCount = approvalMapper.approvalCountByRole(role, type, status, employeeId);
-        int totalPages = (int) Math.ceil((double) totalCount / size);
-
-        // 4. 데이터 조회
+        // 3. 데이터 조회
         List<ApprovalDTO> approvalData =
                 approvalMapper.approvalDataByRole(offset, size, role, type, status, employeeId);
 
-        // 5. React에서 바로 받도록 데이터만 반환
+        // 4. React에서 바로 받도록 데이터만 반환
         return approvalData;
-
-        // 또는 페이지 정보까지 줄 경우:
-        // return Map.of(
-        //     "totalCount", totalCount,
-        //     "totalPages", totalPages,
-        //     "data", approvalData
-        // );
     }
 
 }

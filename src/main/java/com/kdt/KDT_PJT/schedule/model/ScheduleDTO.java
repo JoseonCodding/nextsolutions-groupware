@@ -15,7 +15,7 @@ import lombok.Data;
 public class ScheduleDTO {
 
 
-	int scheduleId, repeatCheck;
+	int scheduleId, repeatCheck, pjtSn;
     String title, cate, alarm, content, holiday, msg;
     
     @JsonInclude(JsonInclude.Include.NON_NULL)
