@@ -40,7 +40,7 @@
       
 
       <!-- 본문 -->
-      <div class="text" th:text="${board.content}">내용</div>
+      <div class="text" th:utext="${board.content}">내용</div>
 <hr />
       <div class="board-actions">
         <a th:href="@{/board/notice}" class="btn">목록으로</a>
