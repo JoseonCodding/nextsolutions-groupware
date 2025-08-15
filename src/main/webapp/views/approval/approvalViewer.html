@@ -36,8 +36,8 @@
 			</tr>
 		</table>
 
-		<!-- 결재선 영역: 근태/연차 제외 -->
-		<th:block th:if="${approvalData.docType != '근태' and approvalData.docType != '연차'}">
+		<!-- 결재선 영역: 근태/연차/프로젝트 제외(3열 유지: 상신자/중간결재자/최종결재자) -->
+		<th:block th:if="${approvalData.docType != '근태' and approvalData.docType != '연차' and approvalData.docType != '프로젝트'}">
 		  <table border="" style="margin-left: 50px">
 		    <tr>
 		      <td><b>상신자</b></td>
@@ -83,7 +83,41 @@
 		  </table>
 		</th:block>
 
-		
+			
+		<!-- 프로젝트 전용 결재선 -->
+		<th:block th:if="${approvalData.docType == '프로젝트'}">
+		  <table border="" style="margin-left: 50px">
+		    <tr>
+		      <td><b>상신자</b></td>
+		      <td><b>결재자</b></td>
+		    </tr>
+		    <tr>
+		      <!-- 상신자 -->
+		      <td>
+		        <span th:text="${approvalData.writerPosition != null ? approvalData.writerPosition : ''}"></span>
+		        <span th:text="${approvalData.writer != null ? ' ' + approvalData.writer : ' -'}">-</span>
+		      </td>
+		      <!-- 결재자(중간결재자만) -->
+		      <td>
+		        <span th:text="${approvalData.approverPosition != null ? approvalData.approverPosition : ''}"></span>
+		        <span th:text="${approvalData.approverName != null ? ' ' + approvalData.approverName : ' -'}">-</span>
+		      </td>
+		    </tr>
+		    <tr>
+		      <!-- 상신일 -->
+		      <td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd')}">-</td>
+		      <!-- 결재일: 프로젝트는 중간결재자만 결재하므로 firstSign만 표시(있으면) -->
+		      <td>
+		        <span th:if="${approvalData != null and approvalData.firstSign != null}"
+		              th:style="${approvalData.status == '반려' ? 'color:red;' : 'color:black;'}"
+		              th:text="${#dates.format(approvalData.firstSign, 'yyyy/MM/dd') + (approvalData.status == '반려' ? ' (반려)' : '')}">
+		        </span>
+		        <span th:if="${approvalData == null or approvalData.firstSign == null}">-</span>
+		      </td>
+		    </tr>
+		  </table>
+		</th:block>
+			
 		<!-- 근태 전용 결재선 -->
 		<th:block th:if="${approvalData.docType == '근태'}">
 		  <table border="" style="margin-left: 50px">
@@ -91,46 +125,65 @@
 		      <td><b>상신자</b></td>
 		      <td><b>결재자</b></td>
 		    </tr>
+		
 		    <tr>
-			<td>
-			  <span th:text="${approvalData.writerPosition != null ? approvalData.writerPosition : ''}"></span>
-			  <span th:text="${approvalData.writer != null ? ' ' + approvalData.writer : ' -'}">-</span>
-			</td>
-			<td>
-			  <div>
-			    <span th:text="${approvalData.approverPosition != null ? approvalData.approverPosition : ''}"></span>
-			    <span th:text="${approvalData.approverName != null ? ' ' + approvalData.approverName : ' -'}">-</span>
-			  </div>
-			  <div style="margin-top: 4px;">
-			    <span th:text="${approvalData.managerPosition != null ? approvalData.managerPosition : ''}"></span>
-			    <span th:text="${approvalData.managerName != null ? ' ' + approvalData.managerName : ' -'}">-</span>
-			  </div>
-			</td>
+		      <!-- 상신자: 직책 + 이름 -->
+		      <td>
+		        <span th:text="${approvalData.writerPosition != null ? approvalData.writerPosition : ''}"></span>
+		        <span th:text="${approvalData.writer != null ? ' ' + approvalData.writer : ' -'}">-</span>
+		      </td>
+		
+		      <!-- 결재자 영역 -->
+		      <td>
+		        <!-- 결재 전: 둘 다 노출 -->
+		        <div th:if="${approvalData.firstSign == null and approvalData.secondSign == null}">
+		          <div>
+		            <span th:text="${approvalData.approverPosition != null ? approvalData.approverPosition : ''}"></span>
+		            <span th:text="${approvalData.approverName != null ? ' ' + approvalData.approverName : ' -'}">-</span>
+		          </div>
+		          <div style="margin-top: 4px;">
+		            <span th:text="${approvalData.managerPosition != null ? approvalData.managerPosition : ''}"></span>
+		            <span th:text="${approvalData.managerName != null ? ' ' + approvalData.managerName : ' -'}">-</span>
+		          </div>
+		        </div>
+		
+		        <!-- 근태 담당자가 결재(승인/반려 포함): firstSign만 존재 -->
+		        <div th:if="${approvalData.firstSign != null and approvalData.secondSign == null}">
+		          <span th:text="${approvalData.approverPosition != null ? approvalData.approverPosition : ''}"></span>
+		          <span th:text="${approvalData.approverName != null ? ' ' + approvalData.approverName : ' -'}">-</span>
+		        </div>
+		
+		        <!-- 대표가 결재(승인/반려 포함): secondSign 존재 -->
+		        <div th:if="${approvalData.secondSign != null}">
+		          <span th:text="${approvalData.managerPosition != null ? approvalData.managerPosition : ''}"></span>
+		          <span th:text="${approvalData.managerName != null ? ' ' + approvalData.managerName : ' -'}">-</span>
+		        </div>
+		      </td>
 		    </tr>
+		
 		    <tr>
-				<td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd')}">-</td>
-				<td>
-				  <span
-				    th:if="${approvalData != null and (approvalData.firstSign != null or approvalData.secondSign != null)}"
-				    th:style="${approvalData.status == '반려' ? 'color:red;' : 'color:black;'}"
-				    th:text="${
-				      #dates.format(
-				        approvalData.secondSign != null ? approvalData.secondSign : approvalData.firstSign,
-				        'yyyy/MM/dd'
-				      )
-				      + (approvalData.status == '반려' ? ' (반려)' : '')
-				    }">
-				  </span>
-				
-				  <span
-				    th:if="${approvalData == null or (approvalData.firstSign == null and approvalData.secondSign == null)}">
-				    -
-				  </span>
-				</td>
-
+		      <!-- 상신일 -->
+		      <td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd')}">-</td>
+		
+		      <!-- 결재일: 존재하는 사인 날짜 + (반려) 표시 -->
+		      <td>
+		        <span
+		          th:if="${approvalData != null and (approvalData.firstSign != null or approvalData.secondSign != null)}"
+		          th:style="${approvalData.status == '반려' ? 'color:red;' : 'color:black;'}"
+		          th:text="${
+		            #dates.format(
+		              (approvalData.secondSign != null ? approvalData.secondSign : approvalData.firstSign),
+		              'yyyy/MM/dd'
+		            )
+		            + (approvalData.status == '반려' ? ' (반려)' : '')
+		          }">
+		        </span>
+		        <span th:if="${approvalData == null or (approvalData.firstSign == null and approvalData.secondSign == null)}">-</span>
+		      </td>
 		    </tr>
 		  </table>
 		</th:block>
+
 		
 		<!-- 연차 전용 결재선 -->
 		<th:block th:if="${approvalData.docType == '연차'}">
@@ -338,40 +391,36 @@
 	       onclick="return confirm('삭제하면 복원할 수 없습니다.\n정말로 삭제하시겠습니까?');">삭제</a>
 	</div>
 
-	<!-- 승인 & 반려 버튼 영역 -->
-	<div th:if="${
-	  (approvalData.docType == '근태' and approvalData.status == '대기' and (loginUser.role == '대표' or loginUser.role == '근태'))
-	  or
-	  (approvalData.docType == '연차' and approvalData.status == '대기' and (loginUser.role == '대표' or loginUser.role == '근태'))
-	  or
-	  (approvalData.docType != '근태' and approvalData.docType != '연차' and (
-	      (approvalData.status == '대기' and (
-	          (approvalData.docType == '공지사항' and loginUser.role == '게시판')
-	          or
-	          (approvalData.docType == '프로젝트' and loginUser.role == '프로젝트')
-	      ))
-	      or
-	      (approvalData.status == '진행중' and loginUser.role == '대표')
-	  ))
-	}">
-	  <!-- 승인 버튼 -->
-	  <form th:action="@{/approval/approve}" method="post" style="display: inline;">
-	    <input type="hidden" name="docId" th:value="${approvalData.docId}" />
-	    <input type="hidden" name="docType" th:value="${approvalData.docType}" />
-	    <button type="submit"
-	            onclick="return confirm('한 번 승인하면 취소할 수 없습니다.\n정말로 승인하시겠습니까?');">
-	      승인
-	    </button>
-	  </form>
-	  <!-- 반려 버튼 -->
-	  <form th:action="@{/approval/reject}" method="post" style="display: inline;">
-	    <input type="hidden" name="docId" th:value="${approvalData.docId}" />
-	    <input type="hidden" name="docType" th:value="${approvalData.docType}" />
-	    <button type="submit"
-	            onclick="return confirm('한 번 반려하면 취소할 수 없습니다.\n정말로 반려하시겠습니까?');">
-	      반려
-	    </button>
-	  </form>
-	</div>
+<!-- 승인 & 반려 버튼 영역 -->
+<div th:if="${
+  (approvalData.docType == '근태'     and approvalData.status == '대기'   and (loginUser.role == '대표' or loginUser.role == '근태'))
+  or
+  (approvalData.docType == '연차'     and approvalData.status == '대기'   and (loginUser.role == '대표' or loginUser.role == '근태'))
+  or
+  (approvalData.docType == '공지사항' and approvalData.status == '대기'   and loginUser.role == '게시판')
+  or
+  (approvalData.docType == '프로젝트' and approvalData.status == '대기'   and loginUser.role == '프로젝트')
+}">
+  <!-- 승인 버튼 -->
+  <form th:action="@{/approval/approve}" method="post" style="display: inline;">
+    <input type="hidden" name="docId"   th:value="${approvalData.docId}" />
+    <input type="hidden" name="docType" th:value="${approvalData.docType}" />
+    <button type="submit"
+            onclick="return confirm('승인 시 상태가 진행중으로 변경됩니다.\n진행하시겠습니까?');">
+      승인
+    </button>
+  </form>
+
+  <!-- 반려 버튼 -->
+  <form th:action="@{/approval/reject}" method="post" style="display: inline;">
+    <input type="hidden" name="docId"   th:value="${approvalData.docId}" />
+    <input type="hidden" name="docType" th:value="${approvalData.docType}" />
+    <button type="submit"
+            onclick="return confirm('반려 시 상태가 반려로 변경됩니다.\n진행하시겠습니까?');">
+      반려
+    </button>
+  </form>
+</div>
+
 </body>
 </html>

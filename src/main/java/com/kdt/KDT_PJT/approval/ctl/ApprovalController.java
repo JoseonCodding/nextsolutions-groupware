@@ -399,11 +399,17 @@ public class ApprovalController {
         EmployeeDto loginUser = (session != null) ? (EmployeeDto) session.getAttribute("loginUser") : null;
         if (loginUser == null) return "redirect:/login?error=auth";
 
-        ApprovalDTO doc = approvalMapper.view(docId, loginUser.getRole(), loginUser.getEmployeeId(), null, null);
+        ApprovalDTO doc = approvalMapper.view(
+            docId,
+            loginUser.getRole(),
+            loginUser.getEmployeeId(),
+            null,
+            null
+        );
         if (doc == null) return "redirect:/approval/main?error=forbidden";
 
-        String[] parts = splitDocId(docId);
-        if (parts == null) return "redirect:/approval/main?error=badDocId";
+        String[] parts = docId.split("-");
+        if (parts.length != 2) return "redirect:/approval/main?error=badDocId";
         String pkId = parts[1].trim();
 
         String docType = doc.getDocType();
@@ -413,28 +419,35 @@ public class ApprovalController {
         // 근태: 1차 승인 즉시 완료(기존 유지)
         if ("근태".equals(docType) && "대기".equals(currentStatus)
                 && ("대표".equals(role) || "근태".equals(role))) {
-            approvalMapper.approveAttendance(pkId, doc.getTimeInout()); // id:String
+            approvalMapper.approveAttendance(pkId, doc.getTimeInout());
         }
-        // 연차: 1차 승인 즉시 완료 + 역할별 서명 기록
+        // 연차: 1차 승인 즉시 완료 + 역할별 사인 기록
         else if ("연차".equals(docType) && "대기".equals(currentStatus)
                 && ("대표".equals(role) || "근태".equals(role))) {
-            int pk = Integer.parseInt(pkId); // leave_id가 INT인 경우
+            int pk = Integer.parseInt(pkId);
             int updated = approvalMapper.approveLeave(pk, role);
             if (updated == 0) return "redirect:/approval/main?error=notUpdated";
             leaveMapper.insertScheduleRest(pkId);
         }
-        // 공지/프로젝트: 다단계
-        else if ("대기".equals(currentStatus) && isResponsibleRole(docType, role)) {
-            updateStatusCommon(docType, pkId, "진행중", doc.getTimeInout(), currentStatus);
-        } else if ("진행중".equals(currentStatus) && "대표".equals(role)) {
-            // 상태를 완료로 업데이트
-            updateStatusCommon(docType, pkId, "완료", doc.getTimeInout(), currentStatus);
-
-            // ✅ 프로젝트가 완료로 승인되면 일정 추가
-            if ("프로젝트".equals(docType)) {
-                approvalMapper.insertProjectSchedule(pkId);
+        // 공지사항: 담당자 → 진행중, 대표 → 완료 (기존 유지)
+        else if ("공지사항".equals(docType)) {
+            if ("대기".equals(currentStatus) && "게시판".equals(role)) {
+                updateStatusCommon(docType, pkId, "진행중", doc.getTimeInout(), currentStatus);
+            } else if ("진행중".equals(currentStatus) && "대표".equals(role)) {
+                updateStatusCommon(docType, pkId, "완료", doc.getTimeInout(), currentStatus);
+            } else {
+                return "redirect:/approval/main?error=forbidden";
             }
-        } else {
+        }
+        // 프로젝트: 중간결재자만 승인 가능, '대기' -> '진행중'
+        else if ("프로젝트".equals(docType)) {
+            if ("대기".equals(currentStatus) && "프로젝트".equals(role)) {
+                approvalMapper.updateStatusProject(pkId, "진행중", currentStatus);
+            } else {
+                return "redirect:/approval/main?error=forbidden";
+            }
+        }
+        else {
             return "redirect:/approval/main?error=forbidden";
         }
 
@@ -455,11 +468,17 @@ public class ApprovalController {
         EmployeeDto loginUser = (session != null) ? (EmployeeDto) session.getAttribute("loginUser") : null;
         if (loginUser == null) return "redirect:/login?error=auth";
 
-        ApprovalDTO doc = approvalMapper.view(docId, loginUser.getRole(), loginUser.getEmployeeId(), null, null);
+        ApprovalDTO doc = approvalMapper.view(
+            docId,
+            loginUser.getRole(),
+            loginUser.getEmployeeId(),
+            null,
+            null
+        );
         if (doc == null) return "redirect:/approval/main?error=forbidden";
 
-        String[] parts = splitDocId(docId);
-        if (parts == null) return "redirect:/approval/main?error=badDocId";
+        String[] parts = docId.split("-");
+        if (parts.length != 2) return "redirect:/approval/main?error=badDocId";
         String pkId = parts[1].trim();
 
         String docType = doc.getDocType();
@@ -473,26 +492,38 @@ public class ApprovalController {
             int updated = approvalMapper.rejectAttendance(pk, "반려", role);
             if (updated == 0) return "redirect:/approval/main?error=notUpdated";
         }
-        // 연차: 1차 반려 + 역할별 서명 기록
+        // 연차: 1차 반려 + 역할별 사인 기록
         else if ("연차".equals(docType) && "대기".equals(currentStatus)
                 && ("대표".equals(role) || "근태".equals(role))) {
             int pk = Integer.parseInt(pkId);
             int updated = approvalMapper.rejectLeave(pk, "반려", role);
             if (updated == 0) return "redirect:/approval/main?error=notUpdated";
         }
-        // 공지/프로젝트: 다단계
-        else if ("대기".equals(currentStatus) && isResponsibleRole(docType, role)) {
-            updateStatusCommon(docType, pkId, "반려", doc.getTimeInout(), currentStatus);
-        } else if ("진행중".equals(currentStatus) && "대표".equals(role)) {
-            updateStatusCommon(docType, pkId, "반려", doc.getTimeInout(), currentStatus);
-        } else {
+        // 공지사항: 담당자/대표 반려 (기존 유지)
+        else if ("공지사항".equals(docType)) {
+            if ("대기".equals(currentStatus) && "게시판".equals(role)) {
+                updateStatusCommon(docType, pkId, "반려", doc.getTimeInout(), currentStatus);
+            } else if ("진행중".equals(currentStatus) && "대표".equals(role)) {
+                updateStatusCommon(docType, pkId, "반려", doc.getTimeInout(), currentStatus);
+            } else {
+                return "redirect:/approval/main?error=forbidden";
+            }
+        }
+        // 프로젝트: 중간결재자만 반려 가능, '대기' -> '반려'
+        else if ("프로젝트".equals(docType)) {
+            if ("대기".equals(currentStatus) && "프로젝트".equals(role)) {
+                approvalMapper.updateStatusProject(pkId, "반려", currentStatus);
+            } else {
+                return "redirect:/approval/main?error=forbidden";
+            }
+        }
+        else {
             return "redirect:/approval/main?error=forbidden";
         }
 
         redirectAttributes.addAttribute("docId", docId);
         return "redirect:/approval/viewer";
     }
-
 
 
 
