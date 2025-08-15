@@ -33,6 +33,7 @@
 		</table>
 	
 		<!-- 결재선 영역 -->
+		<th:block th:if="${approvalData.docType != '근태'}">
 		<table border="" style="margin-left: 50px">
 		  <tr>
 		    <td><b>상신자</b></td>
@@ -40,36 +41,57 @@
 		    <td><b>최종결재자</b></td>
 		  </tr>
 		  <tr>
-		    <td>
-		    	<span th:text="${approvalData == null ? '-' : approvalData.writer}"></span>
-		    </td>
-			<td>
-			  <span th:text="${approvalData == null ? '-' : approvalData.approverName}"></span>
-			</td>
-		    <td>
-			  <span th:text="${approvalData == null ? '-' : approvalData.managerName}"></span>
-			</td>
+		    <td th:text="${approvalData == null ? '-' : approvalData.writer}"></td>
+		    <td th:text="${approvalData == null ? '-' : approvalData.approverName}"></td>
+		    <td th:text="${approvalData == null ? '-' : approvalData.managerName}"></td>
 		  </tr>
 		  <tr>
-		  	<td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd')}"></td>
-            <td>
-                <span th:if="${approvalData != null and approvalData.firstSign != null}">
-                    <span th:style="${approvalData.status == '반려' ? 'color:red;' : 'color:black;'}"
-                          th:text="${#dates.format(approvalData.firstSign, 'yyyy/MM/dd') + (approvalData.status == '반려' ? ' (반려)' : '')}">
-                    </span>
-                </span>
-                <span th:if="${approvalData == null or approvalData.firstSign == null}">-</span>
-            </td>
-            <td>
-                <span th:if="${approvalData != null and approvalData.secondSign != null}">
-                    <span th:style="${approvalData.status == '반려' ? 'color:red;' : 'color:black;'}"
-                          th:text="${#dates.format(approvalData.secondSign, 'yyyy/MM/dd') + (approvalData.status == '반려' ? ' (반려)' : '')}">
-                    </span>
-                </span>
-                <span th:if="${approvalData == null or approvalData.secondSign == null}">-</span>
-            </td>
+		    <!-- 상신일 -->
+		    <td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd')}"></td>
+		    <!-- 중간 결재일 -->
+		    <td>
+		      <span th:if="${approvalData != null and approvalData.firstSign != null}">
+		        <span th:style="${(approvalData.status == '반려' and approvalData.secondSign == null) ? 'color:red;' : 'color:black;'}"
+		              th:text="${#dates.format(approvalData.firstSign, 'yyyy/MM/dd') + ((approvalData.status == '반려' and approvalData.secondSign == null) ? ' (반려)' : '')}">
+		        </span>
+		      </span>
+		      <span th:if="${approvalData == null or approvalData.firstSign == null}">-</span>
+		    </td>
+		    <!-- 최종 결재일 -->
+		    <td>
+		      <span th:if="${approvalData != null and approvalData.secondSign != null}">
+		        <span th:style="${(approvalData.status == '반려' and approvalData.secondSign != null) ? 'color:red;' : 'color:black;'}"
+		              th:text="${#dates.format(approvalData.secondSign, 'yyyy/MM/dd') + ((approvalData.status == '반려' and approvalData.secondSign != null) ? ' (반려)' : '')}">
+		        </span>
+		      </span>
+		      <span th:if="${approvalData == null or approvalData.secondSign == null}">-</span>
+		    </td>
 		  </tr>
 		</table>
+		</th:block>
+		
+		<!-- 근태 전용 간소 결재선 -->
+		<th:block th:if="${approvalData.docType == '근태'}">
+		<table border="" style="margin-left: 50px">
+		  <tr>
+		    <td><b>상신자</b></td>
+		    <td><b>승인 권한자</b></td>
+		  </tr>
+		  <tr>
+		    <td th:text="${approvalData == null ? '-' : approvalData.writer}"></td>
+		    <td th:text="${approvalData == null ? '-' : approvalData.approverName}"></td>
+		  </tr>
+		  <tr>
+		    <td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd')}"></td>
+		    <td>
+		      <span th:if="${approvalData != null and (approvalData.firstSign != null or approvalData.secondSign != null)}"
+		            th:text="${#dates.format(approvalData.secondSign != null ? approvalData.secondSign : approvalData.firstSign, 'yyyy/MM/dd')}">
+		      </span>
+		      <span th:if="${approvalData.firstSign == null and approvalData.secondSign == null}">-</span>
+		    </td>
+		  </tr>
+		</table>
+		</th:block>
 
 	</div>
 	
