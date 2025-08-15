@@ -11,8 +11,14 @@ public class ApprovalDTO {
 	Date createdAt, pjtBgngDt, pjtEndDt;
 	
 	// 프로젝트 파일 첨부 전용 추가 필드
-    String attachFileUuid;		// 파일 이름 난수화
-    String attachFileOrgName;	// 파일 원래 이름 = 뷰어에 표시될 이름 = 다운로드 시 저장되는 이름
+	String attachFileUuid1;      // 1번 UUID (기존)
+	String attachFileOrgName1;   // 1번 원본명 (기존)
+
+	String attachFileUuid2;     // 2번 UUID
+	String attachFileOrgName2;  // 2번 원본명
+
+	String attachFileUuid3;     // 3번 UUID
+	String attachFileOrgName3;  // 3번 원본명
     
     // 연차 전용 추가 필드
     Date leaveCreateDate; // 연차 발생일(l.create_date)

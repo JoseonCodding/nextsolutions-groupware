@@ -4,10 +4,8 @@
 <head>
 	<meta charset="UTF-8">
 	<title>★전자 결재 뷰어</title>
-
-	<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
-	
 </head>
+
 <body>
 
 	<div style="display: flex;">
@@ -283,18 +281,43 @@
 	     th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
 	</div>
 	
-	<!-- 첨부파일 다운로드 영역 -->
-	<div th:if="${approvalData != null and approvalData.docType == '프로젝트'}" style="background-color: white; margin-top: 20px;">
-	  <b>첨부파일</b> :
-	  <span th:if="${approvalData != null and not #strings.isEmpty(approvalData.attachFileUuid)}">
-	    <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid} + '&orgName=' + ${approvalData.attachFileOrgName}}"
-	       th:utext="${approvalData.attachFileOrgName}">다운로드</a>
-	  </span>
-	  <span th:unless="${approvalData != null and not #strings.isEmpty(approvalData.attachFileUuid)}">
-	    첨부파일이 없습니다.
-	  </span>
-	</div>
+	<!-- 첨부파일 (테이블 3행, ApprovalDTO 바인딩용) -->
+	<table th:if="${approvalData != null and approvalData.docType == '프로젝트'}" style="margin-top: 20px;" border="">
+	  <tr>
+	    <td rowspan="3">첨부파일</td>
+	    <td>
+	      <span th:if="${not #strings.isEmpty(approvalData.attachFileUuid1)}">
+	        <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid1} + '&orgName=' + ${approvalData.attachFileOrgName1}}"
+	           th:text="${approvalData.attachFileOrgName1}">첨부파일 다운로드</a>
+	      </span>
+	      <span th:unless="${not #strings.isEmpty(approvalData.attachFileUuid1)}">
+	        첨부파일이 없습니다.
+	      </span>
+	    </td>
+	  </tr>
 	
+	  <tr>
+	    <td>
+	      <span th:if="${not #strings.isEmpty(approvalData.attachFileUuid2)}">
+	        <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid2} + '&orgName=' + ${approvalData.attachFileOrgName2}}"
+	           th:text="${approvalData.attachFileOrgName2}">첨부파일 다운로드</a>
+	      </span>
+	      <span th:unless="${not #strings.isEmpty(approvalData.attachFileUuid2)}">첨부파일이 없습니다.</span>
+	    </td>
+	  </tr>
+	
+	  <tr>
+	    <td>
+	      <span th:if="${not #strings.isEmpty(approvalData.attachFileUuid3)}">
+	        <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid3} + '&orgName=' + ${approvalData.attachFileOrgName3}}"
+	           th:text="${approvalData.attachFileOrgName3}">첨부파일 다운로드</a>
+	      </span>
+	      <span th:unless="${not #strings.isEmpty(approvalData.attachFileUuid3)}">첨부파일이 없습니다.</span>
+	    </td>
+	  </tr>
+	</table>
+
+
 
 	<!-- 목록으로(approvalData가 있을때) or 처음으로(approvalData가 없을때) -->
 	<a th:if="${approvalData != null}"
@@ -350,9 +373,5 @@
 	    </button>
 	  </form>
 	</div>
-
-
-	
-
 </body>
 </html>
