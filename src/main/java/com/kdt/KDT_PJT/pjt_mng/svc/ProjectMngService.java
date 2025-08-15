@@ -14,6 +14,7 @@ import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.dao.CmmnDao;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.pjt_mng.mapper.PjtMngMapper;
+import com.kdt.KDT_PJT.pjt_mng.mapper.PjtMngMapper.ProjectMngMapper;
 
 @Service
 public class ProjectMngService {
@@ -43,6 +44,13 @@ public class ProjectMngService {
       return pjtMngMapper.selectPjtDetail(pjtSn);
 
    }
+   
+   // 🔹 프로젝트 상세 조회 (기존)
+   public CmmnMap getPjtDetailForVersion(String pjtSn) {
+      System.out.println("getPjtDetail : " + pjtSn);
+      return pjtMngMapper.getPjtDetailForVersion(pjtSn);
+
+   }
 
    // 🔹 프로젝트 등록 (기존)
    public void savePjtProc(CmmnMap params) {
@@ -50,6 +58,14 @@ public class ProjectMngService {
       String queryId = "com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.savePjtProc";
       cmmnDao.insert(queryId, params);
    }
+   
+   // 버전관리를 위한 인서트문
+   public void savePjtProcForVersion(CmmnMap params) {
+
+	      String queryId = "com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.savePjtProcForVersion";
+	      cmmnDao.insert(queryId, params);
+	   }
+   
 
    // 🔹 프로젝트 수정 (기존)
    public void updatePjtProc(CmmnMap params) {
@@ -231,6 +247,20 @@ public class ProjectMngService {
 		// TODO Auto-generated method stub
 		return pjtMngMapper.selectApproverCandidates();
 	}
+//파일 버전 저장에 대한거 
+
+	    @Autowired
+	    private ProjectMngMapper projectMngMapper;
+
+	    // 최신 버전 조회
+	    public int findLatestVerByPjtSn(Long pjtSn) {
+	        return projectMngMapper.findLatestVerByPjtSn(pjtSn);
+	    }
+
+	    // 새 버전 저장
+	    public void insertNewVersion(Map<String, Object> param) {
+	        projectMngMapper.insertNewVersion(param);
+	    }
+	}
 
 
-}

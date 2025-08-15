@@ -217,6 +217,7 @@ tr:hover {
 				<th>진행상태</th>
 				<th>시작일</th>
 				<th>종료일</th>
+				<th>결재자</th>
 				<th>비고</th>
 			</tr>
 		</thead>
@@ -229,14 +230,19 @@ tr:hover {
 				<td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>
 				<td th:text="${pjt['PJT_BGNG_DT']}">시작일</td>
 				<td th:text="${pjt['PJT_END_DT']}">종료일</td>
+				<td th:text="${pjt['TB_PJT_APR']}">결재자</td>
 				<td>
 					<button class="button btn-view"
 						th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
-						상세보기</button>   <!-- 아래 : 프로젝트 권한있는 사람에게만 버튼이 보임  -->
+						상세보기</button>   
+					
+					<!--  권한있는 사람에게만 메인에서 변경 버튼이 보임(권한): 대표, 관리자  -->
 					<button class="button btn-edit"
-					    th:if="${loginUserRole == '프로젝트'}" 
+					    th:if="${loginUserRole == '프로젝트' or session.loginUser.role == '대표'}" 
 						th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''">
 						변경</button>
+						
+					
 				</td>
 			</tr>
 		</tbody>

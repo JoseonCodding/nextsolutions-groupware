@@ -58,13 +58,13 @@
 <div class="container">
     <h2>사원 정보 수정</h2>
     
-    <form action="/employee/update" method="post" enctype="multipart/form-data">
+    <form id="employeeUpdateForm" action="/employee/update" method="post" enctype="multipart/form-data">
         <input type="hidden" name="empSeq" th:value="${employee.empSeq}" />
 
         <table>
             <tr>
                 <td>사번</td>
-                <td><input type="text" name="employeeId" th:value="${employee.employeeId}"></td>
+                <td><input type="text" name="employeeId" th:value="${employee.employeeId}" readonly></td>
                 <td>이름</td>
                 <td><input type="text" name="empNm" th:value="${employee.empNm}"></td>
             </tr>
@@ -94,15 +94,12 @@
                         <option value="프로젝트" th:selected="${employee.role == 2}">프로젝트</option>
                         <option value="근태" th:selected="${employee.role == 3}">근태/연차</option>
                         <option value="게시판" th:selected="${employee.role == 4}">게시판</option>
-                        <option value="문서" th:selected="${employee.role == 5}">문서</option>
-                        <option value="사원" th:selected="${employee.role == 6}">사원</option>
+                        <option value="문서" th:selected="${employee.role == 5}">문서관리</option>
+                        <option value="사원" th:selected="${employee.role == 6}">사원관리</option>
                         <option value="공지사항" th:selected="${employee.role == 7}">공지사항</option>
+                        <option value="일정" th:selected="${employee.role == 8}">일정관리</option>
                     </select>
                 </td>
-            </tr>
-            <tr>
-                <td>사진 업로드</td>
-                <td colspan="3"><input type="file" name="photo"></td>
             </tr>
             <tr>
                 <td>비밀번호 변경</td>
@@ -113,5 +110,88 @@
         <button type="submit" class="save-btn">수정 완료</button>
     </form>
 </div>
+
+<script>
+document.getElementById('employeeUpdateForm').addEventListener('submit', function(e) {
+    const f = this;
+
+    const empId     = (f.employeeId?.value || '').trim();
+    const name      = (f.empNm?.value || '').trim();
+    const phone     = (f.phone?.value || '').trim();
+    const birth     = (f.birth?.value || '').trim();
+    const hireDate  = (f.hireDate?.value || '').trim();
+    const resign    = (f.resignDate?.value || '').trim();
+    const role      = (f.role?.value || '').trim();
+    const pw        = (f.password?.value || '');
+
+    // 1) 사번: 정확히 숫자 8자리
+    if (!/^\d{8}$/.test(empId)) {
+        alert('사번은 숫자 8자리로 입력하세요.');
+        f.employeeId.focus();
+        e.preventDefault();
+        return;
+    }
+
+    // 2) 이름: 2자 이상
+    if (name.length < 2) {
+        alert('이름은 2자 이상 입력하세요.');
+        f.empNm.focus();
+        e.preventDefault();
+        return;
+    }
+
+    // 3) 휴대폰: 허용 형식 -> 010-1234-5678 또는 01012345678
+    if (phone && !/^010-\d{4}-\d{4}$/.test(phone) && !/^010\d{8}$/.test(phone)) {
+        alert('휴대폰 번호는 010-1234-5678 또는 01012345678 형식으로 입력하세요.');
+        f.phone.focus();
+        e.preventDefault();
+        return;
+    }
+
+    // 4) 비밀번호(선택): 입력했다면 강력 규칙 적용
+    //    최소 8자, 대문자/소문자/숫자/특수문자 각각 1개 이상
+    if (pw && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/]).{8,}$/.test(pw)) {
+        alert('비밀번호는 8자 이상이며 대문자/소문자/숫자/특수문자를 모두 포함해야 합니다.');
+        f.password.focus();
+        e.preventDefault();
+        return;
+    }
+
+    // 5) 날짜 관계 검증
+    //    birth <= hireDate <= resign(있다면)
+    const toDate = s => (s ? new Date(s + 'T00:00:00') : null);
+
+    const birthD = toDate(birth);
+    const hireD  = toDate(hireDate);
+    const resD   = toDate(resign);
+
+    if (birthD && hireD && hireD < birthD) {
+        alert('입사일은 생년월일 이후여야 합니다.');
+        f.hireDate.focus();
+        e.preventDefault();
+        return;
+    }
+    if (hireD && resD && resD < hireD) {
+        alert('퇴사일은 입사일 이후여야 합니다.');
+        f.resignDate.focus();
+        e.preventDefault();
+        return;
+    }
+
+    // 6) 권한 선택(값이 비어있지 않은지)
+    if (!role) {
+        alert('권한을 선택하세요.');
+        f.role.focus();
+        e.preventDefault();
+        return;
+    }
+
+    // (선택) 휴대폰이 숫자만이면 자동 하이픈 적용
+    if (/^010\d{8}$/.test(phone)) {
+        f.phone.value = phone.replace(/^(\d{3})(\d{4})(\d{4})$/, '$1-$2-$3');
+    }
+});
+</script>
+
 </body>
 </html>

@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
   <title th:text="${board != null ? board.boardName + ' 글쓰기' : '커스텀 글쓰기'}">커스텀 글쓰기</title>
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
   <style>
     .container {
       max-width: 800px;
@@ -59,7 +61,8 @@
     <!-- 내용 -->
     <div class="form-group">
       <label for="content">내용</label>
-      <textarea id="content" th:field="*{content}" rows="12" placeholder="내용을 입력하세요" required></textarea>
+      <textarea id="summernote" name="content" th:text="*{content}" rows="12" placeholder="내용을 입력하세요" required></textarea>
+      <!--  <textarea id="content" th:field="*{content}" rows="12" placeholder="내용을 입력하세요" required></textarea> -->
     </div>
 
     <!-- 버튼 -->
@@ -69,6 +72,36 @@
     </div>
   </form>
 </div>
-
+    <!-- Summernote 관련 JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
+    <script th:if="${editData.docType == '프로젝트'}">
+    $(document).ready(function() {
+      $('#summernote').summernote({
+        lang: 'ko-KR',
+        placeholder: '내용을 입력하세요',
+        tabsize: 2,
+        height: 300,
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'italic', 'underline', 'clear']],
+          ['fontname', ['fontname']],
+          ['fontsize', ['fontsize']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['height', ['height']],
+          ['insert', ['picture', 'link', 'table']],
+          ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+          onInit: function() {
+            let $editable = $(this).next('.note-editor').find('.note-editable');
+            $editable.css('text-align', 'left');
+          }
+        }
+      });
+    });
+    </script>
 </body>
 </html>

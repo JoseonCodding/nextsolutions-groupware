@@ -1,5 +1,6 @@
 <!-- 연차 관리 사용자용 -->
 <form action="" method="">
+<!-- 잔여 연차 요약 -->
 	<table border="">
 		<tr>
 			<td>이름</td>
@@ -16,6 +17,28 @@
 
 		</tr>
 	</table>
+	
+	<table border="">
+    <thead>
+        <tr>
+            <th>발생 날짜</th>
+            <th>연차 발생 이유</th>
+            <th>사용 여부</th>
+            <th>사용일</th>
+            <th>결재상태</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each=" dd : ${detailData}">
+            <td th:text="${dd.createdDateStr}"></td>
+            <td th:text="${dd.createReason}"></td>
+            <td th:text="${dd.leaveType}"></td>
+            <td th:text="${dd.usedDateStr}"></td>
+            <td th:text="${dd.stateType}"></td>
+        </tr>
+    </tbody>
+</table>
+	
 </form>
 
 <a th:href="@{/attend/insert}" >연차신청</a>

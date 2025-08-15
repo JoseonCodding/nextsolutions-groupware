@@ -1,5 +1,3 @@
-[[${session.loginUser}]]<br/>
-[[${scd}]]
 <!-- 일정 상세보기 -->
     <h2>일정 상세보기</h2><a href="/schedule">닫힘</a>
 	
@@ -43,8 +41,7 @@
         <label>알람:</label>
         <span th:text="${scd.alarm}"></span>
     </div>
-<!-- employId가 일치하거나 권한자만 수정,삭제 버튼 보이도록 -->
-																<!-- 추후 권한자(role) 적용시키기 -->
+<!-- employId가 일치하거나 권한자만 수정,삭제 버튼 보이도록 -->													
 <a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '근태' or session.loginUser.role == '대표'}" th:href="@{|/schedule/modify?scheduleId=${scd.scheduleId}|}">수정</a>
 <a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '근태' or session.loginUser.role == '대표'}" th:href="@{|/schedule/delete?scheduleId=${scd.scheduleId}|}">삭제</a>																
 
