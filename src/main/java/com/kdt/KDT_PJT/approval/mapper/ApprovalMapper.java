@@ -462,27 +462,6 @@ public interface ApprovalMapper {
 	                       @Param("status") String status,
 	                       @Param("currentStatus") String currentStatus);
 	
-	// 연차 승인 & 반려
-	@Update({
-	    "<script>",
-	    "UPDATE annual_leave",
-	    "SET state_type = #{status}",
-	    "<if test='status == \"완료\"'> , leave_type = '사용' </if>",
-	    "<choose>",
-	    "  <when test='status == \"진행중\"'> , firstSign = NOW() </when>",
-	    "  <when test='status == \"완료\"'> , secondSign = NOW() </when>",
-	    "  <when test='status == \"반려\"'>",
-	    "    <if test='currentStatus == \"대기\"'> , firstSign = NOW() </if>",
-	    "    <if test='currentStatus == \"진행중\"'> , secondSign = NOW() </if>",
-	    "  </when>",
-	    "</choose>",
-	    "WHERE leave_id = #{id}",
-	    "</script>"
-	})
-	int updateStatusLeave(@Param("id") String id,
-	                      @Param("status") String status,
-	                      @Param("currentStatus") String currentStatus);
-	
 	// 프로젝트 승인 & 반려
 	@Update({
 	    "<script>",
@@ -575,8 +554,30 @@ public interface ApprovalMapper {
     int approveAttendance(
 		    	    @Param("id") String id,
 		    	    @Param("timeInout") String timeInout);
-
-
+    
+    // 연차 반려
+    @Update("""
+    	    UPDATE annual_leave
+    	    SET state_type = #{status},
+    	        firstSign = CASE WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW() ELSE firstSign END,
+    	        secondSign = CASE WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW() ELSE secondSign END
+    	    WHERE leave_id = #{id}
+    	""")
+    	int rejectLeave(@Param("id") int id,
+    	                @Param("status") String status,
+    	                @Param("role") String role);
+    
+    // 연차 승인
+    @Update("""
+    	    UPDATE annual_leave
+    	    SET state_type = '완료',
+    	        leave_type  = '사용',
+    	        firstSign   = CASE WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW() ELSE firstSign END,
+    	        secondSign  = CASE WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW() ELSE secondSign END
+    	    WHERE leave_id = #{id}
+    	""")
+    	int approveLeave(@Param("id") int id,
+    	                 @Param("role") String role);
 
 
 }
