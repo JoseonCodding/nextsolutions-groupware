@@ -521,8 +521,24 @@ public interface ApprovalMapper {
 	int insertProjectSchedule(@Param("id") String projectId);
 	
     // 근태 반려
-    @Update("UPDATE attendance SET status = #{status} WHERE id = #{id}")
-    int rejectAttendance(@Param("id") String id, @Param("status") String status);
+	@Update("""
+		    UPDATE attendance
+		    SET status = #{status},
+		        firstSign = CASE
+		                      WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW()
+		                      ELSE firstSign
+		                    END,
+		        secondSign = CASE
+		                       WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW()
+		                       ELSE secondSign
+		                     END
+		    WHERE id = #{id}
+		""")
+		int rejectAttendance(
+		    @Param("id") int id,
+		    @Param("status") String status,
+		    @Param("role") String role
+		);
     
     // 근태 승인
     @Update({

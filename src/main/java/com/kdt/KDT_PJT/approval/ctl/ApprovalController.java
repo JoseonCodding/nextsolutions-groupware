@@ -442,14 +442,18 @@ public class ApprovalController {
         );
         if (doc == null) return "redirect:/approval/main?error=forbidden";
 
-        String pkId = docId.split("_")[1];
+        String pkId = docId.split("_")[1].trim();
+        int pk = Integer.parseInt(pkId); // attendance.id가 INT인 경우
         String docType = doc.getDocType();
         String currentStatus = doc.getStatus();
         String role = loginUser.getRole();
 
         if ("근태".equals(docType) && "대기".equals(currentStatus)
             && ("대표".equals(role) || "근태".equals(role))) {
-            approvalMapper.rejectAttendance(pkId, "반려");
+            int updated = approvalMapper.rejectAttendance(pk, "반려", role);
+            if (updated == 0) {
+                return "redirect:/approval/main?error=notUpdated";
+            }
         }
         else if ("대기".equals(currentStatus) && isResponsibleRole(docType, role)) {
             updateStatusCommon(docType, pkId, "반려", doc.getTimeInout(), currentStatus);
@@ -464,6 +468,7 @@ public class ApprovalController {
         redirectAttributes.addAttribute("docId", docId);
         return "redirect:/approval/viewer";
     }
+
 
 
 }
