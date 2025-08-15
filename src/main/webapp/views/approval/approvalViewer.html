@@ -16,7 +16,13 @@
 		<table border="">
 			<tr>
 				<td>작성자</td>
-				<td th:text="${approvalData == null ? '-' : approvalData.writer}"></td>
+		    <td>
+		      <span th:if="${approvalData != null}">
+		        <span th:text="${approvalData.writerPosition != null ? approvalData.writerPosition : ''}"></span>
+		        <span th:text="${approvalData.writer != null ? ' ' + approvalData.writer : ' -'}">-</span>
+		      </span>
+		      <span th:if="${approvalData == null}">-</span>
+		    </td>
 			</tr>
 			<tr>
 				<td>부서</td>
@@ -31,7 +37,7 @@
 				<td th:text="${approvalData == null ? '-' : approvalData.docId}"></td>
 			</tr>
 		</table>
-	
+
 		<!-- 결재선 영역 -->
 		<th:block th:if="${approvalData.docType != '근태'}">
 		<table border="" style="margin-left: 50px">
@@ -41,9 +47,18 @@
 		    <td><b>최종결재자</b></td>
 		  </tr>
 		  <tr>
-		    <td th:text="${approvalData == null ? '-' : approvalData.writer}"></td>
-		    <td th:text="${approvalData == null ? '-' : approvalData.approverName}"></td>
-		    <td th:text="${approvalData == null ? '-' : approvalData.managerName}"></td>
+		    <td>
+		        <span th:text="${approvalData.writerPosition != null ? approvalData.writerPosition : ''}"></span>
+		        <span th:text="${approvalData.writer != null ? ' ' + approvalData.writer : ' -'}">-</span>
+		      </td>
+			<td>
+			  <span th:text="${approvalData.approverPosition != null ? approvalData.approverPosition : ''}"></span>
+			  <span th:text="${approvalData.approverName != null ? ' ' + approvalData.approverName : ' -'}">-</span>
+			</td>
+			<td>
+			  <span th:text="${approvalData.managerPosition != null ? approvalData.managerPosition : ''}"></span>
+			  <span th:text="${approvalData.managerName != null ? ' ' + approvalData.managerName : ' -'}">-</span>
+			</td>
 		  </tr>
 		  <tr>
 		    <!-- 상신일 -->
@@ -70,28 +85,54 @@
 		</table>
 		</th:block>
 		
-		<!-- 근태 전용 간소 결재선 -->
+		<!-- 근태 전용 결재선 -->
 		<th:block th:if="${approvalData.docType == '근태'}">
-		<table border="" style="margin-left: 50px">
-		  <tr>
-		    <td><b>상신자</b></td>
-		    <td><b>승인 권한자</b></td>
-		  </tr>
-		  <tr>
-		    <td th:text="${approvalData == null ? '-' : approvalData.writer}"></td>
-		    <td th:text="${approvalData == null ? '-' : approvalData.approverName}"></td>
-		  </tr>
-		  <tr>
-		    <td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd')}"></td>
-		    <td>
-		      <span th:if="${approvalData != null and (approvalData.firstSign != null or approvalData.secondSign != null)}"
-		            th:text="${#dates.format(approvalData.secondSign != null ? approvalData.secondSign : approvalData.firstSign, 'yyyy/MM/dd')}">
-		      </span>
-		      <span th:if="${approvalData.firstSign == null and approvalData.secondSign == null}">-</span>
-		    </td>
-		  </tr>
-		</table>
+		  <table border="" style="margin-left: 50px">
+		    <tr>
+		      <td><b>상신자</b></td>
+		      <td><b>결재자</b></td>
+		    </tr>
+		    <tr>
+			<td>
+			  <span th:text="${approvalData.writerPosition != null ? approvalData.writerPosition : ''}"></span>
+			  <span th:text="${approvalData.writer != null ? ' ' + approvalData.writer : ' -'}">-</span>
+			</td>
+			<td>
+			  <div>
+			    <span th:text="${approvalData.approverPosition != null ? approvalData.approverPosition : ''}"></span>
+			    <span th:text="${approvalData.approverName != null ? ' ' + approvalData.approverName : ' -'}">-</span>
+			  </div>
+			  <div style="margin-top: 4px;">
+			    <span th:text="${approvalData.managerPosition != null ? approvalData.managerPosition : ''}"></span>
+			    <span th:text="${approvalData.managerName != null ? ' ' + approvalData.managerName : ' -'}">-</span>
+			  </div>
+			</td>
+		    </tr>
+		    <tr>
+				<td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd')}">-</td>
+				<td>
+				  <span
+				    th:if="${approvalData != null and (approvalData.firstSign != null or approvalData.secondSign != null)}"
+				    th:style="${approvalData.status == '반려' ? 'color:red;' : 'color:black;'}"
+				    th:text="${
+				      #dates.format(
+				        approvalData.secondSign != null ? approvalData.secondSign : approvalData.firstSign,
+				        'yyyy/MM/dd'
+				      )
+				      + (approvalData.status == '반려' ? ' (반려)' : '')
+				    }">
+				  </span>
+				
+				  <span
+				    th:if="${approvalData == null or (approvalData.firstSign == null and approvalData.secondSign == null)}">
+				    -
+				  </span>
+				</td>
+
+		    </tr>
+		  </table>
 		</th:block>
+
 
 	</div>
 	

@@ -231,7 +231,6 @@ public interface ApprovalMapper {
 	    @Param("employeeId") String employeeId
 	);
 	
-	/* 게시글 데이터 조회 -> (전자결재 뷰어) */
 	@Select({
 	    "<script>",
 	    "SELECT * FROM (",
@@ -253,10 +252,13 @@ public interface ApprovalMapper {
 	    "     NULL AS modifiedBy, NULL AS modifiedAt,",
 	    "     NULL AS modificationReason, NULL AS timeInout,",
 	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt,",
-	    "	  b.firstSign AS firstSign,",
-	    "	  b.secondSign AS secondSign,",
+	    "     b.firstSign AS firstSign,",
+	    "     b.secondSign AS secondSign,",
 	    "     (SELECT emp_nm FROM employee WHERE role = '게시판' LIMIT 1) AS approverName,",
-	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName",
+	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
+	    "     e.position AS writerPosition,",
+	    "     (SELECT position FROM employee WHERE role = '근태' LIMIT 1) AS approverPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition",
 	    "   FROM board_post b",
 	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
 	    "   WHERE b.board_id = 1 AND b.is_deleted = 0",
@@ -280,10 +282,13 @@ public interface ApprovalMapper {
 	    "     NULL AS modifiedBy, NULL AS modifiedAt,",
 	    "     NULL AS modificationReason, NULL AS timeInout,",
 	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt,",
-	    "	  l.firstSign AS firstSign,",
-	    "	  l.secondSign AS secondSign,",
+	    "     l.firstSign AS firstSign,",
+	    "     l.secondSign AS secondSign,",
 	    "     (SELECT emp_nm FROM employee WHERE role = '근태' LIMIT 1) AS approverName,",
-	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName",
+	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
+	    "     e.position AS writerPosition,",
+	    "     (SELECT position FROM employee WHERE role = '근태' LIMIT 1) AS approverPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition",
 	    "   FROM annual_leave l",
 	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
 	    "   WHERE l.state_type IS NOT NULL",
@@ -307,10 +312,13 @@ public interface ApprovalMapper {
 	    "     NULL AS modifiedBy, NULL AS modifiedAt,",
 	    "     NULL AS modificationReason, NULL AS timeInout,",
 	    "     p.PJT_BGNG_DT AS pjtBgngDt, p.PJT_END_DT AS pjtEndDt,",
-	    "	  p.firstSign AS firstSign,",
-	    "	  p.secondSign AS secondSign,",
+	    "     p.firstSign AS firstSign,",
+	    "     p.secondSign AS secondSign,",
 	    "     (SELECT emp_nm FROM employee WHERE role = '프로젝트' LIMIT 1) AS approverName,",
-	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName",
+	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
+	    "     e.position AS writerPosition,",
+	    "     (SELECT position FROM employee WHERE role = '근태' LIMIT 1) AS approverPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition",
 	    "   FROM TB_PJT_BASC p",
 	    "   LEFT JOIN employee e ON p.employeeId = e.employeeId",
 
@@ -333,17 +341,19 @@ public interface ApprovalMapper {
 	    "     a.modified_by AS modifiedBy, a.modified_at AS modifiedAt,",
 	    "     a.modification_reason AS modificationReason, a.time_inout AS timeInout,",
 	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt,",
-	    "	  a.firstSign AS firstSign,",
-	    "	  a.secondSign AS secondSign,",
+	    "     a.firstSign AS firstSign,",
+	    "     a.secondSign AS secondSign,",
 	    "     (SELECT emp_nm FROM employee WHERE role = '근태' LIMIT 1) AS approverName,",
-	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName",
+	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
+	    "     e.position AS writerPosition,",
+	    "     (SELECT position FROM employee WHERE role = '근태' LIMIT 1) AS approverPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition",
 	    "   FROM attendance a",
 	    "   LEFT JOIN employee e ON a.employeeId = e.employeeId",
 
 	    ") AS all_data",
 	    "WHERE docId = #{docId}",
 
-	    // ---- 권한 필터
 	    "<choose>",
 	    "  <when test='role != \"대표\"'>",
 	    "    <choose>",
@@ -363,7 +373,6 @@ public interface ApprovalMapper {
 	    "  </when>",
 	    "</choose>",
 
-	    // ---- type/status 필터
 	    "<if test='type != null and type != \"\"'>",
 	    "  AND docType = #{type}",
 	    "</if>",
@@ -380,6 +389,7 @@ public interface ApprovalMapper {
 	    @Param("type") String type,
 	    @Param("status") String status
 	);
+
 
 
 //	// 이제 삭제 기능은 없습니다~ (is_deleted를 1로 바꾸는 소프트 삭제만 남았어요~)

@@ -27,11 +27,14 @@ public class ApprovalDTO {
     String modificationReason; // 수정 사유
     String timeInout; 			// 수정 항목 (출근,퇴근,출퇴근)
     
-    // 권한처리 전용 추가필드
+    // 권한처리 중에 늘어난 추가필드
     String writerId;			// 상신자
     String approverName;		// 중간결재자
     String managerName;			// 최종결재자
     Date firstSign;    			// 1차 결재 날짜
     Date secondSign;   			// 2차 결재 날짜
+    String writerPosition;		// 상신자 직책
+    String approverPosition;	// 중간결재자 직책
+    String managerPosition;		// 최종 결재자 직책
     
 }
