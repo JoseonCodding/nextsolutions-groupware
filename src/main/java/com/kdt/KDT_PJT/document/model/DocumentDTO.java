@@ -16,12 +16,13 @@ public class DocumentDTO {
 	  private LocalDateTime frstRegDt;    // 등록일
 	  private String content;             // 내용
 	  // 첨부
-	  private Long atchFileSn1;
+	  private String atchFileSn1;
 	  private String orgFileNm1;
-	  private Long atchFileSn2;
-	  private Long atchFileSn3;
+	  private String atchFileSn2;
+	  private String atchFileSn3;
 	  private String orgFileNm2;
 	  private String orgFileNm3;
+	  private String vers;
 
 	  private String gid;                 // 버전군 식별자
 	  private BigDecimal ver;             // 1.0, 1.1 ...

@@ -258,7 +258,7 @@ public class BoardController {
         return "redirect:/board/custom/" + boardId + "/detail?postId=" + postId;
     }
     
- // 커스텀 좋아요 토글
+    // 커스텀 좋아요 토글
     @PostMapping("/custom/{boardId}/like/toggle")
     public String toggleCustomLike(@PathVariable("boardId") Integer boardId,
                                    @ModelAttribute BoardLikeDTO dto,

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div class="document-versions">
+  <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+    <h2 style="margin:0;">버전 목록</h2>
+    <code th:text="${gid}">G-XXXX</code>
+  </div>
+
+  <table class="table table-bordered table-hover" style="width:100%;">
+    <thead>
+      <tr>
+      <th style="width:80px;">버전</th>
+      	<th>제목</th>
+        <th style="width:120px;">사원명</th>
+        <th style="width:160px;">등록일</th>
+        <th style="width:120px;">보기</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="v, iter : ${versions}">
+        <td>
+          <span th:text="${v.ver}">1.0</span>
+          <span th:if="${iter.index == 0}"
+                style="margin-left:6px; font-size:12px; padding:2px 6px; border-radius:10px; background:#eef;">
+            최신
+          </span>
+        </td>
+        <td th:text="${v.pjtNm}">프로젝트명</td>
+        <td th:text="${#temporals.format(v.frstRegDt, 'yyyy-MM-dd HH:mm')}">2025-08-14 10:00</td>
+        <td th:text="${v.empNm}">홍길동</td>
+        
+        <td>
+          <a class="btn btn-sm btn-primary"
+             th:href="@{/document/version(gid=${v.gid}, ver=${v.ver})}">상세</a>
+        </td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(versions)}">
+        <td colspan="7" class="text-center">버전이 없습니다.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:12px; display:flex; gap:8px;">
+    <a class="btn btn-outline-primary"
+       th:if="${!#lists.isEmpty(versions)}"
+       th:href="@{/document/detail(gid=${versions[0].gid}, ver=${versions[0].ver})}">
+      돌아가기
+    </a>
+  </div>
+</div>
+
+</body>
+</html>
