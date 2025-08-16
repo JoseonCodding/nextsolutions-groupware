@@ -19,7 +19,7 @@ public class LeaveDTO {
     String createReason,usedReason, leaveType, employeeId, empNm;
     Integer total, used;
     
-    Date createdDate= new Date(), usedDate=new Date(), approvalDate;
+    Date createDate , usedDate, approvalDate;
     
     String stateType; 
 //	approval_id int AUTO_INCREMENT PRIMARY KEY,
@@ -32,15 +32,23 @@ public class LeaveDTO {
 
 	
 	public int getRest() {
-		return total - used;
+		int t = (total == null) ? 0 : total;
+	    int u = (used == null) ? 0 : used;
+		return t - u;
 	}
 	
-	public String getCreatedDateStr() {
+	public String getCreateDateStr() {
+		if (createDate == null) {
+	        return "";
+	    }
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		return sdf.format(createdDate);
+		return sdf.format(createDate);
 	}
 	
 	public String getUsedDateStr() {
+		if (usedDate == null) {
+	        return "";
+	    }
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		return sdf.format(usedDate);
 		

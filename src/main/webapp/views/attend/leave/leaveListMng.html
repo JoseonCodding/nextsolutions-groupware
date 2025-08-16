@@ -8,7 +8,7 @@
             <td>잔여 연차</td>
         </tr>
         <tr th:each="ldm : ${listMngData}">
-            <td><a th:href="@{/attend/leaveListMngDetail(employeeId=${ldm.employeeId}, empNm=${ldm.empNm})}"
+            <td><a th:href="@{/attend/leaveListMng/leaveMngDetail(employeeId=${ldm.employeeId}, empNm=${ldm.empNm})}"
 			       th:text="${ldm.empNm}">
 			    </a>
             </td>

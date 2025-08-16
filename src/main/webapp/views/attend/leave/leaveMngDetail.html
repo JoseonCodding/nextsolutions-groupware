@@ -1,0 +1,42 @@
+<!-- 연차 관리자용 상세보기 화면 -->
+
+
+<input type="hidden" name="employeeId" th:value="${MngDetail.employeeId}"/>
+<h2>연차 상세 조회</h2> <a href="/attend/leaveListMng">닫힘</a>
+	<table border="">
+		<tr>
+			<td>이름</td>
+			<td>총 연차</td>
+			<td>사용 연차</td>
+			<td>잔여 연차</td>
+		</tr>
+		<tr >
+		    <td th:text="${MngDetail.empNm}"></td>
+		    <td th:text="${MngDetail.total}"></td>
+		    <td th:text="${MngDetail.used}"></td>
+		    <td th:text="${MngDetail.getRest}"></td>
+
+		</tr>
+	</table>
+
+<table border="">
+    <thead>
+        <tr>
+            <th>발생 날짜</th>
+            <th>연차 발생 이유</th>
+            <th>사용 여부</th>
+            <th>사용일</th>
+            <th>결재상태</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="ttt : ${MngDetail2}">
+            <td th:text="${ttt.createDateStr}"></td>
+            <td th:text="${ttt.createReason}"></td>
+            <td th:text="${ttt.leaveType}"></td>
+            <td th:text="${ttt.usedDateStr}"></td>
+            <td th:text="${ttt.stateType}"></td>
+        </tr>
+    </tbody>
+</table>
+

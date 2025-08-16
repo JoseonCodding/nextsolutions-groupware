@@ -1,7 +1,7 @@
 
-<a href="attend">근태 관리</a>
-<a href="attend/leave">연차 관리</a>
+<a href="attend">출퇴근 기록</a>
+<a href="attend/leave">내 연차</a>
 <a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
-   th:href="attend/attendList">출퇴근 변경 이력</a>
+   th:href="attend/attendList">출퇴근 현황</a>
 <a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
-   th:href="attend/leave/leaveListMng">연차 관리(관리자 화면)</a>
+   th:href="attend/leave/leaveListMng">연차 관리</a>
