@@ -72,13 +72,13 @@
                 <td>휴대폰 번호</td>
                 <td><input type="text" name="phone" th:value="${employee.phone}"></td>
                 <td>생년월일</td>
-                <td><input type="date" name="birth" th:value="${employee.birth}"></td>
+                <td><input type="date" name="birth" th:value="${employee.birth != null ? #dates.format(employee.birth, 'yyyy-MM-dd') : null}"></td>
             </tr>
             <tr>
                 <td>입사일</td>
-                <td><input type="date" name="hireDate" th:value="${employee.hireDate}"></td>
+                <td><input type="date" name="hireDate" th:value="${employee.hireDate != null ? #dates.format(employee.hireDate, 'yyyy-MM-dd') : null}"></td>
                 <td>퇴사일</td>
-                <td><input type="date" name="resignDate" th:value="${employee.resignDate}"></td>
+                <td><input type="date" name="resignDate" th:value="${employee.resignDate != null ? #dates.format(employee.resignDate, 'yyyy-MM-dd') : null}"></td>
             </tr>
             <tr>
                 <td>부서명</td>

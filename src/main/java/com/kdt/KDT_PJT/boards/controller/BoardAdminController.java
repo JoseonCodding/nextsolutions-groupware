@@ -2,18 +2,20 @@ package com.kdt.KDT_PJT.boards.controller;
 
 import com.kdt.KDT_PJT.boards.mapper.BoardMapper;
 import com.kdt.KDT_PJT.boards.model.BoardDTO;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin/boards")
-@RequiredArgsConstructor
 public class BoardAdminController {
 
     @Autowired
@@ -26,13 +28,37 @@ public class BoardAdminController {
     // 전체 게시판 관리 목록
     @GetMapping
     public String list(Model model) {
-        // ✔ 이미 있는 메서드명으로 맞춰 사용
-        // 예) selectAllBoards() 또는 selectBoards()
-        List<BoardDTO> boards = boardMapper.selectBoards(); // 없으면 selectAllBoards() 같은 네이밍으로 사용
+        // 관리자용 보드 목록
+        List<BoardDTO> boards = boardMapper.selectBoards();
         model.addAttribute("boards", boards);
+
+        // 화면 우측/상단 KPI용: 각 보드의 "오늘 조회수/오늘 좋아요" 집계
+        // (뷰에서 쓰기 쉽게 List<Map> 형태 제공)
+        List<Map<String, Object>> todayStats = new ArrayList<>();
+        for (BoardDTO b : boards) {
+            Integer boardId = b.getBoardId();
+            if (boardId == null) continue;
+
+            long views = boardMapper.selectTodayViews(boardId);
+            long likes = boardMapper.selectTodayLikes(boardId);
+
+            Map<String, Object> row = new HashMap<>(); 
+            row.put("boardId", boardId);
+            row.put("boardName", b.getBoardName());
+            row.put("viewToday", views);
+            row.put("likeToday", likes);
+            todayStats.add(row);
+        }
+        model.addAttribute("todayStats", todayStats);
+
+        // 통계 대상 보드 리스트(삭제 제외) — 별도 쿼리가 없으므로 여기서는 boards 재활용
+        model.addAttribute("boardsForStats", boards);
+
+        // 공용 템플릿 지정
         model.addAttribute("mainUrl", "board/admin_boards");
         return "home";
     }
+
 
     // 신규 생성 폼
     @GetMapping("/new")
@@ -49,65 +75,48 @@ public class BoardAdminController {
         return "home";
     }
 
-    // 수정 폼
-    @GetMapping("/edit")
-    public String editForm(@PathVariable Integer boardId, Model model) {
-        BoardDTO dto = boardMapper.selectBoardById(boardId);
-        if (dto == null) return "redirect:/admin/boards";
-
-        // accessRole CSV -> accessRoles(List) 동기화는 BoardDTO.getAccessRoles()가 처리
-        model.addAttribute("board", dto);
-        model.addAttribute("mainUrl", "board/admin_boards");
-        return "home";
-    }
-
     /* =========================
        2) 생성/수정/활성화/비활성화
        ========================= */
 
     // 생성
     @PostMapping("/create")
-    public String create(@ModelAttribute BoardDTO form) {
-        // 체크박스 바인딩: name="accessRoles" 로 들어오면 자동 List 바인딩
-        // BoardDTO.setAccessRoles(...)가 CSV 세팅까지 수행
+    public String create(@ModelAttribute BoardDTO form, RedirectAttributes redirect) {
         normalizeBoardMeta(form);
 
-        // 공지/자유는 이미 있으니 신규 생성은 custom 위주를 권장 (막고 싶으면 아래 조건 추가)
-        if (!"custom".equalsIgnoreCase(form.getBoardType())) form.setBoardType("custom");
+        // 공지/자유는 사전 존재 — 신규는 custom으로 강제
+        if (!"custom".equalsIgnoreCase(form.getBoardType())) {
+            form.setBoardType("custom");
+        }
+        
+        // ✅ 최대 6개 제한
+        int count = boardMapper.countBoards();
+        if (count >= 6) {
+            redirect.addFlashAttribute("error", "게시판은 최대 6개까지만 생성할 수 있습니다.");
+            return "redirect:/admin/boards";
+        }
 
         boardMapper.insertBoard(form);
-
         return "redirect:/admin/boards";
     }
 
     // 수정
     @PostMapping("/edit")
-    public String update(@RequestParam("boardId") Integer boardId,
-            			 @ModelAttribute BoardDTO form) {
-        BoardDTO origin = boardMapper.selectBoardById(boardId);
+    public String update(@ModelAttribute BoardDTO form) {
+        BoardDTO origin = boardMapper.selectBoardById(form.getBoardId());
         if (origin == null) return "redirect:/admin/boards";
 
         normalizeBoardMeta(form);
-        form.setBoardId(boardId);
-
-        // 읽기 전용 처리(선택): 공지/자유의 boardType은 잠그고 싶다면 주석 해제
-        // if ("notice".equalsIgnoreCase(origin.getBoardType()) || "free".equalsIgnoreCase(origin.getBoardType())) {
-        //     form.setBoardType(origin.getBoardType());
-        // }
-
         boardMapper.updateBoard(form);
-
         return "redirect:/admin/boards";
     }
 
     // 활성화/비활성 토글
     @PostMapping("/toggle")
-    public String toggleActive(@RequestParam("boardId") Integer boardId,
-            				   @RequestParam("isActive") Boolean isActive) {
-        BoardDTO dto = boardMapper.selectBoardById(boardId);
-        if (dto == null) return "redirect:/admin/boards";
-
-        boardMapper.updateBoardActive(boardId, Boolean.TRUE.equals(isActive) ? 1 : 0);
+    public String toggleActive(@ModelAttribute BoardDTO dto) {
+        if (dto.getBoardId() == null) return "redirect:/admin/boards";
+        int active = Boolean.TRUE.equals(dto.getIsActive()) ? 1 : 0;
+        boardMapper.updateBoardActive(dto.getBoardId(), active);
         return "redirect:/admin/boards";
     }
 
@@ -133,13 +142,42 @@ public class BoardAdminController {
     // 전체 게시판 조회수 통계
     @GetMapping("/stats")
     public String stats(Model model) {
-        // ✔ 이미 있는 메서드명으로 맞춰 사용
-        // 예) selectBoardViewStats() : board_view_stats join board_board
-        model.addAttribute("stats", boardMapper.selectBoardViewStats());
-        //model.addAttribute("mainUrl", "board/board_admin_stats");
+        List<BoardDTO> boards = boardMapper.selectBoards();
+        model.addAttribute("boardsForStats", boards);
+
+        List<Map<String, Object>> todayStats = new ArrayList<>();
+        for (BoardDTO b : boards) {
+            Integer boardId = b.getBoardId();
+            if (boardId == null) continue;
+
+            long views = boardMapper.selectTodayViews(boardId);
+            long likes = boardMapper.selectTodayLikes(boardId);
+
+            Map<String, Object> row = new HashMap<>();
+            row.put("boardId", boardId);
+            row.put("boardName", b.getBoardName());
+            row.put("viewToday", views);
+            row.put("likeToday", likes);
+            todayStats.add(row);
+        }
+        model.addAttribute("todayStats", todayStats);
+
         model.addAttribute("mainUrl", "board/admin_boards");
-        
         return "home";
+    }
+
+    // 단일 보드의 “오늘” 통계(JSON) — 프론트에서 개별 보드 KPI로 호출
+    @GetMapping("/stats/today/{boardId}")
+    @ResponseBody
+    public Map<String, Object> todayStatsOne(@PathVariable Integer boardId) {
+        long views = boardMapper.selectTodayViews(boardId);
+        long likes = boardMapper.selectTodayLikes(boardId);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("boardId", boardId);
+        map.put("viewToday", views);
+        map.put("likeToday", likes);
+        return map;
     }
 
     /* =========================
@@ -153,33 +191,21 @@ public class BoardAdminController {
             form.setBoardType("custom");
         }
 
-        // accessRoles(List) -> accessRole(CSV) 는 BoardDTO.setAccessRoles가 처리
-        // 만약 accessRoles가 null인데 accessRole이 채워져 온 경우(수정폼 직후 등)를 대비
+        // accessRoles(List) -> accessRole(CSV) 동기화
         if (form.getAccessRoles() == null || form.getAccessRoles().isEmpty()) {
-            // 아무것도 체크 안 했으면 기본 USER 허용(원치 않으면 빈 권한으로 저장)
             if (form.getAccessRole() == null || form.getAccessRole().isBlank()) {
                 form.setAccessRoles(Collections.singletonList("USER"));
             } else {
-                // CSV만 존재하면 List 캐시 싱크
-                form.setAccessRole(form.getAccessRole()); // 캐시 무효화
-                form.getAccessRoles(); // 캐시 로드
+                form.setAccessRole(form.getAccessRole()); // CSV만 있을 때 캐시 리빌드
+                form.getAccessRoles();
             }
         } else {
-            // 체크박스로 넘어온 List를 CSV로 동기화
-            form.setAccessRoles(form.getAccessRoles());
+            form.setAccessRoles(form.getAccessRoles());   // List 입력을 CSV로 반영
         }
 
-        // Boolean 널 가드 (NULL → false)
+        // Boolean 널 가드
         if (form.getUseComment() == null) form.setUseComment(Boolean.FALSE);
         if (form.getUseLike() == null)    form.setUseLike(Boolean.FALSE);
         if (form.getIsActive() == null)   form.setIsActive(Boolean.TRUE);
-
-        // 공지 게시판은 사용자 읽기 전용이므로 기능 제한 원하면 아래 사용(선택)
-        if ("notice".equalsIgnoreCase(form.getBoardType())) {
-            // 공지 담당자만 글쓰기 가능(실제 권한은 canWriteBy에서 empId로도 제한됨)
-            // 댓글/좋아요를 기본적으로 끄고 싶다면:
-            // form.setUseComment(Boolean.FALSE);
-            // form.setUseLike(Boolean.FALSE);
-        }
     }
 }

@@ -34,6 +34,9 @@ public class EmployeeController {
     
     // log 사용을 위함
  	private final Logger log = LoggerFactory.getLogger(getClass());
+ 	
+ 	Set<String> allowedIds = Set.of("20250006", "20250001");
+ 	
 
     /** 사원 목록 페이지 */
     @GetMapping("/employee/list")
@@ -43,9 +46,9 @@ public class EmployeeController {
     	
     	EmployeeDto user = (EmployeeDto) session.getAttribute("loginUser");
     	
-    	Set<String> allowedIds = Set.of("20250006", "20250001");
+    	
     	if (user == null || !allowedIds.contains(user.getEmployeeId())) {
-    	    return "redirect:/access-denied";
+    	    return "redirect:/employee/edit?empSeq="+user.getEmpSeq();
     	}
   
 	    // 🔍 검색어 로그 확인 (디버깅용)
@@ -131,7 +134,10 @@ public class EmployeeController {
 
     /** 사원 수정 처리 */
     @PostMapping("/employee/update")
-    public String updateEmployee(EmployeeDto dto) {
+    public String updateEmployee(EmployeeDto dto, HttpSession session
+			,Model model) {
+    	
+    	EmployeeDto user = (EmployeeDto) session.getAttribute("loginUser");
     	
     	 // 컨트롤러 메서드 안에서 바로 변환
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -150,6 +156,10 @@ public class EmployeeController {
     	 System.out.println(dto);
     	 employeeMapper.update(dto);
 
+    	 if (user == null || !allowedIds.contains(user.getEmployeeId())) {
+     	    return "redirect:/rc";
+     	}
+    	 
         return "redirect:/employee/list";
     }
     

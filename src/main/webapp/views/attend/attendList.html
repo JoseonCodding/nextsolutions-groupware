@@ -22,21 +22,23 @@
 
 
   <!-- 목록 그리드 -->
-<table border="">
-	<thead>
-		<tr>
-			<th>날짜</th>
-			<th>이름</th>
-			<th>출근시간</th>
-			<th>퇴근시간</th>
-			<th>수정자</th>
-			<th>수정일</th>
-			<th>수정사유</th>
-		</tr>
-	</thead>
+  <table border="">
+    <thead>
+      <tr>
+        <th>날짜</th>
+        <th>부서</th>
+        <th>이름</th>
+        <th>출근시간</th>
+        <th>퇴근시간</th>
+        <th>수정자</th>
+        <th>수정일</th>
+        <th>수정사유</th>
+      </tr>
+    </thead>
 	<tbody>
 		<tr th:each="dto : ${mainData}">
 			<td th:text="${dto.workDate}"></td>
+			<td th:text="${dto.deptName}"></td>
 			<td th:text="${dto.empNm}"></td>
 			<td th:text="${dto.checkInHourMinute}"></td>
 			<td th:text="${dto.checkOutHourMinute}"></td>
@@ -46,7 +48,6 @@
 			<td th:text="${dto.status == '완료' ? dto.modificationReason : ''}"></td>
 		</tr>
 	</tbody>
-</table>
 
 
 

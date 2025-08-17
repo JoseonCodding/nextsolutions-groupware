@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 @Mapper
@@ -35,17 +34,6 @@ public interface AttendMapper {
 		    ORDER BY check_in_time
 		""")
    List<AttendDTO> userAttendMonthList( AttendDTO attendance);
-      
-
-   //모든 사용자의 출퇴근 기록(관리자용)
-   //@Select("select * from attendance ")
-   @Select("""
-         SELECT a.*, e.emp_nm 
-         FROM attendance a
-         JOIN employee e ON a.employeeId = e.employeeId
-         ORDER BY a.check_in_time DESC
-         """)
-   List<AttendDTO> attendList();
    
    //오늘 출근 조회용
    @Select("""
@@ -74,17 +62,6 @@ public interface AttendMapper {
                                  @Param("modifiedAt") LocalDateTime modifiedAt,
                                  @Param("modificationReason") String modificationReason);
    
-
-   //work_hours, is_normal_work 반영
-//   @Update("""
-//         UPDATE attendance 
-//         SET check_out_time = #{checkOutTime}, 
-//             work_hours = #{workHours}, 
-//             is_normal_work = #{normalWork}
-//         WHERE employeeId = #{employeeId} 
-//           AND DATE(check_in_time) = CURDATE()
-//         """)
-//   void updateAttendance(AttendDTO attendance);
    
    //근태 관리자 페이지-출퇴근 시간 조회페이지 검색기능 있는 버전
    @Select("""
@@ -162,16 +139,7 @@ public interface AttendMapper {
 	
 	
 
-	//work_hours, is_normal_work 반영
-//	@Update("""
-//			UPDATE attendance 
-//			SET check_out_time = #{checkOutTime}, 
-//			    work_hours = #{workHours}, 
-//			    is_normal_work = #{normalWork}
-//			WHERE employeeId = #{employeeId} 
-//			  AND DATE(check_in_time) = CURDATE()
-//			""")
-//	void updateAttendance(AttendDTO attendance);
+
 	
 //	//근태 관리자 페이지-출퇴근 시간 조회페이지 검색기능 있는 버전
 //	@Select("""
@@ -247,9 +215,11 @@ public interface AttendMapper {
 	   """)
    PageInfo<AttendDTO> searchAttendListPage(AttendDTO dto);*/
    
+
+   // 출퇴근 현황(관리자용)
    @Select("""
 	        <script>
-	        SELECT a.*, e.emp_nm
+	        SELECT a.*, e.emp_nm, e.deptName
 	        FROM attendance a
 	        JOIN employee e ON a.employeeId = e.employeeId
 	        WHERE 1=1

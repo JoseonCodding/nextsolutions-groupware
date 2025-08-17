@@ -11,36 +11,36 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LeaveDTO {
 
-	Integer leaveId ; 
+	Integer leaveId, holidayCount ; 
 	
 	boolean useChk;
     
-    //leave_hours 
-    String createReason,usedReason, leaveType, employeeId, empNm;
+    String createReason,usedReason, leaveType, employeeId, empNm,deptName,position;
     Integer total, used;
     
-    Date createdDate= new Date(), usedDate=new Date(), approvalDate;
+    Date createDate , usedDate, approvalDate;
     
     String stateType; 
-//	approval_id int AUTO_INCREMENT PRIMARY KEY,
-//  approval_type VARCHAR(50),  -- 기안 종류(연차, 근태, 프로젝트, 게시판)
-//  employeeId INT NOT NULL,                      -- FK
-//  approval_date DATE NOT NULL,  -- 상신일    
-//  state_type ENUM('대기',대기중, '승인', 반려) NOT NULL,  -- 대기 or 승인
-//  title VARCHAR(50),
-//  content VARCHAR(500),
-
+    
 	
 	public int getRest() {
-		return total - used;
+		int t = (total == null) ? 0 : total;
+	    int u = (used == null) ? 0 : used;
+		return t - u;
 	}
 	
-	public String getCreatedDateStr() {
+	public String getCreateDateStr() {
+		if (createDate == null) {
+	        return "";
+	    }
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		return sdf.format(createdDate);
+		return sdf.format(createDate);
 	}
 	
 	public String getUsedDateStr() {
+		if (usedDate == null) {
+	        return "";
+	    }
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		return sdf.format(usedDate);
 		
@@ -55,5 +55,5 @@ public class LeaveDTO {
 			e.printStackTrace();
 		}
 	}
-  
+	
 }
