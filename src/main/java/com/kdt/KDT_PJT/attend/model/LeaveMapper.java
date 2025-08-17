@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
@@ -88,7 +89,7 @@ public interface LeaveMapper {
 	
 	
 	// 연차 사용 신청
-	@Insert("<script> "+
+	@Update("<script> "+
 
 				"update annual_leave set approval_date = NOW(), used_reason = #{usedReason} ,"+
 				" used_date=  #{usedDate} , state_type = '대기' where leave_id = #{leaveId} "+
