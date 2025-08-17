@@ -83,8 +83,8 @@ public interface ApprovalMapper {
 	    "     p.employeeId AS writerId,",
 	    "     p.FRST_REG_DT AS createdAt,",
 	    "     p.ATCH_FILE_SN1 AS attachFileUuid1,   p.ORG_FILE_NM1 AS attachFileOrgName1,",
-	    "     p.ATCH_FILE_SN2 AS attachFileUuid2,  p.ORG_FILE_NM2 AS attachFileOrgName2,",
-	    "     p.ATCH_FILE_SN3 AS attachFileUuid3,  p.ORG_FILE_NM3 AS attachFileOrgName3,",
+	    "     p.ATCH_FILE_SN2 AS attachFileUuid2,   p.ORG_FILE_NM2 AS attachFileOrgName2,",
+	    "     p.ATCH_FILE_SN3 AS attachFileUuid3,   p.ORG_FILE_NM3 AS attachFileOrgName3,",
 	    "     NULL AS leaveCreateDate,",
 	    "     NULL AS leaveUsedDate,",
 	    "     NULL AS checkInTime,",
@@ -94,6 +94,11 @@ public interface ApprovalMapper {
 	    "     NULL AS modificationReason,",
 	    "     NULL AS timeInout",
 	    "   FROM TB_PJT_BASC p",
+	    "   JOIN (",
+	    "       SELECT gid, MAX(ver) AS max_ver",
+	    "       FROM TB_PJT_BASC",
+	    "       GROUP BY gid",
+	    "   ) pv ON p.gid = pv.gid AND p.ver = pv.max_ver",
 	    "   LEFT JOIN employee e ON p.employeeId = e.employeeId",
 
 	    "   UNION ALL",
@@ -101,7 +106,7 @@ public interface ApprovalMapper {
 	    "   SELECT",
 	    "     CONCAT('attendance-', a.id) AS docId,",
 	    "     '근태' AS docType,",
-	    " 	  CONCAT('근태 수정 신청 - ', COALESCE(DATE_FORMAT(a.check_in_time, '%Y년 %m월 %d일'), '-'), ' ', COALESCE(a.time_inout, '')) AS title,",
+	    "     CONCAT('근태 수정 신청 - ', COALESCE(DATE_FORMAT(a.check_in_time, '%Y년 %m월 %d일'), '-'), ' ', COALESCE(a.time_inout, '')) AS title,",
 	    "     a.modification_reason AS content,",
 	    "     a.status AS status,",
 	    "     e.deptName AS deptName,",
@@ -121,7 +126,7 @@ public interface ApprovalMapper {
 	    "     a.time_inout AS timeInout",
 	    "   FROM attendance a",
 	    "   LEFT JOIN employee e ON a.employeeId = e.employeeId",
-	    " 	WHERE a.status IS NOT NULL",
+	    "   WHERE a.status IS NOT NULL",
 	    ") AS all_data",
 	    "WHERE 1=1",
 
@@ -156,14 +161,13 @@ public interface ApprovalMapper {
 	    "</script>"
 	})
 	List<ApprovalDTO> approvalDataByRole(
-		    @Param("offset") int offset,
-		    @Param("size") int size,
-		    @Param("role") String role,
-		    @Param("type") String type,
-		    @Param("status") String status,
-		    @Param("employeeId") String employeeId
-		);
-
+	        @Param("offset") int offset,
+	        @Param("size") int size,
+	        @Param("role") String role,
+	        @Param("type") String type,
+	        @Param("status") String status,
+	        @Param("employeeId") String employeeId
+	);
 	
 	/* 글 전체 개수 카운트 -> (페이지네이션) */
 	@Select({
@@ -185,9 +189,14 @@ public interface ApprovalMapper {
 
 	    "   UNION ALL",
 
-	    // ──────────────── 프로젝트
+	    // ──────────────── 프로젝트 (gid별 최신 ver만 카운트)
 	    "   SELECT CONCAT('project-', p.PJT_SN) AS docId, '프로젝트' AS docType, p.employeeId AS writerId, p.PJT_STTS_CD AS status",
 	    "     FROM TB_PJT_BASC p",
+	    "     JOIN (",
+	    "         SELECT gid, MAX(ver) AS max_ver",
+	    "         FROM TB_PJT_BASC",
+	    "         GROUP BY gid",
+	    "     ) pv ON p.gid = pv.gid AND p.ver = pv.max_ver",
 
 	    "   UNION ALL",
 
@@ -235,6 +244,7 @@ public interface ApprovalMapper {
 	    @Param("status") String status,
 	    @Param("employeeId") String employeeId
 	);
+
 	
 	@Select({
 	    "<script>",
