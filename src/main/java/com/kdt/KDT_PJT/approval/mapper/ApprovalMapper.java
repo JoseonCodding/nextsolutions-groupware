@@ -543,32 +543,34 @@ public interface ApprovalMapper {
 		);
     
     // 근태 승인
-    @Update({
-        "<script>",
-        "UPDATE attendance",
-        "SET status = '완료',",
-        "    secondSign = NOW(),",
-        "    modified_at = NOW()",
-        "<choose>",
-        "  <when test='timeInout == \"출근\"'>",
-        "    , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00')",
-        "  </when>",
-        "  <when test='timeInout == \"퇴근\"'>",
-        "    , check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
-        "  </when>",
-        "  <when test='timeInout == \"출퇴근\"'>",
-        "    , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00'),",
-        "      check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
-        "  </when>",
-        "</choose>",
-        "WHERE id = #{id}",
-        "  AND modified_by = #{approverId}",   // <- 결재자 기록(동현 수정)
-        "</script>"
-    })
-    int approveAttendance(
-		    	    @Param("id") String id,
-		    	    @Param("timeInout") String timeInout,
-		    	    @Param("approverId") String approverId);
+	@Update({
+	    "<script>",
+	    "UPDATE attendance",
+	    "SET status = '완료',",
+	    "    secondSign = NOW(),",
+	    "    modified_at = NOW(),",
+	    "    modified_by = #{approverId}",   // <- 결재자 기록 저장
+	    "<choose>",
+	    "  <when test='timeInout == \"출근\"'>",
+	    "    , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00')",
+	    "  </when>",
+	    "  <when test='timeInout == \"퇴근\"'>",
+	    "    , check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
+	    "  </when>",
+	    "  <when test='timeInout == \"출퇴근\"'>",
+	    "    , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00'),",
+	    "      check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
+	    "  </when>",
+	    "</choose>",
+	    "WHERE id = #{id}",
+	    "</script>"
+	})
+	int approveAttendance(
+	    @Param("id") String id,
+	    @Param("timeInout") String timeInout,
+	    @Param("approverId") String approverId
+	);
+
     
     // 연차 반려
     @Update("""
