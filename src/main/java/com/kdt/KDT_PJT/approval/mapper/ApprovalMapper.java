@@ -495,33 +495,33 @@ public interface ApprovalMapper {
 	                        @Param("currentStatus") String currentStatus);
 
 	
-	// 프로젝트 승인 시, 일정 테이블에 추가
-	@Insert("""
-		    INSERT INTO schedule (
-		        title,
-		        start_date,
-		        end_date,
-		        cate,
-		        content,
-		        created_at,
-		        employeeId,
-		        holiday,
-		        PJT_SN
-		    )
-		    SELECT
-		        PJT_NM AS title,
-		        PJT_BGNG_DT AS start_date,
-		        PJT_END_DT AS end_date,
-		        '종일' AS cate,
-		        content AS content,
-		        FRST_REG_DT AS created_at,
-		        employeeId AS employeeId,
-		        '프로젝트' AS holiday,
-		        PJT_SN
-		    FROM TB_PJT_BASC
-		    WHERE PJT_SN = #{id}
-		""")
-	int insertProjectSchedule(@Param("id") String projectId);
+//	// 프로젝트 승인 시, 일정 테이블에 추가   --- PJT_SN 필드 URL 만들기 위해서 넣었는데, 현재 사용안하고 이 메서드도 동작막음
+//	@Insert("""
+//		    INSERT INTO schedule (
+//		        title,
+//		        start_date,
+//		        end_date,
+//		        cate,
+//		        content,
+//		        created_at,
+//		        employeeId,
+//		        holiday,
+//		        PJT_SN
+//		    )
+//		    SELECT
+//		        PJT_NM AS title,
+//		        PJT_BGNG_DT AS start_date,
+//		        PJT_END_DT AS end_date,
+//		        '종일' AS cate,
+//		        content AS content,
+//		        FRST_REG_DT AS created_at,
+//		        employeeId AS employeeId,
+//		        '프로젝트' AS holiday,
+//		        PJT_SN
+//		    FROM TB_PJT_BASC
+//		    WHERE PJT_SN = #{id}
+//		""")
+//	int insertProjectSchedule(@Param("id") String projectId);
 	
     // 근태 반려
 	@Update("""

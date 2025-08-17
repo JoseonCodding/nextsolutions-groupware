@@ -385,7 +385,6 @@ public class ApprovalController {
             case "프로젝트" -> {
                 approvalMapper.updateStatusProject(pkId, newStatus, currentStatus);
                 if ("진행중".equals(newStatus) || "완료".equals(newStatus)) {
-                    approvalMapper.insertProjectSchedule(pkId);
                 }
             }
             default -> { /* no-op */ }
@@ -445,7 +444,6 @@ public class ApprovalController {
         else if ("프로젝트".equals(docType)) {
             if ("대기".equals(currentStatus) && "프로젝트".equals(role)) {
                 approvalMapper.updateStatusProject(pkId, "진행중", currentStatus);
-                approvalMapper.insertProjectSchedule(pkId);
             } else {
                 // '진행중' 포함 그 외 상태는 전부 차단
                 return "redirect:/approval/main?error=forbidden";
