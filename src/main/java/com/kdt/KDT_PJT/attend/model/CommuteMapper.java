@@ -17,15 +17,6 @@ public interface CommuteMapper {
 		    """)
 	 int insertAutoLeave(AttendDTO dto);
 	 
-	// 전월 근무일수
-//	@Select("""
-//		    SELECT COUNT(DISTINCT DATE(check_in_time))
-//		    FROM attendance
-//		    WHERE employeeId = #{employeeId}
-//		      AND DATE(check_in_time) BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
-//		                                AND LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
-//		""")
-//    int getLastMonthNormalWorkDays(String employeeId);
 	
 	// 회사의 평일 휴무일 개수
     @Select("SELECT COUNT(*) AS holiday_count "

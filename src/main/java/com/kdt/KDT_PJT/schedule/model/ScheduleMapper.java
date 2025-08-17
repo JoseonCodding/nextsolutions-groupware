@@ -28,8 +28,6 @@ public interface ScheduleMapper {
 	@Select("""
 		    SELECT * 
 		    FROM schedule
-		    WHERE start_date <= #{endDate} 
-		      AND end_date >= #{startDate} 
 		    ORDER BY start_date 
 		""")
 	List<ScheduleDTO> getScheduleListByMonth(ScheduleDTO dto);
