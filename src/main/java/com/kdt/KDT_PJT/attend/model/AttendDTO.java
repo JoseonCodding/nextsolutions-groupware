@@ -3,6 +3,7 @@ package com.kdt.KDT_PJT.attend.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,6 @@ public class AttendDTO {
 	private String employeeId, service, empNm, deptName, position, workingHours;
 	private LocalDateTime checkInTime, checkOutTime;
 	int workCnt;
-
 
 	private String status;
 

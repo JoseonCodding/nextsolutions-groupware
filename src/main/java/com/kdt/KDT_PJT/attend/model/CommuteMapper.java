@@ -15,7 +15,7 @@ public interface CommuteMapper {
 		        (employeeId, create_date, leave_type, create_reason) VALUES 
 		        (#{employeeId}, now(), '발생', '전월 근무율 80% 이상 자동 부여')
 		    """)
-	 int insertAutoLeave();
+	 int insertAutoLeave(AttendDTO dto);
 	 
 	// 전월 근무일수
 //	@Select("""
@@ -27,23 +27,28 @@ public interface CommuteMapper {
 //		""")
 //    int getLastMonthNormalWorkDays(String employeeId);
 	
-	// 주말+회사 휴무일 개수 (total_off_days)
-    @Select("WITH RECURSIVE month_dates AS ( "
-    		+ "    SELECT DATE(CONCAT(DATE(#{startDay}))) AS the_date "
-    		+ "    UNION ALL "
-    		+ "    SELECT DATE_ADD(the_date, INTERVAL 1 DAY) "
-    		+ "    FROM month_dates "
-    		+ "    WHERE the_date < LAST_DAY(CONCAT(DATE(#{startDay}))) "
-    		+ ") "
-    		+ "SELECT "
-    		+ "    COUNT(CASE WHEN DAYOFWEEK(the_date) IN (1,7) THEN 1 END) AS weekend_count, "
-    		+ "    COUNT(CASE WHEN s.start_date IS NOT NULL THEN 1 END) AS holiday_count, "
-    		+ "    COUNT(CASE WHEN DAYOFWEEK(the_date) IN (1,7) OR s.start_date IS NOT NULL THEN 1 END) AS total_off_days "
-    		+ "FROM month_dates md "
-    		+ "LEFT JOIN schedule s "
-    		+ "    ON md.the_date BETWEEN s.start_date AND s.end_date "
-    		+ "    AND s.holiday = '휴무일' ")
-    int getHolidays();
+	// 회사의 평일 휴무일 개수
+    @Select("SELECT COUNT(*) AS holiday_count "
+    		+ "FROM ( "
+    		+ "    SELECT DATE_ADD("
+    		+ "               GREATEST(start_date, #{startDay}), "
+    		+ "               INTERVAL seq DAY "
+    		+ "           ) AS the_date "
+    		+ "    FROM schedule "
+    		+ "    JOIN ( "
+    		+ "        SELECT 0 AS seq UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 "
+    		+ "        UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 "
+    		+ "        UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 "
+    		+ "        UNION ALL SELECT 15 UNION ALL SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 "
+    		+ "        UNION ALL SELECT 20 UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 "
+    		+ "        UNION ALL SELECT 25 UNION ALL SELECT 26 UNION ALL SELECT 27 UNION ALL SELECT 28 UNION ALL SELECT 29 "
+    		+ "        UNION ALL SELECT 30 UNION ALL SELECT 31 "
+    		+ "    ) AS seq_table "
+    		+ "    WHERE seq <= DATEDIFF(LEAST(end_date, #{endDay}), GREATEST(start_date, #{startDay})) "
+    		+ "      AND holiday = '휴무일' "
+    		+ ") AS expanded_dates "
+    		+ "WHERE DAYOFWEEK(the_date) NOT IN (1,7) ")
+    int getHolidays(AttendDTO dto);
 
 	// 해당 월 정상근무 목록
 	@Select("""
