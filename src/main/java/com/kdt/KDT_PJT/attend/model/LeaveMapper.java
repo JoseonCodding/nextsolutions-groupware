@@ -89,14 +89,19 @@ public interface LeaveMapper {
 	
 	
 	// 연차 사용 신청
-	@Update("<script> "+
+	@Update("<script>"
+	      + "UPDATE annual_leave "
+	      + "SET "
+	      + "  approval_date = NOW(), "
+	      + "  used_reason   = #{usedReason}, "
+	      + "  used_date     = #{usedDate}, "
+	      + "  state_type    = '대기', "
+	      + "  firstSign     = NULL, "
+	      + "  secondSign    = NULL "
+	      + "WHERE leave_id  = #{leaveId}"
+	      + "</script>")
+	int approvalList(LeaveDTO dto);
 
-				"update annual_leave set approval_date = NOW(), used_reason = #{usedReason} ,"+
-				" used_date=  #{usedDate} , state_type = '대기' where leave_id = #{leaveId} "+
-			
-			"</script> "
-			)
-	int approvalList(LeaveDTO dto); 
 
 
 	 // 결재

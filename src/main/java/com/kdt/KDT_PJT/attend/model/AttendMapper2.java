@@ -20,6 +20,8 @@ public interface AttendMapper2 {
       modification_reason = #{modificationReason},
       approval_date       = NOW(),
       modified_by         = (SELECT emp_nm FROM employee WHERE employeeId = #{employeeId}),
+      firstSign           = NULL,
+      secondSign          = NULL,
       `status`            = '대기',
       `time_inout`         = CASE
                               WHEN `time_inout` IN ('퇴근','출퇴근') THEN '출퇴근'
@@ -28,7 +30,7 @@ public interface AttendMapper2 {
     WHERE employeeId = #{employeeId}
       AND COALESCE(check_in_time, check_out_time) >= STR_TO_DATE(CONCAT(#{workDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')
       AND COALESCE(check_in_time, check_out_time) <  DATE_ADD(STR_TO_DATE(CONCAT(#{workDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 DAY)
-      AND (`status` IS NULL OR `status` = '대기')
+      AND (`status` IS NULL OR `status` = '대기' OR `status` = '반려')
     """)
     int fixInByEmpAndDate(@Param("employeeId") String employeeId,
                           @Param("workDate") String workDate,
@@ -41,6 +43,8 @@ public interface AttendMapper2 {
       modification_reason = #{modificationReason},
       approval_date       = NOW(),
       modified_by         = (SELECT emp_nm FROM employee WHERE employeeId = #{employeeId}),
+      firstSign           = NULL,
+      secondSign          = NULL,
       `status`            = '대기',
       `time_inout`         = CASE
                               WHEN `time_inout` IN ('출근','출퇴근') THEN '출퇴근'
