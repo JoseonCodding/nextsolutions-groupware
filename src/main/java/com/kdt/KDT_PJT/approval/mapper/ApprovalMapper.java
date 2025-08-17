@@ -562,11 +562,13 @@ public interface ApprovalMapper {
         "  </when>",
         "</choose>",
         "WHERE id = #{id}",
+        "  AND modified_by = #{approverId}",   // <- 결재자 기록(동현 수정)
         "</script>"
     })
     int approveAttendance(
 		    	    @Param("id") String id,
-		    	    @Param("timeInout") String timeInout);
+		    	    @Param("timeInout") String timeInout,
+		    	    @Param("approverId") String approverId);
     
     // 연차 반려
     @Update("""

@@ -401,7 +401,7 @@ public class ApprovalController {
         // 근태: 1차 승인 즉시 완료(기존 유지)
         if ("근태".equals(docType) && "대기".equals(currentStatus)
                 && ("대표".equals(role) || "근태".equals(role))) {
-            approvalMapper.approveAttendance(pkId, doc.getTimeInout());
+            approvalMapper.approveAttendance(pkId, doc.getTimeInout(), loginUser.getEmpNm());
         }
         // 연차: 1차 승인 즉시 완료 + 역할별 사인 기록
         else if ("연차".equals(docType) && "대기".equals(currentStatus)
