@@ -121,6 +121,7 @@ public interface ApprovalMapper {
 	    "     a.time_inout AS timeInout",
 	    "   FROM attendance a",
 	    "   LEFT JOIN employee e ON a.employeeId = e.employeeId",
+	    " 	WHERE a.status IS NOT NULL",
 	    ") AS all_data",
 	    "WHERE 1=1",
 
@@ -429,16 +430,16 @@ public interface ApprovalMapper {
 
 	// 연차 수정
 	@Update({
-		"<script>",
-		"UPDATE annual_leave",
-		"SET",
-		" create_reason = #{dto.title},",
-		" used_reason = #{dto.content},",
-		" used_date = #{dto.leaveUsedDate}",
-		"WHERE leave_id = #{id}",
-		"</script>"
-		})
+	    "<script>",
+	    "UPDATE annual_leave",
+	    "SET",
+	    "  used_reason   = #{dto.content},",
+	    "  used_date     = #{dto.leaveUsedDate}",
+	    "WHERE leave_id = #{id}",
+	    "</script>"
+	})
 	int editLeave(@Param("id") String id, @Param("dto") ApprovalDTO dto);
+
 
 	// 프로젝트 수정
 	@Update("UPDATE TB_PJT_BASC SET docType=#{dto.docType}, PJT_NM=#{dto.title}, content=#{dto.content} WHERE PJT_SN=#{id}")

@@ -374,8 +374,9 @@
 	    and approvalData.writerId == loginUser.employeeId}">
 	    <a th:href="@{/approval/edit(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status})}">수정</a>
 	    <a th:href="@{/approval/delete(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status})}"
-	       onclick="return confirm('삭제하면 해당 신청이 취소됩니다.\n정말로 삭제하시겠습니까?');">삭제</a>
+	       onclick="return confirm('삭제하면 전자결재 목록에서 사라집니다.\n진행하시겠습니까?');">삭제</a>
 	</div>
+
 
 
 
