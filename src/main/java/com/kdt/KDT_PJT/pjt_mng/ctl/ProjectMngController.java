@@ -318,7 +318,7 @@ public class ProjectMngController {
 	    
 	    
 	    //프로젝트 권한 체크 : 권한없는 사람이 접근했을때 막는거 
-	    if (!"프로젝트".equals(loginUser.getRole())) {
+	    if (!("프로젝트".equals(loginUser.getRole()) || "대표".equals(loginUser.getRole()))) {
 	        model.addAttribute("errorMsg", "권한이 없습니다.");
 	        return "error/403"; // 접근 불가 페이지
 	    }
