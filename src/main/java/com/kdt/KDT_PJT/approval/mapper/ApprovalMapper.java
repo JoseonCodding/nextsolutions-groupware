@@ -48,7 +48,7 @@ public interface ApprovalMapper {
 	    "   SELECT",
 	    "     CONCAT('leave-', l.leave_id) AS docId,",
 	    "     '연차' AS docType,",
-	    "     CONCAT('연차 사용신청 - ', l.create_reason) AS title,",
+	    "     CONCAT('연차 사용 신청 - ', l.create_reason) AS title,",
 	    "     l.used_reason AS content,",
 	    "     l.state_type AS status,",
 	    "     e.deptName AS deptName,",
@@ -101,7 +101,7 @@ public interface ApprovalMapper {
 	    "   SELECT",
 	    "     CONCAT('attendance-', a.id) AS docId,",
 	    "     '근태' AS docType,",
-	    "     '근태 수정 신청' AS title,",
+	    " 	  CONCAT('근태 수정 신청 - ', COALESCE(DATE_FORMAT(a.check_in_time, '%Y년 %m월 %d일'), '-'), ' ', COALESCE(a.time_inout, '')) AS title,",
 	    "     a.modification_reason AS content,",
 	    "     a.status AS status,",
 	    "     e.deptName AS deptName,",
@@ -275,7 +275,7 @@ public interface ApprovalMapper {
 	    "   SELECT",
 	    "     CONCAT('leave-', l.leave_id) AS docId,",
 	    "     '연차' AS docType,",
-	    "     CONCAT('연차 사용신청 - ', l.create_reason) AS title,",
+	    "     CONCAT('연차 사용 신청 - ', l.create_reason) AS title,",
 	    "     l.used_reason AS content,",
 	    "     l.state_type AS status,",
 	    "     e.deptName AS deptName,",
@@ -338,7 +338,7 @@ public interface ApprovalMapper {
 	    "   SELECT",
 	    "     CONCAT('attendance-', a.id) AS docId,",
 	    "     '근태' AS docType,",
-	    "     '근태 수정 신청' AS title,",
+	    " 	  CONCAT('근태 수정 신청 - ', COALESCE(DATE_FORMAT(a.check_in_time, '%Y년 %m월 %d일'), '-'), ' ', COALESCE(a.time_inout, '')) AS title,",
 	    "     a.modification_reason AS content,",
 	    "     a.status AS status,",
 	    "     e.deptName AS deptName,",
@@ -429,15 +429,15 @@ public interface ApprovalMapper {
 
 	// 연차 수정
 	@Update({
-	    "<script>",
-	    "UPDATE annual_leave",
-	    "SET docType = #{dto.docType},",
-	    "    create_reason = #{dto.title},",
-	    "    used_reason = #{dto.content},",
-	    "    used_date = #{dto.leaveUsedDate}",
-	    "WHERE leave_id = #{id}",
-	    "</script>"
-	})
+		"<script>",
+		"UPDATE annual_leave",
+		"SET",
+		" create_reason = #{dto.title},",
+		" used_reason = #{dto.content},",
+		" used_date = #{dto.leaveUsedDate}",
+		"WHERE leave_id = #{id}",
+		"</script>"
+		})
 	int editLeave(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 
 	// 프로젝트 수정
