@@ -367,13 +367,18 @@
 	   처음으로
 	</a>
 	
-	<!-- 수정, 삭제 버튼 영역 -->
-	<div th:if="${approvalData != null and approvalData.status == '대기' and (approvalData.docType == '공지사항') 
-		and approvalData.writerId == loginUser.employeeId}">
+	<!-- 수정, 삭제 버튼 영역: 연차/근태 + 대기 + 작성자 본인 -->
+	<div th:if="${approvalData != null 
+	    and approvalData.status == '대기' 
+	    and (approvalData.docType == '연차' or approvalData.docType == '근태')
+	    and approvalData.writerId == loginUser.employeeId}">
 	    <a th:href="@{/approval/edit(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status})}">수정</a>
 	    <a th:href="@{/approval/delete(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status})}"
-	       onclick="return confirm('삭제하면 복원할 수 없습니다.\n정말로 삭제하시겠습니까?');">삭제</a>
+	       onclick="return confirm('삭제하면 해당 신청이 취소됩니다.\n정말로 삭제하시겠습니까?');">삭제</a>
 	</div>
+
+
+
 
 	<!-- 승인 & 반려 버튼 영역 -->
 	<div th:if="${

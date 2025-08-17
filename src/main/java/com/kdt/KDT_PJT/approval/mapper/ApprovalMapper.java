@@ -401,21 +401,6 @@ public interface ApprovalMapper {
 	    @Param("type") String type,
 	    @Param("status") String status
 	);
-
-
-
-//	// 이제 삭제 기능은 없습니다~ (is_deleted를 1로 바꾸는 소프트 삭제만 남았어요~)
-//	@Delete("DELETE FROM board_post WHERE post_id = #{id}")
-//	int deleteNotice(@Param("id") String id);
-//
-//	@Delete("DELETE FROM annual_leave WHERE leave_id = #{id}")
-//	int deleteLeave(@Param("id") String id);
-//
-//	@Delete("DELETE FROM TB_PJT_BASC WHERE PJT_SN = #{id}")
-//	int deleteProject(@Param("id") String id);
-//	
-//	@Delete("DELETE FROM attendance WHERE id = #{id}")
-//	int deleteAttendance(@Param("id") String id);
 	
 	// 공지사항 소프트 삭제
 	@Update("UPDATE board_post SET is_deleted = 1 WHERE post_id = #{id}")
@@ -424,7 +409,25 @@ public interface ApprovalMapper {
 	// 공지사항 수정
 	@Update("UPDATE board_post SET docType=#{dto.docType}, title=#{dto.title}, content=#{dto.content} WHERE post_id=#{id}")
 	int editNotice(@Param("id") String id, @Param("dto") ApprovalDTO dto);
+	
+	// 연차 '삭제' = state_type NULL 처리
+	@Update("""
+	    UPDATE annual_leave
+	    SET state_type = NULL
+	    WHERE leave_id = #{id}
+	""")
+	int softDeleteLeave(@Param("id") String id);
 
+	// 근태 '삭제' = status NULL 처리
+	@Update("""
+	    UPDATE attendance
+	    SET status = NULL
+	    WHERE id = #{id}
+	""")
+	int softDeleteAttendance(@Param("id") String id);
+
+
+	// 연차 수정
 	@Update({
 	    "<script>",
 	    "UPDATE annual_leave",
@@ -435,8 +438,6 @@ public interface ApprovalMapper {
 	    "WHERE leave_id = #{id}",
 	    "</script>"
 	})
-	
-	// 연차 수정
 	int editLeave(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 
 	// 프로젝트 수정
