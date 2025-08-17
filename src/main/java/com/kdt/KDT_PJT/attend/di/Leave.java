@@ -26,7 +26,7 @@ public class Leave {
     	
     	Date today = new Date();
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    	System.out.println("autoGiveLeaveForQualifiedEmployees : "+ today+"deahedrfgdgregrgraeg");
+    	System.out.println("autoGiveLeaveForQualifiedEmployees : "+ today);
     	
     	AttendDTO param = new AttendDTO();
     	

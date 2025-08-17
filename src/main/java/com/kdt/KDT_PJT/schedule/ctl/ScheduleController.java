@@ -37,7 +37,7 @@ public class ScheduleController {
 		schDto.setEmployeeId(loginUser.getEmployeeId());
 		
 		// DTO에 이번 달 시작일·종료일 세팅
-	    schDto.monthDays();
+	    //schDto.monthDays();
 		model.addAttribute("firstDayOfWeek", schDto.getFirstDayOfWeek());  // 1=월요일 ~ 7=일요일
 		
 	    List<ScheduleDTO> scheduleList = mapper.getScheduleListByMonth(schDto);
