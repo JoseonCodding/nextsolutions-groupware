@@ -36,7 +36,7 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/approval")
 public class ApprovalController {
    
-   // 콘텐츠 영역 상단 헤더용
+   // 콘텐츠 영역 상단 헤더용  
    @ModelAttribute("navUrl")
    public String navUrl() {
       
