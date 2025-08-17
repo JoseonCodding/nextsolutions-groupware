@@ -21,7 +21,7 @@ public interface LeaveMapper {
 	List<LeaveDTO> annualLeaveRest(EmployeeDto dto); 
 	
 	
-	//emp_seq 기준으로 특정 사용자의 총 연차 정보를 조회
+	// 단일 사용자의 총 연차 정보를 조회
 	@Select("select total, ifnull(use_cnt,0) as used, t3.* from  "
 			+ "(select count(*) as total from annual_leave  "
 			+ "where employeeId =  #{employeeId} ) t1, "
@@ -31,11 +31,11 @@ public interface LeaveMapper {
 			+ "; ")
 	LeaveDTO getAnnualLeaveOne(EmployeeDto dto);
 	
-
-
-	//관리자용 연차 조회 (이름 포함)
+	// 관리자용 연차 조회 : 모든 사원의 연차 총합, 사용 연차, 이름을 한 번에 조회
 	@Select("""
 	    SELECT e.emp_nm AS empNm,
+			   e.deptName AS deptName,
+			   e.position AS position,
 	           t1.employeeId,
 	           t1.total,
 	           IFNULL(t2.use_cnt, 0) AS used
@@ -55,7 +55,39 @@ public interface LeaveMapper {
 	""")
 	List<LeaveDTO> mngLeaveList(); 
 	
-	//연차 사용 신청
+
+	// 관리자용 연차 조회 : 단일 사원의 연차 총합, 사용 연차, 이름을 한 번에 조회
+	@Select("""
+	    SELECT e.emp_nm AS empNm,
+			   e.deptName AS deptName,
+			   e.position AS position,
+	           t1.employeeId,
+	           t1.total,
+	           IFNULL(t2.use_cnt, 0) AS used
+	    FROM (
+	        SELECT employeeId, COUNT(*) AS total
+	        FROM annual_leave
+	         WHERE employeeId = #{employeeId}   -- 단일 사원 필터 추가
+	        GROUP BY employeeId
+	    ) t1
+	    LEFT JOIN (
+	        SELECT employeeId, COUNT(*) AS use_cnt
+	        FROM annual_leave
+	        WHERE leave_type = '사용'
+	        AND employeeId = #{employeeId}  -- 단일 사원 필터 추가
+	        GROUP BY employeeId
+	    ) t2 ON t1.employeeId = t2.employeeId
+	    JOIN employee e ON t1.employeeId = e.employeeId
+	    ORDER BY e.emp_nm
+	""")
+	LeaveDTO mngLeaveListOne(LeaveDTO one); 
+	
+	//관리자용 - 연차 테이블에서 가져오기
+	@Select("select * from annual_leave where employeeId = #{employeeId};")
+	List<LeaveDTO> annualLeaveOneMMM(LeaveDTO one);
+	
+	
+	// 연차 사용 신청
 	@Insert("<script> "+
 
 				"update annual_leave set approval_date = NOW(), used_reason = #{usedReason} ,"+
@@ -65,7 +97,8 @@ public interface LeaveMapper {
 			)
 	int approvalList(LeaveDTO dto); 
 
-	 
+
+	 // 결재
 	 @Insert("""
 			 INSERT INTO schedule (
 			   title, start_date, end_date, cate, content,

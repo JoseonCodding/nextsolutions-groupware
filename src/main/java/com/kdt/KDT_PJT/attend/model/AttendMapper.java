@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 @Mapper
@@ -35,17 +34,6 @@ public interface AttendMapper {
 		    ORDER BY check_in_time
 		""")
    List<AttendDTO> userAttendMonthList( AttendDTO attendance);
-      
-
-   //모든 사용자의 출퇴근 기록(관리자용)
-   //@Select("select * from attendance ")
-   @Select("""
-         SELECT a.*, e.emp_nm 
-         FROM attendance a
-         JOIN employee e ON a.employeeId = e.employeeId
-         ORDER BY a.check_in_time DESC
-         """)
-   List<AttendDTO> attendList();
    
    //오늘 출근 조회용
    @Select("""
@@ -74,17 +62,6 @@ public interface AttendMapper {
                                  @Param("modifiedAt") LocalDateTime modifiedAt,
                                  @Param("modificationReason") String modificationReason);
    
-
-   //work_hours, is_normal_work 반영
-//   @Update("""
-//         UPDATE attendance 
-//         SET check_out_time = #{checkOutTime}, 
-//             work_hours = #{workHours}, 
-//             is_normal_work = #{normalWork}
-//         WHERE employeeId = #{employeeId} 
-//           AND DATE(check_in_time) = CURDATE()
-//         """)
-//   void updateAttendance(AttendDTO attendance);
    
    //근태 관리자 페이지-출퇴근 시간 조회페이지 검색기능 있는 버전
    @Select("""
@@ -247,9 +224,12 @@ public interface AttendMapper {
 	   """)
    PageInfo<AttendDTO> searchAttendListPage(AttendDTO dto);*/
    
+   
+   /* 근무시간 미출력
+   // 출퇴근 현황(관리자용)
    @Select("""
 	        <script>
-	        SELECT a.*, e.emp_nm
+	        SELECT a.*, e.emp_nm, e.deptName
 	        FROM attendance a
 	        JOIN employee e ON a.employeeId = e.employeeId
 	        WHERE 1=1
@@ -267,5 +247,36 @@ public interface AttendMapper {
 	        </script>
 	    """)
 	    List<AttendDTO> searchAttendListPage(AttendDTO dto);
+
+*/
+   // 근무시간 출력 - 미완성
+   	@Select("""
+		   <script>
+		   SELECT 
+		       a.*, 
+		       e.emp_nm, 
+		       e.deptName,
+		       CASE 
+		           WHEN TIMESTAMPDIFF(HOUR, GREATEST(TIME(a.check_in_time), '09:00:00'), LEAST(TIME(a.check_out_time), '18:00:00')) &lt; 8 
+		               THEN TIMESTAMPDIFF(HOUR, GREATEST(TIME(a.check_in_time), '09:00:00'), LEAST(TIME(a.check_out_time), '18:00:00'))
+		           ELSE '8'
+		       END AS workingHours
+		   FROM attendance a
+		   JOIN employee e ON a.employeeId = e.employeeId
+		   WHERE 1=1
+		   <if test="workDate != null and workDate != ''">
+		       AND a.check_in_time &gt;= STR_TO_DATE(CONCAT(#{workDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')
+		       AND a.check_in_time &lt; DATE_ADD(STR_TO_DATE(CONCAT(#{workDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 DAY)
+		   </if>
+		   <if test="empNm != null and empNm != ''">
+		       AND e.emp_nm LIKE CONCAT('%', #{empNm}, '%')
+		   </if>
+		   <if test="modifiedBy != null and modifiedBy != ''">
+		       AND a.modified_by LIKE CONCAT('%', #{modifiedBy}, '%')
+		   </if>
+		   ORDER BY a.check_in_time DESC
+		   </script>
+		   """)
+   	List<AttendDTO> searchAttendListPage(AttendDTO dto);
 
 }

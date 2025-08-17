@@ -52,7 +52,7 @@ public class LeaveController {
     }
     
     
-	//연차 관리(사용자용)
+	// 내 연차 (사용자용)
     @GetMapping("/leaveList")
     public String leaveList(HttpSession session,Model model) {
     	
@@ -62,6 +62,10 @@ public class LeaveController {
         
         LeaveDTO dto = mapper.getAnnualLeaveOne(loginUser); 
         List<LeaveDTO> dtoList = mapper.annualLeave(loginUser); 
+        
+        dto.setDeptName(loginUser.getDeptName());
+        dto.setPosition(loginUser.getPosition());
+        
         System.out.println("/attend/leave : "+dto);
         // 홈에서 뜨는 화면 연결
         model.addAttribute("mainUrl", "attend/leave/leaveList");
@@ -79,10 +83,6 @@ public class LeaveController {
     	
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
     	
-    	// 주석처리요망 -->
-    	//me = new EmployeeDto();
-    	//me.setEmployeeId("20250001");
-    	//  <--
     									//잔여연차 가져오기
     	List<LeaveDTO> restData = mapper.annualLeaveRest(loginUser); 
 
@@ -149,15 +149,75 @@ public class LeaveController {
         model.addAttribute("pageNum", pageNum);    // ✅ 현재 페이지
         model.addAttribute("pageSize", pageSize);  // ✅ 페이지 크기
         model.addAttribute("mainUrl", "attend/leave/leaveListMng");
+
         
-  
-        
-    
         System.out.println("/attend/leave/leaveListMng : "+dto);
         
 
         
         model.addAttribute("listMngData", dto);
+        return "navTap"; 
+    }
+    
+    //연차 상세 조회(관리자용)
+    @RequestMapping("/leaveListMng/leaveMngDetail")
+    public String leaveListMngDetail(HttpSession session, Model model,
+    							HttpServletRequest request, LeaveDTO ddd) {
+        System.out.println("연차 관리자 디테일 페이지");
+        
+        EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
+        
+        
+       
+        // 연차 상세 조회 상단
+        LeaveDTO dttt = mapper.mngLeaveListOne(ddd);
+        
+        
+        
+        // 연차 상세 조회 하단
+        List<LeaveDTO> one = mapper.annualLeaveOneMMM(ddd);
+        
+        int pageNum = 1;
+        int pageSize = 10;
+        try {
+            if (request.getParameter("pageNum") != null) {
+                pageNum = Integer.parseInt(request.getParameter("pageNum"));
+            }
+            if (request.getParameter("pageSize") != null) {
+                pageSize = Integer.parseInt(request.getParameter("pageSize"));
+            }
+        } catch (Exception e) {
+            // log.warn("페이지 번호 파싱 실패, 기본값 사용", e);
+        }
+        
+        // ✅ 여기서 페이징 시작
+        PageHelper.startPage(pageNum, pageSize);
+
+        // ✅ 하나의 경로로 조회 (필요 시 dto.workDate를 오늘 날짜로 채워 기본 동작 만들기)
+        List<LeaveDTO> dto = mapper.mngLeaveList(); // 관리자용 연차 조회
+
+        // ✅ PageInfo로 래핑
+        PageInfo<LeaveDTO> page = new PageInfo<>(dto);
+
+       
+        
+        // 뷰로 전달
+        model.addAttribute("page", page);           // 전체 페이징 메타데이터
+        model.addAttribute("mainData", page.getList()); // 현재 페이지 데이터
+        model.addAttribute("pageNum", pageNum);    // ✅ 현재 페이지
+        model.addAttribute("pageSize", pageSize);  // ✅ 페이지 크기
+        
+        model.addAttribute("mainUrl", "attend/leave/leaveMngDetail");
+        
+  
+        
+    
+        System.out.println("/leaveListMngDetail : "+dto);
+        
+       
+        
+        model.addAttribute("MngDetail", dttt);
+        model.addAttribute("MngDetail2", one);
         return "navTap"; 
     }
 
