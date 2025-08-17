@@ -553,14 +553,21 @@ public interface ApprovalMapper {
 		    @Param("role") String role
 		);
     
-    // 근태 승인
+	// 근태 승인
 	@Update({
 	    "<script>",
 	    "UPDATE attendance",
 	    "SET status = '완료',",
-	    "    secondSign = NOW(),",
 	    "    modified_at = NOW(),",
-	    "    modified_by = #{approverId}",   // <- 결재자 기록 저장
+	    "    modified_by = #{approverId}",
+	    "<choose>",
+	    "  <when test='role == \"근태\"'>",
+	    "    , firstSign = CASE WHEN firstSign IS NULL THEN NOW() ELSE firstSign END",
+	    "  </when>",
+	    "  <when test='role == \"대표\"'>",
+	    "    , secondSign = CASE WHEN secondSign IS NULL THEN NOW() ELSE secondSign END",
+	    "  </when>",
+	    "</choose>",
 	    "<choose>",
 	    "  <when test='timeInout == \"출근\"'>",
 	    "    , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00')",
@@ -579,8 +586,10 @@ public interface ApprovalMapper {
 	int approveAttendance(
 	    @Param("id") String id,
 	    @Param("timeInout") String timeInout,
-	    @Param("approverId") String approverId
+	    @Param("approverId") String approverId,
+	    @Param("role") String role
 	);
+
 
     
     // 연차 반려
