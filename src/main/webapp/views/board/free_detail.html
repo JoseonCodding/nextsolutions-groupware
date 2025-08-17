@@ -44,8 +44,9 @@
     <strong>작성일:</strong>
     <span th:text="${board.createdAt != null ? #dates.format(board.createdAt, 'yyyy-MM-dd HH:mm') : '작성일 정보 없음'}"></span>
   </p>
-  <span>조회: <strong th:text="${board.viewCount} ?: 0"></strong></span>
-  <span>좋아요: <strong th:text="${board.likeCount} ?: 0"></strong></span>
+  <span>조회: <strong th:text="${board.viewCount ?: 0}"></strong></span>
+<span>좋아요: <strong th:text="${board.likeCount ?: 0}"></strong></span>
+
 </div>
 
 

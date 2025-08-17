@@ -120,6 +120,56 @@ public class BoardController {
         return "home";
     }
 
+    // 커스텀 상세
+    @GetMapping("/custom/{boardId:\\d+}/detail")
+    public String customDetail(@PathVariable("boardId") Integer boardId,
+                               @RequestParam("postId") Integer postId,
+                               BoardLikeDTO likeDto,
+                               Model model,
+                               HttpSession session) {
+    	// 1) 조회수 증가 (로그인 최초 1회만, 비로그인은 매번)
+        EmployeeDto login = (EmployeeDto) session.getAttribute("loginUser");
+        String me = (login != null) ? login.getEmployeeId() : null;
+
+        boolean needIncrease = false;
+        if (me != null && !me.isBlank()) {
+            BoardDTO v = new BoardDTO();
+            v.setPostId(postId);
+            v.setEmployeeId(me);
+            int inserted = boardMapper.recordView(v); // UNIQUE(post_id, employee_id) 가정
+            if (inserted > 0) needIncrease = true;    // 최초 1회만 +1
+        } else {
+            needIncrease = true;                      // 비로그인은 매번 +1
+        }
+        if (needIncrease) {
+            BoardDTO v = new BoardDTO();
+            v.setPostId(postId);
+            boardMapper.increaseViewCount(v);                 // 게시글 view_count +1
+            boardMapper.upsertBoardDailyView(boardId);        // 보드 일일 통계 +1
+        }
+
+        // 2) 본문/메타/댓글/좋아요 상태 조회
+        BoardDTO post = boardMapper.selectPostById(postId);   // 증가 반영 후 재조회
+        model.addAttribute("board", post);
+
+        likeDto.setPostId(postId.longValue());
+        likeDto.setEmployeeId(me);
+        boolean likedByMe = (me != null) && likeMapper.exists(likeDto);
+
+        // 게시판 메타에서 댓글/좋아요 사용 여부
+        BoardDTO boardMeta = boardMapper.selectBoardById(boardId);
+        
+        
+        model.addAttribute("useComment", boardMeta != null && boardMeta.useCommentOrFalse());
+        model.addAttribute("useLike",    boardMeta != null && boardMeta.useLikeOrFalse());
+
+        model.addAttribute("comments", commentMapper.selectCommentsByPostId(postId.longValue()));
+        model.addAttribute("likedByMe", likedByMe);
+        model.addAttribute("activeBoardId", boardId);
+        model.addAttribute("mainUrl", "board/custom_detail");
+        return "home";
+    }
+
     // 커스텀 작성 폼
     @GetMapping("/custom/{boardId:\\d+}/write")
     public String customWriteForm(@PathVariable("boardId") Integer boardId, Model model) {
@@ -147,35 +197,6 @@ public class BoardController {
 
         boardMapper.insert(dto);
         return "redirect:/board/custom/" + boardId;
-    }
-
-    // 커스텀 상세
-    @GetMapping("/custom/{boardId:\\d+}/detail")
-    public String customDetail(@PathVariable("boardId") Integer boardId,
-                               @RequestParam("postId") Integer postId,
-                               BoardLikeDTO likeDto,
-                               Model model,
-                               HttpSession session) {
-        BoardDTO post = boardMapper.selectPostById(postId);
-        model.addAttribute("board", post);
-
-        EmployeeDto login = (EmployeeDto) session.getAttribute("loginUser");
-        String loginEmployeeId = (login != null) ? login.getEmployeeId() : null;
-
-        likeDto.setPostId(postId.longValue());
-        likeDto.setEmployeeId(loginEmployeeId);
-        boolean likedByMe = loginEmployeeId != null && likeMapper.exists(likeDto);
-
-        // 게시판 메타에서 댓글/좋아요 사용 여부
-        BoardDTO boardMeta = boardMapper.selectBoardById(boardId);
-        model.addAttribute("useComment", boardMeta != null && boardMeta.useCommentOrFalse());
-        model.addAttribute("useLike",    boardMeta != null && boardMeta.useLikeOrFalse());
-
-        model.addAttribute("comments", commentMapper.selectCommentsByPostId(postId.longValue()));
-        model.addAttribute("likedByMe", likedByMe);
-        model.addAttribute("activeBoardId", boardId);
-        model.addAttribute("mainUrl", "board/custom_detail");
-        return "home";
     }
 
     // 커스텀 게시글 수정 폼
@@ -345,11 +366,32 @@ public class BoardController {
     // 공지사항 상세보기
     @GetMapping("/notice/detail")
     public String noticeDetail(BoardDTO dto, Model model, HttpSession session) {
+    	
+    	// 1) 조회수 증가 (로그인 최초 1회만, 비로그인은 매번)
+        EmployeeDto u = (EmployeeDto) session.getAttribute("loginUser");
+        String me = (u != null) ? u.getEmployeeId() : null;
+
+        boolean needIncrease = false;
+        if (me != null && dto.getPostId() != null) {
+            BoardDTO v = new BoardDTO();
+            v.setPostId(dto.getPostId());
+            v.setEmployeeId(me);
+            int inserted = boardMapper.recordView(v);
+            if (inserted > 0) needIncrease = true;
+        } else if (dto.getPostId() != null) {
+            needIncrease = true;
+        }
+        if (needIncrease) {
+            boardMapper.increaseNoticeView(dto);  // board_id=1, status='완료' 조건 포함
+            Integer noticeBoardId = boardMapper.findBoardIdByType("notice");
+            if (noticeBoardId != null) boardMapper.upsertBoardDailyView(noticeBoardId);
+        }
+
+        // 2) 본문 재조회 (증가 반영)
         BoardDTO board = boardMapper.findNoticeApprovedById(dto);
         model.addAttribute("board", board);
 
-        // 내가 좋아요 했는지
-        EmployeeDto u = (EmployeeDto) session.getAttribute("loginUser");
+        // 3) 좋아요 상태
         boolean likedByMe = false;
         if (u != null && dto.getPostId() != null) {
             BoardLikeDTO likeDto = new BoardLikeDTO();
@@ -359,11 +401,7 @@ public class BoardController {
         }
         model.addAttribute("likedByMe", likedByMe);
 
-        // 조회수/통계
-        boardMapper.increaseNoticeView(dto);
-        boardMapper.bumpNoticeDailyView();
-
-        // 메타에서 좋아요/댓글 사용 여부 (없으면 true)
+        // 4) 메타 (없으면 true)
         Integer noticeBoardId = boardMapper.findBoardIdByType("notice");
         BoardDTO boardMeta = (noticeBoardId == null) ? null : boardMapper.selectBoardById(noticeBoardId);
         boolean useLike = (boardMeta != null) ? boardMeta.useLikeOrFalse() : true;
@@ -371,7 +409,7 @@ public class BoardController {
         model.addAttribute("useLike", useLike);
         model.addAttribute("useComment", useComment);
 
-        // 좋아요 카운트
+        // 5) 좋아요 카운트
         int likeCount = 0;
         if (dto.getPostId() != null) {
             BoardLikeDTO countDto = new BoardLikeDTO();
@@ -383,7 +421,7 @@ public class BoardController {
         model.addAttribute("activeBoard", "notice");
         model.addAttribute("mainUrl", "board/notice_detail");
         return "home";
-    }
+    } 
 
     // 공지사항 좋아요
     @PostMapping("/notice/like/toggle")
@@ -531,41 +569,56 @@ public class BoardController {
 
     // 자유게시판 상세보기
     @GetMapping("/free/detail")
-    public String freeDetail(BoardDTO dto, BoardLikeDTO likeDto,
-                             Model model,
-                             HttpSession session) {
+    public String freeDetail(@RequestParam("postId") Integer postId,   // ✅ 명시적으로 받기
+                             BoardDTO dto, BoardLikeDTO likeDto,
+                             Model model, HttpSession session) {
+
+        if (postId == null) return "redirect:/board/free";  // ✅ 가드
+        dto.setPostId(postId);                               // ✅ DTO에 주입
 
         // 1) 로그인 사용자 아이디 확보 (계정 기준 1회만 +1)
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         String me = (loginUser != null) ? loginUser.getEmployeeId() : null;
 
-        // 2) 조회수 증가
+        // 2) 조회수 증가 (로그인 최초 1회만, 비로그인은 매번)
+        boolean needIncrease = false;
         if (me != null && !me.isBlank()) {
             dto.setEmployeeId(me);
-            boardMapper.recordView(dto);
+            int inserted = boardMapper.recordView(dto); // UNIQUE(post_id, employee_id) 가정
+            if (inserted > 0) needIncrease = true;      // 최초 1회만 +1
+        } else {
+            needIncrease = true;                         // 비로그인
+        }
+        if (needIncrease) {
+            boardMapper.increaseViewCount(dto);         // UPDATE board_post SET view_count = view_count + 1 WHERE post_id = #{postId}
+
+            // postId → boardId 얻어서 일일 통계 +1
+            Integer bid = null;
+            Long b = boardMapper.findBoardIdByPostId(dto.getPostId().longValue());
+            if (b != null) bid = b.intValue();
+            if (bid != null) boardMapper.upsertBoardDailyView(bid); // ✅ boardId만 받는 버전
         }
 
-        // 3) 본문 재조회
+        // 3) 본문 재조회 (증가 반영)
         BoardDTO board = boardMapper.detail(dto);
         if (board == null || board.isDeleted()) return "redirect:/board/free";
 
         // 4) 댓글
-        List<CommentDTO> comments =
-            commentMapper.selectCommentsByPostId(dto.getPostId().longValue());
+        List<CommentDTO> comments = commentMapper.selectCommentsByPostId(dto.getPostId().longValue());
 
         // 5) 좋아요 상태
         likeDto.setPostId(dto.getPostId().longValue());
         likeDto.setEmployeeId(me);
         boolean likedByMe = (me != null) && likeMapper.exists(likeDto);
 
-        // 6) 게시판 메타에서 댓글/좋아요 사용 여부
+        // 6) 게시판 메타
         Integer freeBoardId = boardMapper.findBoardIdByType("free");
-        BoardDTO boardMeta = boardMapper.selectBoardById(freeBoardId);
+        BoardDTO boardMeta = (freeBoardId != null) ? boardMapper.selectBoardById(freeBoardId) : null;
         model.addAttribute("useComment", boardMeta != null && boardMeta.useCommentOrFalse());
         model.addAttribute("useLike",    boardMeta != null && boardMeta.useLikeOrFalse());
 
         // 7) 모델
-        model.addAttribute("board", board);
+        model.addAttribute("board", board);                // ← viewCount 증가 반영됨
         model.addAttribute("comments", comments);
         model.addAttribute("likedByMe", likedByMe);
         model.addAttribute("activeBoard", "free");

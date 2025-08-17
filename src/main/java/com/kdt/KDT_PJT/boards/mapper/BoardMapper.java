@@ -16,8 +16,8 @@ public interface BoardMapper {
 	    SELECT board_id
 	      FROM board_board
 	     WHERE board_type = #{boardType}
-	       AND is_deleted = 0
-	       AND is_active  = 1
+	       AND is_deleted = false
+	       AND is_active  = true
 	     ORDER BY board_id DESC
 	     LIMIT 1
 	""")
@@ -95,6 +95,13 @@ public interface BoardMapper {
     		""")
     int customTotalCnt(BoardDTO dto);
 
+    // 전체 게시판 개수 조회 (삭제 안 된 것만)
+    @Select("""
+        SELECT COUNT(*)
+        FROM board_board
+        WHERE is_deleted = FALSE
+    """)
+    int countBoards();
 
 
     
@@ -201,15 +208,6 @@ public interface BoardMapper {
     // 공지 상세 진입 시 조회수 +1
     @Update("UPDATE board_post SET view_count = view_count + 1 WHERE post_id = #{postId} AND board_id=1 AND status='완료'")
     int increaseNoticeView(BoardDTO dto);
-
-    // 공지 일자별 뷰 통계 업서트
-    @Insert("""
-      INSERT INTO board_view_stats (board_id, view_date, view_count)
-      VALUES (1, CURDATE(), 1)
-      ON DUPLICATE KEY UPDATE view_count = view_count + 1
-    """)
-    int bumpNoticeDailyView();
-
 
     /// ========= 자유(보드=2) =========
     // 자유 목록
@@ -348,7 +346,7 @@ public interface BoardMapper {
         SELECT board_id, board_name, board_type, access_role,
                use_comment, use_like, is_active, is_deleted, created_at, updated_at
         FROM board_board
-        WHERE is_active = TRUE AND is_deleted = false
+        WHERE is_active = true AND is_deleted = false
         ORDER BY board_id ASC
     """)
     List<BoardDTO> selectActiveBoards();
@@ -414,14 +412,37 @@ public interface BoardMapper {
     		   WHERE board_id = #{boardId}
     		""")
     		int softDeleteBoard(@Param("boardId") Integer boardId);
-
-    // (옵션) 통계
+    
+    // 오늘 날짜(CURDATE) 기준 해당 보드의 조회수 합산
     @Select("""
-      SELECT s.stat_id, s.board_id, b.board_name, s.view_date, s.view_count
-      FROM board_view_stats s
-      JOIN board_board b ON b.board_id = s.board_id
-      ORDER BY s.view_date DESC, s.board_id ASC
+        SELECT COALESCE(SUM(view_count), 0)
+        FROM board_view_stats
+        WHERE board_id = #{boardId}
+          AND view_date = CURDATE()
     """)
-    List<Map<String,Object>> selectBoardViewStats();
+    long selectTodayViews(@Param("boardId") Integer boardId);
 
+    // 오늘 날짜(CURDATE) 기준 해당 보드의 좋아요 건수
+    @Select("""
+        SELECT COUNT(*)
+        FROM board_like l
+        JOIN board_post p ON p.post_id = l.post_id
+        WHERE p.board_id = #{boardId}
+          AND DATE(l.created_at) = CURDATE()
+    """)
+    long selectTodayLikes(@Param("boardId") Integer boardId);
+
+    // (선택) 게시글 열람 시 조회수 1 증가 — 통계 테이블을 daily upsert
+    // 사용처: 글 상세 보기 핸들러 끝에서 호출
+    @Insert("""
+    		  INSERT INTO board_view_stats (board_id, view_date, view_count, board_name)
+    		  SELECT #{boardId}, CURDATE(), 1, b.board_name
+    		    FROM board_board b
+    		   WHERE b.board_id = #{boardId}
+    		  ON DUPLICATE KEY UPDATE
+    		      view_count = board_view_stats.view_count + 1,
+    		      board_name = (SELECT bb.board_name FROM board_board bb WHERE bb.board_id = #{boardId})
+    		""")
+    		int upsertBoardDailyView(@Param("boardId") Integer boardId);
+    
 }
