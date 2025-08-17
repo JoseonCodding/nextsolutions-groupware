@@ -63,10 +63,22 @@ public class ProjectMngService {
    }
    
    // 버전관리를 위한 인서트문
-   public void savePjtProcForVersion(CmmnMap params) {
+   public int savePjtProcForVersion(CmmnMap params) {
 
 	      String queryId = "com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.savePjtProcForVersion";
 	      cmmnDao.insert(queryId, params);
+	      
+	      queryId = "com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.maxPjtSn";
+	      return cmmnDao.selectOne(queryId);
+	   }
+   
+   // 새글의 pjt_sn
+   public int maxPjtSn() {
+
+	    
+	      
+	      String queryId = "com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.maxPjtSn";
+	      return cmmnDao.selectOne(queryId);
 	   }
    
 
@@ -142,11 +154,13 @@ public class ProjectMngService {
 
       return cmmnDao.selectList("com.kdt.mapper.pjt_mng.PjtMngMapper.searchProjectPagedList", param);
    }
-
+/*
    // ✅ 전체 카운트 조회 (신규)
    public int countProjectList(String keyword) {
       return cmmnDao.selectOne("com.kdt.mapper.pjt_mng.PjtMngMapper.countProjectList", keyword);
    }
+  */ 
+   
 
    public PageInfo<CmmnMap> getProjectList(int pageNum, int pageSize, String keyword) {
 
