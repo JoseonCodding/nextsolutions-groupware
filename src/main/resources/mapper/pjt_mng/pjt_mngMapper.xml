@@ -48,6 +48,7 @@
   <!-- 프로젝트 등록 -->
   <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     INSERT INTO TB_PJT_BASC (
+    
       PJT_NM, employeeId,TB_PJT_APR, PJT_BGNG_DT, PJT_END_DT,
       PJT_STTS_CD,  FRST_REG_DT,
       content, ATCH_FILE_SN1, ORG_FILE_NM1,
@@ -314,6 +315,15 @@ ORDER BY b.LAST_MDFCN_DT DESC
     VALUES
     (#{pjtSn}, #{ver}, #{atchFileSn}, #{changeSummary}, #{contentTxt}, #{rgtrId}, NOW())
 </insert>
+
+<!-- EmployeeMapper.xml -->
+<select id="selectEmpNameById" parameterType="string" resultType="string">
+  SELECT emp_nm
+  FROM employee
+  WHERE employeeId = #{employeeId}   <!-- 실제 컬럼명에 맞춰 employeeId/EMP_SEQ 등으로 수정 -->
+    AND use_yn = 'Y'
+  LIMIT 1
+</select>
 
 
 </mapper>

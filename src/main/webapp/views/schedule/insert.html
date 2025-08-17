@@ -28,7 +28,7 @@
                 // 종료일/종료시간 비활성화 및 초기화
                 endDateInput.disabled = true;
               	endDateInput.value = "";
-                //endTimeInput.disabled = true;
+                endTimeInput.disabled = false;
                 //endTimeInput.value = "";
 
                 // 시작시간은 사용 가능
@@ -97,10 +97,10 @@
 		<tr >
 			<td colspan="3">
 				시작:
-				<input type="date" name="startDateStr" /><input type="time" name="startTimeStr" step="600">
+				<input type="date" name="startDateStr" /><input type="time" name="startTimeStr" >
 				~ 
 				종료:
-				<input type="date" name="endDateStr" /><input type="time" name="endTimeStr" step="600">
+				<input type="date" name="endDateStr" /><input type="time" name="endTimeStr" >
 
 				<input type="checkbox" name="cate" value="종일"/>종일일정
 			</td>

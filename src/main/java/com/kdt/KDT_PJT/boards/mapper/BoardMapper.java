@@ -12,8 +12,17 @@ import java.util.Map;
 public interface BoardMapper {
 	
 	// (공통) 게시판 유형으로 board_id 찾기
-    @Select("SELECT board_id FROM board_board WHERE board_type = #{boardType}")
-    Integer findBoardIdByType(@Param("boardType") String boardType);
+	@Select("""
+	    SELECT board_id
+	      FROM board_board
+	     WHERE board_type = #{boardType}
+	       AND is_deleted = 0
+	       AND is_active  = 1
+	     ORDER BY board_id DESC
+	     LIMIT 1
+	""")
+	Integer findBoardIdByType(@Param("boardType") String boardType);
+
     
     // 댓글/좋아요/글쓰기 차단할 때 필요
     @Select("SELECT board_id FROM board_post WHERE post_id = #{postId}")

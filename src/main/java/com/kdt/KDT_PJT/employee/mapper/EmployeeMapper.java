@@ -23,6 +23,11 @@ public interface EmployeeMapper {
     EmployeeDto getDetail(EmployeeDto dto);
 
     int update(EmployeeDto dto);
+
+	static String selectEmpNameById(String employeeId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
  
 
 }

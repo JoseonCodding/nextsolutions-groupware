@@ -253,14 +253,27 @@ public class ProjectMngController {
 
    // 프로젝트 등록 폼 열기
    @GetMapping("/project/register")
-   public String projectRegisterForm(Model model) {
-      // 사원 목록 가져오기
-      model.addAttribute("employeeList", projectMngService.getApproverCandidates());
+   public String projectRegisterForm(Model model, HttpSession session) {
+	   EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+     // 사원 목록 가져오기
+     //model.addAttribute("employeeList", projectMngService.getApproverCandidates());
 
+	   if (loginUser != null) {
+	        String employeeId = loginUser.getEmployeeId();
+	        // ✅ DB에서 이름 조회 (employee 테이블의 EMP_NM 컬럼)
+	        String empNm = employeeService.getEmpNameById(loginUser.getEmployeeId()); 
+	        // ✅ 뷰에 넘기기
+	        model.addAttribute("empNm", empNm);  // ✅ 이름을 모델에 담아줌
+
+	        System.out.println("empNm = " + empNm);
+	    }
+	   
       // 등록 페이지로 이동
       return "pjt_mng/pjt_reg_form";
    }
 
+   
+   
    @GetMapping("/list")
    public String showProjectList(@RequestParam(required = false) String keyword, Model model) {
       List<CmmnMap> result = projectMngService.searchProjectMngList(keyword); // 검색어 넘기기
@@ -371,40 +384,7 @@ public class ProjectMngController {
       }
    }
 
-// 파일의 버전관리 
-//  
-//   @PostMapping("/file/{pjtSn}/update")
-//   public String updateFile(@PathVariable("pjtSn") Long pjtSn,
-//                            @RequestParam(required = false) MultipartFile file,
-//                            @RequestParam(required = false) String changeSummary,
-//                            @RequestParam(required = false) String contentTxt,
-//                            @SessionAttribute("loginUserId") String loginUserId) {
-//
-//       // 1) 최신 버전 가져오기
-//       int latestVer = projectMngService.findLatestVerByPjtSn(pjtSn);
-//       int nextVer = latestVer + 1;
-//
-//       // 2) 파일 저장 (없으면 null)
-//       Long atchFileSn = null;
-//       if (file != null && !file.isEmpty()) {
-//           // 기존 파일 업로드 로직 재사용
-//           atchFileSn = saveFileAndReturnSn(file, loginUserId);
-//       }
-//
-//       // 3) INSERT 파라미터 구성
-//       Map<String, Object> param = new HashMap<>();
-//       param.put("pjtSn", pjtSn);
-//       param.put("ver", nextVer);
-//       param.put("atchFileSn", atchFileSn);
-//       param.put("changeSummary", changeSummary);
-//       param.put("contentTxt", contentTxt);
-//       param.put("rgtrId", loginUserId);
-//
-//       // 4) 새 버전 INSERT
-//       projectMngService.insertNewVersion(param);
-//
-//       return "redirect:/doc/manage?pjtSn=" + pjtSn;
-//   }
+
 
    
    private Long saveFileAndReturnSn(MultipartFile file, String loginUserId) {
@@ -568,13 +548,20 @@ public class ProjectMngController {
       params.put("LAST_MDFR_ID", "SYSTEM"); // 임시
       
      
+      
+      
       CmmnMap pjt = projectMngService.getPjtDetailForVersion(pjtSn);
-      
-      
+            
       
       if(pjtSttsCd.equals("진행중")) {
-    	  params.put("ver", ver+1);
-    	  params.put("gid", pjtSn);
+    	  
+    	//  params.put("gid", pjtSn);
+    	//  params.put("ver", ver+1);
+    	  
+    	  params.put("gid", pjt.get("gid"));
+    	  params.put("ver", (Integer)pjt.get("ver") + 1);  
+    	  
+
     	  projectMngService.savePjtProcForVersion(params);      
       }else {
     	  projectMngService.updatePjtProc(params); 
