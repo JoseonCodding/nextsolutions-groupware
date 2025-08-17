@@ -54,6 +54,9 @@ public class ProjectMngService {
 
    // 🔹 프로젝트 등록 (기존)
    public void savePjtProc(CmmnMap params) {
+	   
+	   
+	   
 
       String queryId = "com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.savePjtProc";
       cmmnDao.insert(queryId, params);

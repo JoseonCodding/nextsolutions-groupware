@@ -47,6 +47,11 @@ public class EmployeeService {
         employeeMapper.updateEmployee(params);
     }
 
+	public String getEmpNameById(String employeeId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
    
 
 }

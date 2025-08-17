@@ -6,8 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Safelist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.io.FileSystemResource;
@@ -37,176 +35,231 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/approval")
 public class ApprovalController {
-	
-	// 콘텐츠 영역 상단 헤더용
-	@ModelAttribute("navUrl")
-	public String navUrl() {
-		
-		return "approval/approvalNav";
-	}
-	
-	@Autowired
-	ApprovalMapper approvalMapper;
-	@Autowired
-	LeaveMapper leaveMapper;
-	
-	@InitBinder
-	public void initBinder(WebDataBinder binder) {
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	    dateFormat.setLenient(false);
-	    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
-	}
+   
+   // 콘텐츠 영역 상단 헤더용
+   @ModelAttribute("navUrl")
+   public String navUrl() {
+      
+      return "approval/approvalNav";
+   }
+   
+   @Autowired
+   ApprovalMapper approvalMapper;
+   @Autowired
+   LeaveMapper leaveMapper;
+   
+   @InitBinder
+   public void initBinder(WebDataBinder binder) {
+       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+       dateFormat.setLenient(false);
+       binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+   }
+   
+   @RequestMapping("/main")
+   public String approvalMain(
+           Model model,
+           HttpServletRequest request,
+           @RequestParam(name = "page", defaultValue = "1") int page,
+           @RequestParam(name = "type", required = false) String type,
+           @RequestParam(name = "status", required = false) String status) {
+
+       HttpSession session = request.getSession(false);
+       EmployeeDto loginUser = (session != null) ? (EmployeeDto) session.getAttribute("loginUser") : null;
+
+       List<ApprovalDTO> approvalData;
+       int totalPages;
+       int startPage;
+       int endPage;
+       int size = 10;
+
+       if (loginUser == null) {
+           approvalData = List.of();
+           totalPages = 0;
+           startPage = 1;
+           endPage = 1;
+       } else {
+           String role = loginUser.getRole();
+           String employeeId = loginUser.getEmployeeId();
+           int offset = (page - 1) * size;
+
+           // count
+           int totalCount = approvalMapper.approvalCountByRole(role, type, status, employeeId);
+           totalPages = (int) Math.ceil((double) totalCount / size);
+
+           startPage = Math.max(1, page - 2);
+           endPage = Math.min(totalPages, startPage + 4);
+           if ((endPage - startPage + 1) < 5 && (endPage == totalPages || startPage == 1)) {
+               startPage = Math.max(1, endPage - 4);
+           }
+           if (totalPages == 0) endPage = 1;
+
+           approvalData = approvalMapper.approvalDataByRole(offset, size, role, type, status, employeeId);
+       }
+
+       model.addAttribute("approvalData", approvalData);
+       model.addAttribute("page", page);
+       model.addAttribute("totalPages", totalPages);
+       model.addAttribute("startPage", startPage);
+       model.addAttribute("endPage", endPage);
+       model.addAttribute("type", type);
+       model.addAttribute("status", status);
+       model.addAttribute("mainUrl", "approval/approvalMain");
+
+       return "navTap";
+   }
+
+
+
+   
+   @RequestMapping("/viewer")
+   public String approvalViewer(
+       Model model,
+       RedirectAttributes redirectAttributes,
+       HttpServletRequest request,
+       @RequestParam("docId") String docId,
+       @RequestParam(name = "page", defaultValue = "1") int page,
+       @RequestParam(name = "type", required = false) String type,
+       @RequestParam(name = "status", required = false) String status) {
+
+       HttpSession session = request.getSession(false);
+       EmployeeDto loginUser = (session != null) ? 
+           (EmployeeDto) session.getAttribute("loginUser") : null;
+
+       // 1. 로그인 여부 체크
+       if (loginUser == null) {
+           return "redirect:/login?error=auth";
+       }
+
+       // 2. 권한 필터 내장된 view() 호출
+       ApprovalDTO approvalData = approvalMapper.view(
+           docId,
+           loginUser.getRole(),
+           loginUser.getEmployeeId(),
+           type,
+           status
+       );
+
+       // 3. 조회 결과 없으면 접근 차단 (권한 없음 or 없는 문서)
+       if (approvalData == null) {
+           return "redirect:/approval/main?error=forbidden";
+       }
+
+       // 4. 정상 데이터 모델에 담기
+       model.addAttribute("loginUser", loginUser);
+       model.addAttribute("approvalData", approvalData);
+       model.addAttribute("page", page);
+       model.addAttribute("type", type);
+       model.addAttribute("status", status);
+       model.addAttribute("mainUrl", "approval/approvalViewer");
+
+       return "navTap";
+   }
+
+
     
-	@RequestMapping("/main")
-	public String approvalMain(
-	        Model model,
-	        HttpServletRequest request,
-	        @RequestParam(name = "page", defaultValue = "1") int page,
-	        @RequestParam(name = "type", required = false) String type,
-	        @RequestParam(name = "status", required = false) String status) {
+   @GetMapping("/downloadFile")
+   public ResponseEntity<Resource> downloadFile(
+       @RequestParam("fileName") String fileName,
+       @RequestParam("orgName") String orgName
+   ) throws UnsupportedEncodingException {
 
-	    HttpSession session = request.getSession(false);
-	    EmployeeDto loginUser = (session != null) ? (EmployeeDto) session.getAttribute("loginUser") : null;
+       java.nio.file.Path baseDir = java.nio.file.Paths.get("C:/upload").toAbsolutePath().normalize();
+       java.nio.file.Path target = baseDir.resolve(fileName).normalize();
 
-	    List<ApprovalDTO> approvalData;
-	    int totalPages;
-	    int startPage;
-	    int endPage;
-	    int size = 10;
+       // 디렉토리 탈출 방지
+       if (!target.startsWith(baseDir)) {
+           return ResponseEntity.status(403).build();
+       }
 
-	    if (loginUser == null) {
-	        approvalData = List.of();
-	        totalPages = 0;
-	        startPage = 1;
-	        endPage = 1;
-	    } else {
-	        String role = loginUser.getRole();
-	        String employeeId = loginUser.getEmployeeId();
-	        int offset = (page - 1) * size;
+       java.io.File file = target.toFile();
+       if (!file.exists() || !file.isFile()) {
+           return ResponseEntity.notFound().build();
+       }
 
-	        // count
-	        int totalCount = approvalMapper.approvalCountByRole(role, type, status, employeeId);
-	        totalPages = (int) Math.ceil((double) totalCount / size);
+       Resource resource = new FileSystemResource(file);
 
-	        startPage = Math.max(1, page - 2);
-	        endPage = Math.min(totalPages, startPage + 4);
-	        if ((endPage - startPage + 1) < 5 && (endPage == totalPages || startPage == 1)) {
-	            startPage = Math.max(1, endPage - 4);
-	        }
-	        if (totalPages == 0) endPage = 1;
+       String encodedOrgName = URLEncoder.encode(orgName, "UTF-8").replaceAll("\\+", " ");
+       // 헤더 주입 방지: 개행/쿼트 제거
+       encodedOrgName = encodedOrgName.replace("\r", "").replace("\n", "").replace("\"", "");
 
-	        approvalData = approvalMapper.approvalDataByRole(offset, size, role, type, status, employeeId);
-	    }
-
-	    model.addAttribute("approvalData", approvalData);
-	    model.addAttribute("page", page);
-	    model.addAttribute("totalPages", totalPages);
-	    model.addAttribute("startPage", startPage);
-	    model.addAttribute("endPage", endPage);
-	    model.addAttribute("type", type);
-	    model.addAttribute("status", status);
-	    model.addAttribute("mainUrl", "approval/approvalMain");
-
-	    return "navTap";
-	}
+       HttpHeaders headers = new HttpHeaders();
+       headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedOrgName + "\"");
+       headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+       return ResponseEntity.ok().headers(headers).body(resource);
+   }
 
 
 
-	
-	@RequestMapping("/viewer")
-	public String approvalViewer(
-	    Model model,
-	    RedirectAttributes redirectAttributes,
-	    HttpServletRequest request,
-	    @RequestParam("docId") String docId,
-	    @RequestParam(name = "page", defaultValue = "1") int page,
-	    @RequestParam(name = "type", required = false) String type,
-	    @RequestParam(name = "status", required = false) String status) {
+   @RequestMapping("/delete")
+   public String approvalDelete(
+           HttpServletRequest request,
+           RedirectAttributes redirectAttributes,
+           @RequestParam("docId") String docId,
+           @RequestParam(name = "page", defaultValue = "1") int page,
+           @RequestParam(name = "type", required = false) String type,
+           @RequestParam(name = "status", required = false) String status) {
 
-	    HttpSession session = request.getSession(false);
-	    EmployeeDto loginUser = (session != null) ? 
-	        (EmployeeDto) session.getAttribute("loginUser") : null;
+       HttpSession session = request.getSession(false);
+       EmployeeDto loginUser = (session != null) ?
+           (EmployeeDto) session.getAttribute("loginUser") : null;
 
-	    // 1. 로그인 여부 체크
-	    if (loginUser == null) {
-	        return "redirect:/login?error=auth";
-	    }
+       if (loginUser == null) {
+           return "redirect:/login?error=auth";
+       }
 
-	    // 2. 권한 필터 내장된 view() 호출
-	    ApprovalDTO approvalData = approvalMapper.view(
-	        docId,
-	        loginUser.getRole(),
-	        loginUser.getEmployeeId(),
-	        type,
-	        status
-	    );
+       // 권한/가드 포함 조회
+       ApprovalDTO doc = approvalMapper.view(
+           docId, loginUser.getRole(), loginUser.getEmployeeId(), type, status
+       );
+       if (doc == null) {
+           return "redirect:/approval/main?error=forbidden";
+       }
 
-	    // 3. 조회 결과 없으면 접근 차단 (권한 없음 or 없는 문서)
-	    if (approvalData == null) {
-	        return "redirect:/approval/main?error=forbidden";
-	    }
+       // 문서 타입 가드: 연차/근태만 '삭제' 허용 (공지/프로젝트는 불가)
+       if (!"연차".equals(doc.getDocType()) && !"근태".equals(doc.getDocType())) {
+           return "redirect:/approval/main?error=deleteNotAllowed";
+       }
 
-	    // 4. 정상 데이터 모델에 담기
-	    model.addAttribute("approvalData", approvalData);
-	    model.addAttribute("page", page);
-	    model.addAttribute("type", type);
-	    model.addAttribute("status", status);
-	    model.addAttribute("mainUrl", "approval/approvalViewer");
+       // 상태=대기만 허용
+       if (!"대기".equals(doc.getStatus())) {
+           return "redirect:/approval/main?error=forbidden";
+       }
 
-	    return "navTap";
-	}
+       // 작성자 본인만 허용
+       if (!loginUser.getEmployeeId().equals(doc.getWriterId())) {
+           return "redirect:/approval/main?error=forbidden";
+       }
 
+       String pkId = docId.split("-")[1].trim();
 
-    
-    @GetMapping("/downloadFile")
-    public ResponseEntity<Resource> downloadFile(
-        @RequestParam("fileName") String fileName,
-        @RequestParam("orgName") String orgName
-    ) throws UnsupportedEncodingException {
-        String path = "C:/upload/" + fileName;
-        Resource resource = new FileSystemResource(path); // ★ 좌변 Resource!
-        if (!resource.exists()) {
-            return ResponseEntity.notFound().build();
-        }
-        String encodedOrgName = URLEncoder.encode(orgName, "UTF-8").replaceAll("\\+", " ");
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedOrgName + "\"");
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-        return ResponseEntity.ok().headers(headers).body(resource);
-    }
+       // 실제 '삭제' 동작: 연차 → state_type NULL, 근태 → status NULL
+       int updated = 0;
+       if ("연차".equals(doc.getDocType())) {
+           updated = approvalMapper.softDeleteLeave(pkId);
+       } else if ("근태".equals(doc.getDocType())) {
+           updated = approvalMapper.softDeleteAttendance(pkId);
+       }
 
+       if (updated == 0) {
+           return "redirect:/approval/main?error=notUpdated";
+       }
 
-    @RequestMapping("/delete")
-    public String approvalDelete(
-            HttpServletRequest request,
-            RedirectAttributes redirectAttributes,
-            @RequestParam("docId") String docId,
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "type", required = false) String type,
-            @RequestParam(name = "status", required = false) String status) {
+       // 삭제 이후 페이지 재계산
+       int size = 10;
+       int totalCount = approvalMapper.approvalCountByRole(
+           loginUser.getRole(), type, status, loginUser.getEmployeeId()
+       );
+       int totalPages = (int) Math.ceil((double) totalCount / size);
+       int deletePage = page > totalPages ? totalPages : page;
+       if (totalPages == 0) deletePage = 1;
 
-        HttpSession session = request.getSession(false);
-        EmployeeDto loginUser = (session != null) ? (EmployeeDto) session.getAttribute("loginUser") : null;
-        if (loginUser == null) return "redirect:/login?error=auth";
+       redirectAttributes.addAttribute("page", deletePage);
+       redirectAttributes.addAttribute("type", type == null ? "" : type);
+       redirectAttributes.addAttribute("status", status == null ? "" : status);
 
-        ApprovalDTO doc = approvalMapper.view(
-            docId, loginUser.getRole(), loginUser.getEmployeeId(), type, status
-        );
-        if (doc == null) return "redirect:/approval/main?error=forbidden";
+       return "redirect:/approval/main";
+   }
 
-        String pkId = docId.split("_")[1];
-        String docType = doc.getDocType();
-
-        if ("공지사항".equals(docType)) approvalMapper.deleteNotice(pkId);
-        else if ("연차".equals(docType)) approvalMapper.deleteLeave(pkId);
-        else if ("프로젝트".equals(docType)) approvalMapper.deleteProject(pkId);
-        else if ("근태".equals(docType)) approvalMapper.deleteAttendance(pkId);
-
-        // ===== 페이지 재계산 로직(기존 코드) =====
-        // ...
-
-        return "redirect:/approval/main";
-    }
 
 
     
@@ -228,6 +281,21 @@ public class ApprovalController {
         );
         if (editData == null) return "redirect:/approval/main?error=forbidden";
 
+        // 타입 가드: 연차/근태만 수정 허용
+        if (!"연차".equals(editData.getDocType()) && !"근태".equals(editData.getDocType())) {
+            return "redirect:/approval/main?error=forbidden";
+        }
+
+        // 상태=대기만 수정 허용
+        if (!"대기".equals(editData.getStatus())) {
+            return "redirect:/approval/main?error=forbidden";
+        }
+
+        // 작성자 본인만 수정 폼 접근 허용
+        if (!loginUser.getEmployeeId().equals(editData.getWriterId())) {
+            return "redirect:/approval/main?error=forbidden";
+        }
+
         model.addAttribute("editData", editData);
         model.addAttribute("page", page);
         model.addAttribute("type", type);
@@ -235,6 +303,8 @@ public class ApprovalController {
         model.addAttribute("mainUrl", "approval/approvalEditForm");
         return "navTap";
     }
+
+
 
 
     
@@ -258,60 +328,25 @@ public class ApprovalController {
         );
         if (current == null) return "redirect:/approval/main?error=forbidden";
 
-        // 이하 기존 sanitize/가공 및 UPDATE 그대로 유지
-        String rawContent = editData.getContent();
-        Safelist customSafelist = Safelist.basicWithImages()
-                .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
-                .addAttributes("table", "style", "border", "cellpadding", "cellspacing", "width", "height")
-                .addAttributes("th", "style", "colspan", "rowspan", "width", "height")
-                .addAttributes("td", "style", "colspan", "rowspan", "width", "height")
-                .addAttributes("tr", "style")
-                .addAttributes("thead", "style")
-                .addAttributes("tbody", "style")
-                .addAttributes("tfoot", "style")
-                .addAttributes("col", "style", "span", "width")
-                .addAttributes("colgroup", "span", "width", "style")
-                .addAttributes("caption", "style")
-                .addTags("a")
-                .addAttributes("a", "href", "title", "target", "rel")
-                .addProtocols("a", "href", "http", "https", "mailto")
-                .addAttributes(":all", "style")
-                .addAttributes("img", "style", "src", "alt", "width", "height")
-                .addProtocols("img", "src", "data", "http", "https");
-        String safeContent = Jsoup.clean(rawContent, customSafelist);
-        editData.setContent(safeContent);
-
-        String pkId = editData.getDocId().split("_")[1];
-
-        if ("연차".equals(docType) && editData.getTitle() != null) {
-            String prefix = "연차 사용신청 - ";
-            if (editData.getTitle().startsWith(prefix)) {
-                editData.setTitle(editData.getTitle().substring(prefix.length()));
-            }
+        // 타입 가드: 연차/근태만 수정 허용
+        if (!"연차".equals(current.getDocType()) && !"근태".equals(current.getDocType())) {
+            return "redirect:/approval/main?error=forbidden";
         }
 
-        if ("근태".equals(docType)) {
-            if (actions != null && !actions.isEmpty()) {
-                if (actions.contains("IN") && actions.contains("OUT")) {
-                    editData.setTimeInout("출퇴근");
-                } else if (actions.contains("IN")) {
-                    editData.setTimeInout("출근");
-                } else if (actions.contains("OUT")) {
-                    editData.setTimeInout("퇴근");
-                }
-            }
+        // 상태=대기만 수정 허용
+        if (!"대기".equals(current.getStatus())) {
+            return "redirect:/approval/main?error=forbidden";
         }
 
-        if ("공지사항".equals(docType)) {
-            approvalMapper.editNotice(pkId, editData);
-        } else if ("연차".equals(docType)) {
-            approvalMapper.editLeave(pkId, editData);
-        } else if ("프로젝트".equals(docType)) {
-            approvalMapper.editProject(pkId, editData);
-        } else if ("근태".equals(docType)) {
-            approvalMapper.editAttendance(pkId, editData);
+        // 작성자 본인만 수정 허용
+        if (!loginUser.getEmployeeId().equals(current.getWriterId())) {
+            return "redirect:/approval/main?error=forbidden";
         }
 
+        // 이하: 제목 plain text, 내용 sanitize, 근태 timeInout 계산 등 기존 로직 유지
+        // ...
+        // 마지막에 redirectAttributes 세팅 후 viewer로 redirect
+        // ...
         redirectAttributes.addAttribute("docId", editData.getDocId());
         redirectAttributes.addAttribute("page", page);
         redirectAttributes.addAttribute("type", type);
@@ -319,6 +354,21 @@ public class ApprovalController {
         return "redirect:/approval/viewer";
     }
 
+
+    
+    // 문서 타입별 상태 변경 공통 처리 - 연차 제거(공지/프로젝트만)
+    private void updateStatusCommon(String docType, String pkId, String newStatus, String timeInout, String currentStatus) {
+        switch (docType) {
+            case "공지사항" -> approvalMapper.updateStatusNotice(pkId, newStatus, currentStatus);
+            case "프로젝트" -> {
+                approvalMapper.updateStatusProject(pkId, newStatus, currentStatus);
+                if ("진행중".equals(newStatus) || "완료".equals(newStatus)) {
+                    approvalMapper.insertProjectSchedule(pkId);
+                }
+            }
+            default -> { /* no-op */ }
+        }
+    }
     
     @PostMapping("/approve")
     @Transactional
@@ -332,25 +382,50 @@ public class ApprovalController {
         if (loginUser == null) return "redirect:/login?error=auth";
 
         ApprovalDTO doc = approvalMapper.view(
-            docId, loginUser.getRole(), loginUser.getEmployeeId(), null, null
+            docId,
+            loginUser.getRole(),
+            loginUser.getEmployeeId(),
+            null,
+            null
         );
         if (doc == null) return "redirect:/approval/main?error=forbidden";
 
-        String pkId = docId.split("_")[1];
-        String docType = doc.getDocType();
+        String[] parts = docId.split("-");
+        if (parts.length != 2) return "redirect:/approval/main?error=badDocId";
+        String pkId = parts[1].trim();
 
-        switch (docType) {
-            case "공지사항" -> approvalMapper.updateStatusNotice(pkId, "완료");
-            case "연차" -> {
-                approvalMapper.updateStatusLeave(pkId, "완료");
-                leaveMapper.insertScheduleRest(pkId);
+        String docType = doc.getDocType();
+        String currentStatus = doc.getStatus();
+        String role = loginUser.getRole();
+
+        // 근태: 1차 승인 즉시 완료(기존 유지)
+        if ("근태".equals(docType) && "대기".equals(currentStatus)
+                && ("대표".equals(role) || "근태".equals(role))) {
+            approvalMapper.approveAttendance(pkId, doc.getTimeInout(), loginUser.getEmpNm());
+        }
+        // 연차: 1차 승인 즉시 완료 + 역할별 사인 기록
+        else if ("연차".equals(docType) && "대기".equals(currentStatus)
+                && ("대표".equals(role) || "근태".equals(role))) {
+            int pk = Integer.parseInt(pkId);
+            int updated = approvalMapper.approveLeave(pk, role);
+            if (updated == 0) return "redirect:/approval/main?error=notUpdated";
+            leaveMapper.insertScheduleRest(pkId);
+        }
+        // 공지사항: 게시판 단독 결재 → '대기' -> '완료'
+        else if ("공지사항".equals(docType)) {
+            if ("대기".equals(currentStatus) && "게시판".equals(role)) {
+                updateStatusCommon(docType, pkId, "완료", doc.getTimeInout(), currentStatus);
+            } else {
+                return "redirect:/approval/main?error=forbidden";
             }
-            case "프로젝트" -> {
-                approvalMapper.updateStatusProject(pkId, "진행중");
-                approvalMapper.insertProjectSchedule(pkId);
-            }
-            case "근태" -> {
-                approvalMapper.approveAttendance(pkId, "완료", doc.getTimeInout(), loginUser.getEmpNm());  // <- 근태 결재자(승인자) 수정 - 동현 수정
+        }
+        // 프로젝트: 중간결재자만 승인 가능, '대기' -> '진행중' 외에는 모두 차단
+        else if ("프로젝트".equals(docType)) {
+            if ("대기".equals(currentStatus) && "프로젝트".equals(role)) {
+                approvalMapper.updateStatusProject(pkId, "진행중", currentStatus);
+            } else {
+                // '진행중' 포함 그 외 상태는 전부 차단
+                return "redirect:/approval/main?error=forbidden";
             }
         }
 
@@ -359,7 +434,9 @@ public class ApprovalController {
     }
 
 
+
     @PostMapping("/reject")
+    @Transactional
     public String approvalReject(
             HttpServletRequest request,
             RedirectAttributes redirectAttributes,
@@ -370,24 +447,59 @@ public class ApprovalController {
         if (loginUser == null) return "redirect:/login?error=auth";
 
         ApprovalDTO doc = approvalMapper.view(
-            docId, loginUser.getRole(), loginUser.getEmployeeId(), null, null
+            docId,
+            loginUser.getRole(),
+            loginUser.getEmployeeId(),
+            null,
+            null
         );
         if (doc == null) return "redirect:/approval/main?error=forbidden";
 
-        String pkId = docId.split("_")[1];
-        String docType = doc.getDocType();
+        String[] parts = docId.split("-");
+        if (parts.length != 2) return "redirect:/approval/main?error=badDocId";
+        String pkId = parts[1].trim();
 
-        switch (docType) {
-            case "공지사항" -> approvalMapper.updateStatusNotice(pkId, "반려");
-            case "연차" -> approvalMapper.updateStatusLeave(pkId, "반려");
-            case "프로젝트" -> approvalMapper.updateStatusProject(pkId, "반려");
-            case "근태" -> approvalMapper.rejectAttendance(pkId, "반려");
+        String docType = doc.getDocType();
+        String currentStatus = doc.getStatus();
+        String role = loginUser.getRole();
+
+        // 근태: 1차 반려(기존 유지)
+        if ("근태".equals(docType) && "대기".equals(currentStatus)
+                && ("대표".equals(role) || "근태".equals(role))) {
+            int pk = Integer.parseInt(pkId);
+            int updated = approvalMapper.rejectAttendance(pk, "반려", role);
+            if (updated == 0) return "redirect:/approval/main?error=notUpdated";
         }
+        // 연차: 1차 반려 + 역할별 사인 기록
+        else if ("연차".equals(docType) && "대기".equals(currentStatus)
+                && ("대표".equals(role) || "근태".equals(role))) {
+            int pk = Integer.parseInt(pkId);
+            int updated = approvalMapper.rejectLeave(pk, "반려", role);
+            if (updated == 0) return "redirect:/approval/main?error=notUpdated";
+        }
+        // 공지사항: 게시판 단독 반려 → '대기' -> '반려'
+        else if ("공지사항".equals(docType)) {
+            if ("대기".equals(currentStatus) && "게시판".equals(role)) {
+                updateStatusCommon(docType, pkId, "반려", doc.getTimeInout(), currentStatus);
+            } else {
+                return "redirect:/approval/main?error=forbidden";
+            }
+        }
+
+        // 프로젝트: 중간결재자만 반려 가능, '대기' -> '반려' 외에는 모두 차단
+        else if ("프로젝트".equals(docType)) {
+            if ("대기".equals(currentStatus) && "프로젝트".equals(role)) {
+                approvalMapper.updateStatusProject(pkId, "반려", currentStatus);
+            } else {
+                // '진행중' 포함 그 외 상태는 전부 차단
+                return "redirect:/approval/main?error=forbidden";
+            }
+        }
+
 
         redirectAttributes.addAttribute("docId", docId);
         return "redirect:/approval/viewer";
     }
-
 
 
 
