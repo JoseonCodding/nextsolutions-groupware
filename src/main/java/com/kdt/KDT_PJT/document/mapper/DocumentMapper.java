@@ -17,7 +17,7 @@ public interface DocumentMapper {
       GROUP BY gid
     ) m
       ON t.gid = m.gid AND t.ver = m.max_ver
-    LEFT JOIN EMPLOYEE e ON e.employeeId = t.employeeId
+    LEFT JOIN employee e ON e.employeeId = t.employeeId
     WHERE t.PJT_STTS_CD IN ('진행중','완료')
       AND (t.employeeId = #{employeeId} OR #{isAdmin})
     ORDER BY t.FRST_REG_DT DESC
@@ -55,7 +55,7 @@ public interface DocumentMapper {
            FROM TB_PJT_BASC
            WHERE gid = #{gid} ) m
       ON t.gid = m.gid AND t.ver = m.max_ver
-    LEFT JOIN EMPLOYEE e ON e.employeeId = t.employeeId
+    LEFT JOIN employee e ON e.employeeId = t.employeeId
     WHERE t.PJT_STTS_CD IN ('진행중','완료')
     LIMIT 1
   """)
@@ -65,7 +65,7 @@ public interface DocumentMapper {
   @Select("""
     SELECT t.*, e.emp_nm AS empNm
     FROM TB_PJT_BASC t
-    LEFT JOIN EMPLOYEE e ON e.employeeId = t.employeeId
+    LEFT JOIN employee e ON e.employeeId = t.employeeId
     WHERE t.gid = #{gid}
     ORDER BY t.ver DESC
   """)
@@ -75,7 +75,7 @@ public interface DocumentMapper {
   @Select("""
     SELECT t.*, e.emp_nm AS empNm
     FROM TB_PJT_BASC t
-    LEFT JOIN EMPLOYEE e ON e.employeeId = t.employeeId
+    LEFT JOIN employee e ON e.employeeId = t.employeeId
     WHERE t.gid = #{gid} AND t.ver = #{ver}
     LIMIT 1
   """)
