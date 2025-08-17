@@ -683,12 +683,13 @@ public interface ApprovalMapper {
         "        check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
         "    </when>",
         "  </choose>",
+        "  , modified_by = #{approverId}",	// <- 결재자 기록(동현 수정)
         "  , modified_at = NOW()",
         "</if>",
         "WHERE id = #{id}",
         "</script>"
     })
-    int approveAttendance(@Param("id") String id, @Param("status") String status, @Param("timeInout") String timeInout);
+    int approveAttendance(@Param("id") String id, @Param("status") String status, @Param("timeInout") String timeInout,  @Param("approverId") String approverId);
 
 
 

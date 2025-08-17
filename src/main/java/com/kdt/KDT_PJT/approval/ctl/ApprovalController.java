@@ -350,7 +350,7 @@ public class ApprovalController {
                 approvalMapper.insertProjectSchedule(pkId);
             }
             case "근태" -> {
-                approvalMapper.approveAttendance(pkId, "완료", doc.getTimeInout());
+                approvalMapper.approveAttendance(pkId, "완료", doc.getTimeInout(), loginUser.getEmpNm());  // <- 근태 결재자(승인자) 수정 - 동현 수정
             }
         }
 
