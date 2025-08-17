@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>글수정 폼</title>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
 </head>
 <body>
 	<h1>글 수정 폼</h1>
@@ -22,8 +23,7 @@
 
   <div class="form-group" style="margin-top:8px">
     <label>내용</label>
-    <textarea name="content" rows="10" required
-              th:text="${board.content}"></textarea>
+    <textarea id="summernote" name="content" th:utext="*{board.content}" rows="12" placeholder="내용을 입력하세요" required></textarea>
   </div>
 
   <div style="margin-top:12px; display:flex; gap:8px">
@@ -39,6 +39,36 @@
 </form>
   
 </div>
-	
+	    <!-- Summernote 관련 JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
+<script>
+    $(document).ready(function() {
+      $('#summernote').summernote({
+        lang: 'ko-KR',
+        placeholder: '내용을 입력하세요',
+        tabsize: 2,
+        height: 300,
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'italic', 'underline', 'clear']],
+          ['fontname', ['fontname']],
+          ['fontsize', ['fontsize']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['height', ['height']],
+          ['insert', ['picture', 'link', 'table']],
+          ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+          onInit: function() {
+            let $editable = $(this).next('.note-editor').find('.note-editable');
+            $editable.css('text-align', 'left');
+          }
+        }
+      });
+    });
+</script>
 </body>
 </html>
