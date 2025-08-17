@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LeaveDTO {
 
-	Integer leaveId ; 
+	Integer leaveId, holidayCount ; 
 	
 	boolean useChk;
     
@@ -55,5 +55,5 @@ public class LeaveDTO {
 			e.printStackTrace();
 		}
 	}
-  
+	
 }
