@@ -215,12 +215,12 @@ public class ApprovalController {
            return "redirect:/approval/main?error=forbidden";
        }
 
-       // 문서 타입 가드: 연차/근태만 '삭제' 허용 (공지/프로젝트는 불가)
+       // 문서 타입 가드: 연차/근태만 '삭제' 허용
        if (!"연차".equals(doc.getDocType()) && !"근태".equals(doc.getDocType())) {
            return "redirect:/approval/main?error=deleteNotAllowed";
        }
 
-       // 상태=대기만 허용
+       // 상태=대기만 삭제 허용
        if (!"대기".equals(doc.getStatus())) {
            return "redirect:/approval/main?error=forbidden";
        }
@@ -332,27 +332,49 @@ public class ApprovalController {
         if (!"연차".equals(current.getDocType()) && !"근태".equals(current.getDocType())) {
             return "redirect:/approval/main?error=forbidden";
         }
-
         // 상태=대기만 수정 허용
         if (!"대기".equals(current.getStatus())) {
             return "redirect:/approval/main?error=forbidden";
         }
-
         // 작성자 본인만 수정 허용
         if (!loginUser.getEmployeeId().equals(current.getWriterId())) {
             return "redirect:/approval/main?error=forbidden";
         }
 
-        // 이하: 제목 plain text, 내용 sanitize, 근태 timeInout 계산 등 기존 로직 유지
-        // ...
-        // 마지막에 redirectAttributes 세팅 후 viewer로 redirect
-        // ...
+        // --- 실제 UPDATE 실행 (연차/근태만) ---
+        String pkId = editData.getDocId().split("-")[1].trim();
+
+        if ("연차".equals(docType)) {
+            // 연차: create_reason(=title), used_reason(=content), used_date(=leaveUsedDate)
+            int updated = approvalMapper.editLeave(pkId, editData);
+            if (updated == 0) {
+                return "redirect:/approval/main?error=notUpdated";
+            }
+        } else if ("근태".equals(docType)) {
+            // 근태: 체크박스 → timeInout 계산
+            if (actions != null && !actions.isEmpty()) {
+                if (actions.contains("IN") && actions.contains("OUT")) {
+                    editData.setTimeInout("출퇴근");
+                } else if (actions.contains("IN")) {
+                    editData.setTimeInout("출근");
+                } else if (actions.contains("OUT")) {
+                    editData.setTimeInout("퇴근");
+                }
+            }
+            // 근태: modification_reason(=content), time_inout 업데이트
+            int updated = approvalMapper.editAttendance(pkId, editData);
+            if (updated == 0) {
+                return "redirect:/approval/main?error=notUpdated";
+            }
+        }
+
         redirectAttributes.addAttribute("docId", editData.getDocId());
         redirectAttributes.addAttribute("page", page);
         redirectAttributes.addAttribute("type", type);
         redirectAttributes.addAttribute("status", status);
         return "redirect:/approval/viewer";
     }
+
 
 
     

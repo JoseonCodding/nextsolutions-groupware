@@ -54,7 +54,7 @@ public class ProjectMngController {
    @Autowired
    private ProjectMngService projectMngService;
 
-   // log 사용을 위함
+   // 로그 객체 (현재 클래스 이름으로 로거 생성)
    private final Logger log = LoggerFactory.getLogger(getClass());
 
    // ✅ 프로젝트 목록 화면 조회 (검색어 유무에 따라 분기)
@@ -63,21 +63,22 @@ public class ProjectMngController {
          HttpServletRequest request, Model model, HttpSession session
          , @RequestParam(required = false, name = "keywordType") String keywordType) {
 
+	   // 디버깅 로그
 	   log.info("keywordType(raw) = {}", keywordType);
 	   log.info("keyword(raw) = {}", keyword);
-	    // ✅ 널/대소문자 정리
+	    
+	   // ✅ null /대소문자 정리
 	    String type = (keywordType == null) ? "" : keywordType.toLowerCase();
-	   // 선택값 유지 용
-	    if (keywordType == null) keywordType = "";
+	    if (keywordType == null) keywordType = "";  	 // 선택값 유지 용
+
 	    
-	    
-	    
-	 // ✅ 선택값 유지용
+	     // ✅ 뷰에 현재 검색/정렬 상태 전달
 	    model.addAttribute("keywordType", type);
-	    model.addAttribute("keyword", ""); // ← 입력칸 유지
-       
+	    model.addAttribute("keyword", "");  // 입력칸 초기화(유지하려면 keyword 넣어도 됨)
 
        
+
+	    // ✅ 로그인 사용자 세션에서 가져오기 (세션 키: "loginUser")
        EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
        System.out.println("getPjtList Called >>> employeeId = " + loginUser.getEmployeeId());
       
@@ -100,8 +101,8 @@ public class ProjectMngController {
       }
 
       // 리스트 가져오기
-      PageInfo<CmmnMap> list = projectMngService.getProjectList(pageNum, pageSize, keyword);
-      
+      //PageInfo<CmmnMap> list = projectMngService.getProjectList(pageNum, pageSize, keyword);
+      PageInfo<CmmnMap> list = null;
       switch (keywordType) {
       case "writer":
     	  log.info(" sortType = writer ");
@@ -177,6 +178,8 @@ public class ProjectMngController {
 
       model.addAttribute("pjtList", list.getList()); // 현재 페이지 데이터
       model.addAttribute("pageInfo", list); // 페이징 정보
+      
+      System.out.println("list:"+list.getList());
       
       // 권찬 받아오기
       model.addAttribute("loginUserRole", loginUser.getRole());
@@ -315,7 +318,7 @@ public class ProjectMngController {
 	    
 	    
 	    //프로젝트 권한 체크 : 권한없는 사람이 접근했을때 막는거 
-	    if (!"프로젝트".equals(loginUser.getRole())) {
+	    if (!("프로젝트".equals(loginUser.getRole()) || "대표".equals(loginUser.getRole()))) {
 	        model.addAttribute("errorMsg", "권한이 없습니다.");
 	        return "error/403"; // 접근 불가 페이지
 	    }
@@ -399,6 +402,9 @@ public class ProjectMngController {
 		   @RequestParam(value = "TB_PJT_APR", required = false) String TB_PJT_APR,
          @RequestParam(value = "empNm", required = false) String empNm,
          @RequestParam(value = "ver", required = false) Integer ver,
+         @RequestParam(value = "gid", required = false) Integer gid,
+         
+         @RequestParam(value = "FRST_REG_DT", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime FRST_REG_DT,
          @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
          @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
          @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd,
@@ -413,6 +419,7 @@ public class ProjectMngController {
          @RequestParam(value = "uploadFile3", required = false) MultipartFile uploadFile3,
          @RequestParam(value = "oldFileName3", required = false) String oldFileName3,
          @RequestParam(value = "oldOrgFileName3", required = false) String oldOrgFileName3)
+   
    {
 	   
    
@@ -555,14 +562,12 @@ public class ProjectMngController {
       
       if(pjtSttsCd.equals("진행중")) {
     	  
-    	//  params.put("gid", pjtSn);
-    	//  params.put("ver", ver+1);
+    	  params.put("gid", gid);
+    	  params.put("ver", ver+1);
+    	  params.put("FRST_REG_DT",FRST_REG_DT);
     	  
-    	  params.put("gid", pjt.get("gid"));
-    	  params.put("ver", (Integer)pjt.get("ver") + 1);  
-    	  
-
-    	  projectMngService.savePjtProcForVersion(params);      
+       	  
+    	  pjtSn = projectMngService.savePjtProcForVersion(params)+"";      
       }else {
     	  projectMngService.updatePjtProc(params); 
       }
@@ -706,6 +711,9 @@ public class ProjectMngController {
       log.info("현재시간 (formatted): " + formatted);
       params.put("FRST_REG_DT", formatted); // DB에 저장할 값
 
+      int pjtSn = projectMngService.maxPjtSn();
+      params.put("PJT_SN", pjtSn+1);
+      
       projectMngService.savePjtProc(params);
 
       return "redirect:/pjtMng/getPjtList";

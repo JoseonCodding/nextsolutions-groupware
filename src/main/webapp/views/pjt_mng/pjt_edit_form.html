@@ -57,6 +57,7 @@ input, select {
 	box-sizing: border-box;
 }
 
+
 .button-row {
 	display: flex;
 	justify-content: center;
@@ -97,12 +98,13 @@ input, select {
 <body>
 
 	<h1>프로젝트 변경</h1>
-
+	<!-- ✅ 프로젝트 수정 Form -->
 	<form method="post" action="/pjtMng/updatePjtProc"
-		enctype="multipart/form-data">
-
+		 enctype="multipart/form-data">
+  
 		<!-- hidden 값도 null-safe -->
 		<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN'] ?: ''}" />
+		<input type="hidden" name="gid" th:value="${pjt['gid'] ?: ''}" />
 		<input type="hidden" name="oldFileName"  th:value="${pjt['ATCH_FILE_SN'] ?: ''}"> 
 		<input type="hidden" name="oldOrgFileName" th:value="${pjt['ORG_FILE_NM'] ?: ''}">
 
@@ -189,6 +191,12 @@ input, select {
 						style="margin-top: 8px; color: #333; font-size: 14px; background-color: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
 					</div></td>
 			</tr>
+			
+			<tr><th>등록일</th>
+			
+			<td>
+				<input type="text" name="FRST_REG_DT" th:value="${pjt['FRST_REG_DT']}"	readonly />
+			</td></tr>
 		</table>
 
 
