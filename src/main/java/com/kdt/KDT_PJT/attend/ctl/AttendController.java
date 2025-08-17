@@ -49,7 +49,7 @@ public class AttendController {
    // log 사용을 위함
    private final Logger log = LoggerFactory.getLogger(getClass());
    
-	//사용자 본인의 출퇴근 기록 (근태관리 메인 페이지)
+	//사용자 본인의 출퇴근 기록 
     @GetMapping
     String showAttendancePage(HttpSession session, Model model,AttendDTO attendance) {
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
@@ -128,7 +128,7 @@ public class AttendController {
     }
 
     
-    
+    // 관리자용
     @GetMapping("/attendList")
     public String attendListPage(AttendDTO dto,
                                  Model model,

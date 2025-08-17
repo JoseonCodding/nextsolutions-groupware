@@ -34,6 +34,8 @@ public interface LeaveMapper {
 	// 관리자용 연차 조회 : 모든 사원의 연차 총합, 사용 연차, 이름을 한 번에 조회
 	@Select("""
 	    SELECT e.emp_nm AS empNm,
+			   e.deptName AS deptName,
+			   e.position AS position,
 	           t1.employeeId,
 	           t1.total,
 	           IFNULL(t2.use_cnt, 0) AS used
@@ -57,6 +59,8 @@ public interface LeaveMapper {
 	// 관리자용 연차 조회 : 단일 사원의 연차 총합, 사용 연차, 이름을 한 번에 조회
 	@Select("""
 	    SELECT e.emp_nm AS empNm,
+			   e.deptName AS deptName,
+			   e.position AS position,
 	           t1.employeeId,
 	           t1.total,
 	           IFNULL(t2.use_cnt, 0) AS used

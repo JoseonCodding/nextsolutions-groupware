@@ -6,12 +6,16 @@
 	<table border="">
 		<tr>
 			<td>이름</td>
+			<td>부서</td>
+			<td>직위</td>
 			<td>총 연차</td>
 			<td>사용 연차</td>
 			<td>잔여 연차</td>
 		</tr>
 		<tr >
 		    <td th:text="${MngDetail.empNm}"></td>
+		    <td th:text="${MngDetail.deptName}"></td>
+		    <td th:text="${MngDetail.position}"></td>
 		    <td th:text="${MngDetail.total}"></td>
 		    <td th:text="${MngDetail.used}"></td>
 		    <td th:text="${MngDetail.getRest}"></td>

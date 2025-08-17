@@ -3,6 +3,8 @@
     <table border="">
         <tr>
             <td>이름</td>
+            <td>부서</td>
+			<td>직위</td>
             <td>총 연차</td>
             <td>사용 연차</td>
             <td>잔여 연차</td>
@@ -12,6 +14,8 @@
 			       th:text="${ldm.empNm}">
 			    </a>
             </td>
+            <td th:text="${ldm.deptName}"></td>
+		    <td th:text="${ldm.position}"></td>
             <td th:text="${ldm.total}"></td>
             <td th:text="${ldm.used}"></td>
             <td th:text="${ldm.getRest}"></td>

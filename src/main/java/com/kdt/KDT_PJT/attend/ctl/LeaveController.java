@@ -62,6 +62,10 @@ public class LeaveController {
         
         LeaveDTO dto = mapper.getAnnualLeaveOne(loginUser); 
         List<LeaveDTO> dtoList = mapper.annualLeave(loginUser); 
+        
+        dto.setDeptName(loginUser.getDeptName());
+        dto.setPosition(loginUser.getPosition());
+        
         System.out.println("/attend/leave : "+dto);
         // 홈에서 뜨는 화면 연결
         model.addAttribute("mainUrl", "attend/leave/leaveList");
@@ -167,6 +171,8 @@ public class LeaveController {
        
         // 연차 상세 조회 상단
         LeaveDTO dttt = mapper.mngLeaveListOne(ddd);
+        
+        
         
         // 연차 상세 조회 하단
         List<LeaveDTO> one = mapper.annualLeaveOneMMM(ddd);
