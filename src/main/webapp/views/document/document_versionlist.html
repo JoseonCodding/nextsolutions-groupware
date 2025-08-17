@@ -16,7 +16,7 @@
       <tr>
       <th style="width:80px;">버전</th>
       	<th>제목</th>
-        <th style="width:120px;">사원명</th>
+        <th style="width:120px;">담당자</th>
         <th style="width:160px;">등록일</th>
         <th style="width:120px;">보기</th>
       </tr>
@@ -31,8 +31,9 @@
           </span>
         </td>
         <td th:text="${v.pjtNm}">프로젝트명</td>
-        <td th:text="${#temporals.format(v.frstRegDt, 'yyyy-MM-dd HH:mm')}">2025-08-14 10:00</td>
         <td th:text="${v.empNm}">홍길동</td>
+        <td th:text="${#dates.format(v.frstRegDt, 'yyyy-MM-dd')}">-</td>
+        
         
         <td>
           <a class="btn btn-sm btn-primary"

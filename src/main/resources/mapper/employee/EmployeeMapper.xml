@@ -15,6 +15,7 @@
         emp_seq,
         employeeId,
         password,
+        role,
         active,
         emp_nm
     FROM employee

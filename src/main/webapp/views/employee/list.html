@@ -64,7 +64,7 @@
 <div>
   <!-- 검색 form -->
 <form action="/employee/list"  method="get" style="margin-top: 20px; display: flex; gap: 12px;">
-  <input type="text" name="keyword" placeholder="프로젝트명, 담당자 검색" class="form-control" 
+  <input type="text" name="keyword" placeholder="사원명 검색" class="form-control" 
          style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;" />
   <button type="submit" class="button" style="background-color: #2962ff; color: white;">
     검색
@@ -79,6 +79,7 @@
             <th>순번</th>
             <th>사번</th>
             <th>비밀번호</th>
+            <th>권한</th>
             <th>상태</th>
             <th>이름</th>
             <th>활성화/비활성화</th>
@@ -90,6 +91,7 @@
             <td th:text="${emp.emp_seq}"></td>
             <td th:text="${emp.employeeId}"></td>
             <td th:text="${emp.password}"></td>
+            <td th:text="${emp.role}"></td>
             <td class="status"
                 th:classappend="${emp.active == 1} ? 'status-active' : 'status-inactive'"
                 th:text="${emp.active == 1 ? '활성' : '비활성'}"></td>

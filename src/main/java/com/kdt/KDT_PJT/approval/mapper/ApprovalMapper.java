@@ -2,7 +2,6 @@ package com.kdt.KDT_PJT.approval.mapper;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,12 +14,12 @@ import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
 @Mapper
 public interface ApprovalMapper {
 	
-	/* 글 목록 */
+	/* 프로젝트, 연차, 근태, 공지사항 데이터 조회 -> (전자결재 메인) */
 	@Select({
 	    "<script>",
 	    "SELECT * FROM (",
 	    "   SELECT ",
-	    "     CONCAT('notice_', b.post_id) AS docId,",
+	    "     CONCAT('notice-', b.post_id) AS docId,",
 	    "     '공지사항' AS docType,",
 	    "     b.title AS title,",
 	    "     b.content AS content,",
@@ -29,8 +28,9 @@ public interface ApprovalMapper {
 	    "     e.emp_nm AS writer,",
 	    "     e.employeeId AS writerId,",
 	    "     b.created_at AS createdAt,",
-	    "     NULL AS attachFileUuid,",
-	    "     NULL AS attachFileOrgName,",
+	    "     NULL AS attachFileUuid1, NULL AS attachFileOrgName1,",
+	    "     NULL AS attachFileUuid2, NULL AS attachFileOrgName2,",
+	    "     NULL AS attachFileUuid3, NULL AS attachFileOrgName3,",
 	    "     NULL AS leaveCreateDate,",
 	    "     NULL AS leaveUsedDate,",
 	    "     NULL AS checkInTime,",
@@ -41,12 +41,12 @@ public interface ApprovalMapper {
 	    "     NULL AS timeInout",
 	    "   FROM board_post b",
 	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
-	    "   WHERE b.board_id = 1",
+	    "   WHERE b.board_id = 1 AND b.is_deleted = 0",
 
 	    "   UNION ALL",
 
 	    "   SELECT",
-	    "     CONCAT('leave_', l.leave_id) AS docId,",
+	    "     CONCAT('leave-', l.leave_id) AS docId,",
 	    "     '연차' AS docType,",
 	    "     CONCAT('연차 사용신청 - ', l.create_reason) AS title,",
 	    "     l.used_reason AS content,",
@@ -55,8 +55,9 @@ public interface ApprovalMapper {
 	    "     e.emp_nm AS writer,",
 	    "     e.employeeId AS writerId,",
 	    "     l.approval_date AS createdAt,",
-	    "     NULL AS attachFileUuid,",
-	    "     NULL AS attachFileOrgName,",
+	    "     NULL AS attachFileUuid1, NULL AS attachFileOrgName1,",
+	    "     NULL AS attachFileUuid2, NULL AS attachFileOrgName2,",
+	    "     NULL AS attachFileUuid3, NULL AS attachFileOrgName3,",
 	    "     l.create_date AS leaveCreateDate,",
 	    "     l.used_date AS leaveUsedDate,",
 	    "     NULL AS checkInTime,",
@@ -72,17 +73,18 @@ public interface ApprovalMapper {
 	    "   UNION ALL",
 
 	    "   SELECT",
-	    "     CONCAT('project_', p.PJT_SN) AS docId,",
+	    "     CONCAT('project-', p.PJT_SN) AS docId,",
 	    "     '프로젝트' AS docType,",
 	    "     p.PJT_NM AS title,",
 	    "     p.content AS content,",
 	    "     p.PJT_STTS_CD AS status,",
-	    "     '프로젝트부' AS deptName,",
-	    "     '박길동' AS writer,",
+	    "     e.deptName AS deptName,",
+	    "     e.emp_nm AS writer,",
 	    "     p.employeeId AS writerId,",
 	    "     p.FRST_REG_DT AS createdAt,",
-	    "     p.ATCH_FILE_SN1 AS attachFileUuid,",
-	    "     p.ORG_FILE_NM1 AS attachFileOrgName,",
+	    "     p.ATCH_FILE_SN1 AS attachFileUuid1,   p.ORG_FILE_NM1 AS attachFileOrgName1,",
+	    "     p.ATCH_FILE_SN2 AS attachFileUuid2,  p.ORG_FILE_NM2 AS attachFileOrgName2,",
+	    "     p.ATCH_FILE_SN3 AS attachFileUuid3,  p.ORG_FILE_NM3 AS attachFileOrgName3,",
 	    "     NULL AS leaveCreateDate,",
 	    "     NULL AS leaveUsedDate,",
 	    "     NULL AS checkInTime,",
@@ -92,11 +94,12 @@ public interface ApprovalMapper {
 	    "     NULL AS modificationReason,",
 	    "     NULL AS timeInout",
 	    "   FROM TB_PJT_BASC p",
+	    "   LEFT JOIN employee e ON p.employeeId = e.employeeId",
 
 	    "   UNION ALL",
 
 	    "   SELECT",
-	    "     CONCAT('attendance_', a.id) AS docId,",
+	    "     CONCAT('attendance-', a.id) AS docId,",
 	    "     '근태' AS docType,",
 	    "     '근태 수정 신청' AS title,",
 	    "     a.modification_reason AS content,",
@@ -105,8 +108,9 @@ public interface ApprovalMapper {
 	    "     e.emp_nm AS writer,",
 	    "     e.employeeId AS writerId,",
 	    "     a.approval_date AS createdAt,",
-	    "     NULL AS attachFileUuid,",
-	    "     NULL AS attachFileOrgName,",
+	    "     NULL AS attachFileUuid1, NULL AS attachFileOrgName1,",
+	    "     NULL AS attachFileUuid2, NULL AS attachFileOrgName2,",
+	    "     NULL AS attachFileUuid3, NULL AS attachFileOrgName3,",
 	    "     NULL AS leaveCreateDate,",
 	    "     NULL AS leaveUsedDate,",
 	    "     a.check_in_time AS checkInTime,",
@@ -160,20 +164,20 @@ public interface ApprovalMapper {
 		);
 
 	
-	// 글 전체 개수 카운트
+	/* 글 전체 개수 카운트 -> (페이지네이션) */
 	@Select({
 	    "<script>",
 	    "SELECT COUNT(*) FROM (",
 	    // ──────────────── 공지사항
-	    "   SELECT CONCAT('notice_', b.post_id) AS docId, '공지사항' AS docType, e.employeeId AS writerId, b.status",
+	    "   SELECT CONCAT('notice-', b.post_id) AS docId, '공지사항' AS docType, e.employeeId AS writerId, b.status",
 	    "     FROM board_post b",
 	    "     LEFT JOIN employee e ON b.employee_id = e.employeeId",
-	    "    WHERE b.board_id = 1",
+	    "    WHERE b.board_id = 1 AND b.is_deleted = 0",
 
 	    "   UNION ALL",
 
 	    // ──────────────── 연차
-	    "   SELECT CONCAT('leave_', l.leave_id) AS docId, '연차' AS docType, e.employeeId AS writerId, l.state_type AS status",
+	    "   SELECT CONCAT('leave-', l.leave_id) AS docId, '연차' AS docType, e.employeeId AS writerId, l.state_type AS status",
 	    "     FROM annual_leave l",
 	    "     LEFT JOIN employee e ON l.employeeId = e.employeeId",
 	    "    WHERE l.state_type IS NOT NULL",
@@ -181,13 +185,13 @@ public interface ApprovalMapper {
 	    "   UNION ALL",
 
 	    // ──────────────── 프로젝트
-	    "   SELECT CONCAT('project_', p.PJT_SN) AS docId, '프로젝트' AS docType, p.employeeId AS writerId, p.PJT_STTS_CD AS status",
+	    "   SELECT CONCAT('project-', p.PJT_SN) AS docId, '프로젝트' AS docType, p.employeeId AS writerId, p.PJT_STTS_CD AS status",
 	    "     FROM TB_PJT_BASC p",
 
 	    "   UNION ALL",
 
 	    // ──────────────── 근태
-	    "   SELECT CONCAT('attendance_', a.id) AS docId, '근태' AS docType, e.employeeId AS writerId, a.status",
+	    "   SELECT CONCAT('attendance-', a.id) AS docId, '근태' AS docType, e.employeeId AS writerId, a.status",
 	    "     FROM attendance a",
 	    "     LEFT JOIN employee e ON a.employeeId = e.employeeId",
 	    "    WHERE a.status IS NOT NULL",
@@ -230,220 +234,14 @@ public interface ApprovalMapper {
 	    @Param("status") String status,
 	    @Param("employeeId") String employeeId
 	);
-
-
-
-
-
 	
-	// 공지사항 + 연차 + 프로젝트 + 근태 DB 끌어오기
-	@Select({
-	    "<script>",
-	    "SELECT * FROM (",
-	    "   SELECT ",
-	    "     CONCAT('notice_', b.post_id) AS docId,",
-	    "     '공지사항' AS docType,",
-	    "     b.title AS title,",
-	    "     b.content AS content,",
-	    "     b.status AS status,",
-	    "     e.deptName AS deptName,",
-	    "     e.emp_nm AS writer,",
-	    "     b.created_at AS createdAt,",
-	    "     NULL AS attachFileUuid,",
-	    "     NULL AS attachFileOrgName,",
-	    "     NULL AS leaveCreateDate,",
-	    "     NULL AS leaveUsedDate,",
-	    "     NULL AS checkInTime,",
-	    "     NULL AS checkOutTime,",
-	    "     NULL AS modifiedBy,",
-	    "     NULL AS modifiedAt,",
-	    "     NULL AS modificationReason,",
-	    "     NULL AS timeInout",
-	    "   FROM board_post b",
-	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
-	    "   WHERE b.board_id = 1",
-	    "     <if test='type != null and type != \"\"'>",
-	    "       AND b.docType = #{type}",
-	    "     </if>",
-	    "     <if test='status != null and status != \"\"'>",
-	    "       AND b.status = #{status}",
-	    "     </if>",
-
-	    "   UNION ALL",
-
-	    "   SELECT",
-	    "     CONCAT('leave_', l.leave_id) AS docId,",
-	    "     '연차' AS docType,",
-	    "     CONCAT('연차 사용신청 - ', l.create_reason) AS title,",
-	    "     l.used_reason AS content,",
-	    "     l.state_type AS status,",
-	    "     e.deptName AS deptName,",
-	    "     e.emp_nm AS writer,",
-	    "     l.approval_date AS createdAt,",
-	    "     NULL AS attachFileUuid,",
-	    "     NULL AS attachFileOrgName,",
-	    "     l.create_date AS leaveCreateDate,",
-	    "     l.used_date AS leaveUsedDate,",
-	    "     NULL AS checkInTime,",
-	    "     NULL AS checkOutTime,",
-	    "     NULL AS modifiedBy,",
-	    "     NULL AS modifiedAt,",
-	    "     NULL AS modificationReason,",
-	    "     NULL AS timeInout",
-	    "   FROM annual_leave l",
-	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
-	    "   <where>",
-	    "     l.state_type IS NOT NULL",
-	    "     <if test='type != null and type != \"\"'>",
-	    "       AND l.docType = #{type}",
-	    "     </if>",
-	    "     <if test='status != null and status != \"\"'>",
-	    "       AND l.state_type = #{status}",
-	    "     </if>",
-	    "   </where>",
-
-	    "   UNION ALL",
-
-	    "   SELECT",
-	    "     CONCAT('project_', p.PJT_SN) AS docId,",
-	    "     '프로젝트' AS docType,",
-	    "     p.PJT_NM AS title,",
-	    "     p.content AS content,",
-	    "     p.PJT_STTS_CD AS status,",
-	    "     '프로젝트부' AS deptName,",
-	    "     '박길동' AS writer,",
-	    "     p.FRST_REG_DT AS createdAt,",
-	    "     p.ATCH_FILE_SN1 AS attachFileUuid,",
-	    "     p.ORG_FILE_NM1 AS attachFileOrgName,",
-	    "     NULL AS leaveCreateDate,",
-	    "     NULL AS leaveUsedDate,",
-	    "     NULL AS checkInTime,",
-	    "     NULL AS checkOutTime,",
-	    "     NULL AS modifiedBy,",
-	    "     NULL AS modifiedAt,",
-	    "     NULL AS modificationReason,",
-	    "     NULL AS timeInout",
-	    "   FROM TB_PJT_BASC p",
-	    "   <where>",
-	    "     <if test='type != null and type != \"\"'>",
-	    "       p.docType = #{type}",
-	    "     </if>",
-	    "     <if test='status != null and status != \"\"'>",
-	    "       AND p.PJT_STTS_CD = #{status}",
-	    "     </if>",
-	    "   </where>",
-
-	    "   UNION ALL",
-
-	    "   SELECT",
-	    "     CONCAT('attendance_', a.id) AS docId,",
-	    "     '근태' AS docType,",
-	    "     '근태 수정 신청' AS title,",
-	    "     a.modification_reason AS content,",
-	    "     a.status AS status,",
-	    "     e.deptName AS deptName,",
-	    "     e.emp_nm AS writer,",
-	    "     a.approval_date AS createdAt,",
-	    "     NULL AS attachFileUuid,",
-	    "     NULL AS attachFileOrgName,",
-	    "     NULL AS leaveCreateDate,",
-	    "     NULL AS leaveUsedDate,",
-	    "     a.check_in_time AS checkInTime,",
-	    "     a.check_out_time AS checkOutTime,",
-	    "     a.modified_by AS modifiedBy,",
-	    "     a.modified_at AS modifiedAt,",
-	    "     a.modification_reason AS modificationReason,",
-	    "     a.time_inout AS timeInout",
-	    "   FROM attendance a",
-	    "   LEFT JOIN employee e ON a.employeeId = e.employeeId",
-	    "   <where>",
-	    "     a.status IS NOT NULL",
-	    "     <if test='type != null and type != \"\"'>",
-	    "       AND a.docType = #{type}",
-	    "     </if>",
-	    "     <if test='status != null and status != \"\"'>",
-	    "       AND a.status = #{status}",
-	    "     </if>",
-	    "   </where>",
-
-	    ") AS all_data",
-	    "ORDER BY createdAt DESC",
-	    "LIMIT #{offset}, #{size}",
-	    "</script>"
-	})
-	List<ApprovalDTO> approvalData(
-		    @Param("offset") int offset,
-		    @Param("size") int size,
-		    @Param("type") String type,
-		    @Param("status") String status
-		);
-
-
-	// 공지사항 + 연차 + 프로젝트 + 근태  DB 총 개수 세기
-	@Select({
-		  "<script>",
-		  "SELECT COUNT(*) FROM (",
-		  "  SELECT CONCAT('notice_', b.post_id) AS docId",
-		  "    FROM board_post b",
-		  "   WHERE b.board_id = 1",
-		  "     <if test='type != null and type != \"\"'>",
-		  "       AND b.docType = #{type}",
-		  "     </if>",
-		  "     <if test='status != null and status != \"\"'>",
-		  "       AND b.status = #{status}",
-		  "     </if>",
-		  "  UNION ALL",
-		  "  SELECT CONCAT('leave_', l.leave_id) AS docId",
-		  "    FROM annual_leave l",
-		  "   <where>",
-		  "     l.state_type IS NOT NULL",
-		  "     <if test='type != null and type != \"\"'>",
-		  "       AND l.docType = #{type}",
-		  "     </if>",
-		  "     <if test='status != null and status != \"\"'>",
-		  "       AND l.state_type = #{status}",
-		  "     </if>",
-		  "   </where>",
-		  "  UNION ALL",
-		  "  SELECT CONCAT('project_', p.PJT_SN) AS docId",
-		  "    FROM TB_PJT_BASC p",
-		  "   <where>",
-		  "     <if test='type != null and type != \"\"'>",
-		  "       p.docType = #{type}",
-		  "     </if>",
-		  "     <if test='status != null and status != \"\"'>",
-		  "       AND p.PJT_STTS_CD = #{status}",
-		  "     </if>",
-		  "   </where>",
-		  "  UNION ALL",
-		  "  SELECT CONCAT('attendance_', a.id) AS docId",
-		  "    FROM attendance a",
-		  "   <where>",
-		  "     a.status IS NOT NULL",
-		  "     <if test='type != null and type != \"\"'>",
-		  "       AND a.docType = #{type}",
-		  "     </if>",
-		  "     <if test='status != null and status != \"\"'>",
-		  "       AND a.status = #{status}",
-		  "     </if>",
-		  "   </where>",
-		  ") AS ALL_DATA",
-		  "</script>"
-		})
-		int approvalCountAll(
-		  @Param("type") String type,
-		  @Param("status") String status
-		);
-
-	
-	// 뷰어용 데이터 조회
 	@Select({
 	    "<script>",
 	    "SELECT * FROM (",
 
 	    // ───── 공지사항
 	    "   SELECT ",
-	    "     CONCAT('notice_', b.post_id) AS docId,",
+	    "     CONCAT('notice-', b.post_id) AS docId,",
 	    "     '공지사항' AS docType,",
 	    "     b.title AS title,",
 	    "     b.content AS content,",
@@ -452,21 +250,30 @@ public interface ApprovalMapper {
 	    "     e.emp_nm AS writer,",
 	    "     e.employeeId AS writerId,",
 	    "     b.created_at AS createdAt,",
-	    "     NULL AS attachFileUuid, NULL AS attachFileOrgName,",
+	    "     NULL AS attachFileUuid1, NULL AS attachFileOrgName1,",
+	    "     NULL AS attachFileUuid2, NULL AS attachFileOrgName2,",
+	    "     NULL AS attachFileUuid3, NULL AS attachFileOrgName3,",
 	    "     NULL AS leaveCreateDate, NULL AS leaveUsedDate,",
 	    "     NULL AS checkInTime, NULL AS checkOutTime,",
 	    "     NULL AS modifiedBy, NULL AS modifiedAt,",
 	    "     NULL AS modificationReason, NULL AS timeInout,",
-	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt",
+	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt,",
+	    "     b.firstSign AS firstSign,",
+	    "     b.secondSign AS secondSign,",
+	    "     (SELECT emp_nm FROM employee WHERE role = '게시판' LIMIT 1) AS approverName,",
+	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
+	    "     e.position AS writerPosition,",
+	    "     (SELECT position FROM employee WHERE role = '근태' LIMIT 1) AS approverPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition",
 	    "   FROM board_post b",
 	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
-	    "   WHERE b.board_id = 1",
+	    "   WHERE b.board_id = 1 AND b.is_deleted = 0",
 
 	    "   UNION ALL",
 
 	    // ───── 연차
 	    "   SELECT",
-	    "     CONCAT('leave_', l.leave_id) AS docId,",
+	    "     CONCAT('leave-', l.leave_id) AS docId,",
 	    "     '연차' AS docType,",
 	    "     CONCAT('연차 사용신청 - ', l.create_reason) AS title,",
 	    "     l.used_reason AS content,",
@@ -475,12 +282,21 @@ public interface ApprovalMapper {
 	    "     e.emp_nm AS writer,",
 	    "     e.employeeId AS writerId,",
 	    "     l.approval_date AS createdAt,",
-	    "     NULL AS attachFileUuid, NULL AS attachFileOrgName,",
+	    "     NULL AS attachFileUuid1, NULL AS attachFileOrgName1,",
+	    "     NULL AS attachFileUuid2, NULL AS attachFileOrgName2,",
+	    "     NULL AS attachFileUuid3, NULL AS attachFileOrgName3,",
 	    "     l.create_date AS leaveCreateDate, l.used_date AS leaveUsedDate,",
 	    "     NULL AS checkInTime, NULL AS checkOutTime,",
 	    "     NULL AS modifiedBy, NULL AS modifiedAt,",
 	    "     NULL AS modificationReason, NULL AS timeInout,",
-	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt",
+	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt,",
+	    "     l.firstSign AS firstSign,",
+	    "     l.secondSign AS secondSign,",
+	    "     (SELECT emp_nm FROM employee WHERE role = '근태' LIMIT 1) AS approverName,",
+	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
+	    "     e.position AS writerPosition,",
+	    "     (SELECT position FROM employee WHERE role = '근태' LIMIT 1) AS approverPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition",
 	    "   FROM annual_leave l",
 	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
 	    "   WHERE l.state_type IS NOT NULL",
@@ -489,28 +305,38 @@ public interface ApprovalMapper {
 
 	    // ───── 프로젝트
 	    "   SELECT",
-	    "     CONCAT('project_', p.PJT_SN) AS docId,",
+	    "     CONCAT('project-', p.PJT_SN) AS docId,",
 	    "     '프로젝트' AS docType,",
 	    "     p.PJT_NM AS title,",
 	    "     p.content AS content,",
 	    "     p.PJT_STTS_CD AS status,",
-	    "     '프로젝트부' AS deptName,",
-	    "     '박길동' AS writer,",
-	    "     p.employeeId AS writerId,",
+	    "     e.deptName AS deptName,",
+	    "     e.emp_nm AS writer,",
+	    "     e.employeeId AS writerId,",
 	    "     p.FRST_REG_DT AS createdAt,",
-	    "     p.ATCH_FILE_SN1 AS attachFileUuid, p.ORG_FILE_NM1 AS attachFileOrgName,",
+	    "     p.ATCH_FILE_SN1 AS attachFileUuid1,   p.ORG_FILE_NM1 AS attachFileOrgName1,",
+	    "     p.ATCH_FILE_SN2 AS attachFileUuid2,  p.ORG_FILE_NM2 AS attachFileOrgName2,",
+	    "     p.ATCH_FILE_SN3 AS attachFileUuid3,  p.ORG_FILE_NM3 AS attachFileOrgName3,",
 	    "     NULL AS leaveCreateDate, NULL AS leaveUsedDate,",
 	    "     NULL AS checkInTime, NULL AS checkOutTime,",
 	    "     NULL AS modifiedBy, NULL AS modifiedAt,",
 	    "     NULL AS modificationReason, NULL AS timeInout,",
-	    "     p.PJT_BGNG_DT AS pjtBgngDt, p.PJT_END_DT AS pjtEndDt",
+	    "     p.PJT_BGNG_DT AS pjtBgngDt, p.PJT_END_DT AS pjtEndDt,",
+	    "     p.firstSign AS firstSign,",
+	    "     p.secondSign AS secondSign,",
+	    "     (SELECT emp_nm FROM employee WHERE role = '프로젝트' LIMIT 1) AS approverName,",
+	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
+	    "     e.position AS writerPosition,",
+	    "     (SELECT position FROM employee WHERE role = '근태' LIMIT 1) AS approverPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition",
 	    "   FROM TB_PJT_BASC p",
+	    "   LEFT JOIN employee e ON p.employeeId = e.employeeId",
 
 	    "   UNION ALL",
 
 	    // ───── 근태
 	    "   SELECT",
-	    "     CONCAT('attendance_', a.id) AS docId,",
+	    "     CONCAT('attendance-', a.id) AS docId,",
 	    "     '근태' AS docType,",
 	    "     '근태 수정 신청' AS title,",
 	    "     a.modification_reason AS content,",
@@ -519,19 +345,27 @@ public interface ApprovalMapper {
 	    "     e.emp_nm AS writer,",
 	    "     e.employeeId AS writerId,",
 	    "     a.approval_date AS createdAt,",
-	    "     NULL AS attachFileUuid, NULL AS attachFileOrgName,",
+	    "     NULL AS attachFileUuid1, NULL AS attachFileOrgName1,",
+	    "     NULL AS attachFileUuid2, NULL AS attachFileOrgName2,",
+	    "     NULL AS attachFileUuid3, NULL AS attachFileOrgName3,",
 	    "     NULL AS leaveCreateDate, NULL AS leaveUsedDate,",
 	    "     a.check_in_time AS checkInTime, a.check_out_time AS checkOutTime,",
 	    "     a.modified_by AS modifiedBy, a.modified_at AS modifiedAt,",
 	    "     a.modification_reason AS modificationReason, a.time_inout AS timeInout,",
-	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt",
+	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt,",
+	    "     a.firstSign AS firstSign,",
+	    "     a.secondSign AS secondSign,",
+	    "     (SELECT emp_nm FROM employee WHERE role = '근태' LIMIT 1) AS approverName,",
+	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
+	    "     e.position AS writerPosition,",
+	    "     (SELECT position FROM employee WHERE role = '근태' LIMIT 1) AS approverPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition",
 	    "   FROM attendance a",
 	    "   LEFT JOIN employee e ON a.employeeId = e.employeeId",
 
 	    ") AS all_data",
 	    "WHERE docId = #{docId}",
 
-	    // ---- 권한 필터 (대표이면 전체 허용)
 	    "<choose>",
 	    "  <when test='role != \"대표\"'>",
 	    "    <choose>",
@@ -551,7 +385,6 @@ public interface ApprovalMapper {
 	    "  </when>",
 	    "</choose>",
 
-	    // ---- type/status 필터 (선택)
 	    "<if test='type != null and type != \"\"'>",
 	    "  AND docType = #{type}",
 	    "</if>",
@@ -571,23 +404,24 @@ public interface ApprovalMapper {
 
 
 
-
-
-	// 결재 종류 별 삭제 메소드 (PK로 비교)
-	@Delete("DELETE FROM board_post WHERE post_id = #{id}")
-	int deleteNotice(@Param("id") String id);
-
-	@Delete("DELETE FROM annual_leave WHERE leave_id = #{id}")
-	int deleteLeave(@Param("id") String id);
-
-	@Delete("DELETE FROM TB_PJT_BASC WHERE PJT_SN = #{id}")
-	int deleteProject(@Param("id") String id);
+//	// 이제 삭제 기능은 없습니다~ (is_deleted를 1로 바꾸는 소프트 삭제만 남았어요~)
+//	@Delete("DELETE FROM board_post WHERE post_id = #{id}")
+//	int deleteNotice(@Param("id") String id);
+//
+//	@Delete("DELETE FROM annual_leave WHERE leave_id = #{id}")
+//	int deleteLeave(@Param("id") String id);
+//
+//	@Delete("DELETE FROM TB_PJT_BASC WHERE PJT_SN = #{id}")
+//	int deleteProject(@Param("id") String id);
+//	
+//	@Delete("DELETE FROM attendance WHERE id = #{id}")
+//	int deleteAttendance(@Param("id") String id);
 	
-	@Delete("DELETE FROM attendance WHERE id = #{id}")
-	int deleteAttendance(@Param("id") String id);
+	// 공지사항 소프트 삭제
+	@Update("UPDATE board_post SET is_deleted = 1 WHERE post_id = #{id}")
+	int softDeleteNotice(@Param("id") String id);
 	
-	
-	// 결재 종류 별 수정 메소드
+	// 공지사항 수정
 	@Update("UPDATE board_post SET docType=#{dto.docType}, title=#{dto.title}, content=#{dto.content} WHERE post_id=#{id}")
 	int editNotice(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 
@@ -601,11 +435,15 @@ public interface ApprovalMapper {
 	    "WHERE leave_id = #{id}",
 	    "</script>"
 	})
+	
+	// 연차 수정
 	int editLeave(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 
+	// 프로젝트 수정
 	@Update("UPDATE TB_PJT_BASC SET docType=#{dto.docType}, PJT_NM=#{dto.title}, content=#{dto.content} WHERE PJT_SN=#{id}")
 	int editProject(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 	
+	// 근태 수정
 	@Update(
 			"UPDATE attendance "
 			+ "SET docType=#{dto.docType}, "
@@ -616,26 +454,46 @@ public interface ApprovalMapper {
 	int editAttendance(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 	
 	
-	// 공지사항 승인&반려 메서드
-	@Update("UPDATE board_post SET status=#{status} WHERE post_id=#{id}")
-	int updateStatusNotice(@Param("id") String id, @Param("status") String status);
-	
-	// 연차 승인&반려 메서드
+	// 공지사항 승인 & 반려
 	@Update({
-	  "<script>",
-	  "UPDATE annual_leave",
-	  "SET state_type = #{status}",
-	  "<if test=\"status == '완료'\">, leave_type = '사용'</if>",
-	  "WHERE leave_id = #{id}",
-	  "</script>"
+	    "<script>",
+	    "UPDATE board_post",
+	    "SET status = #{status},",
+	    "    firstSign = CASE ",
+	    "                 WHEN #{status} IN ('완료','반려') AND firstSign IS NULL THEN NOW()",
+	    "                 ELSE firstSign",
+	    "               END",
+	    "WHERE post_id = #{id}",
+	    "  AND status = #{currentStatus}",
+	    "</script>"
 	})
-	int updateStatusLeave(@Param("id") String id, @Param("status") String status);
+	int updateStatusNotice(@Param("id") String id,
+	                       @Param("status") String status,
+	                       @Param("currentStatus") String currentStatus);
+
 	
-	// 프로젝트 승인&반려 메서드
-	@Update("UPDATE TB_PJT_BASC SET PJT_STTS_CD=#{status} WHERE PJT_SN=#{id}")
-	int updateStatusProject(@Param("id") String id, @Param("status") String status);
+	// 프로젝트 승인 & 반려
+	@Update({
+	    "<script>",
+	    "UPDATE TB_PJT_BASC",
+	    "SET PJT_STTS_CD = #{status}",
+	    "<choose>",
+	    "  <when test='status == \"진행중\"'> , firstSign = NOW() </when>",
+	    "  <when test='status == \"완료\"'> , secondSign = NOW() </when>",
+	    "  <when test='status == \"반려\"'>",
+	    "    <if test='currentStatus == \"대기\"'> , firstSign = NOW() </if>",
+	    "    <if test='currentStatus == \"진행중\"'> , secondSign = NOW() </if>",
+	    "  </when>",
+	    "</choose>",
+	    "WHERE PJT_SN = #{id}",
+	    "</script>"
+	})
+	int updateStatusProject(@Param("id") String id,
+	                        @Param("status") String status,
+	                        @Param("currentStatus") String currentStatus);
+
 	
-	// 프로젝트 승인 시, 일정 테이블에 추가되는 메서드
+	// 프로젝트 승인 시, 일정 테이블에 추가
 	@Insert("""
 		    INSERT INTO schedule (
 		        title,
@@ -645,7 +503,8 @@ public interface ApprovalMapper {
 		        content,
 		        created_at,
 		        employeeId,
-		        holiday
+		        holiday,
+		        PJT_SN
 		    )
 		    SELECT
 		        PJT_NM AS title,
@@ -655,42 +514,82 @@ public interface ApprovalMapper {
 		        content AS content,
 		        FRST_REG_DT AS created_at,
 		        employeeId AS employeeId,
-		        '프로젝트' AS holiday
+		        '프로젝트' AS holiday,
+		        PJT_SN
 		    FROM TB_PJT_BASC
 		    WHERE PJT_SN = #{id}
 		""")
-		int insertProjectSchedule(@Param("id") String projectId);
+	int insertProjectSchedule(@Param("id") String projectId);
 	
-    // 근태 반려 메서드
-    @Update("UPDATE attendance SET status = #{status} WHERE id = #{id}")
-    int rejectAttendance(@Param("id") String id, @Param("status") String status);
-
-    // 근태 승인 메서드
+    // 근태 반려
+	@Update("""
+		    UPDATE attendance
+		    SET status = #{status},
+		        firstSign = CASE
+		                      WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW()
+		                      ELSE firstSign
+		                    END,
+		        secondSign = CASE
+		                       WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW()
+		                       ELSE secondSign
+		                     END
+		    WHERE id = #{id}
+		""")
+		int rejectAttendance(
+		    @Param("id") int id,
+		    @Param("status") String status,
+		    @Param("role") String role
+		);
+    
+    // 근태 승인
     @Update({
         "<script>",
         "UPDATE attendance",
-        "SET status = #{status}",
-        "<if test='status == \"완료\"'>",
-        "  <choose>",
-        "    <when test='timeInout == \"출근\"'>",
-        "      , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00')",
-        "    </when>",
-        "    <when test='timeInout == \"퇴근\"'>",
-        "      , check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
-        "    </when>",
-        "    <when test='timeInout == \"출퇴근\"'>",
-        "      , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00'),",
-        "        check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
-        "    </when>",
-        "  </choose>",
-        "  , modified_at = NOW()",
-        "</if>",
+        "SET status = '완료',",
+        "    secondSign = NOW(),",
+        "    modified_at = NOW()",
+        "<choose>",
+        "  <when test='timeInout == \"출근\"'>",
+        "    , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00')",
+        "  </when>",
+        "  <when test='timeInout == \"퇴근\"'>",
+        "    , check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
+        "  </when>",
+        "  <when test='timeInout == \"출퇴근\"'>",
+        "    , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00'),",
+        "      check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
+        "  </when>",
+        "</choose>",
         "WHERE id = #{id}",
         "</script>"
     })
-    int approveAttendance(@Param("id") String id, @Param("status") String status, @Param("timeInout") String timeInout);
-
-
+    int approveAttendance(
+		    	    @Param("id") String id,
+		    	    @Param("timeInout") String timeInout);
+    
+    // 연차 반려
+    @Update("""
+    	    UPDATE annual_leave
+    	    SET state_type = #{status},
+    	        firstSign = CASE WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW() ELSE firstSign END,
+    	        secondSign = CASE WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW() ELSE secondSign END
+    	    WHERE leave_id = #{id}
+    	""")
+    	int rejectLeave(@Param("id") int id,
+    	                @Param("status") String status,
+    	                @Param("role") String role);
+    
+    // 연차 승인
+    @Update("""
+    	    UPDATE annual_leave
+    	    SET state_type = '완료',
+    	        leave_type  = '사용',
+    	        firstSign   = CASE WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW() ELSE firstSign END,
+    	        secondSign  = CASE WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW() ELSE secondSign END
+    	    WHERE leave_id = #{id}
+    	""")
+    	int approveLeave(@Param("id") int id,
+    	                 @Param("role") String role);
 
 
 }
