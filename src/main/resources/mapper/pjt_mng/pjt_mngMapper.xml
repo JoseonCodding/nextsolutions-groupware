@@ -49,12 +49,14 @@
   <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     INSERT INTO TB_PJT_BASC (
     
-      PJT_NM, employeeId,TB_PJT_APR, PJT_BGNG_DT, PJT_END_DT,
+      PJT_SN, PJT_NM, employeeId,TB_PJT_APR, PJT_BGNG_DT, PJT_END_DT,
       PJT_STTS_CD,  FRST_REG_DT,
       content, ATCH_FILE_SN1, ORG_FILE_NM1,
       ATCH_FILE_SN2, ORG_FILE_NM2,
-      ATCH_FILE_SN3, ORG_FILE_NM3
+      ATCH_FILE_SN3, ORG_FILE_NM3,
+      gid, ver
     ) VALUES (
+      #{PJT_SN},
       #{PJT_NM},
       #{employeeId},
        #{TB_PJT_APR},
@@ -69,7 +71,8 @@
       #{ATCH_FILE_SN2},
       #{ORG_FILE_NM2},
       #{ATCH_FILE_SN3},
-      #{ORG_FILE_NM3}
+      #{ORG_FILE_NM3},
+      #{PJT_SN}, 1
     )
   </insert>
   
@@ -81,7 +84,8 @@
       content, ATCH_FILE_SN1, ORG_FILE_NM1,
       ATCH_FILE_SN2, ORG_FILE_NM2,
       ATCH_FILE_SN3, ORG_FILE_NM3,
-      ver, gid, USE_YN
+      
+      ver, gid
     ) VALUES (
       #{PJT_NM},
       #{employeeId},
@@ -98,9 +102,9 @@
       #{ORG_FILE_NM2},
       #{ATCH_FILE_SN3},
       #{ORG_FILE_NM3},
+      
       #{ver},
-      #{gid},
-       'N'
+      #{gid}
     )
   </insert>
 
@@ -118,7 +122,7 @@
           resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     SELECT B.PJT_SN, B.PJT_NM, B.PJT_STTS_CD, B.employeeId,
            B.FRST_REG_DT, B.LAST_MDFCN_DT,
-           B.PJT_BGNG_DT, B.PJT_END_DT, B.TB_PJT_APR
+           B.PJT_BGNG_DT, B.PJT_END_DT, B.TB_PJT_APR, B.ver
     FROM TB_PJT_BASC B
     WHERE (B.USE_YN IS NULL OR B.USE_YN = 'Y')
       <if test="keyword != null and keyword != ''">
@@ -197,14 +201,16 @@
         resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
      
      <!-- 게시글 리스트 최신순으로 정렬 -->   
-  SELECT *
-  FROM TB_PJT_BASC
-  WHERE (USE_YN IS NULL OR USE_YN = 'Y')
+  select t2.* from TB_PJT_BASC t2,
+(select gid, max(ver) as max_ver from TB_PJT_BASC
+group by gid) t1
+where
+t2.gid = t1.gid and t2.ver = t1.max_ver  and  (t2.USE_YN IS NULL OR t2.USE_YN = 'Y')
     <if test="keyword != null and keyword != ''">
-      AND (PJT_NM LIKE CONCAT('%', #{keyword}, '%')
-           OR employeeId = #{keyword})
+      AND (t2.PJT_NM LIKE CONCAT('%', #{keyword}, '%')
+           OR t2.employeeId = #{keyword})
     </if>
-    ORDER BY FRST_REG_DT DESC
+    ORDER BY  t2.FRST_REG_DT DESC
 </select>
 
 
@@ -323,6 +329,12 @@ ORDER BY b.LAST_MDFCN_DT DESC
   WHERE employeeId = #{employeeId}   <!-- 실제 컬럼명에 맞춰 employeeId/EMP_SEQ 등으로 수정 -->
     AND use_yn = 'Y'
   LIMIT 1
+</select>
+
+
+
+<select id="maxPjtSn"  resultType="int">
+	select max(PJT_SN) from TB_PJT_BASC
 </select>
 
 

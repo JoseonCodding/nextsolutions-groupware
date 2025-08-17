@@ -297,10 +297,10 @@ function validateForm() {
   const form = document.forms[0];
   if (!form) return true;
 
-  // 1) 프로젝트명: 1~25자, 공백 허용, 특수문자 불가
+  // 1) 프로젝트명: 1~35자, 공백 허용, 특수문자 불가
   const name = (form.pjtNm?.value || "").trim();
-  if (!/^[가-힣A-Za-z0-9\s]{1,25}$/.test(name)) {
-    alert("프로젝트명은 공백 가능, 특수문자 없이 1~25자여야 합니다.");
+  if (!/^[가-힣A-Za-z0-9\s]{1,35}$/.test(name)) {
+    alert("프로젝트명은 공백 가능, 특수문자 없이 1~35자여야 합니다.");
     form.pjtNm?.focus();
     return false;
   }

@@ -240,6 +240,8 @@ tr:hover {
 				<th>시작일</th>
 				<th>종료일</th>
 				<th>결재자</th>
+				<th>버전</th>
+				<th>gid</th>
 				<th>비고</th>
 			</tr>
 		</thead>
@@ -254,6 +256,8 @@ tr:hover {
 				<td th:text="${pjt['PJT_BGNG_DT']}">시작일</td>
 				<td th:text="${pjt['PJT_END_DT']}">종료일</td>
 				<td th:text="${pjt['TB_PJT_APR']}">결재자</td>
+				<td th:text="${pjt['ver']}"></td>
+				<td th:text="${pjt['gid']}"></td>
 				<td>
 					<button class="button btn-view"
 						th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">

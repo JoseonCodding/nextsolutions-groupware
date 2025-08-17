@@ -223,4 +223,7 @@ public class CmmnDao extends SqlSessionDaoSupport {
 	public void listToOutUsingResultHandler(String queryId, ResultHandler<?> handler) {
 		getSqlSession().select(queryId, handler);
 	}
+	
+	
+	
 }
