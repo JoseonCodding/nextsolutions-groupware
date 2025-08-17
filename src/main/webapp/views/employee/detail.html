@@ -88,17 +88,10 @@
             </tr>
             <tr>
                 <td>권한</td>
-                <td colspan="3">
-                
+                <td colspan="3"></td>
                 <td th:text="${employee.role}"></td>
 
-                </td>
             </tr>
-            <tr>
-                <td>사진</td>
-                <td><img src=""/></td>
-            </tr>
-		
         </table>
         <input type="button" value="수정" th:onclick="'update(' + ${employee.empSeq} + ')'" />
     </form>
