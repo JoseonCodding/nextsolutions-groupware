@@ -26,11 +26,25 @@ public interface ScheduleMapper {
 	int insert(ScheduleDTO dto); 
 	
 	@Select("""
-		    SELECT * 
+		     SELECT *
 		    FROM schedule
 		    ORDER BY start_date 
 		""")
 	List<ScheduleDTO> getScheduleListByMonth(ScheduleDTO dto);
+	
+	
+	@Select("""
+		   
+		    select t1.PJT_SN, t1.PJT_BGNG_DT as start_date, t1.PJT_END_DT as end_date, '종일' as cate, t1.PJT_NM as title, t1.docType as holiday, t1.PJT_STTS_CD
+			from TB_PJT_BASC t1,
+			(select gid, max(ver) AS max_ver from TB_PJT_BASC where PJT_STTS_CD = '완료' or PJT_STTS_CD = '진행중'
+			group by gid) t2
+			where t1.gid = t2.gid and t1.ver = t2.max_ver
+			order by t1.gid , t1.ver;
+		""")
+	List<ScheduleDTO> getProjectListByMonth();
+	
+	
 	
 	//일정 상세보기
 	@Select("SELECT * FROM schedule WHERE schedule_id = #{scheduleId}")
