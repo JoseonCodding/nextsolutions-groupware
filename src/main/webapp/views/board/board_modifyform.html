@@ -23,7 +23,7 @@
 
   <div class="form-group" style="margin-top:8px">
     <label>내용</label>
-    <textarea id="summernote" name="content" th:text="*{content}" rows="12" placeholder="내용을 입력하세요" required></textarea>
+    <textarea id="summernote" name="content" th:utext="*{board.content}" rows="12" placeholder="내용을 입력하세요" required></textarea>
   </div>
 
   <div style="margin-top:12px; display:flex; gap:8px">

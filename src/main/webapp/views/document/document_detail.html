@@ -20,15 +20,15 @@
   <table class="table table-bordered" style="width:100%; margin-bottom:16px;">
     <tbody>
     <tr>
-      <th style="width:140px;">GID</th>
+      <th style="width:140px;">문서번호</th>
       <td th:text="${doc.gid}">G-xxxx</td>
       <th style="width:140px;">등록일</th>
-      <td th:text="${#temporals.format(doc.frstRegDt, 'yyyy-MM-dd HH:mm')}">2025-08-14 10:00</td>
+      <td th:text="${#dates.format(doc.frstRegDt, 'yyyy-MM-dd')}">-</td>
     </tr>
     <tr>
       <th>사번</th>
       <td th:text="${doc.employeeId}">2025xxxx</td>
-      <th>사원명</th>
+      <th>담당자</th>
       <td th:text="${doc.empNm}">홍길동</td>
     </tr>
     </tbody>

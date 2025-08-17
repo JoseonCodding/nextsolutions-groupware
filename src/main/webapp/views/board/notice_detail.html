@@ -7,6 +7,27 @@
     .like-btn{border:1px solid #ddd;border-radius:9999px;padding:.3rem .7rem;background:#fff}
     .like-btn.liked{color:#e11d48;border-color:#e11d48}
     .like-count{margin-left:.25rem;font-weight:600}
+    /* 본문과 구분선/버튼들 사이 간격 */
+  .text{ margin:20px 0 28px; }
+
+  /* hr 기본 간격도 살짝 넓게 */
+  hr{ margin:16px 0; }
+
+  /* 목록/삭제 버튼 간격 */
+  .board-actions{
+    margin-top: 20px;       /* 내용과 버튼 간격 */
+    display: flex;          /* 가로 정렬 */
+    gap: 10px;              /* 버튼 사이 간격 */
+    align-items: center;    /* 세로축 정렬 */
+  }
+
+  /* .board-actions 바로 뒤에 오는 삭제 버튼을 띄워줌 */
+  .board-actions + .btn-danger{
+    margin-left: 12px;     /* 목록으로/수정과 삭제 사이 가로 간격 */
+  }
+
+  /* 혹시 버튼들이 너무 붙어 보이면 개별 버튼에 여백 살짝 */
+  .btn{ display:inline-block; padding:6px 10px; }
     </style>
   </head>
   <body>
@@ -44,7 +65,7 @@
 <hr />
       <div class="board-actions">
         <a th:href="@{/board/notice}" class="btn">목록으로</a>
-      </div>
+      
       
 
     <a class="btn btn-danger"
@@ -53,5 +74,6 @@
            )}"
        th:href="@{'/board/notice/delete'(postId=${board.postId})}"
        th:onclick="|return confirm('게시글을 삭제하시겠습니까?');|">삭제</a>
+       </div>
   </body>
 </html>

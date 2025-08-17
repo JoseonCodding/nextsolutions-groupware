@@ -1,8 +1,10 @@
 package com.kdt.KDT_PJT.document.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +42,7 @@ public class DocumentController {
         int total = documentMapper.countDocsForManage(employeeId, isAdmin);
         int totalPages = Math.max(1, (int) Math.ceil(total / (double) limit));
 
-        model.addAttribute("approvalData", list);  // 기존 뷰에서 사용하는 키 유지
+        model.addAttribute("approvalData", list);  // 기존 뷰 키 그대로 사용
         model.addAttribute("page", page);
         model.addAttribute("size", size);
         model.addAttribute("total", total);
@@ -51,8 +53,8 @@ public class DocumentController {
 
     /** 문서 상세보기: ver 없으면 해당 gid의 '진행중/완료' 최신버전 */
     @GetMapping("/detail")
-    public String documentDetail(@RequestParam(value = "gid") String gid,
-            					 @RequestParam(value = "ver", required = false) Integer ver,
+    public String documentDetail(@RequestParam("gid") String gid,
+                                 @RequestParam(value = "ver", required = false) Integer ver,
                                  Model model,
                                  HttpSession session) {
 
@@ -64,7 +66,7 @@ public class DocumentController {
 
         DocumentDTO doc = (ver != null)
                 ? documentMapper.findByGidAndVer(gid, ver)
-                : documentMapper.findLatestApprovedByGid(gid); // mapper가 진행중/완료 최신 1건 반환
+                : documentMapper.findLatestApprovedByGid(gid); // 진행중/완료 최신 1건
 
         if (doc == null) return "redirect:/document/main";
         if (!isAdmin && !me.equals(doc.getEmployeeId())) return "redirect:/document/main";
@@ -83,10 +85,10 @@ public class DocumentController {
         String me = loginUser.getEmployeeId();
         boolean isAdmin = isAdmin(me);
 
-        // 소유자 확인(최신 문서 기준으로 빠르게 거르기)
+        // 최신 문서 기준 빠른 권한 체크
         DocumentDTO latest = documentMapper.findLatestApprovedByGid(gid);
         if (latest != null && !isAdmin && !me.equals(latest.getEmployeeId())) {
-            // 최신이 내 것이 아니더라도, 과거 버전에 내 소유가 있을 수 있으니 전체 버전 확인
+            // 과거 버전에 내 소유가 있을 수 있으므로 전체 확인
             List<DocumentDTO> versionsTmp = documentMapper.findVersions(gid);
             boolean allowedTmp = versionsTmp.stream().anyMatch(v -> me.equals(v.getEmployeeId()));
             if (!allowedTmp) return "redirect:/document/main";
@@ -105,7 +107,7 @@ public class DocumentController {
     /** 버전 상세: 지정 ver 1건 (소유자 또는 관리자만 접근) */
     @GetMapping("/version")
     public String versionView(@RequestParam("gid") String gid,
-            				  @RequestParam("ver") Integer ver,
+                              @RequestParam("ver") Integer ver,
                               Model model,
                               HttpSession session) {
 
@@ -127,6 +129,6 @@ public class DocumentController {
     /** 관리자 사번 판별 (업무 규칙 반영) */
     private boolean isAdmin(String employeeId) {
         return "20250001".equals(employeeId)   // 대표
-            || "20250005".equals(employeeId);  // 문서 관리자
+            || "20250005".equals(employeeId); // 문서 관리자
     }
 }
