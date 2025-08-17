@@ -385,7 +385,6 @@ public class ApprovalController {
             case "프로젝트" -> {
                 approvalMapper.updateStatusProject(pkId, newStatus, currentStatus);
                 if ("진행중".equals(newStatus) || "완료".equals(newStatus)) {
-                    approvalMapper.insertProjectSchedule(pkId);
                 }
             }
             default -> { /* no-op */ }
