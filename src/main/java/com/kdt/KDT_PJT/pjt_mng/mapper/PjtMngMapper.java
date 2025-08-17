@@ -3,8 +3,13 @@ package com.kdt.KDT_PJT.pjt_mng.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Service;
 
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
+import com.kdt.KDT_PJT.employee.mapper.EmployeeMapper;
+
+import lombok.RequiredArgsConstructor;
+
 
 import java.util.List;
 import java.util.Map;
@@ -22,10 +27,7 @@ public interface PjtMngMapper {
        
   //메인 : 내가 참여한 프로젝트 관련
     
-   
-   
-   
-      
+         
     @Select(" SELECT COUNT(*) FROM TB_PJT_BASC WHERE (USE_YN IS NULL OR USE_YN = 'Y') AND employeeId = #{employeeId}")
     int countMyProjects(@Param("employeeId") String employeeId);
     
@@ -82,6 +84,22 @@ public interface PjtMngMapper {
        int insertNewVersion(Map<String, Object> param);
    }
 
+   // 이름 단건조회  api
+   @Service
+   @RequiredArgsConstructor
+   public class EmployeeService {
+       private final EmployeeMapper employeeMapper;
+
+       public String getEmpNameById(String employeeId) {
+    	    return employeeMapper.selectEmpNameById(employeeId);
+    	}
+
+   }
+
+   @Mapper
+   public interface EmployeeMapper {
+       String selectEmpNameById(String employeeId);
+   }
    
 
 
