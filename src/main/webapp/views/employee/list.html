@@ -87,7 +87,7 @@
     </thead>
     <tbody>
         <tr th:each="emp : ${employees}">
-            <td><input type="checkbox" class="emp-check" th:value="${emp.emp_seq}"></td>
+            <td><input type="radio" name="empSelect" class="emp-check" th:value="${emp.emp_seq}"></td>
             <td th:text="${emp.emp_seq}"></td>
             <td th:text="${emp.employeeId}"></td>
             <td th:text="${emp.password}"></td>

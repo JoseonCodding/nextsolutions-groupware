@@ -35,230 +35,230 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/approval")
 public class ApprovalController {
-	
-	// 콘텐츠 영역 상단 헤더용
-	@ModelAttribute("navUrl")
-	public String navUrl() {
-		
-		return "approval/approvalNav";
-	}
-	
-	@Autowired
-	ApprovalMapper approvalMapper;
-	@Autowired
-	LeaveMapper leaveMapper;
-	
-	@InitBinder
-	public void initBinder(WebDataBinder binder) {
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	    dateFormat.setLenient(false);
-	    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
-	}
-	
-	@RequestMapping("/main")
-	public String approvalMain(
-	        Model model,
-	        HttpServletRequest request,
-	        @RequestParam(name = "page", defaultValue = "1") int page,
-	        @RequestParam(name = "type", required = false) String type,
-	        @RequestParam(name = "status", required = false) String status) {
+   
+   // 콘텐츠 영역 상단 헤더용
+   @ModelAttribute("navUrl")
+   public String navUrl() {
+      
+      return "approval/approvalNav";
+   }
+   
+   @Autowired
+   ApprovalMapper approvalMapper;
+   @Autowired
+   LeaveMapper leaveMapper;
+   
+   @InitBinder
+   public void initBinder(WebDataBinder binder) {
+       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+       dateFormat.setLenient(false);
+       binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+   }
+   
+   @RequestMapping("/main")
+   public String approvalMain(
+           Model model,
+           HttpServletRequest request,
+           @RequestParam(name = "page", defaultValue = "1") int page,
+           @RequestParam(name = "type", required = false) String type,
+           @RequestParam(name = "status", required = false) String status) {
 
-	    HttpSession session = request.getSession(false);
-	    EmployeeDto loginUser = (session != null) ? (EmployeeDto) session.getAttribute("loginUser") : null;
+       HttpSession session = request.getSession(false);
+       EmployeeDto loginUser = (session != null) ? (EmployeeDto) session.getAttribute("loginUser") : null;
 
-	    List<ApprovalDTO> approvalData;
-	    int totalPages;
-	    int startPage;
-	    int endPage;
-	    int size = 10;
+       List<ApprovalDTO> approvalData;
+       int totalPages;
+       int startPage;
+       int endPage;
+       int size = 10;
 
-	    if (loginUser == null) {
-	        approvalData = List.of();
-	        totalPages = 0;
-	        startPage = 1;
-	        endPage = 1;
-	    } else {
-	        String role = loginUser.getRole();
-	        String employeeId = loginUser.getEmployeeId();
-	        int offset = (page - 1) * size;
+       if (loginUser == null) {
+           approvalData = List.of();
+           totalPages = 0;
+           startPage = 1;
+           endPage = 1;
+       } else {
+           String role = loginUser.getRole();
+           String employeeId = loginUser.getEmployeeId();
+           int offset = (page - 1) * size;
 
-	        // count
-	        int totalCount = approvalMapper.approvalCountByRole(role, type, status, employeeId);
-	        totalPages = (int) Math.ceil((double) totalCount / size);
+           // count
+           int totalCount = approvalMapper.approvalCountByRole(role, type, status, employeeId);
+           totalPages = (int) Math.ceil((double) totalCount / size);
 
-	        startPage = Math.max(1, page - 2);
-	        endPage = Math.min(totalPages, startPage + 4);
-	        if ((endPage - startPage + 1) < 5 && (endPage == totalPages || startPage == 1)) {
-	            startPage = Math.max(1, endPage - 4);
-	        }
-	        if (totalPages == 0) endPage = 1;
+           startPage = Math.max(1, page - 2);
+           endPage = Math.min(totalPages, startPage + 4);
+           if ((endPage - startPage + 1) < 5 && (endPage == totalPages || startPage == 1)) {
+               startPage = Math.max(1, endPage - 4);
+           }
+           if (totalPages == 0) endPage = 1;
 
-	        approvalData = approvalMapper.approvalDataByRole(offset, size, role, type, status, employeeId);
-	    }
+           approvalData = approvalMapper.approvalDataByRole(offset, size, role, type, status, employeeId);
+       }
 
-	    model.addAttribute("approvalData", approvalData);
-	    model.addAttribute("page", page);
-	    model.addAttribute("totalPages", totalPages);
-	    model.addAttribute("startPage", startPage);
-	    model.addAttribute("endPage", endPage);
-	    model.addAttribute("type", type);
-	    model.addAttribute("status", status);
-	    model.addAttribute("mainUrl", "approval/approvalMain");
+       model.addAttribute("approvalData", approvalData);
+       model.addAttribute("page", page);
+       model.addAttribute("totalPages", totalPages);
+       model.addAttribute("startPage", startPage);
+       model.addAttribute("endPage", endPage);
+       model.addAttribute("type", type);
+       model.addAttribute("status", status);
+       model.addAttribute("mainUrl", "approval/approvalMain");
 
-	    return "navTap";
-	}
+       return "navTap";
+   }
 
 
 
-	
-	@RequestMapping("/viewer")
-	public String approvalViewer(
-	    Model model,
-	    RedirectAttributes redirectAttributes,
-	    HttpServletRequest request,
-	    @RequestParam("docId") String docId,
-	    @RequestParam(name = "page", defaultValue = "1") int page,
-	    @RequestParam(name = "type", required = false) String type,
-	    @RequestParam(name = "status", required = false) String status) {
+   
+   @RequestMapping("/viewer")
+   public String approvalViewer(
+       Model model,
+       RedirectAttributes redirectAttributes,
+       HttpServletRequest request,
+       @RequestParam("docId") String docId,
+       @RequestParam(name = "page", defaultValue = "1") int page,
+       @RequestParam(name = "type", required = false) String type,
+       @RequestParam(name = "status", required = false) String status) {
 
-	    HttpSession session = request.getSession(false);
-	    EmployeeDto loginUser = (session != null) ? 
-	        (EmployeeDto) session.getAttribute("loginUser") : null;
+       HttpSession session = request.getSession(false);
+       EmployeeDto loginUser = (session != null) ? 
+           (EmployeeDto) session.getAttribute("loginUser") : null;
 
-	    // 1. 로그인 여부 체크
-	    if (loginUser == null) {
-	        return "redirect:/login?error=auth";
-	    }
+       // 1. 로그인 여부 체크
+       if (loginUser == null) {
+           return "redirect:/login?error=auth";
+       }
 
-	    // 2. 권한 필터 내장된 view() 호출
-	    ApprovalDTO approvalData = approvalMapper.view(
-	        docId,
-	        loginUser.getRole(),
-	        loginUser.getEmployeeId(),
-	        type,
-	        status
-	    );
+       // 2. 권한 필터 내장된 view() 호출
+       ApprovalDTO approvalData = approvalMapper.view(
+           docId,
+           loginUser.getRole(),
+           loginUser.getEmployeeId(),
+           type,
+           status
+       );
 
-	    // 3. 조회 결과 없으면 접근 차단 (권한 없음 or 없는 문서)
-	    if (approvalData == null) {
-	        return "redirect:/approval/main?error=forbidden";
-	    }
+       // 3. 조회 결과 없으면 접근 차단 (권한 없음 or 없는 문서)
+       if (approvalData == null) {
+           return "redirect:/approval/main?error=forbidden";
+       }
 
-	    // 4. 정상 데이터 모델에 담기
-	    model.addAttribute("loginUser", loginUser);
-	    model.addAttribute("approvalData", approvalData);
-	    model.addAttribute("page", page);
-	    model.addAttribute("type", type);
-	    model.addAttribute("status", status);
-	    model.addAttribute("mainUrl", "approval/approvalViewer");
+       // 4. 정상 데이터 모델에 담기
+       model.addAttribute("loginUser", loginUser);
+       model.addAttribute("approvalData", approvalData);
+       model.addAttribute("page", page);
+       model.addAttribute("type", type);
+       model.addAttribute("status", status);
+       model.addAttribute("mainUrl", "approval/approvalViewer");
 
-	    return "navTap";
-	}
+       return "navTap";
+   }
 
 
     
-	@GetMapping("/downloadFile")
-	public ResponseEntity<Resource> downloadFile(
-	    @RequestParam("fileName") String fileName,
-	    @RequestParam("orgName") String orgName
-	) throws UnsupportedEncodingException {
+   @GetMapping("/downloadFile")
+   public ResponseEntity<Resource> downloadFile(
+       @RequestParam("fileName") String fileName,
+       @RequestParam("orgName") String orgName
+   ) throws UnsupportedEncodingException {
 
-	    java.nio.file.Path baseDir = java.nio.file.Paths.get("C:/upload").toAbsolutePath().normalize();
-	    java.nio.file.Path target = baseDir.resolve(fileName).normalize();
+       java.nio.file.Path baseDir = java.nio.file.Paths.get("C:/upload").toAbsolutePath().normalize();
+       java.nio.file.Path target = baseDir.resolve(fileName).normalize();
 
-	    // 디렉토리 탈출 방지
-	    if (!target.startsWith(baseDir)) {
-	        return ResponseEntity.status(403).build();
-	    }
+       // 디렉토리 탈출 방지
+       if (!target.startsWith(baseDir)) {
+           return ResponseEntity.status(403).build();
+       }
 
-	    java.io.File file = target.toFile();
-	    if (!file.exists() || !file.isFile()) {
-	        return ResponseEntity.notFound().build();
-	    }
+       java.io.File file = target.toFile();
+       if (!file.exists() || !file.isFile()) {
+           return ResponseEntity.notFound().build();
+       }
 
-	    Resource resource = new FileSystemResource(file);
+       Resource resource = new FileSystemResource(file);
 
-	    String encodedOrgName = URLEncoder.encode(orgName, "UTF-8").replaceAll("\\+", " ");
-	    // 헤더 주입 방지: 개행/쿼트 제거
-	    encodedOrgName = encodedOrgName.replace("\r", "").replace("\n", "").replace("\"", "");
+       String encodedOrgName = URLEncoder.encode(orgName, "UTF-8").replaceAll("\\+", " ");
+       // 헤더 주입 방지: 개행/쿼트 제거
+       encodedOrgName = encodedOrgName.replace("\r", "").replace("\n", "").replace("\"", "");
 
-	    HttpHeaders headers = new HttpHeaders();
-	    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedOrgName + "\"");
-	    headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-	    return ResponseEntity.ok().headers(headers).body(resource);
-	}
+       HttpHeaders headers = new HttpHeaders();
+       headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedOrgName + "\"");
+       headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+       return ResponseEntity.ok().headers(headers).body(resource);
+   }
 
 
 
-	@RequestMapping("/delete")
-	public String approvalDelete(
-	        HttpServletRequest request,
-	        RedirectAttributes redirectAttributes,
-	        @RequestParam("docId") String docId,
-	        @RequestParam(name = "page", defaultValue = "1") int page,
-	        @RequestParam(name = "type", required = false) String type,
-	        @RequestParam(name = "status", required = false) String status) {
+   @RequestMapping("/delete")
+   public String approvalDelete(
+           HttpServletRequest request,
+           RedirectAttributes redirectAttributes,
+           @RequestParam("docId") String docId,
+           @RequestParam(name = "page", defaultValue = "1") int page,
+           @RequestParam(name = "type", required = false) String type,
+           @RequestParam(name = "status", required = false) String status) {
 
-	    HttpSession session = request.getSession(false);
-	    EmployeeDto loginUser = (session != null) ?
-	        (EmployeeDto) session.getAttribute("loginUser") : null;
+       HttpSession session = request.getSession(false);
+       EmployeeDto loginUser = (session != null) ?
+           (EmployeeDto) session.getAttribute("loginUser") : null;
 
-	    if (loginUser == null) {
-	        return "redirect:/login?error=auth";
-	    }
+       if (loginUser == null) {
+           return "redirect:/login?error=auth";
+       }
 
-	    // 권한/가드 포함 조회
-	    ApprovalDTO doc = approvalMapper.view(
-	        docId, loginUser.getRole(), loginUser.getEmployeeId(), type, status
-	    );
-	    if (doc == null) {
-	        return "redirect:/approval/main?error=forbidden";
-	    }
+       // 권한/가드 포함 조회
+       ApprovalDTO doc = approvalMapper.view(
+           docId, loginUser.getRole(), loginUser.getEmployeeId(), type, status
+       );
+       if (doc == null) {
+           return "redirect:/approval/main?error=forbidden";
+       }
 
-	    // 문서 타입 가드: 연차/근태만 '삭제' 허용 (공지/프로젝트는 불가)
-	    if (!"연차".equals(doc.getDocType()) && !"근태".equals(doc.getDocType())) {
-	        return "redirect:/approval/main?error=deleteNotAllowed";
-	    }
+       // 문서 타입 가드: 연차/근태만 '삭제' 허용 (공지/프로젝트는 불가)
+       if (!"연차".equals(doc.getDocType()) && !"근태".equals(doc.getDocType())) {
+           return "redirect:/approval/main?error=deleteNotAllowed";
+       }
 
-	    // 상태=대기만 허용
-	    if (!"대기".equals(doc.getStatus())) {
-	        return "redirect:/approval/main?error=forbidden";
-	    }
+       // 상태=대기만 허용
+       if (!"대기".equals(doc.getStatus())) {
+           return "redirect:/approval/main?error=forbidden";
+       }
 
-	    // 작성자 본인만 허용
-	    if (!loginUser.getEmployeeId().equals(doc.getWriterId())) {
-	        return "redirect:/approval/main?error=forbidden";
-	    }
+       // 작성자 본인만 허용
+       if (!loginUser.getEmployeeId().equals(doc.getWriterId())) {
+           return "redirect:/approval/main?error=forbidden";
+       }
 
-	    String pkId = docId.split("-")[1].trim();
+       String pkId = docId.split("-")[1].trim();
 
-	    // 실제 '삭제' 동작: 연차 → state_type NULL, 근태 → status NULL
-	    int updated = 0;
-	    if ("연차".equals(doc.getDocType())) {
-	        updated = approvalMapper.softDeleteLeave(pkId);
-	    } else if ("근태".equals(doc.getDocType())) {
-	        updated = approvalMapper.softDeleteAttendance(pkId);
-	    }
+       // 실제 '삭제' 동작: 연차 → state_type NULL, 근태 → status NULL
+       int updated = 0;
+       if ("연차".equals(doc.getDocType())) {
+           updated = approvalMapper.softDeleteLeave(pkId);
+       } else if ("근태".equals(doc.getDocType())) {
+           updated = approvalMapper.softDeleteAttendance(pkId);
+       }
 
-	    if (updated == 0) {
-	        return "redirect:/approval/main?error=notUpdated";
-	    }
+       if (updated == 0) {
+           return "redirect:/approval/main?error=notUpdated";
+       }
 
-	    // 삭제 이후 페이지 재계산
-	    int size = 10;
-	    int totalCount = approvalMapper.approvalCountByRole(
-	        loginUser.getRole(), type, status, loginUser.getEmployeeId()
-	    );
-	    int totalPages = (int) Math.ceil((double) totalCount / size);
-	    int deletePage = page > totalPages ? totalPages : page;
-	    if (totalPages == 0) deletePage = 1;
+       // 삭제 이후 페이지 재계산
+       int size = 10;
+       int totalCount = approvalMapper.approvalCountByRole(
+           loginUser.getRole(), type, status, loginUser.getEmployeeId()
+       );
+       int totalPages = (int) Math.ceil((double) totalCount / size);
+       int deletePage = page > totalPages ? totalPages : page;
+       if (totalPages == 0) deletePage = 1;
 
-	    redirectAttributes.addAttribute("page", deletePage);
-	    redirectAttributes.addAttribute("type", type == null ? "" : type);
-	    redirectAttributes.addAttribute("status", status == null ? "" : status);
+       redirectAttributes.addAttribute("page", deletePage);
+       redirectAttributes.addAttribute("type", type == null ? "" : type);
+       redirectAttributes.addAttribute("status", status == null ? "" : status);
 
-	    return "redirect:/approval/main";
-	}
+       return "redirect:/approval/main";
+   }
 
 
 
