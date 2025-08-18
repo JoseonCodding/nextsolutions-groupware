@@ -20,6 +20,9 @@
         // 일정 1개 HTML 변환
         function scheduleOneView(schOne){
             var clickBox = "";
+            let color = "black"; // 기본: 일반 일정(검은색)
+            
+            /*
             if(schOne.holiday=='일정' || schOne.holiday=='휴무일'){
                 clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"'>"+schOne.title+"</a>";
             }else if(schOne.holiday=='프로젝트' ){
@@ -28,6 +31,24 @@
                 clickBox = schOne.title;
             }
             return clickBox+"<br/>";
+            */
+            
+            if(schOne.holiday == '휴무일'){
+                color = "red";  // 휴무일
+                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' style='color:"+color+"'>"+schOne.title+"</a>";
+            }else if(schOne.holiday == '프로젝트'){
+                color = "blue"; // 프로젝트
+                clickBox = "<a href='/pjtMng/pjtDetail?pjtSn="+ schOne.pjtSn +"' style='color:"+color+"'>"+schOne.title+"</a>";
+            }else if(schOne.holiday == '연차'){
+                color = "green"; // 연차
+                clickBox = "<span style='color:"+color+"'>"+schOne.title+"</span>";
+            }else{
+                color = "black"; // 일반 일정
+                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' style='color:"+color+"'>"+schOne.title+"</a>";
+            }
+
+            return clickBox + "<br/>";
+            
         }
 
         // 필터링
