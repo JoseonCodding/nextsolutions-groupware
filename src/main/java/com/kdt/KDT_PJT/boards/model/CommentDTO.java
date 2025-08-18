@@ -15,4 +15,5 @@ public class CommentDTO {
     LocalDateTime createdAt;
     Boolean isDeleted;
     Boolean hasChild;
+    Integer commentCount;
 }

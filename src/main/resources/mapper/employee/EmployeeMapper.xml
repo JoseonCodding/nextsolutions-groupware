@@ -37,20 +37,38 @@
     </update>
 
     <!-- 사원 등록 (MySQL 1093 에러 방지) -->
-    <insert id="insertEmployee" parameterType="CmmnMap">
-        INSERT INTO employee (
-            emp_seq, employeeId, password, active, emp_nm
-        ) VALUES (
-            (SELECT seq FROM (
-                SELECT COALESCE(MAX(emp_seq),0) + 1 AS seq
-                FROM employee
-            ) AS t),
-            #{employeeId},
-            #{password},
-            1,
-            #{emp_nm}
-        )
-    </insert>
+	<insert id="insertEmployee" parameterType="CmmnMap">
+		INSERT INTO employee (
+		emp_seq
+		, employeeId
+		, password
+		, active
+		, emp_nm
+		, phone
+		, birth
+		, deptName
+		, position
+		, role
+		, hireDate
+		, resignDate
+		) VALUES (
+		(SELECT seq FROM (
+		SELECT COALESCE(MAX(emp_seq), 0) + 1 AS seq
+		FROM employee
+		) AS t)
+		, #{employeeId}
+		, #{password}
+		, 1
+		, #{empNm}
+		, #{phone}
+		, #{birth}
+		, #{deptName}
+		, #{position}   <!-- ★ 누락된 부분 추가 -->
+		, #{role}
+		, #{hireDate}
+		, #{resignDate}
+		)
+	</insert>
     
     <select id="getEmployeeBySeq" parameterType="int" resultType="CmmnMap">
     SELECT * FROM employee WHERE emp_seq = #{empSeq}

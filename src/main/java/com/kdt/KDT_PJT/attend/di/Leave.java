@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.kdt.KDT_PJT.attend.model.AttendDTO;
+import com.kdt.KDT_PJT.attend.model.AttendDTO2;
 import com.kdt.KDT_PJT.attend.model.CommuteMapper;
 
 
@@ -25,25 +25,35 @@ public class Leave {
     public void autoGiveLeaveForQualifiedEmployees() {
     	
     	Date today = new Date();
+    	
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     	System.out.println("autoGiveLeaveForQualifiedEmployees : "+ today);
     	
-    	AttendDTO param = new AttendDTO();
-    	
+    	AttendDTO2 param = new AttendDTO2();
+	
     	Date startDay = new Date(today.getYear(),today.getMonth()-1,1);
     	Date endDay = new Date(today.getYear(),today.getMonth(),0);
     	
+    	
     	param.setStartDay(sdf.format(startDay));
     	param.setEndDay(sdf.format(endDay));
+    	param.setMonth(startDay.getMonth()+1);
+        YearMonth yearMonth = YearMonth.of(startDay.getYear()+1900,startDay.getMonth()+1);
     	
-    	// 해당 월 회사 휴무일 수 조회
+    	
+    	//더미데이터만들기용  --->
+//    	param.setStartDay("2025-05-01");
+//    	param.setEndDay("2025-05-31");
+//    	param.setMonth(5);
+//    	
+//        YearMonth yearMonth = YearMonth.of(2025,6);
+        //더미 끝 <------
+        
+        
+        // 해당 월 회사 휴무일 수 조회
         int totalOffDays = commuteMapper.getHolidays(param);
         System.out.println("totalOffDays : "+totalOffDays);
-
         
-
-        YearMonth yearMonth = YearMonth.of(startDay.getYear()+1900,startDay.getMonth()+1);
-
         int workDays = 0;
         for (int day = 1; day <= yearMonth.lengthOfMonth(); day++) {
             LocalDate date = yearMonth.atDay(day);
@@ -60,17 +70,18 @@ public class Leave {
         int normalWorkDays = workDays - totalOffDays;
 
     	
-    	List<AttendDTO> allEmployees = commuteMapper.getLastMonthTotalWorkDays(param);
+    	List<AttendDTO2> allEmployees = commuteMapper.getLastMonthTotalWorkDays(param);
 
-        for (AttendDTO dto : allEmployees) {
+        for (AttendDTO2 dto : allEmployees) {
             
         	System.out.println("테스트 목록"+dto);
 
         }
         
-        for (AttendDTO dto : allEmployees) {
+        for (AttendDTO2 dto : allEmployees) {
             int workedDays = dto.getWorkCnt(); // 정상 근무일 수
             double workRate = (double) workedDays / normalWorkDays;
+            dto.setReason(param.getMonth()+"월 근무율 80% 이상 자동 부여");
 
             if (workRate >= 0.8) {
                 

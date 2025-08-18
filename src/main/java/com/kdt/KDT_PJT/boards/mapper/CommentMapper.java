@@ -65,6 +65,16 @@ public interface CommentMapper {
       WHERE comment_id = #{commentId}
     """)
     int deleteComment(CommentDTO dto);
+    
+    // 삭제되지 않은(= is_deleted = false) 댓글 수
+    @Select("""
+        SELECT COUNT(*)
+        FROM board_comment
+        WHERE post_id = #{postId}
+          AND is_deleted = FALSE
+    """)
+    int countAliveByPostId(@Param("postId") Long postId);
+
 
 
       // 댓글 수정

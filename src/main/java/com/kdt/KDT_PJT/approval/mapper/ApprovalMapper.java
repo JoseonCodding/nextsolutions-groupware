@@ -606,6 +606,8 @@ public interface ApprovalMapper {
 		    @Param("role") String role,
 		    @Param("approverId") String approverId
 		);
+
+
     
 	// 근태 승인
 	@Update({
@@ -644,6 +646,8 @@ public interface ApprovalMapper {
 	    @Param("approverId") String approverId,
 	    @Param("role") String role
 	);
+
+
 
 
     
