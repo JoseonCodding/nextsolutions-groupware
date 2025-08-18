@@ -139,19 +139,16 @@ input, select {
 				<th>상태</th>
 				<td>
 				<input type="text" name="ver" th:value="${pjt['ver']}"	readonly />
-				<input type="text" name="pjtSttsCd" th:value="${pjt['PJT_STTS_CD']}" 	 />
-				
+
+				<!-- <input type="text" name="pjtSttsCd" th:value="${pjt['PJT_STTS_CD']}"	readonly /> -->
+				<!-- 상태는 드롭박스로 선택 -->
+  <select name="pjtSttsCd" required>
+    <option value="진행중" th:selected="${pjt['PJT_STTS_CD'] == '진행중'}">진행중</option>
+    <option value="완료" th:selected="${pjt['PJT_STTS_CD'] == '완료'}">완료</option>
+    
+  </select>
 		
-					<!-- 상태가 null이면 '대기'가 선택되도록 처리 --> <!-- <select name="pjtSttsCd">
-						<option value="대기"
-							th:selected="${(pjt['PJT_STTS_CD'] ?: '대기') == '대기'}">대기</option>
-						<option value="진행중"
-							th:selected="${(pjt['PJT_STTS_CD'] ?: '') == '진행중'}">진행중</option>
-						<option value="완료"
-							th:selected="${(pjt['PJT_STTS_CD'] ?: '') == '완료'}">완료</option>
-						<option value="반려"
-							th:selected="${(pjt['PJT_STTS_CD'] ?: '') == '반려'}">반려</option>
-				</select> -->
+					
 				</td>
 			</tr>
 
