@@ -82,7 +82,8 @@
       content, ATCH_FILE_SN1, ORG_FILE_NM1,
       ATCH_FILE_SN2, ORG_FILE_NM2,
       ATCH_FILE_SN3, ORG_FILE_NM3,
-      ver, gid
+      ver, gid,
+      firstSign, secondSign, approvedBy
     ) VALUES (
       #{PJT_NM},
       #{employeeId},
@@ -99,8 +100,13 @@
       #{ATCH_FILE_SN3},
       #{ORG_FILE_NM3},      
       #{ver},
-      #{gid}
+      #{gid},
+      #{firstSign},
+      #{secondSign},
+      #{approvedBy}
     )
+    
+
   </insert>
 
   <!-- 프로젝트 상세 조회 -->
