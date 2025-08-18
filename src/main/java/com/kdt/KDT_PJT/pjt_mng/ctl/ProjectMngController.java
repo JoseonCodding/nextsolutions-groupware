@@ -74,7 +74,7 @@ public class ProjectMngController {
 	    
 	     // ✅ 뷰에 현재 검색/정렬 상태 전달
 	    model.addAttribute("keywordType", type);
-	    model.addAttribute("keyword", "");  // 입력칸 초기화(유지하려면 keyword 넣어도 됨)
+	    model.addAttribute("keyword", keyword);  // 입력칸 초기화(유지하려면 keyword 넣어도 됨)
 
        
 
