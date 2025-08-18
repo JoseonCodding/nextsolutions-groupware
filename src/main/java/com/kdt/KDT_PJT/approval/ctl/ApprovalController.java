@@ -26,6 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
+import com.kdt.KDT_PJT.approval.model.ApproverDTO;
 import com.kdt.KDT_PJT.attend.model.LeaveMapper;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
@@ -143,8 +144,13 @@ public class ApprovalController {
        if (approvalData == null) {
            return "redirect:/approval/main?error=forbidden";
        }
+       
+       // 결재권한자 목록 추가 조회
+       List<ApproverDTO> approvers = approvalMapper.selectApproversByDocType(approvalData.getDocType());
+       approvalData.setApprovers(approvers);
 
        // 4. 정상 데이터 모델에 담기
+       model.addAttribute("approvalData", approvalData);
        model.addAttribute("loginUser", loginUser);
        model.addAttribute("approvalData", approvalData);
        model.addAttribute("page", page);
