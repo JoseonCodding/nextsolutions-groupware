@@ -309,7 +309,10 @@ public class ProjectMngController {
 
 
 	@GetMapping("/pjtEditForm")
-	public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn, Model model, HttpSession session) {
+	public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn,
+														Model model, 
+														HttpSession session
+														) {
 		log.info("getPjtEditForm Called >>> {}", pjtSn);
 	    List<CmmnMap> approverList = projectMngService.selectApproverCandidates();
 	    EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
