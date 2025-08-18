@@ -51,12 +51,6 @@
   <!-- 좋아요 토글 -->
   <div class="like-toggle" th:if="${useLike}">
     <form th:action="@{/board/custom/{boardId}/like/toggle(boardId=${board.boardId})}" method="post">
-      <!-- 목록 상태 유지 파라미터 -->
-      <input type="hidden" name="page"    th:value="${page}">
-      <input type="hidden" name="size"    th:value="${size}">
-      <input type="hidden" name="sort"    th:value="${sort}">
-      <input type="hidden" name="keyword" th:value="${keyword}">
-
   		<input type="hidden" name="postId" th:value="${board.postId}" />
   		<button type="submit" class="like-btn" th:classappend="${likedByMe} ? ' liked' : ''">
     		<span th:text="${likedByMe} ? '♥' : '♡'">♡</span>
@@ -101,12 +95,6 @@
           <form th:if="${me != null and me == c.employeeId and !#bools.isTrue(c.isDeleted)}"
                 th:action="@{/board/custom/{boardId}/comment/delete(boardId=${board.boardId})}"
                 method="post" style="display:inline">
-            <!-- 목록 상태 유지 파라미터 -->
-            <input type="hidden" name="page"    th:value="${page}">
-            <input type="hidden" name="size"    th:value="${size}">
-            <input type="hidden" name="sort"    th:value="${sort}">
-            <input type="hidden" name="keyword" th:value="${keyword}">
-
             <input type="hidden" name="commentId" th:value="${c.commentId}">
             <input type="hidden" name="postId" th:value="${c.postId}">
             <input type="submit" value="삭제">
@@ -123,12 +111,6 @@
               th:if="${c.parentCommentId == null and c.isDeleted != true}"
               th:action="@{/board/custom/{boardId}/comment/reply(boardId=${board.boardId})}"
               method="post" style="display:none">
-          <!-- 목록 상태 유지 파라미터 -->
-          <input type="hidden" name="page"    th:value="${page}">
-          <input type="hidden" name="size"    th:value="${size}">
-          <input type="hidden" name="sort"    th:value="${sort}">
-          <input type="hidden" name="keyword" th:value="${keyword}">
-
           <input type="hidden" name="postId" th:value="${c.postId}">
           <input type="hidden" name="parentCommentId" th:value="${c.commentId}">
           <textarea name="content" rows="3" placeholder="답글을 입력하세요" required></textarea>
@@ -142,12 +124,6 @@
   <!-- 댓글 입력폼 -->
   <div class="comment-form" th:if="${useComment}">
     <form th:action="@{/board/custom/{boardId}/comment/save(boardId=${board.boardId})}" method="post">
-      <!-- 목록 상태 유지 파라미터 -->
-      <input type="hidden" name="page"    th:value="${page}">
-      <input type="hidden" name="size"    th:value="${size}">
-      <input type="hidden" name="sort"    th:value="${sort}">
-      <input type="hidden" name="keyword" th:value="${keyword}">
-
       <input type="hidden" name="postId" th:value="${board.postId}">
       <input type="hidden" name="parentCommentId" value="">
       <textarea name="content" rows="3" placeholder="댓글을 입력하세요" required></textarea>
@@ -161,7 +137,7 @@
 
     <a class="btn"
        th:if="${session.loginUser != null and #strings.equals(board.employeeId, session.loginUser.employeeId)}"
-       th:href="@{/board/custom/{boardId}/modify(boardId=${board.boardId}, postId=${board.postId}, page=${page}, size=${size}, sort=${sort}, keyword=${keyword})}">수정</a>
+       th:href="@{/board/custom/{boardId}/modify(boardId=${board.boardId}, postId=${board.postId})}">수정</a>
 
     <a class="btn btn-danger"
        th:if="${session.loginUser != null and (
