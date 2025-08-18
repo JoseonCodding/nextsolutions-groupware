@@ -145,7 +145,7 @@ public class ApprovalController {
            return "redirect:/approval/main?error=forbidden";
        }
        
-       // 결재권한자 목록 추가 조회
+       // 결재권한자 목록 추가 조회  
        List<ApproverDTO> approvers = approvalMapper.selectApproversByDocType(approvalData.getDocType());
        approvalData.setApprovers(approvers);
 
