@@ -169,7 +169,7 @@ public class BoardAdminController {
     // 단일 보드의 “오늘” 통계(JSON) — 프론트에서 개별 보드 KPI로 호출
     @GetMapping("/stats/today/{boardId}")
     @ResponseBody
-    public Map<String, Object> todayStatsOne(@PathVariable Integer boardId) {
+    public Map<String, Object> todayStatsOne(@PathVariable("boardId") Integer boardId) {
         long views = boardMapper.selectTodayViews(boardId);
         long likes = boardMapper.selectTodayLikes(boardId);
 

@@ -262,7 +262,11 @@ public interface BoardMapper {
     @Select("""
            SELECT p.post_id AS postId, p.board_id AS boardId, p.employee_id AS employeeId,
                   p.title, p.content, p.created_at AS createdAt, p.updated_at AS updatedAt,
-                  p.view_count AS viewCount, p.like_count AS likeCount, p.is_deleted AS isDeleted
+                  p.view_count AS viewCount, p.like_count AS likeCount, p.is_deleted AS isDeleted,
+                  (SELECT COUNT(*) 
+           FROM board_comment c 
+           WHERE c.post_id = p.post_id 
+           AND c.is_deleted = FALSE) AS commentCount
            FROM board_post p
            WHERE p.post_id = #{postId} AND p.is_deleted = false
          """)
@@ -337,7 +341,7 @@ public interface BoardMapper {
                use_comment, use_like, is_active, is_deleted, created_at, updated_at
         FROM board_board
         WHERE is_deleted = false
-        ORDER BY board_id DESC
+        ORDER BY board_id ASC
     """)
     List<BoardDTO> selectBoards();
 
