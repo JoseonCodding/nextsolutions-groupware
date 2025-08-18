@@ -225,7 +225,7 @@
  , t2.gid
  , t2.ver
  , t2.firstSign
- , t2. secondSign
+ , t2.secondSign
  , t2.approvedBy
  
   

@@ -489,6 +489,7 @@ public interface ApprovalMapper {
 	    "<script>",
 	    "UPDATE board_post",
 	    "SET status = #{status},",
+	    "    approvedBy = #{approverId},",
 	    "    firstSign = CASE ",
 	    "                 WHEN #{status} IN ('완료','반려') AND firstSign IS NULL THEN NOW()",
 	    "                 ELSE firstSign",
@@ -497,9 +498,13 @@ public interface ApprovalMapper {
 	    "  AND status = #{currentStatus}",
 	    "</script>"
 	})
-	int updateStatusNotice(@Param("id") String id,
-	                       @Param("status") String status,
-	                       @Param("currentStatus") String currentStatus);
+	int updateStatusNotice(
+	    @Param("id") String id,
+	    @Param("status") String status,
+	    @Param("currentStatus") String currentStatus,
+	    @Param("approverId") String approverId
+	);
+
 
 	
 	// 프로젝트 승인 & 반려
@@ -508,19 +513,35 @@ public interface ApprovalMapper {
 	    "UPDATE TB_PJT_BASC",
 	    "SET PJT_STTS_CD = #{status}",
 	    "<choose>",
-	    "  <when test='status == \"진행중\"'> , firstSign = NOW() </when>",
-	    "  <when test='status == \"완료\"'> , secondSign = NOW() </when>",
+	    "  <when test='status == \"진행중\"'>",
+	    "     , firstSign = NOW()",
+	    "     , approvedBy = #{approverId}",
+	    "  </when>",
+	    "  <when test='status == \"완료\"'>",
+	    "     , secondSign = NOW()",
+	    "     , approvedBy = #{approverId}",
+	    "  </when>",
 	    "  <when test='status == \"반려\"'>",
-	    "    <if test='currentStatus == \"대기\"'> , firstSign = NOW() </if>",
-	    "    <if test='currentStatus == \"진행중\"'> , secondSign = NOW() </if>",
+	    "     <if test='currentStatus == \"대기\"'>",
+	    "        , firstSign = NOW()",
+	    "        , approvedBy = #{approverId}",
+	    "     </if>",
+	    "     <if test='currentStatus == \"진행중\"'>",
+	    "        , secondSign = NOW()",
+	    "        , approvedBy = #{approverId}",
+	    "     </if>",
 	    "  </when>",
 	    "</choose>",
 	    "WHERE PJT_SN = #{id}",
 	    "</script>"
 	})
-	int updateStatusProject(@Param("id") String id,
-	                        @Param("status") String status,
-	                        @Param("currentStatus") String currentStatus);
+	int updateStatusProject(
+	    @Param("id") String id,
+	    @Param("status") String status,
+	    @Param("currentStatus") String currentStatus,
+	    @Param("approverId") String approverId
+	);
+
 
 	
 //	// 프로젝트 승인 시, 일정 테이블에 추가   --- PJT_SN 필드 URL 만들기 위해서 넣었는데, 현재 사용안하고 이 메서드도 동작막음
@@ -555,6 +576,7 @@ public interface ApprovalMapper {
 	@Update("""
 		    UPDATE attendance
 		    SET status = #{status},
+		        approvedBy = #{approverId},
 		        firstSign = CASE
 		                      WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW()
 		                      ELSE firstSign
@@ -568,8 +590,11 @@ public interface ApprovalMapper {
 		int rejectAttendance(
 		    @Param("id") int id,
 		    @Param("status") String status,
-		    @Param("role") String role
+		    @Param("role") String role,
+		    @Param("approverId") String approverId
 		);
+
+
     
 	// 근태 승인
 	@Update({
@@ -577,7 +602,8 @@ public interface ApprovalMapper {
 	    "UPDATE attendance",
 	    "SET status = '완료',",
 	    "    modified_at = NOW(),",
-	    "    modified_by = #{approverId}",
+	    "    modified_by = #{approverId},",
+	    "    approvedBy  = #{approverId}",
 	    "<choose>",
 	    "  <when test='role == \"근태\"'>",
 	    "    , firstSign = CASE WHEN firstSign IS NULL THEN NOW() ELSE firstSign END",
@@ -609,30 +635,44 @@ public interface ApprovalMapper {
 	);
 
 
+
+
     
     // 연차 반려
-    @Update("""
-    	    UPDATE annual_leave
-    	    SET state_type = #{status},
-    	        firstSign = CASE WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW() ELSE firstSign END,
-    	        secondSign = CASE WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW() ELSE secondSign END
-    	    WHERE leave_id = #{id}
-    	""")
-    	int rejectLeave(@Param("id") int id,
-    	                @Param("status") String status,
-    	                @Param("role") String role);
+	@Update("""
+		    UPDATE annual_leave
+		    SET state_type = #{status},
+		        approvedBy  = #{approverId},
+		        firstSign   = CASE WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW() ELSE firstSign END,
+		        secondSign  = CASE WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW() ELSE secondSign END
+		    WHERE leave_id = #{id}
+		""")
+		int rejectLeave(
+		    @Param("id") int id,
+		    @Param("status") String status,
+		    @Param("role") String role,
+		    @Param("approverId") String approverId
+		);
+
+
     
     // 연차 승인
     @Update("""
     	    UPDATE annual_leave
     	    SET state_type = '완료',
     	        leave_type  = '사용',
+    	        approvedBy  = #{approverId},
     	        firstSign   = CASE WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW() ELSE firstSign END,
     	        secondSign  = CASE WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW() ELSE secondSign END
     	    WHERE leave_id = #{id}
     	""")
-    	int approveLeave(@Param("id") int id,
-    	                 @Param("role") String role);
+    	int approveLeave(
+    	    @Param("id") int id,
+    	    @Param("role") String role,
+    	    @Param("approverId") String approverId
+    	);
+
+
     
     @Select({
         "<script>",
