@@ -92,6 +92,12 @@ input, select {
 .back-btn:hover {
 	background-color: #357abd;
 }
+
+.save-btn:disabled {
+    background-color: #ccc !important;  /* 회색 */
+    color: #666 !important;             /* 글자도 연한 회색 */
+    cursor: not-allowed;                /* 마우스 커서 X 모양 */
+}
 </style>
 </head>
 
@@ -237,14 +243,7 @@ input, select {
         th:disabled="${stts == '대기'}"
         th:title="${stts == '대기'} ? '대기 상태 프로젝트는 저장할 수 없습니다.' : null">
   저장
-</button>
-			
-			
-			
-			
-			
-			
-			
+</button>					
 			
 			
 		</div>
