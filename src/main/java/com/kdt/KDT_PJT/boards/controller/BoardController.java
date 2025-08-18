@@ -164,6 +164,10 @@ public class BoardController {
         model.addAttribute("useLike",    boardMeta != null && boardMeta.useLikeOrFalse());
 
         model.addAttribute("comments", commentMapper.selectCommentsByPostId(postId.longValue()));
+        
+        int commentCount = commentMapper.countAliveByPostId(postId.longValue());
+        model.addAttribute("commentCount", commentCount);
+        
         model.addAttribute("likedByMe", likedByMe);
         model.addAttribute("activeBoardId", boardId);
         model.addAttribute("mainUrl", "board/custom_detail");
@@ -605,6 +609,8 @@ public class BoardController {
 
         // 4) 댓글
         List<CommentDTO> comments = commentMapper.selectCommentsByPostId(dto.getPostId().longValue());
+        int commentCount = commentMapper.countAliveByPostId(dto.getPostId().longValue());
+        model.addAttribute("commentCount", commentCount);
 
         // 5) 좋아요 상태
         likeDto.setPostId(dto.getPostId().longValue());
