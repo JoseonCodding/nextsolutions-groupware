@@ -30,10 +30,13 @@ public class ApiScheduleController {
 	@GetMapping("schedules")
 	Object schedules(HttpSession sesson) {
 		ScheduleDTO schDto = new ScheduleDTO();
-		schDto.monthDays();
+		//schDto.monthDays();
 		
 		System.out.println("/api/schedules 진입");
-		return mapper.getScheduleListByMonth(schDto);
+		
+		List<ScheduleDTO> scheduleList = mapper.getScheduleListByMonth(schDto);
+		scheduleList.addAll(mapper.getProjectListByMonth());
+		return scheduleList;
 	}
 
     @GetMapping("schedulealert")	
