@@ -158,9 +158,26 @@ public interface BoardMapper {
 
     // 공지 상세 (board_id=1, 완료만)
     @Select("""
-           SELECT p.* FROM board_post p
-           WHERE p.post_id=#{postId} AND p.board_id=1 AND p.status='완료' AND p.is_deleted=false
-         """)
+    		   SELECT 
+    		       p.post_id     AS postId,
+    		       p.board_id    AS boardId,
+    		       p.employee_id AS employeeId,
+    		       e.emp_nm      AS empNm,
+    		       p.title,
+    		       p.content,
+    		       p.created_at  AS createdAt,
+    		       p.updated_at  AS updatedAt,
+    		       p.view_count  AS viewCount,
+    		       p.like_count  AS likeCount,
+    		       p.is_deleted  AS isDeleted,
+    		       p.status
+    		   FROM board_post p
+    		   LEFT JOIN employee e ON e.employeeId = p.employee_id
+    		   WHERE p.post_id = #{postId}
+    		     AND p.board_id = 1
+    		     AND p.status = '완료'
+    		     AND p.is_deleted = false
+    		""")
     BoardDTO findNoticeApprovedById(BoardDTO dto);
 
     // 초안(대기) 저장
@@ -260,7 +277,7 @@ public interface BoardMapper {
 
     // 게시글 상세 조회
     @Select("""
-           SELECT p.post_id AS postId, p.board_id AS boardId, p.employee_id AS employeeId,
+           SELECT p.post_id AS postId, p.board_id AS boardId, p.employee_id AS employeeId, e.emp_nm AS empNm,
                   p.title, p.content, p.created_at AS createdAt, p.updated_at AS updatedAt,
                   p.view_count AS viewCount, p.like_count AS likeCount, p.is_deleted AS isDeleted,
                   (SELECT COUNT(*) 
@@ -268,6 +285,8 @@ public interface BoardMapper {
            WHERE c.post_id = p.post_id 
            AND c.is_deleted = FALSE) AS commentCount
            FROM board_post p
+           LEFT JOIN employee e
+    		ON e.employeeId = p.employee_id
            WHERE p.post_id = #{postId} AND p.is_deleted = false
          """)
     BoardDTO detail(BoardDTO dto);

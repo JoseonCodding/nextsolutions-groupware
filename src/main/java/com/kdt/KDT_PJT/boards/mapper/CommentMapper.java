@@ -8,13 +8,24 @@ import java.util.List;
 @Mapper
 public interface CommentMapper {
 
-	// 댓글 등록(기존 그대로)
+		// 댓글 등록(기존 그대로)
 	  @Insert("""
 	    INSERT INTO board_comment (post_id, employee_id, parent_comment_id, content, is_deleted)
 	    VALUES (#{postId}, #{employeeId}, #{parentCommentId}, #{content}, false)
 	  """)
 	  @Options(useGeneratedKeys = true, keyProperty = "commentId")
 	  int insertComment(CommentDTO comment);
+	  
+	  // 본인 댓글만 삭제
+	  @Update("""
+			  UPDATE board_comment
+			  SET is_deleted = 1
+			  WHERE comment_id  = #{commentId}
+			    AND employee_id = #{employeeId}
+			    AND (is_deleted = 0 OR is_deleted IS NULL)
+			""")
+			int deleteByOwner(@Param("commentId") Long commentId,
+			                  @Param("employeeId") String employeeId);
     
     //답글에는 답글 x
     @Select("SELECT COUNT(1)\r\n " +
