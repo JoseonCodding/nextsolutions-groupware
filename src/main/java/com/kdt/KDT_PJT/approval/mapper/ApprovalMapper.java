@@ -130,6 +130,7 @@ public interface ApprovalMapper {
 	    ") AS all_data",
 	    "WHERE 1=1",
 
+	    // 기존 역할별 분기(그대로 유지)
 	    "<choose>",
 	    "  <when test='role != \"대표\"'>",
 	    "    <choose>",
@@ -149,6 +150,12 @@ public interface ApprovalMapper {
 	    "  </when>",
 	    "</choose>",
 
+	    // [중요] 대표가 아닌 경우 프로젝트 문서는 본인 글만 보이도록 공통 제한 추가
+	    "<if test='role != \"대표\"'>",
+	    "  AND (docType != '프로젝트' OR writerId = #{employeeId})",
+	    "</if>",
+
+	    // 타입/상태 필터
 	    "<if test='type != null and type != \"\"'>",
 	    "  AND docType = #{type}",
 	    "</if>",
@@ -168,12 +175,12 @@ public interface ApprovalMapper {
 	        @Param("status") String status,
 	        @Param("employeeId") String employeeId
 	);
+
 	
 	/* 글 전체 개수 카운트 -> (페이지네이션) */
 	@Select({
 	    "<script>",
 	    "SELECT COUNT(*) FROM (",
-	    // ──────────────── 공지사항
 	    "   SELECT CONCAT('notice-', b.post_id) AS docId, '공지사항' AS docType, e.employeeId AS writerId, b.status",
 	    "     FROM board_post b",
 	    "     LEFT JOIN employee e ON b.employee_id = e.employeeId",
@@ -181,7 +188,6 @@ public interface ApprovalMapper {
 
 	    "   UNION ALL",
 
-	    // ──────────────── 연차
 	    "   SELECT CONCAT('leave-', l.leave_id) AS docId, '연차' AS docType, e.employeeId AS writerId, l.state_type AS status",
 	    "     FROM annual_leave l",
 	    "     LEFT JOIN employee e ON l.employeeId = e.employeeId",
@@ -189,7 +195,6 @@ public interface ApprovalMapper {
 
 	    "   UNION ALL",
 
-	    // ──────────────── 프로젝트 (gid별 최신 ver만 카운트)
 	    "   SELECT CONCAT('project-', p.PJT_SN) AS docId, '프로젝트' AS docType, p.employeeId AS writerId, p.PJT_STTS_CD AS status",
 	    "     FROM TB_PJT_BASC p",
 	    "     JOIN (",
@@ -200,7 +205,6 @@ public interface ApprovalMapper {
 
 	    "   UNION ALL",
 
-	    // ──────────────── 근태
 	    "   SELECT CONCAT('attendance-', a.id) AS docId, '근태' AS docType, e.employeeId AS writerId, a.status",
 	    "     FROM attendance a",
 	    "     LEFT JOIN employee e ON a.employeeId = e.employeeId",
@@ -208,7 +212,7 @@ public interface ApprovalMapper {
 	    ") AS all_data",
 	    "WHERE 1=1",
 
-	    // --- role + 내글 조건 ---
+	    // 기존 역할별 분기(그대로 유지)
 	    "<choose>",
 	    "  <when test='role != \"대표\"'>",
 	    "    <choose>",
@@ -228,7 +232,12 @@ public interface ApprovalMapper {
 	    "  </when>",
 	    "</choose>",
 
-	    // --- type/status 필터 ---
+	    // [중요] 대표가 아닌 경우 프로젝트 문서는 본인 글만 카운트
+	    "<if test='role != \"대표\"'>",
+	    "  AND (docType != '프로젝트' OR writerId = #{employeeId})",
+	    "</if>",
+
+	    // 타입/상태 필터
 	    "<if test='type != null and type != \"\"'>",
 	    "  AND docType = #{type}",
 	    "</if>",
@@ -245,12 +254,13 @@ public interface ApprovalMapper {
 	    @Param("employeeId") String employeeId
 	);
 
+
 	
 	@Select({
 	    "<script>",
 	    "SELECT * FROM (",
 
-	    // ───── 공지사항
+	    // 공지사항
 	    "   SELECT ",
 	    "     CONCAT('notice-', b.post_id) AS docId,",
 	    "     '공지사항' AS docType,",
@@ -282,7 +292,7 @@ public interface ApprovalMapper {
 
 	    "   UNION ALL",
 
-	    // ───── 연차
+	    // 연차
 	    "   SELECT",
 	    "     CONCAT('leave-', l.leave_id) AS docId,",
 	    "     '연차' AS docType,",
@@ -314,7 +324,7 @@ public interface ApprovalMapper {
 
 	    "   UNION ALL",
 
-	    // ───── 프로젝트
+	    // 프로젝트
 	    "   SELECT",
 	    "     CONCAT('project-', p.PJT_SN) AS docId,",
 	    "     '프로젝트' AS docType,",
@@ -345,11 +355,11 @@ public interface ApprovalMapper {
 
 	    "   UNION ALL",
 
-	    // ───── 근태
+	    // 근태
 	    "   SELECT",
 	    "     CONCAT('attendance-', a.id) AS docId,",
 	    "     '근태' AS docType,",
-	    " 	  CONCAT('근태 수정 신청 - ', COALESCE(DATE_FORMAT(a.check_in_time, '%Y년 %m월 %d일'), '-'), ' ', COALESCE(a.time_inout, '')) AS title,",
+	    "     CONCAT('근태 수정 신청 - ', COALESCE(DATE_FORMAT(a.check_in_time, '%Y년 %m월 %d일'), '-'), ' ', COALESCE(a.time_inout, '')) AS title,",
 	    "     a.modification_reason AS content,",
 	    "     a.status AS status,",
 	    "     e.deptName AS deptName,",
@@ -377,6 +387,7 @@ public interface ApprovalMapper {
 	    ") AS all_data",
 	    "WHERE docId = #{docId}",
 
+	    // 기존 역할별 분기(그대로 유지)
 	    "<choose>",
 	    "  <when test='role != \"대표\"'>",
 	    "    <choose>",
@@ -396,6 +407,12 @@ public interface ApprovalMapper {
 	    "  </when>",
 	    "</choose>",
 
+	    // [중요] 대표가 아닌 경우 프로젝트 상세 접근은 본인 글만 허용
+	    "<if test='role != \"대표\"'>",
+	    "  AND (docType != '프로젝트' OR writerId = #{employeeId})",
+	    "</if>",
+
+	    // 타입/상태 필터(뷰에서는 null로 들어오는 경우가 많지만 그대로 유지)
 	    "<if test='type != null and type != \"\"'>",
 	    "  AND docType = #{type}",
 	    "</if>",
@@ -412,6 +429,7 @@ public interface ApprovalMapper {
 	    @Param("type") String type,
 	    @Param("status") String status
 	);
+
 	
 	// 공지사항 소프트 삭제
 	@Update("UPDATE board_post SET is_deleted = 1 WHERE post_id = #{id}")
@@ -633,7 +651,7 @@ public interface ApprovalMapper {
         "      AND role = '게시판'",
         "    </when>",
         "    <when test='docType == \"프로젝트\"'>",
-        "      AND role = '프로젝트'",
+        "      AND role = '대표'",
         "    </when>",
         "    <when test='docType == \"연차\" or docType == \"근태\"'>",
         "      AND role IN ('근태','대표')",

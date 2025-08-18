@@ -99,10 +99,10 @@
 		        <span th:text="${approvalData.writer != null ? ' ' + approvalData.writer : ' -'}">-</span>
 		      </td>
 		
-		      <!-- 결재자: 프로젝트 권한자 N명 반복 출력 -->
+		      <!-- 결재자: 대표만 표시 -->
 		      <td>
 		        <div th:if="${approvalData.approvers != null and !approvalData.approvers.isEmpty()}">
-		          <div th:each="ap : ${approvalData.approvers}">
+		          <div th:each="ap : ${approvalData.approvers}" th:if="${ap.role == '대표'}">
 		            <span th:text="${ap.position != null ? ap.position : ''}"></span>
 		            <span th:text="${ap.name != null ? ' ' + ap.name : ' -'}">-</span>
 		          </div>
@@ -111,21 +111,32 @@
 		      </td>
 		    </tr>
 		
-		    <tr>
-		      <!-- 상신일 -->
-		      <td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd')}">-</td>
-		
-		      <!-- 결재일: 프로젝트는 중간결재자 단계 firstSign 기준 표시 -->
-		      <td>
-		        <span th:if="${approvalData != null and approvalData.firstSign != null}"
-		              th:style="${approvalData.status == '반려' ? 'color:red;' : 'color:black;'}"
-		              th:text="${#dates.format(approvalData.firstSign, 'yyyy/MM/dd') + (approvalData.status == '반려' ? ' (반려)' : '')}">
-		        </span>
-		        <span th:if="${approvalData == null or approvalData.firstSign == null}">-</span>
-		      </td>
-		    </tr>
+			<tr>
+			  <!-- 상신일 -->
+			  <td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd')}">-</td>
+			
+			  <!-- 결재일: secondSign 우선, 없으면 firstSign 표시. 반려면 (반려) 표기 -->
+			  <td>
+			    <!-- secondSign 우선 표시 -->
+			    <span th:if="${approvalData != null and approvalData.secondSign != null}"
+			          th:style="${approvalData.status == '반려' ? 'color:red;' : 'color:black;'}"
+			          th:text="${#dates.format(approvalData.secondSign, 'yyyy/MM/dd') + (approvalData.status == '반려' ? ' (반려)' : '')}">
+			    </span>
+			
+			    <!-- secondSign이 없으면 firstSign 표시 -->
+			    <span th:if="${approvalData != null and approvalData.secondSign == null and approvalData.firstSign != null}"
+			          th:style="${approvalData.status == '반려' ? 'color:red;' : 'color:black;'}"
+			          th:text="${#dates.format(approvalData.firstSign, 'yyyy/MM/dd') + (approvalData.status == '반려' ? ' (반려)' : '')}">
+			    </span>
+			
+			    <!-- 둘 다 없으면 대시 -->
+			    <span th:if="${approvalData == null or (approvalData.secondSign == null and approvalData.firstSign == null)}">-</span>
+			  </td>
+			</tr>
+
 		  </table>
 		</th:block>
+
 
 
 			
@@ -435,14 +446,14 @@
 
 
 	<!-- 승인 & 반려 버튼 영역 -->
-	<div th:if="${
-	  (approvalData.docType == '근태'     and approvalData.status == '대기'   and (loginUser.role == '대표' or loginUser.role == '근태'))
-	  or
-	  (approvalData.docType == '연차'     and approvalData.status == '대기'   and (loginUser.role == '대표' or loginUser.role == '근태'))
-	  or
-	  (approvalData.docType == '공지사항' and approvalData.status == '대기'   and loginUser.role == '게시판')
-	  or
-	  (approvalData.docType == '프로젝트' and approvalData.status == '대기'   and loginUser.role == '프로젝트')
+	<div th:if=" ${
+	    (approvalData.docType == '근태'     and approvalData.status == '대기'   and (loginUser.role == '대표' or loginUser.role == '근태'))
+	    or
+	    (approvalData.docType == '연차'     and approvalData.status == '대기'   and (loginUser.role == '대표' or loginUser.role == '근태'))
+	    or
+	    (approvalData.docType == '공지사항' and approvalData.status == '대기'   and loginUser.role == '게시판')
+	    or
+	    (approvalData.docType == '프로젝트' and approvalData.status == '대기'   and loginUser.role == '대표')
 	}">
 	  <!-- 승인 버튼 -->
 	  <form th:action="@{/approval/approve}" method="post" style="display: inline;">
@@ -464,6 +475,7 @@
 	    </button>
 	  </form>
 	</div>
+
 
 
 </body>
