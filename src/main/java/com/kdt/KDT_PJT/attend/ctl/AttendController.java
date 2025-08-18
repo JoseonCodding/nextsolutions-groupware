@@ -42,10 +42,7 @@ public class AttendController {
 	
 	@Autowired
     AttendMapper attendMapper;
-	
-	@Autowired
-	AttendMapper2 attendMapper2;
-	
+
    // log 사용을 위함
    private final Logger log = LoggerFactory.getLogger(getClass());
    
@@ -86,7 +83,7 @@ public class AttendController {
     //출근 시간 기록
     @PostMapping("/in")
     String checkIn(HttpSession session) {
-    	System.out.println("checkIn 작동하나");
+    	System.out.println("checkIn 작동");
         service.recordCheckIn(session);
         return "redirect:/attend";
     }
