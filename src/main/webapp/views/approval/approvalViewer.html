@@ -8,6 +8,15 @@
 
 <body>
 
+	<!-- 뷰어 상단 타이틀 -->
+	<h1 th:switch="${approvalData != null ? approvalData.docType : ''}" style="text-align:center; margin-bottom:20px;">
+	    <span th:case="'프로젝트'">프로젝트 등록 신청</span>
+	    <span th:case="'연차'">연차 사용 신청</span>
+	    <span th:case="'근태'">근태 수정 신청</span>
+	    <span th:case="'공지사항'">공지사항 등록 신청</span>
+	</h1>
+
+
 	<div style="display: flex;">
 	
 		<!-- 작성자, 부서, 기안일, 문서번호 영역 -->
