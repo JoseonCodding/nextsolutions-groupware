@@ -432,10 +432,10 @@ public class ApprovalController {
                 return "redirect:/approval/main?error=forbidden";
             }
         }
-        // 프로젝트: 대표 최종결재 → '대기' -> '완료' + approvedBy 저장
+        // 프로젝트: 대표 최종결재 → '대기' -> '진행중' + approvedBy 저장
         else if ("프로젝트".equals(docType)) {
             if ("대기".equals(currentStatus) && "대표".equals(role)) {
-                int updated = approvalMapper.updateStatusProject(pkId, "완료", currentStatus, approverId);
+                int updated = approvalMapper.updateStatusProject(pkId, "진행중", currentStatus, approverId);
                 if (updated == 0) return "redirect:/approval/main?error=notUpdated";
             } else {
                 return "redirect:/approval/main?error=forbidden";
