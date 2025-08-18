@@ -2,13 +2,13 @@ package com.kdt.KDT_PJT.approval.mapper;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
+import com.kdt.KDT_PJT.approval.model.ApproverDTO;
 
 
 @Mapper
@@ -615,6 +615,37 @@ public interface ApprovalMapper {
     	""")
     	int approveLeave(@Param("id") int id,
     	                 @Param("role") String role);
+    
+    @Select({
+        "<script>",
+        "SELECT employeeId, emp_nm AS name, position, role, ",
+        "  CASE ",
+        "    WHEN role = '근태' THEN 1 ",
+        "    WHEN role = '프로젝트' THEN 1 ",
+        "    WHEN role = '게시판' THEN 1 ",
+        "    WHEN role = '대표' THEN 2 ",
+        "    ELSE 99 ",
+        "  END AS signOrder ",
+        "FROM employee ",
+        "WHERE 1=1 ",
+        "  <choose>",
+        "    <when test='docType == \"공지사항\"'>",
+        "      AND role = '게시판'",
+        "    </when>",
+        "    <when test='docType == \"프로젝트\"'>",
+        "      AND role = '프로젝트'",
+        "    </when>",
+        "    <when test='docType == \"연차\" or docType == \"근태\"'>",
+        "      AND role IN ('근태','대표')",
+        "    </when>",
+        "    <otherwise>",
+        "      AND 1=0",
+        "    </otherwise>",
+        "  </choose>",
+        "ORDER BY signOrder, position, name",
+        "</script>"
+    })
+    List<ApproverDTO> selectApproversByDocType(@Param("docType") String docType);
 
 
 }

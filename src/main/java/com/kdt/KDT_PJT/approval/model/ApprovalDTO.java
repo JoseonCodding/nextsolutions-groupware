@@ -1,6 +1,7 @@
 package com.kdt.KDT_PJT.approval.model;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
 
@@ -42,5 +43,6 @@ public class ApprovalDTO {
     String writerPosition;		// 상신자 직책
     String approverPosition;	// 중간결재자 직책
     String managerPosition;		// 최종 결재자 직책
+    List<ApproverDTO> approvers; // 결재자 목록 추가
     
 }
