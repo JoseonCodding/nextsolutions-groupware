@@ -7,9 +7,7 @@
 <mapper namespace="com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper">
 
 
-<!-- ===============================
-       1. 프로젝트 기본 CRUD
-       =============================== -->
+<!--  1. 프로젝트 기본 CRUD   -->
 
   <!-- 프로젝트 총 개수 (검색 조건 포함) -->
   <select id="countProjects" resultType="int">
@@ -45,7 +43,7 @@
     WHERE PJT_SN = #{PJT_SN}
   </update>
 
-  <!-- 프로젝트 등록 -->
+  <!-- 프로젝트 최초 등록 -->
   <insert id="savePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     INSERT INTO TB_PJT_BASC (
     
@@ -76,7 +74,7 @@
     )
   </insert>
   
-    <!-- 프로젝트 등록 -->
+  <!--  프로젝트 수정 시 새 버전 저장 -->
   <insert id="savePjtProcForVersion" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     INSERT INTO TB_PJT_BASC (
       PJT_NM, employeeId,TB_PJT_APR, PJT_BGNG_DT, PJT_END_DT,
@@ -84,7 +82,6 @@
       content, ATCH_FILE_SN1, ORG_FILE_NM1,
       ATCH_FILE_SN2, ORG_FILE_NM2,
       ATCH_FILE_SN3, ORG_FILE_NM3,
-      
       ver, gid
     ) VALUES (
       #{PJT_NM},
@@ -93,7 +90,6 @@
       #{PJT_BGNG_DT},
       #{PJT_END_DT},
       #{PJT_STTS_CD},
-
       #{FRST_REG_DT},
       #{content},
       #{ATCH_FILE_SN1},
@@ -101,8 +97,7 @@
       #{ATCH_FILE_SN2},
       #{ORG_FILE_NM2},
       #{ATCH_FILE_SN3},
-      #{ORG_FILE_NM3},
-      
+      #{ORG_FILE_NM3},      
       #{ver},
       #{gid}
     )
@@ -117,7 +112,7 @@
     WHERE PJT_SN = #{pjtSn}
   </select>
 
-  <!-- 프로젝트 목록 (검색/페이징/필터 포함) -->
+  <!-- 프로젝트 목록조회 (검색/페이징/필터 포함) -->
   <select id="selectProjectList" parameterType="map"
           resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
           /* com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.selectProjectList*/
@@ -157,9 +152,7 @@
       </if>
   </select>
 
-  <!-- ===============================
-       2. 대시보드 카드 숫자용 쿼리
-       =============================== -->
+  <!--      2. 대시보드 카드 숫자    -->
 
   <!-- 내 참여 프로젝트 수 -->
   <select id="countMyProjects" parameterType="string" resultType="int">
@@ -177,8 +170,7 @@
     WHERE (USE_YN IS NULL OR USE_YN = 'Y')
       AND TB_PJT_APR = #{employeeId}
   </select>
-
-  
+ 
 
   <!-- 작성자명 드롭다운 -->
   <select id="selectApproverCandidates" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
@@ -188,7 +180,7 @@
     ORDER BY employeeid
   </select>
 
-  <!-- 프로젝트 결재자 수정 -->
+  <!-- 프로젝트 결재자 변경 -->
   <update id="updateApprover" parameterType="map">
     UPDATE TB_PJT_BASC
        SET TB_PJT_APR = #{TB_PJT_APR},
