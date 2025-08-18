@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 public class AttendDTO2 {
 
 	private Long id;
-	private String employeeId, service, empNm, deptName, position, workingHours;
+	private String employeeId, service, empNm, deptName, position, workingHours, reason;
 	private LocalDateTime checkInTime, checkOutTime;
-	int workCnt;
+	int workCnt, month;
 
 	private String status;
 

@@ -73,7 +73,7 @@
 
   <!-- 댓글 목록 -->
   <div class="comments-section" th:if="${useComment}">
-    <h3>댓글 (<span th:text="${comments != null ? comments.size() : 0}">0</span>)</h3>
+    <h3>댓글 (<span th:text="${commentCount}">0</span>)</h3>
     <ul class="comment-list">
   <li th:each="c : ${comments}"
     class="comment-item"

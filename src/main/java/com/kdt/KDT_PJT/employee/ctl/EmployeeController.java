@@ -1,12 +1,14 @@
 package com.kdt.KDT_PJT.employee.ctl;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -112,12 +114,37 @@ public class EmployeeController {
     /** 회원가입 처리 */
     @PostMapping("/employee/register")
     public String registerEmployee(@RequestParam("employeeId") String employeeId,
-                                   @RequestParam("password") String password,
-                                   @RequestParam("empNm") String empNm) {
+            @RequestParam("password") String password,
+            @RequestParam("empNm") String empNm,
+            @RequestParam("phone") String phone,
+            @RequestParam("deptName") String deptName,
+            @RequestParam("position") String position,
+            @RequestParam("role") String role,
+            @RequestParam("birth") 
+            @DateTimeFormat(pattern = "yyyy-MM-dd") Date birth,
+            @RequestParam("hireDate") 
+            @DateTimeFormat(pattern = "yyyy-MM-dd") Date hireDate,
+            @RequestParam(value="resignDate", required=false) 
+            @DateTimeFormat(pattern = "yyyy-MM-dd") Date resignDate) {
         CmmnMap params = new CmmnMap();
         params.put("employeeId", employeeId);
         params.put("password", password);
         params.put("empNm", empNm);
+        params.put("phone", phone);
+        params.put("birth", birth);
+        params.put("deptName", deptName);
+        params.put("position", position);
+        params.put("role", role);
+        params.put("hireDate", hireDate);
+        params.put("resignDate", resignDate);
+        
+        
+        log.info("birth " + birth);
+        log.info("hireDate " + hireDate);
+        log.info("resignDate " + resignDate);
+        
+        
+        
         employeeService.insertEmployee(params);
         return "redirect:/employee/list";
     }
