@@ -20,6 +20,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
+import com.kdt.KDT_PJT.attend.model.AttendDTO2;
 import com.kdt.KDT_PJT.attend.model.AttendMapper;
 import com.kdt.KDT_PJT.attend.model.AttendMapper2;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
@@ -48,7 +49,7 @@ public class AttendController {
    
 	//사용자 본인의 출퇴근 기록 
     @GetMapping
-    String showAttendancePage(HttpSession session, Model model,AttendDTO attendance) {
+    String showAttendancePage(HttpSession session, Model model,AttendDTO2 attendance) {
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
     	
     	// 현재 조회 기간이 없으면 기본값 세팅 (이번달 시작일 ~ 이번달 말일)

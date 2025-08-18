@@ -33,7 +33,7 @@ public interface AttendMapper {
 		      AND DATE(check_in_time) BETWEEN #{startDay} AND #{endDay}
 		    ORDER BY check_in_time
 		""")
-   List<AttendDTO> userAttendMonthList( AttendDTO attendance);
+   List<AttendDTO> userAttendMonthList( AttendDTO2 attendance);
    
    //오늘 출근 조회용
    @Select("""
