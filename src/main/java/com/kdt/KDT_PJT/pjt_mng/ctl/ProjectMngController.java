@@ -329,6 +329,8 @@ public class ProjectMngController {
 	    
 		CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
 		log.debug("DETAIL TB_PJT_APR={}", pjtDetail.get("TB_PJT_APR")); // 값 확인
+		
+		
 		model.addAttribute("isAdmin", isAdmin);
 	    model.addAttribute("approverList", approverList);
 		model.addAttribute("pjt", pjtDetail);
