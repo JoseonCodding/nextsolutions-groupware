@@ -65,7 +65,7 @@ public interface PjtMngMapper {
    @Select(" select "
    			+ " t2.* "
    			+ ", (SELECT emp_nm from employee where 1=1 and employeeId = t2.employeeId) as reg_user"
-   			+ ", (SELECT emp_nm from employee where 1=1 and employeeId = t2.employeeId) as app_user"
+   			+ ", (SELECT emp_nm from employee where 1=1 and employeeId = t2.TB_PJT_APR) as app_user"
    			+ "    FROM TB_PJT_BASC t2"
    			+ "    WHERE PJT_SN = #{pjtSn}"
 		   )
