@@ -42,7 +42,7 @@
 			<td th:text="${dto.empNm}"></td>
 			<td th:text="${dto.checkInHourMinute}"></td>
 			<td th:text="${dto.checkOutHourMinute}"></td>
-			<td th:text="${dto.status == '완료' ? dto.empNm : ''}"></td>
+			<td th:text="${dto.status == '완료' ? dto.mbNm : ''}"></td>
 			<td th:text="${dto.status == '완료' and dto.modifiedAt != null 
               ? #temporals.format(dto.modifiedAt, 'yyyy-MM-dd') : ''}"></td>
 			<td th:text="${dto.status == '완료' ? dto.modificationReason : ''}"></td>

@@ -219,9 +219,10 @@ public interface AttendMapper {
    // 출퇴근 현황(관리자용)
    @Select("""
 	        <script>
-	        SELECT a.*, e.emp_nm, e.deptName
+	        SELECT a.*, e.emp_nm, e.deptName, mb.emp_nm as  mb_nm 
 	        FROM attendance a
 	        JOIN employee e ON a.employeeId = e.employeeId
+	        left outer JOIN employee mb ON a.modified_by = mb.employeeId
 	        WHERE 1=1
 	        <if test="workDate != null and workDate != ''">
 	            AND a.check_in_time &gt;= STR_TO_DATE(CONCAT(#{workDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')
