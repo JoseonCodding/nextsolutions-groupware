@@ -1,5 +1,7 @@
 package com.kdt.KDT_PJT.api_p;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,15 +36,18 @@ public class ApiScheduleController {
 		
 		System.out.println("/api/schedules 진입");
 		
-		List<ScheduleDTO> scheduleList = mapper.getScheduleListByMonth(schDto);
+		List<ScheduleDTO> scheduleList = mapper.getScheduleListRepeatEmpty();
 		scheduleList.addAll(mapper.getProjectListByMonth());
 		return scheduleList;
 	}
 
     @GetMapping("schedulealert")	
     Object sendNotifications(HttpSession sesson) {
-    	List<ScheduleDTO> res = mapper.getActiveAllDayNotifications();
-    	System.out.println("/api/schedulealert 진입"+res);
+    	ScheduleDTO schDto = new ScheduleDTO();
+    	//schDto.setCurr(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+    	System.out.println("/api/schedulealert 진입 1 "+schDto);
+    	List<ScheduleDTO> res = mapper.getActiveAllDayNotifications(schDto);
+    	System.out.println("/api/schedulealert 진입 2 "+res);
     	
         return res;
     }
