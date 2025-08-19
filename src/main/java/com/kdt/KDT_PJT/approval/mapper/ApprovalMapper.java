@@ -106,7 +106,7 @@ public interface ApprovalMapper {
 	    "   SELECT",
 	    "     CONCAT('attendance-', a.id) AS docId,",
 	    "     '근태' AS docType,",
-	    "     CONCAT('근태 수정 신청 - ', COALESCE(DATE_FORMAT(a.check_in_time, '%Y년 %m월 %d일'), '-'), ' ', COALESCE(a.time_inout, '')) AS title,",
+	    "     CONCAT('근태 수정 신청 - ', COALESCE(DATE_FORMAT(COALESCE(a.check_in_time, a.check_out_time), '%Y년 %m월 %d일'), '-'), ' ', COALESCE(a.time_inout, '')) AS title,",
 	    "     a.modification_reason AS content,",
 	    "     a.status AS status,",
 	    "     e.deptName AS deptName,",
@@ -282,10 +282,10 @@ public interface ApprovalMapper {
 	    "     b.firstSign AS firstSign,",
 	    "     b.secondSign AS secondSign,",
 	    "     (SELECT emp_nm   FROM employee WHERE role = '게시판' LIMIT 1) AS approverName,",
-	    "     (SELECT emp_nm   FROM employee WHERE role = '대표'   LIMIT 1) AS managerName,",
+	    "     NULL AS managerName,",
 	    "     e.position AS writerPosition,",
-	    "     (SELECT position FROM employee WHERE role = '근태'   LIMIT 1) AS approverPosition,",
-	    "     (SELECT position FROM employee WHERE role = '대표'   LIMIT 1) AS managerPosition,",
+	    "     (SELECT position FROM employee WHERE role = '게시판'   LIMIT 1) AS approverPosition,",
+	    "     NULL AS managerPosition,",
 	    "     b.approvedBy AS approvedBy,",
 	    "     (SELECT emp_nm   FROM employee WHERE employeeId = b.approvedBy LIMIT 1) AS approvedByName,",
 	    "     (SELECT position FROM employee WHERE employeeId = b.approvedBy LIMIT 1) AS approvedByPosition",
@@ -351,11 +351,11 @@ public interface ApprovalMapper {
 	    "     p.PJT_BGNG_DT AS pjtBgngDt, p.PJT_END_DT AS pjtEndDt,",
 	    "     p.firstSign AS firstSign,",
 	    "     p.secondSign AS secondSign,",
-	    "     (SELECT emp_nm   FROM employee WHERE role = '프로젝트' LIMIT 1) AS approverName,",
-	    "     (SELECT emp_nm   FROM employee WHERE role = '대표'     LIMIT 1) AS managerName,",
+	    "     (SELECT emp_nm   FROM employee WHERE role = '대표' LIMIT 1) AS approverName,",
+	    "     (SELECT emp_nm   FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
 	    "     e.position AS writerPosition,",
-	    "     (SELECT position FROM employee WHERE role = '근태'     LIMIT 1) AS approverPosition,",
-	    "     (SELECT position FROM employee WHERE role = '대표'     LIMIT 1) AS managerPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS approverPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition,",
 	    "     p.approvedBy AS approvedBy,",
 	    "     (SELECT emp_nm   FROM employee WHERE employeeId = p.approvedBy LIMIT 1) AS approvedByName,",
 	    "     (SELECT position FROM employee WHERE employeeId = p.approvedBy LIMIT 1) AS approvedByPosition",
@@ -609,7 +609,7 @@ public interface ApprovalMapper {
 
 
     
-	// 근태 승인
+	// 근태 승인 - 기준 날짜를 check_in_time 또는 check_out_time 중 존재하는 값으로 결정
 	@Update({
 	    "<script>",
 	    "UPDATE attendance",
@@ -627,14 +627,30 @@ public interface ApprovalMapper {
 	    "</choose>",
 	    "<choose>",
 	    "  <when test='timeInout == \"출근\"'>",
-	    "    , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00')",
+	    "    , check_in_time = CASE",
+	    "        WHEN COALESCE(check_in_time, check_out_time) IS NOT NULL",
+	    "          THEN CONCAT(DATE_FORMAT(COALESCE(check_in_time, check_out_time), '%Y-%m-%d'), ' 09:00:00')",
+	    "        ELSE check_in_time",
+	    "      END",
 	    "  </when>",
 	    "  <when test='timeInout == \"퇴근\"'>",
-	    "    , check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
+	    "    , check_out_time = CASE",
+	    "        WHEN COALESCE(check_in_time, check_out_time) IS NOT NULL",
+	    "          THEN CONCAT(DATE_FORMAT(COALESCE(check_in_time, check_out_time), '%Y-%m-%d'), ' 18:00:00')",
+	    "        ELSE check_out_time",
+	    "      END",
 	    "  </when>",
 	    "  <when test='timeInout == \"출퇴근\"'>",
-	    "    , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00'),",
-	    "      check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
+	    "    , check_in_time = CASE",
+	    "        WHEN COALESCE(check_in_time, check_out_time) IS NOT NULL",
+	    "          THEN CONCAT(DATE_FORMAT(COALESCE(check_in_time, check_out_time), '%Y-%m-%d'), ' 09:00:00')",
+	    "        ELSE check_in_time",
+	    "      END,",
+	    "      check_out_time = CASE",
+	    "        WHEN COALESCE(check_in_time, check_out_time) IS NOT NULL",
+	    "          THEN CONCAT(DATE_FORMAT(COALESCE(check_in_time, check_out_time), '%Y-%m-%d'), ' 18:00:00')",
+	    "        ELSE check_out_time",
+	    "      END",
 	    "  </when>",
 	    "</choose>",
 	    "WHERE id = #{id}",
@@ -646,7 +662,6 @@ public interface ApprovalMapper {
 	    @Param("approverId") String approverId,
 	    @Param("role") String role
 	);
-
 
 
 
