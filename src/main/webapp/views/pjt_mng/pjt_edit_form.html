@@ -131,7 +131,7 @@ input, select {
 				<td>
 					<!-- 모델 키가 employeeid 인 듯하여 그대로 사용 --> <input type="text"
 					name="employeeId" th:value="${pjt['employeeId'] ?: ''}"
-					placeholder="담당자 이름 입력" />
+					placeholder="담당자 이름 입력"  readonly />
 				</td>
 			</tr>
 			<tr>
@@ -178,14 +178,14 @@ input, select {
 			</tr>
 			 -->
 
-
 			<tr>
 				<th>결재자</th>
 				<td>
-					<!-- DB로 넘어갈 진짜 값(사번) --> <input type="hidden" name="TB_PJT_APR"
-					th:value="${approverFixedId}" /> <!-- 화면 표시용 (읽기 전용) --> <input
-					type="text" th:value="${approverFixedName}" readonly
-					class="form-control" />
+					<!-- DB로 넘어갈 진짜 값(사번) --> 
+					<input type="hidden" name="TB_PJT_APR" 	th:value="${pjt['TB_PJT_APR']}" />
+					
+					 <!-- 화면 표시용 (읽기 전용) -->
+              		<input type="text" th:value="${pjt['TB_PJT_APR']}" readonly class="form-control" />
 				</td>
 			</tr>
 			
@@ -219,9 +219,10 @@ input, select {
 
 
 		<!-- null-safe -->
-		<input type="hidden" name="approvers" id="approversInput"
-			th:value="${pjt['approvers'] ?: ''}" />
+		<input type="hidden" name="approvers" id="approversInput" th:value="${pjt['approvers'] ?: ''}" />
 
+		<input type="hidden" name="ver" id="ver"  th:value="${pjt['ver'] ?: ''}" />
+		
 		<div class="button-row">
 			<button type="button" class="back-btn" onclick="history.back()">←
 				돌아가기</button>
