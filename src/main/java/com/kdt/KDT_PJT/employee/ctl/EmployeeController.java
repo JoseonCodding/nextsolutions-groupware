@@ -12,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,6 +28,11 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class EmployeeController {
+	
+	@ModelAttribute("navUrl")
+	String navUrl() {
+		return "employee/layout/empTap";
+	}
 
     @Autowired
     private EmployeeService employeeService;
@@ -90,7 +96,7 @@ public class EmployeeController {
         //model.addAttribute("employees", list);
         model.addAttribute("mainUrl", "employee/list");
         //System.out.println("/employee/list : "+list);
-        return "home";
+        return "navTap";
     }
     
    
