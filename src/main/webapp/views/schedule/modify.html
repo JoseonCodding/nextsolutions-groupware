@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		</tr>
 		<tr >
 			<td colspan="3">
-				일정명<textarea th:field="*{title}" cols="30" rows="1">[[*{title}]]</textarea>
+				일정명<textarea th:field="*{title}" cols="30" rows="1" th:text="*{title}"></textarea>
 			</td>
 		</tr>
 		<tr >
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		</tr>
 		<tr >
 			<td colspan="3">
-				<textarea name="content" id="" cols="50" rows="30">[[*{content}]]</textarea>
+				<textarea th:field="*{content}" cols="50" rows="30" th:text="*{content}"></textarea>
 			</td>
 		</tr>
 		<tr >

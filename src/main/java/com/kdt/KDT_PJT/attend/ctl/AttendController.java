@@ -22,7 +22,6 @@ import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
 import com.kdt.KDT_PJT.attend.model.AttendDTO2;
 import com.kdt.KDT_PJT.attend.model.AttendMapper;
-import com.kdt.KDT_PJT.attend.model.AttendMapper2;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -80,7 +79,7 @@ public class AttendController {
         return "navTap";
         
     }
-
+    
     //출근 시간 기록
     @PostMapping("/in")
     String checkIn(HttpSession session) {

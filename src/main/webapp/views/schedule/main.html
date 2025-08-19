@@ -18,6 +18,16 @@
         // 현재 주차(주별 보기 시 유지용)
         let currentWeekNo = null;
 
+        // XSS 방어
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         // 일정 1개 HTML 변환
         function scheduleOneView(schOne){
             var clickBox = "";
@@ -36,7 +46,8 @@
             
             if(schOne.holiday == '휴무일'){
                 color = "red";  // 휴무일
-                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' style='color:"+color+"'>"+schOne.title+"</a>";
+                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' style='color:"+color+"'>"+escapeHtml(schOne.title)+"</a>";
+
             }else if(schOne.holiday == '프로젝트'){
                 color = "blue"; // 프로젝트
                 clickBox = "<a href='/pjtMng/pjtDetail?pjtSn="+ schOne.pjtSn +"' style='color:"+color+"'>"+schOne.title+"</a>";
@@ -45,7 +56,7 @@
                 clickBox = "<span style='color:"+color+"'>"+schOne.title+"</span>";
             }else{
                 color = "black"; // 일반 일정
-                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' style='color:"+color+"'>"+schOne.title+"</a>";
+                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' style='color:"+color+"'>"+escapeHtml(schOne.title)+"</a>";
             }
 
             return clickBox + "<br/>";
@@ -366,7 +377,7 @@
     });
 </script>
 
-
+<h1>일정 관리</h1>
 <h3 id="diary_title"></h3>
 
 <div align="right">

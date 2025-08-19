@@ -28,6 +28,19 @@ public class ScheduleController {
 	@Autowired
 	ScheduleMapper mapper;
 	
+	//문자열을 HTML escape 하는 메서드
+	public class XssUtils {
+	    public static String escapeHtml(String input) {
+	        if (input == null) return null;
+	        return input.replaceAll("&", "&amp;")
+	                    .replaceAll("<", "&lt;")
+	                    .replaceAll(">", "&gt;")
+	                    .replaceAll("\"", "&quot;")
+	                    .replaceAll("'", "&#039;");
+	    }
+	}
+
+	
 	//일정 메인 페이지
 	@RequestMapping
 	String showSchedulePage(HttpSession session, Model model, ScheduleDTO schDto) {
@@ -45,8 +58,11 @@ public class ScheduleController {
 	    
 	    
 	    
+	    // XSS 처리 적용
 	    for (ScheduleDTO dto : scheduleList) {
-	        dto.convertDatesToLocal();
+	        dto.convertDatesToLocal(); 
+	        dto.setTitle(XssUtils.escapeHtml(dto.getTitle()));
+	        dto.setContent(XssUtils.escapeHtml(dto.getContent())); // 내용 필드도 있다면
 	    }
 
 	    model.addAttribute("scheduleList", scheduleList);
@@ -69,8 +85,11 @@ public class ScheduleController {
 	String insertReg(HttpSession session, Model model,  ScheduleDTO dto) {
 		
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-	    
 	    dto.setEmployeeId(loginUser.getEmployeeId());
+	    
+	    // 입력값 XSS 방어
+	    dto.setTitle(XssUtils.escapeHtml(dto.getTitle()));
+	    dto.setContent(XssUtils.escapeHtml(dto.getContent()));
 	    
 		mapper.insert(dto);
 	    
@@ -107,7 +126,13 @@ public class ScheduleController {
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
 	    
 	    dto.setEmployeeId(loginUser.getEmployeeId());
+	    
+	    // 입력값 XSS 방어
+	    dto.setTitle(XssUtils.escapeHtml(dto.getTitle()));
+	    dto.setContent(XssUtils.escapeHtml(dto.getContent()));
+	    
 		int modify = mapper.modify(dto);
+
 		System.out.println("modify : "+modify);
 		model.addAttribute("modify", modify);
 		
