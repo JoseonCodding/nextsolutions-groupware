@@ -1,31 +1,89 @@
 
-<!-- 일정 등록 -->
+<!-- 일정 수정 -->
 <!-- 종일 일정에 체크할 시 시간 선택 비활성화 -->
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const allDayCheckbox = document.querySelector('input[name="cate"][value="종일"]');
-    const startTimeInput = document.querySelector('input[name="startTime"]');
-    const endTimeInput = document.querySelector('input[name="endTime"]');
+    document.addEventListener("DOMContentLoaded", function () {
+        const allDayCheckbox = document.querySelector('input[name="cate"][value="종일"]');
+        const holidayCheckbox = document.querySelector('input[name="holiday"]');
+        const repeatSelect   = document.getElementById("repeatCheck");
+        const startTimeInput = document.querySelector('input[name="startTimeStr"]');
+        const endTimeInput   = document.querySelector('input[name="endTimeStr"]');
+        const endDateInput   = document.querySelector('input[name="endDateStr"]');
+        const startDateInput = document.querySelector('input[name="startDateStr"]');
 
-    function toggleTimeInputs() {
-        const isAllDay = allDayCheckbox.checked;
-        startTimeInput.disabled = isAllDay;
-        endTimeInput.disabled = isAllDay;
-        
-        if (isAllDay) {
-            startTimeInput.value = "";
-            endTimeInput.value = "";
+
+        function applyState() {
+            const isDaily  = repeatSelect.value === "1";
+            const isHoliday = holidayCheckbox.checked;
+
+            /*
+            // 1) 매일 반복이 최우선 제약
+            if (isDaily) {
+                // 종일/휴무일 해제 및 비활성화
+                //allDayCheckbox.checked = false;
+                //allDayCheckbox.disabled = true;
+
+                holidayCheckbox.checked = false;
+                holidayCheckbox.disabled = true;
+
+                // 종료일/종료시간 비활성화 및 초기화
+                //endDateInput.disabled = true;
+              	//endDateInput.value = "";
+                //endTimeInput.disabled = false;
+                //endTimeInput.value = "";
+
+                // 시작시간은 사용 가능
+                startTimeInput.disabled = false;
+                return; // 매일 규칙이 최상위이므로 여기서 종료
+            } else {
+                // 매일 아님 → 다시 활성화
+                allDayCheckbox.disabled = false;
+                holidayCheckbox.disabled = false;
+                
+            }
+
+            // 2) 휴무일 체크 시: 종일 자동 체크 + 반복 선택 비활성화(반복 없음으로 고정)
+            if (isHoliday) {
+                allDayCheckbox.checked = true;
+                repeatSelect.disabled = true;
+                repeatSelect.value = "0";
+            } else {
+                repeatSelect.disabled = false;
+            }
+
+            // 3) 종일 여부에 따른 시간 입력 제어
+            const isAllDay = allDayCheckbox.checked;
+            startTimeInput.disabled = isAllDay;
+            endTimeInput.disabled   = isAllDay;
+            if (isAllDay) {
+                startTimeInput.value = "";
+                endTimeInput.value = "";
+            }
+
+            */   
         }
-    }
+        
+     	// 시작일 변경 시 종료일 최소값 제한
+        startDateInput.addEventListener("change", function() {
+            endDateInput.min = startDateInput.value;
+            if (endDateInput.value && endDateInput.value < startDateInput.value) {
+                endDateInput.value = startDateInput.value;
+            }
+        });
 
-    allDayCheckbox.addEventListener("change", toggleTimeInputs);
+        // 이벤트 바인딩
+        holidayCheckbox.addEventListener("change", applyState);
+        allDayCheckbox.addEventListener("change", applyState);
+        repeatSelect.addEventListener("change", applyState);
 
-    // 페이지 로드 시 초기 상태 설정
-    toggleTimeInputs();
-});
+        // 초기 상태 반영
+        applyState();
+    });
+    
 </script>
 
 <form  method="post" th:object="${scd}">
+
 	<table border="" >
 		<tr>
 			<td colspan="3" align="center">

@@ -2,6 +2,7 @@ package com.kdt.KDT_PJT.attend.ctl;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,9 +77,11 @@ public class AttendController {
         model.addAttribute("nextMonthStartDay", attendance.getNextMonthStartDay());
         model.addAttribute("nextMonthEndDay", attendance.getNextMonthEndDay());
         model.addAttribute("currentStartDay", attendance.getStartDay());
+
         return "navTap";
         
     }
+
     
     //출근 시간 기록
     @PostMapping("/in")
