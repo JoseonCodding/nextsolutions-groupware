@@ -309,7 +309,10 @@ public class ProjectMngController {
 
 
 	@GetMapping("/pjtEditForm")
-	public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn, Model model, HttpSession session) {
+	public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn,
+														Model model, 
+														HttpSession session
+														) {
 		log.info("getPjtEditForm Called >>> {}", pjtSn);
 	    List<CmmnMap> approverList = projectMngService.selectApproverCandidates();
 	    EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
@@ -326,6 +329,8 @@ public class ProjectMngController {
 	    
 		CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
 		log.debug("DETAIL TB_PJT_APR={}", pjtDetail.get("TB_PJT_APR")); // 값 확인
+		
+		
 		model.addAttribute("isAdmin", isAdmin);
 	    model.addAttribute("approverList", approverList);
 		model.addAttribute("pjt", pjtDetail);

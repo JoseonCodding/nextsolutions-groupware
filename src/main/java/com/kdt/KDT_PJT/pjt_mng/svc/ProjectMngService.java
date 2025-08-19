@@ -278,6 +278,11 @@ public class ProjectMngService {
 	    public void insertNewVersion(Map<String, Object> param) {
 	        projectMngMapper.insertNewVersion(param);
 	    }
+
+		public CmmnMap getPjtById(int pjtSn) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 
 
