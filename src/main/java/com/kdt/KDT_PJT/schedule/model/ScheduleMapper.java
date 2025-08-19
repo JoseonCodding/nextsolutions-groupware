@@ -87,38 +87,70 @@ public interface ScheduleMapper {
 	int delete(ScheduleDTO dto);
 	
     // 알림 발송 대상 조회
-    @Select("""
-    	    SELECT *, '1일전입니다' as msg FROM schedule
+//    @Select("""
+//    	    SELECT *, '1일전입니다' as msg FROM schedule
+//			WHERE alarm = '알림' AND cate = '종일'
+//			and ( 
+//				(repeat_check = 0 AND #{curr} = DATE_SUB(start_date, INTERVAL 1 DAY))
+//			    or
+//			    (#{curr} >= DATE_SUB(start_date, INTERVAL 1 DAY) and #{curr} <= DATE_SUB(end_date, INTERVAL 1 DAY) and (
+//			        repeat_check = 1 
+//			        or
+//			        (repeat_check = 2 and weekday(#{curr}) = weekday( DATE_SUB(start_date, INTERVAL 1 DAY))) 
+//			        or
+//			        (repeat_check = 3 and dayofmonth(#{curr}) = dayofmonth( DATE_SUB(start_date, INTERVAL 1 DAY)) )
+//			    )
+//			   ) 
+//			)
+//			union 
+//			SELECT *, '1시간전입니다' as msg FROM schedule
+//			WHERE alarm = '알림' AND (cate != '종일' or cate is null) AND hour(start_time) = hour(DATE_SUB(#{curr}, INTERVAL 1 HOUR))
+//			and (repeat_check = 0 and #{curr} = start_date 
+//			    or
+//			    (#{curr} >= start_date and #{curr} <= end_date and  (
+//			        repeat_check = 1 
+//			        or
+//			        (repeat_check = 2 and weekday(#{curr}) = weekday( start_date ) ) 
+//			        or
+//			        (repeat_check = 3 and dayofmonth(#{curr}) = dayofmonth( start_date) )
+//			    )
+//			   ) 
+//			)
+//			ORDER BY start_date DESC, start_time DESC
+//			LIMIT 10
+//    	""")
+	@Select("""
+			SELECT *, '1일전입니다' as msg FROM schedule
 			WHERE alarm = '알림' AND cate = '종일'
-			and ( 
-				(repeat_check = 0 AND #{curr} = DATE_SUB(start_date, INTERVAL 1 DAY))
+			and (
+				(repeat_check = 0 AND current_date() = DATE_SUB(start_date, INTERVAL 1 DAY))
 			    or
-			    (#{curr} >= DATE_SUB(start_date, INTERVAL 1 DAY) and #{curr} <= DATE_SUB(end_date, INTERVAL 1 DAY) and (
-			        repeat_check = 1 
+			    (current_date() >= DATE_SUB(start_date, INTERVAL 1 DAY) and now() <= DATE_SUB(end_date, INTERVAL 1 DAY) and (
+			        repeat_check = 1
 			        or
-			        (repeat_check = 2 and weekday(#{curr}) = weekday( DATE_SUB(start_date, INTERVAL 1 DAY))) 
+			        (repeat_check = 2 and weekday(current_date()) = weekday( DATE_SUB(start_date, INTERVAL 1 DAY)))
 			        or
-			        (repeat_check = 3 and dayofmonth(#{curr}) = dayofmonth( DATE_SUB(start_date, INTERVAL 1 DAY)) )
+			        (repeat_check = 3 and dayofmonth(current_date()) = dayofmonth( DATE_SUB(start_date, INTERVAL 1 DAY)) )
 			    )
-			   ) 
+			   )
 			)
-			union 
+			union
 			SELECT *, '1시간전입니다' as msg FROM schedule
-			WHERE alarm = '알림' AND (cate != '종일' or cate is null) AND hour(start_time) = hour(DATE_ADD(#{curr}, INTERVAL 1 HOUR))
-			and (repeat_check = 0 and #{curr} = start_date 
+			WHERE alarm = '알림' AND (cate != '종일' or cate is null) AND hour(start_time) = hour(date_add(now(), INTERVAL 1 HOUR))
+			and (repeat_check = 0 and current_date() = start_date
 			    or
-			    (#{curr} >= start_date and #{curr} <= end_date and  (
-			        repeat_check = 1 
+			    (current_date() >= start_date and current_date() <= end_date and  (
+			        repeat_check = 1
 			        or
-			        (repeat_check = 2 and weekday(#{curr}) = weekday( start_date ) ) 
+			        (repeat_check = 2 and weekday(current_date()) = weekday( start_date ) )
 			        or
-			        (repeat_check = 3 and dayofmonth(#{curr}) = dayofmonth( start_date) )
+			        (repeat_check = 3 and dayofmonth(current_date()) = dayofmonth( start_date) )
 			    )
-			   ) 
+			   )
 			)
 			ORDER BY start_date DESC, start_time DESC
 			LIMIT 10
-    	""")
+			""")
     List<ScheduleDTO> getActiveAllDayNotifications(ScheduleDTO schDto);
     
 
