@@ -183,9 +183,9 @@ public interface BoardMapper {
     // 초안(대기) 저장
     @Insert("""
       INSERT INTO board_post
-        (board_id, employee_id, title, content, created_at, updated_at, view_count, like_count, is_deleted, status, docType)
+        (board_id, employee_id, title, content, created_at, view_count, like_count, is_deleted, status, docType)
       VALUES
-        (1, #{employeeId}, #{title}, #{content}, NOW(), NOW(), 0, 0, FALSE, '대기', '공지사항')
+        (1, #{employeeId}, #{title}, #{content}, NOW(), 0, 0, FALSE, '대기', '공지사항')
     """)
     @Options(useGeneratedKeys = true, keyProperty = "postId", keyColumn = "post_id")
     int insertNoticeDraft(BoardDTO dto);
@@ -193,7 +193,7 @@ public interface BoardMapper {
     // 승인: 대기 -> 완료
     @Update("""
       UPDATE board_post
-         SET status='완료', published_at=NOW(), updated_at=NOW()
+         SET status='완료', published_at=NOW()
        WHERE post_id=#{postId}
          AND board_id=1
          AND status='대기'
@@ -204,7 +204,7 @@ public interface BoardMapper {
     // 반려: 대기 -> 반려
     @Update("""
       UPDATE board_post
-         SET status='반려', updated_at=NOW()
+         SET status='반려'
        WHERE post_id=#{postId}
          AND board_id=1
          AND status='대기'
@@ -215,7 +215,7 @@ public interface BoardMapper {
     // 공지 삭제(관리자용)
     @Update("""
       UPDATE board_post
-         SET is_deleted=TRUE, updated_at=NOW()
+         SET is_deleted=TRUE
        WHERE post_id=#{postId}
          AND board_id=1
          AND is_deleted=FALSE
@@ -312,7 +312,7 @@ public interface BoardMapper {
     // 작성자 본인 삭제
     @Update("""
       UPDATE board_post
-         SET is_deleted=TRUE, updated_at=NOW()
+         SET is_deleted=TRUE
        WHERE post_id=#{postId}
          AND (is_deleted=FALSE OR is_deleted IS NULL)
          AND employee_id=#{employeeId}
