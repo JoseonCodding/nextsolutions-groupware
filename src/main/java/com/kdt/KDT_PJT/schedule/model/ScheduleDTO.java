@@ -19,7 +19,7 @@ public class ScheduleDTO {
     String title, cate, alarm, content, holiday, msg;
     
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    Date startDate=new Date(), endDate=new Date(), createdAt=new Date(), updatedAt=new Date(), deleteDate=new Date();
+    Date startDate=new Date(), endDate=new Date(), createdAt=new Date(), updatedAt=new Date(), deleteDate=new Date(), curr=new Date();
     String employeeId;
     //Date startTime, endTime;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -30,7 +30,7 @@ public class ScheduleDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     LocalDate endLocalDate= LocalDate.now();
     
-    Integer firstDayOfWeek, year, month, lastDate, startLocalDateNo, endLocalDateNo;
+    Integer firstDayOfWeek, year, month, lastDate, startLocalDateNo, endLocalDateNo, startLocalDayNo;
     
     
     /**
@@ -39,7 +39,7 @@ public class ScheduleDTO {
      * - endDate: 해당 월 마지막 일자 (java.sql.Date)
      * - firstDayOfWeek: 해당 월 1일의 요일 값 (월=1, 일=7)
      * - lastDate: 해당 월의 마지막 일자 (정수)
-     */
+     
     public void monthDays() {
     	
         //now = LocalDate.now();
@@ -64,6 +64,7 @@ public class ScheduleDTO {
         
         System.out.println("monthDays : "+ now);
     }
+    */
 
     // DB에서 가져온 날짜(Date 타입)를 시스템 로컬 타임존(LocalDate) 기준으로 변환, 해당 날짜의 ‘일(day)’ 숫자만 별도로 저장
     public void convertDatesToLocal() {
@@ -72,6 +73,7 @@ public class ScheduleDTO {
         	startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         	// LocalDate에서 '일(dayOfMonth)'만 추출 (예: 2025-08-13 → 13)
         	startLocalDateNo = startLocalDate.getDayOfMonth();
+        	startLocalDayNo = startLocalDate.getDayOfWeek().getValue()%7;
         }
         if (endDate != null) { 
         	endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();

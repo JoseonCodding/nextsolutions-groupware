@@ -109,10 +109,14 @@ input, select {
 
 		<!-- hidden 값도 null-safe -->
 		<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN'] ?: ''}" />
-		<input type="hidden" name="gid" th:value="${pjt['gid'] ?: ''}" /> <input
-			type="hidden" name="oldFileName"
-			th:value="${pjt['ATCH_FILE_SN'] ?: ''}"> <input type="hidden"
-			name="oldOrgFileName" th:value="${pjt['ORG_FILE_NM'] ?: ''}">
+
+		<input type="hidden" name="gid" th:value="${pjt['gid'] ?: ''}" />
+		<input type="hidden" name="oldFileName"  th:value="${pjt['ATCH_FILE_SN'] ?: ''}"> 
+		<input type="hidden" name="oldOrgFileName" th:value="${pjt['ORG_FILE_NM'] ?: ''}">
+		<input type="hidden" name="firstSign" th:value="${pjt['firstSign'] ?: ''}">
+		<input type="hidden" name="secondSign" th:value="${pjt['secondSign'] ?: ''}">
+		<input type="hidden" name="approvedBy" th:value="${pjt['approvedBy'] ?: ''}">
+
 
 
 		<table>

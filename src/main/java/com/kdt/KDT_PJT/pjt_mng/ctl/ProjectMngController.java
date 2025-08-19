@@ -74,7 +74,7 @@ public class ProjectMngController {
 	    
 	     // ✅ 뷰에 현재 검색/정렬 상태 전달
 	    model.addAttribute("keywordType", type);
-	    model.addAttribute("keyword", "");  // 입력칸 초기화(유지하려면 keyword 넣어도 됨)
+	    model.addAttribute("keyword", keyword);  // 입력칸 초기화(유지하려면 keyword 넣어도 됨)
 
        
 
@@ -423,10 +423,13 @@ public class ProjectMngController {
          @RequestParam(value = "oldOrgFileName2", required = false) String oldOrgFileName2,
          @RequestParam(value = "uploadFile3", required = false) MultipartFile uploadFile3,
          @RequestParam(value = "oldFileName3", required = false) String oldFileName3,
-         @RequestParam(value = "oldOrgFileName3", required = false) String oldOrgFileName3)
+         @RequestParam(value = "oldOrgFileName3", required = false) String oldOrgFileName3,
+   @RequestParam(value = "firstSign", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime firstSign,
+   @RequestParam(value = "secondSign", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime secondSign,
+   @RequestParam(value = "approvedBy", required = false) String approvedBy)
    
    {
-	   
+	  
    
       Safelist customSafelist = Safelist.basicWithImages()
             .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
@@ -453,6 +456,11 @@ public class ProjectMngController {
       params.put("PJT_STTS_CD", pjtSttsCd);
       params.put("content", safeContent);
       params.put("APPROVERS", approvers);
+      params.put("firstSign", firstSign);
+      params.put("secondSign", secondSign);
+      params.put("approvedBy", approvedBy);
+      
+
 
       String uploadDir = "C:/upload/";
       String newFileName = oldFileName1 != null ? oldFileName1 : "";

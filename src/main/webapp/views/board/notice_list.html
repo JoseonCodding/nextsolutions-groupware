@@ -10,65 +10,64 @@
     .board-nav ul li a { text-decoration:none; font-weight:bold; color:#666; padding:8px 12px; border-bottom:2px solid transparent; transition:all .2s; }
     .board-nav ul li.active a { color:#000; border-bottom:2px solid #2c3e50; }
     .board-nav ul { display:flex; }
-  .board-nav ul li.admin { margin-left:auto; }
-  .board-nav ul li.admin a { color:#6b7280; font-weight:700; }
-  .board-nav ul li.admin a:hover { color:#111827; }
-  .ico-gear { width:16px; height:16px; vertical-align:-2px; fill:currentColor; }
+    .board-nav ul li.admin { margin-left:auto; }
+    .board-nav ul li.admin a { color:#6b7280; font-weight:700; }
+    .board-nav ul li.admin a:hover { color:#111827; }
+    .ico-gear { width:16px; height:16px; vertical-align:-2px; fill:currentColor; }
   </style>
 </head>
 <body>
   <!-- 상단 탭 -->
-<div class="board-nav">
-  <ul>
-    <li th:each="b : ${allBoards}"
-        th:classappend="${activeBoardId} == ${b.boardId} ? 'active'">
-      <a th:href="@{/board/{boardId}(boardId=${b.boardId})}"
-         th:text="${b.boardName}">게시판</a>
-    </li>
-    <li class="admin"
-        th:if="${session.loginUser != null and session.loginUser.employeeId == '20250004'}">
-      <a th:href="@{/admin/boards}">
-        <svg viewBox="0 0 24 24" class="ico-gear">
-          <path d="M12 8.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Zm8.1 3.2c0-.4 0-.8-.1-1.2l2-1.5-2-3.5-2.4.7a7.7 7.7 0 0 0-2.1-1.2L15 2h-6l-.5 2.3a7.7 7.7 0 0 0-2.1 1.2l-2.4-.7-2 3.5 2 1.5c0 .4-.1.8-.1 1.2s0 .8.1 1.2l-2 1.5 2 3.5 2.4-.7c.6.5 1.3.9 2.1 1.2L9 22h6l.5-2.3c.8-.3 1.5-.7 2.1-1.2l2.4.7 2-3.5-2-1.5c.1-.4.1-.8.1-1.2Z"/>
-        </svg>
-        게시판관리
-      </a>
-    </li>
-  </ul>
-</div>
+  <div class="board-nav">
+    <ul>
+      <li th:each="b : ${allBoards}"
+          th:classappend="${activeBoardId} == ${b.boardId} ? 'active'">
+        <a th:href="@{/board/{boardId}(boardId=${b.boardId})}"
+           th:text="${b.boardName}">게시판</a>
+      </li>
+      <li class="admin"
+          th:if="${session.loginUser != null and session.loginUser.employeeId == '20250004'}">
+        <a th:href="@{/admin/boards}">
+          <svg viewBox="0 0 24 24" class="ico-gear">
+            <path d="M12 8.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Zm8.1 3.2c0-.4 0-.8-.1-1.2l2-1.5-2-3.5-2.4.7a7.7 7.7 0 0 0-2.1-1.2L15 2h-6l-.5 2.3a7.7 7.7 0 0 0-2.1 1.2l-2.4-.7-2 3.5 2 1.5c0 .4-.1.8-.1 1.2s0 .8.1 1.2l-2 1.5 2 3.5 2.4-.7c.6.5 1.3.9 2.1 1.2L9 22h6l.5-2.3c.8-.3 1.5-.7 2.1-1.2l2.4.7 2-3.5-2-1.5c.1-.4.1-.8.1-1.2Z"/>
+          </svg>
+          게시판관리
+        </a>
+      </li>
+    </ul>
+  </div>
 
   <!-- 본문 -->
   <div class="container">
     <div class="board-controls" style="display:flex; justify-content:space-between; margin:20px 0;">
-                <!-- 정렬: 변경 즉시 자동 적용 -->
-  <form th:action="@{/board/notice}" method="get" id="sortForm">
-    <!-- 현재 검색어/사이즈 유지 + 페이지 1로 초기화 -->
-    <input type="hidden" name="keyword" th:value="${keyword}">
-    <input type="hidden" name="size" th:value="${size}">
-    <input type="hidden" name="page" value="1">
-    <select name="sort" th:value="${sort}" onchange="document.getElementById('sortForm').submit()">
-      <option value="newest" th:selected="${sort}=='newest'">최신순</option>
-      <option value="views"  th:selected="${sort}=='views'">조회수순</option>
-      <option value="likes"  th:selected="${sort}=='likes'">추천순</option>
-    </select>
-    <noscript><button type="submit">정렬 적용</button></noscript>
-  </form>
+      <!-- 정렬: 변경 즉시 자동 적용 -->
+      <form th:action="@{/board/notice}" method="get" id="sortForm">
+        <!-- 현재 검색어/사이즈 유지 + 페이지 1로 초기화 -->
+        <input type="hidden" name="keyword" th:value="${keyword}">
+        <input type="hidden" name="size" th:value="${size}">
+        <input type="hidden" name="page" value="1">
+        <select name="sort" th:value="${sort}" onchange="document.getElementById('sortForm').submit()">
+          <option value="newest" th:selected="${sort}=='newest'">최신순</option>
+          <option value="views"  th:selected="${sort}=='views'">조회수순</option>
+          <option value="likes"  th:selected="${sort}=='likes'">추천순</option>
+        </select>
+        <noscript><button type="submit">정렬 적용</button></noscript>
+      </form>
 
-  <!-- 검색: 버튼 눌러야 적용 -->
-  <form th:action="@{/board/notice}" method="get" style="display:flex; gap:8px;">
-    <input type="text" name="keyword" th:value="${keyword}" placeholder="제목/작성자 검색">
-    <!-- 현재 정렬/사이즈 유지 + 페이지 1로 초기화 -->
-    <input type="hidden" name="sort" th:value="${sort}">
-    <input type="hidden" name="size" th:value="${size}">
-    <input type="hidden" name="page" value="1">
-    <button type="submit">검색</button>
-  </form>
+      <!-- 검색: 버튼 눌러야 적용 -->
+      <form th:action="@{/board/notice}" method="get" style="display:flex; gap:8px;">
+        <input type="text" name="keyword" th:value="${keyword}" placeholder="제목/작성자 검색">
+        <!-- 현재 정렬/사이즈 유지 + 페이지 1로 초기화 -->
+        <input type="hidden" name="sort" th:value="${sort}">
+        <input type="hidden" name="size" th:value="${size}">
+        <input type="hidden" name="page" value="1">
+        <button type="submit">검색</button>
+      </form>
 
       <!-- 글쓰기 -->
-      <a th:href="@{/board/notice/write}" class="btn" th:if="${canWrite}">글쓰기</a>
-
-     </div>
-
+      <a th:href="@{/board/notice/write(page=${page}, size=${size}, sort=${sort}, keyword=${keyword})}"
+         class="btn" th:if="${canWrite}">글쓰기</a>
+    </div>
 
     <!-- 목록 테이블 -->
     <table class="board-table" style="width:100%; border-collapse:collapse;">
@@ -84,41 +83,49 @@
       </thead>
       <tbody>
         <tr th:each="b, stat : ${boards}">
-          <td style="padding:10px; text-align:center;" th:text="${stat.count}">1</td>
+          <td style="padding:10px; text-align:center;" th:text="${offset + stat.count}">1</td>
           <td style="padding:10px;">
-            <a th:href="@{/board/notice/detail(postId=${b.postId})}" th:text="${b.title}">제목</a>
+            <a th:href="@{/board/notice/detail(
+                           postId=${b.postId},
+                           page=${page}, size=${size}, sort=${sort}, keyword=${keyword}
+                         )}"
+               th:text="${b.title}">제목</a>
           </td>
           <td style="padding:10px; text-align:center;" th:text="${b.empNm}">작성자</td>
-
           <td style="padding:10px; text-align:center;"
-              th:text="${b.createdAt != null ? #dates.format(b.createdAt, 'yyyy-MM-dd HH:mm') : ''}"></td>
+              th:text="${b.createdAt != null ? #dates.format(b.createdAt, 'yyyy-MM-dd') : ''}"></td>
           <td style="padding:10px; text-align:center;" th:text="${b.viewCount} ?: 0"></td>
           <td style="padding:10px; text-align:center;" th:text="${b.likeCount} ?: 0"></td>
         </tr>
-        
 
         <tr th:if="${#lists.isEmpty(boards)}">
           <td colspan="6" style="padding:90px; text-align:center; color:#999;">등록된 게시글이 없습니다.</td>
         </tr>
       </tbody>
     </table>
-    
+
+    <!-- 페이지네이션 (page/size/sort/keyword 유지) -->
     <div class="pagination" style="display:flex;gap:6px;align-items:center">
-  <a th:classappend="${page==1}?' disabled'" th:href="@{/board/notice(page=1,size=${size})}">&lt;&lt;</a>
-  <a th:classappend="${page==1}?' disabled'" th:href="@{/board/notice(page=${page>1?page-1:1},size=${size})}">&lt;</a>
+      <a th:classappend="${page==1}?' disabled'"
+         th:href="@{/board/notice(page=1, size=${size}, sort=${sort}, keyword=${keyword})}">&lt;&lt;</a>
 
-  <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
-    <a th:if="${p!=page}" th:href="@{/board/notice(page=${p},size=${size})}" th:text="${p}"></a>
-    <span th:if="${p==page}" th:text="${p}" style="font-weight:700;padding:2px 6px;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff"></span>
-  </span>
+      <a th:classappend="${page==1}?' disabled'"
+         th:href="@{/board/notice(page=${page>1?page-1:1}, size=${size}, sort=${sort}, keyword=${keyword})}">&lt;</a>
 
-  <a th:classappend="${page==totalPages}?' disabled'"
-     th:href="@{/board/notice(page=${page<totalPages?page+1:totalPages},size=${size})}">&gt;</a>
-  <a th:classappend="${page==totalPages}?' disabled'"
-     th:href="@{/board/notice(page=${totalPages},size=${size})}">&gt;&gt;</a>
-</div>
+      <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
+        <a th:if="${p!=page}"
+           th:href="@{/board/notice(page=${p}, size=${size}, sort=${sort}, keyword=${keyword})}"
+           th:text="${p}"></a>
+        <span th:if="${p==page}" th:text="${p}"
+              style="font-weight:700;padding:2px 6px;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff"></span>
+      </span>
 
-    
+      <a th:classappend="${page==totalPages}?' disabled'"
+         th:href="@{/board/notice(page=${page<totalPages?page+1:totalPages}, size=${size}, sort=${sort}, keyword=${keyword})}">&gt;</a>
+
+      <a th:classappend="${page==totalPages}?' disabled'"
+         th:href="@{/board/notice(page=${totalPages}, size=${size}, sort=${sort}, keyword=${keyword})}">&gt;&gt;</a>
+    </div>
   </div>
 </body>
 </html>
