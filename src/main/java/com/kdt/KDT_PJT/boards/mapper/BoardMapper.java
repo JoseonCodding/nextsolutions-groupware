@@ -59,7 +59,7 @@ public interface BoardMapper {
     		    ORDER BY p.like_count DESC, p.post_id DESC
     		  </when>
     		  <otherwise>
-    		    ORDER BY COALESCE(p.updated_at, p.created_at) DESC, p.post_id DESC
+    		    ORDER BY p.created_at DESC, p.post_id DESC
     		  </otherwise>
     		</choose>
     		LIMIT #{limit} OFFSET #{offset}
@@ -249,7 +249,7 @@ public interface BoardMapper {
     		    ORDER BY p.like_count DESC, p.post_id DESC
     		  </when>
     		  <otherwise>
-    		    ORDER BY COALESCE(p.updated_at, p.created_at) DESC, p.post_id DESC
+    		    ORDER BY p.created_at DESC, p.post_id DESC
     		  </otherwise>
     		</choose>
     		LIMIT <choose><when test="limit != null">#{limit}</when><otherwise>10</otherwise></choose>
@@ -418,7 +418,8 @@ public interface BoardMapper {
                        WHEN 'FREE'   THEN 1
                        ELSE 2
                      END,
-                     board_name
+                     created_at ASC,
+    				 board_id ASC;
           """)
           List<BoardDTO> selectAllBoardsForTabs();
     
