@@ -700,16 +700,20 @@ public interface ApprovalMapper {
     
     @Select({
         "<script>",
-        "SELECT employeeId, emp_nm AS name, position, role, ",
-        "  CASE ",
-        "    WHEN role = '근태' THEN 1 ",
-        "    WHEN role = '프로젝트' THEN 1 ",
-        "    WHEN role = '게시판' THEN 1 ",
-        "    WHEN role = '대표' THEN 2 ",
-        "    ELSE 99 ",
-        "  END AS signOrder ",
-        "FROM employee ",
-        "WHERE 1=1 ",
+        "SELECT",
+        "  employeeId,",
+        "  emp_nm   AS name,",
+        "  position,",
+        "  role,",
+        "  CASE",
+        "    WHEN role = '근태'     THEN 1",
+        "    WHEN role = '프로젝트' THEN 1",
+        "    WHEN role = '게시판'   THEN 1",
+        "    WHEN role = '대표'     THEN 2",
+        "    ELSE 99",
+        "  END AS signOrder",
+        "FROM employee",
+        "WHERE 1=1",
         "  <choose>",
         "    <when test='docType == \"공지사항\"'>",
         "      AND role = '게시판'",
@@ -724,10 +728,31 @@ public interface ApprovalMapper {
         "      AND 1=0",
         "    </otherwise>",
         "  </choose>",
-        "ORDER BY signOrder, position, name",
+        "ORDER BY",
+        "  CASE role",
+        "    WHEN '대표'     THEN 1",
+        "    WHEN '근태'     THEN 2",
+        "    WHEN '게시판'   THEN 3",
+        "    WHEN '프로젝트' THEN 4",
+        "    ELSE 99",
+        "  END ASC,",
+        "  CASE position",
+        "    WHEN '대표'   THEN 1",
+        "    WHEN '사장'   THEN 2",
+        "    WHEN '부사장' THEN 3",
+        "    WHEN '부장'   THEN 4",
+        "    WHEN '과장'   THEN 5",
+        "    WHEN '대리'   THEN 6",
+        "    WHEN '주임'   THEN 7",
+        "    WHEN '사원'   THEN 8",
+        "    ELSE 99",
+        "  END ASC,",
+        "  name ASC",
         "</script>"
     })
     List<ApproverDTO> selectApproversByDocType(@Param("docType") String docType);
+
+
 
 
 }
