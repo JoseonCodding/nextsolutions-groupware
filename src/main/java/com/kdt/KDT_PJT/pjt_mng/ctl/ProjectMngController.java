@@ -407,8 +407,7 @@ public class ProjectMngController {
 		   @RequestParam(value = "TB_PJT_APR", required = false) String TB_PJT_APR,
          @RequestParam(value = "empNm", required = false) String empNm,
          @RequestParam(value = "ver", required = false) Integer ver,
-         @RequestParam(value = "gid", required = false) Integer gid,
-         
+         @RequestParam(value = "gid", required = false) Integer gid,         
          @RequestParam(value = "FRST_REG_DT", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime FRST_REG_DT,
          @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
          @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
@@ -461,13 +460,12 @@ public class ProjectMngController {
       params.put("approvedBy", approvedBy);
       
 
-
       String uploadDir = "C:/upload/";
       String newFileName = oldFileName1 != null ? oldFileName1 : "";
       String newOrgFileName = oldOrgFileName1 != null ? oldOrgFileName1 : "";
 
-      // 업로드 할 수 있는  파일 갯수 1~3까지 
 
+      //  업로드 할 수 있는  파일 갯수 1~3까지 
       if (uploadFile1 != null && !uploadFile1.isEmpty()) {
          String extension = uploadFile1.getOriginalFilename()
                .substring(uploadFile1.getOriginalFilename().lastIndexOf("."));
@@ -482,6 +480,7 @@ public class ProjectMngController {
 
          try {
             uploadFile1.transferTo(dest);
+       
             // 기존 파일 삭제
             if (oldFileName1 != null && !oldFileName1.isEmpty()) {
                File prevFile = new File(uploadDir + oldFileName1);
