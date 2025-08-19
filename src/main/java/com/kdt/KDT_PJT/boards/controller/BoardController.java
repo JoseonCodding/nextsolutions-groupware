@@ -38,7 +38,7 @@ public class BoardController {
     @Autowired BoardLikeMapper likeMapper;
 
     /* =================== 공통: Summernote HTML 세정 헬퍼 =================== */
-    private static final Safelist SAFE = Safelist.basicWithImages()
+    private static final Safelist SAFE = Safelist.basic()
         // 줄바꿈 관련 태그 명시
         .addTags("br","p","pre")
         // 테이블 관련
@@ -53,12 +53,12 @@ public class BoardController {
         .addAttributes("col","style","span","width")
         .addAttributes("colgroup","span","width","style")
         .addAttributes("caption","style")
-        // 이미지/링크
+        /* 이미지/링크
         .addAttributes("img","style","src","alt","width","height")
         .addProtocols("img","src","data","http","https")
         .addTags("a")
         .addAttributes("a","href","title","target","rel")
-        .addProtocols("a","href","http","https","mailto")
+        .addProtocols("a","href","http","https","mailto")  */
         // 인라인 스타일 허용
         .addAttributes(":all","style");
 
@@ -118,7 +118,7 @@ public class BoardController {
         model.addAttribute("offset", dto.getOffset());
         model.addAttribute("keyword", dto.getKeyword());
         model.addAttribute("sort", dto.getSort());
-
+        
         model.addAttribute("board", boardMeta); // 현재 보드 정보
         model.addAttribute("canWrite", boardMeta != null && boardMeta.canWriteBy(me));
         model.addAttribute("boards", boards);
@@ -552,6 +552,7 @@ public class BoardController {
 
         dto.setLimit(size);
         dto.setOffset((page-1)*size);
+        dto.setSort(dto.sortOrDefault());
 
         List<BoardDTO> boards = boardMapper.selectFreePosts(dto);
         int total = boardMapper.freeTotalCnt(dto);
@@ -575,6 +576,8 @@ public class BoardController {
         model.addAttribute("offset", dto.getOffset());
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+        model.addAttribute("keyword", dto.getKeyword());
+        model.addAttribute("sort", dto.getSort());
         model.addAttribute("activeBoard", "free");
         model.addAttribute("mainUrl", "board/free_list");
         return "home";

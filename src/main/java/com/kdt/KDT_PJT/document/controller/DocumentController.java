@@ -27,7 +27,7 @@ public class DocumentController {
     public String documentMain(Model model,
                                HttpSession session,
                                @RequestParam(name = "page", defaultValue = "1") int page,
-                               @RequestParam(name = "size", defaultValue = "20") int size) {
+                               @RequestParam(name = "size", defaultValue = "10") int size) {
 
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) return "redirect:/login";
@@ -36,17 +36,28 @@ public class DocumentController {
         boolean isAdmin = isAdmin(employeeId);
 
         int limit  = Math.max(1, size);
-        int offset = Math.max(0, (Math.max(1, page) - 1) * limit);
+        int offset = (page - 1) * limit;
 
         List<DocumentDTO> list = documentMapper.findDocsForManage(employeeId, isAdmin, limit, offset);
         int total = documentMapper.countDocsForManage(employeeId, isAdmin);
         int totalPages = Math.max(1, (int) Math.ceil(total / (double) limit));
+        
+        page = Math.min(Math.max(1, page), totalPages);
+        
+
+        // 👇 페이지 버튼 묶음 계산 (자유게시판과 동일)
+        int win = 5;
+        int startPage = ((page - 1) / win) * win + 1;
+        int endPage   = Math.min(startPage + win - 1, totalPages);
+
 
         model.addAttribute("approvalData", list);  // 기존 뷰 키 그대로 사용
         model.addAttribute("page", page);
         model.addAttribute("size", size);
         model.addAttribute("total", total);
         model.addAttribute("totalPages", totalPages);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
         model.addAttribute("mainUrl", "document/document_list");
         return "home";
     }
@@ -55,6 +66,9 @@ public class DocumentController {
     @GetMapping("/detail")
     public String documentDetail(@RequestParam("gid") String gid,
                                  @RequestParam(value = "ver", required = false) Integer ver,
+                                 @RequestParam(value="page", defaultValue="1") int page,
+                                 @RequestParam(value="size", defaultValue="10") int size,
+                                 @RequestParam(value="keyword", required=false) String keyword,
                                  Model model,
                                  HttpSession session) {
 
@@ -72,6 +86,9 @@ public class DocumentController {
         if (!isAdmin && !me.equals(doc.getEmployeeId())) return "redirect:/document/main";
 
         model.addAttribute("doc", doc);
+        model.addAttribute("page", page);
+        model.addAttribute("size", size);
+        model.addAttribute("keyword", keyword);
         model.addAttribute("mainUrl", "document/document_detail");
         return "home";
     }
