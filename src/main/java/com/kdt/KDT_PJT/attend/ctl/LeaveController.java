@@ -80,7 +80,7 @@ public class LeaveController {
     
     //연차 사용 신청(사용자용)
     @GetMapping("/insert")
-    public String insert(HttpSession session,Model model) {
+    public String insert(HttpSession session,Model model,RedirectAttributes ra) {
     	System.out.println("연차 신청 페이지");
     	
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");

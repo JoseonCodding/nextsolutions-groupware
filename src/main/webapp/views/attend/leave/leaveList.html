@@ -1,3 +1,4 @@
+
 <!-- 연차 관리 사용자용 -->
 <form action="" method="">
 <!-- 잔여 연차 요약 -->
@@ -8,12 +9,12 @@
 			<td>사용 연차</td>
 			<td>잔여 연차</td>
 		</tr>
-		<tr th:each=" ld : ${listData}">
-		    <td th:text="${ld.empNm}"></td>
-		    <td th:text="${ld.total}"/>
-		    <td th:text="${ld.used}"/>
+		
+		    <td th:text="${listData.empNm}"></td>
+		    <td th:text="${listData.total}"/>
+		    <td th:text="${listData.used}"/>
 
-		    <td th:text="${ld.getRest}"></td>
+		    <td th:text="${listData.getRest}"></td>
 
 		</tr>
 	</table>
@@ -40,5 +41,9 @@
 </table>
 	
 </form>
-
+<th:block th:if="${listData.getRest>0}">
 <a th:href="@{/attend/insert}" >연차신청</a>
+</th:block>
+<th:block th:if="${listData.getRest==0}">
+<div onClick="alert('잔여연차가 없습니다')" >연차신청</div>
+</th:block>

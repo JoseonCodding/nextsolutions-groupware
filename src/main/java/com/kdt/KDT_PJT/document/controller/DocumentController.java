@@ -1,10 +1,20 @@
 package com.kdt.KDT_PJT.document.controller;
 
-import java.math.BigDecimal;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-
+import org.springframework.http.MediaType;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -142,6 +152,37 @@ public class DocumentController {
         model.addAttribute("mainUrl", "document/version_detail");
         return "home";
     }
+    
+//    @GetMapping("/download")
+//    public ResponseEntity<Resource> downloadFile(
+//        @RequestParam("fileName") String fileName,
+//        @RequestParam("orgName") String orgName
+//    ) throws UnsupportedEncodingException {
+//
+//        java.nio.file.Path baseDir = java.nio.file.Paths.get("C:/upload").toAbsolutePath().normalize();
+//        java.nio.file.Path target = baseDir.resolve(fileName).normalize();
+//
+//        // 디렉토리 탈출 방지
+//        if (!target.startsWith(baseDir)) {
+//            return ResponseEntity.status(403).build();
+//        }
+//
+//        java.io.File file = target.toFile();
+//        if (!file.exists() || !file.isFile()) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        Resource resource = new FileSystemResource(file);
+//
+//        String encodedOrgName = URLEncoder.encode(orgName, "UTF-8").replaceAll("\\+", " ");
+//        // 헤더 주입 방지: 개행/쿼트 제거
+//        encodedOrgName = encodedOrgName.replace("\r", "").replace("\n", "").replace("\"", "");
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedOrgName + "\"");
+//        headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+//        return ResponseEntity.ok().headers(headers).body(resource);
+//    }
 
     /** 관리자 사번 판별 (업무 규칙 반영) */
     private boolean isAdmin(String employeeId) {
