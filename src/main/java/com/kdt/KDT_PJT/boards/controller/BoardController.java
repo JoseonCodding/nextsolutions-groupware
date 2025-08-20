@@ -89,6 +89,12 @@ public class BoardController {
         // 나머지는 전부 커스텀으로
         return "redirect:/board/custom/" + boardId;
     }
+    
+    
+    @ModelAttribute("navUrl")
+	String navUrl() {
+		return "board/boardNav";
+	}
 
     /* ============================ 커스텀 게시판 ============================ */
 
@@ -129,7 +135,9 @@ public class BoardController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("activeBoardId", boardId); // 탭 활성화용
         model.addAttribute("mainUrl", "board/custom_list");
-        return "home";
+        
+        //return "home";
+        return "navTap";
     }
 
     // 커스텀 상세
@@ -192,7 +200,7 @@ public class BoardController {
         model.addAttribute("likedByMe", likedByMe);
         model.addAttribute("activeBoardId", boardId);
         model.addAttribute("mainUrl", "board/custom_detail");
-        return "home";
+        return "navTap";
     }
 
     // 커스텀 작성 폼
@@ -201,7 +209,7 @@ public class BoardController {
         model.addAttribute("board", boardMapper.selectBoardById(boardId)); // null이어도 그대로 내려감
         model.addAttribute("boardDTO", new BoardDTO());
         model.addAttribute("mainUrl", "board/custom_writeform");// 폼 바인딩용
-        return "home"; // 템플릿 이름
+        return "navTap";// 템플릿 이름
     }
 
     // 커스텀 게시글 저장
@@ -247,7 +255,7 @@ public class BoardController {
         model.addAttribute("activeBoard", "custom");// 수정 폼에 바인딩
         model.addAttribute("activeBoardId", boardId); // 탭 활성화용
         model.addAttribute("mainUrl", "board/board_modifyform"); // 자유/공지와 같은 폼 재사용
-        return "home";
+        return "navTap";
     }
 
     // 커스텀 게시글 수정 저장
@@ -388,7 +396,7 @@ public class BoardController {
         model.addAttribute("sort", dto.getSort());
         model.addAttribute("activeBoard", "notice");
         model.addAttribute("mainUrl", "board/notice_list");
-        return "home";
+        return "navTap";
     }
 
     // 공지사항 상세보기
@@ -455,7 +463,7 @@ public class BoardController {
         model.addAttribute("likeCount", likeCount);
         model.addAttribute("activeBoard", "notice");
         model.addAttribute("mainUrl", "board/notice_detail");
-        return "home";
+        return "navTap";
     }
 
     // 공지사항 좋아요
@@ -490,7 +498,7 @@ public class BoardController {
         model.addAttribute("boardDTO", new BoardDTO());
         model.addAttribute("activeBoard", "notice");
         model.addAttribute("mainUrl", "board/notice_writeform");
-        return "home";
+        return "navTap";
     }
 
     // 공지 저장: 초안만 저장(대기). 상신 단계 없음.
@@ -580,7 +588,7 @@ public class BoardController {
         model.addAttribute("sort", dto.getSort());
         model.addAttribute("activeBoard", "free");
         model.addAttribute("mainUrl", "board/free_list");
-        return "home";
+        return "navTap";
     }
 
     // 자유게시판 글쓰기 폼
@@ -589,7 +597,7 @@ public class BoardController {
         model.addAttribute("boardDTO", new BoardDTO());
         model.addAttribute("activeBoard", "free");
         model.addAttribute("mainUrl", "board/free_writeform");
-        return "home";
+        return "navTap";
     }
 
     // 자유게시판 저장
@@ -680,7 +688,7 @@ public class BoardController {
         model.addAttribute("likedByMe", likedByMe);
         model.addAttribute("activeBoard", "free");
         model.addAttribute("mainUrl", "board/free_detail");
-        return "home";
+        return "navTap";
     }
 
     // 게시글 수정 폼
@@ -702,7 +710,7 @@ public class BoardController {
         model.addAttribute("board", board);
         model.addAttribute("activeBoard", "free");
         model.addAttribute("mainUrl", "board/board_modifyform");
-        return "home";
+        return "navTap";
     }
 
     // 수정 저장
