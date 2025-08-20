@@ -85,9 +85,10 @@
           <strong th:text="${c.empNm} ?: ${c.employeeId}">작성자</strong>
           <span class="time" th:text="${c.createdAt != null ? #temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm') : ''}"></span>
 
-          <button type="button" th:if="${c.parentCommentId} == null" class="btn-reply" th:attr="data-target=${'rf-' + c.commentId}">
-            답글쓰기
-          </button>
+          <!-- 답글 버튼: 부모 + 미삭제일 때만 -->
+			<button type="button" class="btn-reply"
+        			th:if="${c.parentCommentId == null and c.isDeleted == false}"
+        			th:attr="data-target=${'rf-' + c.commentId}">답글</button>
 
           <form th:if="${me != null and me == c.employeeId}"
                 th:action="@{/board/commentDelete}" method="post" style="display:inline">
@@ -103,15 +104,16 @@
                        ? '[삭제된 댓글입니다]' : c.content}"></div>
 
         <!-- 대댓글 등록 폼 -->
-        <form th:id="${'rf-' + c.commentId}" th:if="${c.parentCommentId} == null"
-              th:action="@{/board/commentReply}" method="post" class="reply-form"
-              style="display:none; margin-top:8px">
-          <input type="hidden" name="postId"          th:value="${c.postId}"/>
-          <input type="hidden" name="parentCommentId" th:value="${c.commentId}"/>
-          <textarea name="content" rows="3" placeholder="답글을 입력하세요" required></textarea>
-          <button type="submit">등록</button>
-          <button type="button" class="btn-cancel" th:attr="data-target=${'rf-' + c.commentId}">취소</button>
-        </form>
+        <form th:id="${'rf-' + c.commentId}"
+      		  th:if="${c.parentCommentId == null and c.isDeleted == false}"
+      	  	  th:action="@{/board/custom/{boardId}/comment/reply(boardId=${board.boardId})}"
+      		  method="post" style="display:none">
+  		<input type="hidden" name="postId" th:value="${c.postId}">
+  		<input type="hidden" name="parentCommentId" th:value="${c.commentId}">
+  		<textarea name="content" rows="3" placeholder="답글을 입력하세요" required></textarea>
+  		<button type="submit">등록</button>
+  		<button type="button" class="btn-cancel" th:attr="data-target=${'rf-' + c.commentId}">취소</button>
+		</form>
       </li>
     </ul>
   </div>
