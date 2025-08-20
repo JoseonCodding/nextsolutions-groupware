@@ -1,0 +1,125 @@
+@charset "UTF-8";
+
+:root {
+  --main-color: #3949ab;
+  --accent-color: #ffc107;
+  --font-size-base: 16px;
+  --header-height: 60px;
+  --save-btn : #ff0000;		/* 저장 버튼*/
+  --edit-btn:#ff80ff;		/* 수정 버튼*/
+  --approval-btn:#c5edfc;  	/* 승인 버튼*/
+  --reject-btn:#80ff00;  	/* 반려 버튼*/
+  --search-btn:#0080c0; 	/* 검색 버튼*/
+}
+
+/* 수정 버튼 */ 
+.edit-btn:hover {
+    background:var(--edit-btn);
+}
+.edit-btn {
+    background:var(--edit-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    float: right;
+}
+
+/* 저장 버튼*/
+.save-btn:hover {
+    background: var(--save-btn);
+}
+.save-btn {
+    background: var(--save-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    float: right;
+}
+/* 등록 버튼 */
+.regist-btn:hover {
+    background: #ff0000;
+}
+.regist-btn {
+    background: #ff9800;
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    float: right;
+}
+/* 검색 버튼 */
+.search-btn:hover {
+    background: #ff0000;
+}
+.search-btn {
+    background: #ff9800;
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    float: right;
+}
+
+
+/* 승인 버튼 */
+.approval-btn {
+    background: var(--approval-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    float: right;
+}
+
+
+/* 반려 버튼 */
+.reject-btn:hover {
+    background:var(--reject-btn);
+}
+.reject-btn {
+    background: var(--reject-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    float: right;
+}
+
+
+/* 검색 버튼 */
+.search-btn:hover {
+    background:var(--edit-btn);
+}
+.search-btn {
+    background: var(--search-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    float: right;
+}
+
+

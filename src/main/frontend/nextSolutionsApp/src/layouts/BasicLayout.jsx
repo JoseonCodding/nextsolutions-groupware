@@ -20,7 +20,7 @@ const BasicLayout = () => {
   console.log(`${user.empNm}, ${user.employeeId}`);
 
   return (
-    <div className="max-w-[1440px] m-auto flex flex-col gap-[20px] px-8 py-4 text-base">
+    <div className="max-w-[1280px] m-auto flex flex-col gap-[20px] p-4 text-base">
       <Header className="" />
       <main className="grow">
         <Outlet />

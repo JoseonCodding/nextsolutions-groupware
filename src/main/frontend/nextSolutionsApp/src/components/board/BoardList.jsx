@@ -1,44 +1,35 @@
 import {
   useReactTable,
   getCoreRowModel,
-  getSortedRowModel,
   flexRender,
 } from '@tanstack/react-table';
 import { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
-import axios from '../../lib/axios';
+import useFetch from '../../hooks/useFetch';
 
 const BoardList = () => {
+  const { data, loading, error } = useFetch('/notices');
+
   const [rows, setRows] = useState([]);
-  const [sorting, setSorting] = useState([{ id: 'regDate', desc: true }]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  console.log('공지사항:', data);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
+    if (!data) return;
 
-    axios
-      .get('/mainnotices?limit=10')
-      .then((res) => {
-        const list = Array.isArray(res.data) ? res.data : [];
-        const normalized = list.map((item, idx) => ({
-          order: idx + 1,
-          title: item.title,
-          author: item.employeeId,
-          regDate: item.regDate,
-          views: item.viewCnt,
-          likes: item.likeCnt,
-          id: item.id,
-        }));
-        normalized.sort(
-          (a, b) => dayjs(b.regDate).valueOf() - dayjs(a.regDate).valueOf()
-        );
-        setRows(normalized.slice(0, 5));
-      })
-      .catch((e) => setError(e?.message || '불러오기 실패'))
-      .finally(() => setLoading(false));
-  }, []);
+    const list = Array.isArray(data) ? data : [];
+    const normalized = list.map((item, idx) => ({
+      order: idx + 1,
+      title: item.title ?? '(제목 없음)',
+      author: item.empNm ?? '-',
+      regDate: item.createdAt ?? null,
+      views: item.viewCount ?? 0,
+      likes: item.likeCount ?? 0,
+      id: item.postId ?? null,
+    }));
+
+    setRows(normalized);
+  }, [data]);
 
   const columns = useMemo(
     () => [
@@ -47,16 +38,27 @@ const BoardList = () => {
         header: 'NO',
         cell: (info) => info.getValue(),
         enableSorting: false,
-        size: 60,
+        size: 50,
+        minSize: 40,
+        maxSize: 60,
       },
       {
         accessorKey: 'title',
         header: '제목',
         cell: ({ row, getValue }) => {
           const id = row.original.id;
+
+          // 식별자 없으면 링크 만들지 않기
+          if (id == null) {
+            console.warn('식별자 없음 행(링크 미생성):', row.original);
+            return <span className="text-gray-500">{getValue()}</span>;
+          }
+
           return (
             <a
-              href={`/board/notice/view?id=${encodeURIComponent(id)}&page=1`}
+              href={`/board/notice/detail?postId=${encodeURIComponent(
+                String(id)
+              )}`}
               className="underline underline-offset-2 hover:opacity-80"
               title="상세 보기"
             >
@@ -64,29 +66,43 @@ const BoardList = () => {
             </a>
           );
         },
+        size: 150,
+        minSize: 140,
+        maxSize: 180,
       },
       {
         accessorKey: 'author',
         header: '작성자',
         cell: (info) => info.getValue(),
+        size: 80,
+        minSize: 60,
+        maxSize: 100,
       },
-
       {
         accessorKey: 'regDate',
         header: '작성일',
-        sortingFn: (a, b, col) =>
-          dayjs(a.getValue(col)).valueOf() - dayjs(b.getValue(col)).valueOf(),
-        cell: (info) => dayjs(info.getValue()).format('YYYY-MM-DD'),
+        enableSorting: false, // 날짜 컬럼 정렬 비활성화
+        cell: (info) =>
+          info.getValue() ? dayjs(info.getValue()).format('YYYY-MM-DD') : '-',
+        size: 100,
+        minSize: 80,
+        maxSize: 120,
       },
       {
         accessorKey: 'views',
         header: '조회수',
-        cell: (info) => info.getValue(),
+        cell: (info) => <div className="text-right">{info.getValue()}</div>,
+        size: 80,
+        minSize: 60,
+        maxSize: 100,
       },
       {
         accessorKey: 'likes',
         header: '추천수',
-        cell: (info) => info.getValue(),
+        cell: (info) => <div className="text-right">{info.getValue()}</div>,
+        size: 80,
+        minSize: 60,
+        maxSize: 100,
       },
     ],
     []
@@ -95,37 +111,40 @@ const BoardList = () => {
   const table = useReactTable({
     data: rows,
     columns,
-    state: { sorting },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getCoreRowModel: getCoreRowModel(), // 정렬 기능 제거
+    defaultColumn: { size: 150, minSize: 80, maxSize: 800 },
   });
 
   if (loading) return <div>로딩 중...</div>;
-  if (error) return <div>에러 발생: {error}</div>;
+  if (error) return <div>에러 발생: {error?.message || '불러오기 실패'}</div>;
 
   return (
-    <div className="border border-gray-300 rounded-lg overflow-hidden">
-      <table className="w-full text-sm">
+    <div className="border border-gray-300 rounded-lg overflow-auto">
+      <table className="w-full text-sm table-fixed">
         <thead className="bg-gray-50">
           {table.getHeaderGroups().map((hg) => (
             <tr key={hg.id}>
-              {hg.headers.map((header) => (
-                <th
-                  key={header.id}
-                  onClick={header.column.getToggleSortingHandler()}
-                  className="cursor-pointer border-b border-gray-300 px-3 py-2 text-left select-none"
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                  {{
-                    asc: ' 🔼',
-                    desc: ' 🔽',
-                  }[header.column.getIsSorted()] ?? null}
-                </th>
-              ))}
+              {hg.headers.map((header) => {
+                const w = header.getSize();
+                return (
+                  <th
+                    key={header.id}
+                    scope="col"
+                    aria-sort="none"
+                    className="border-b border-gray-300 px-3 py-2 text-left select-none overflow-hidden whitespace-nowrap text-ellipsis"
+                    style={{
+                      width: `${w}px`,
+                      minWidth: `${w}px`,
+                      maxWidth: `${w}px`,
+                    }}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                  </th>
+                );
+              })}
             </tr>
           ))}
         </thead>
@@ -142,14 +161,28 @@ const BoardList = () => {
           ) : (
             table.getRowModel().rows.map((row) => (
               <tr
-                key={row.id}
+                key={row.original.id ?? row.id} // 데이터 식별자 우선
                 className="border-b border-gray-300 last:border-b-0 hover:bg-gray-50"
               >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-3 py-2">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const w = cell.column.getSize();
+                  return (
+                    <td
+                      key={cell.id}
+                      className="px-3 py-2 overflow-hidden whitespace-nowrap text-ellipsis align-middle"
+                      style={{
+                        width: `${w}px`,
+                        minWidth: `${w}px`,
+                        maxWidth: `${w}px`,
+                      }}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  );
+                })}
               </tr>
             ))
           )}

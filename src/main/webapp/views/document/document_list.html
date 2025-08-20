@@ -27,7 +27,7 @@
 
       <!-- 제목 클릭 시 항상 최신 상세로 (ver 파라미터 생략) -->
       <td>
-        <a th:href="@{/document/detail(gid=${doc.gid})}"
+        <a th:href="@{/document/detail(gid=${doc.gid}, page=${page}, size=${size}, keyword=${keyword})}"
            th:text="${doc.pjtNm}"></a>
       </td>
 
@@ -66,19 +66,33 @@
   </table>
 
   <!-- 페이징 -->
-  <div class="pagination">
-    <ul class="pagination">
-      <li th:classappend="${page <= 1} ? 'disabled'">
-        <a th:href="@{/document/main(page=${page-1}, size=${size})}">&laquo; 이전</a>
-      </li>
-      <li>
-        <span th:text="${page} + ' / ' + ${totalPages}"></span>
-      </li>
-      <li th:classappend="${page >= totalPages} ? 'disabled'">
-        <a th:href="@{/document/main(page=${page+1}, size=${size})}">다음 &raquo;</a>
-      </li>
-    </ul>
-  </div>
+  <div class="pagination" style="display:flex;gap:6px;align-items:center">
+  <!-- 처음 -->
+  <a th:classappend="${page==1}?' disabled'"
+     th:href="@{/document/main(page=1, size=${size})}">&lt;&lt;</a>
+
+  <!-- 이전 -->
+  <a th:classappend="${page==1}?' disabled'"
+     th:href="@{/document/main(page=${page>1?page-1:1}, size=${size})}">&lt;</a>
+
+  <!-- 번호 -->
+  <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
+    <a th:if="${p!=page}"
+       th:href="@{/document/main(page=${p}, size=${size})}"
+       th:text="${p}"></a>
+    <span th:if="${p==page}" th:text="${p}"
+          style="font-weight:700;padding:2px 6px;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff"></span>
+  </span>
+
+  <!-- 다음 -->
+  <a th:classappend="${page==totalPages}?' disabled'"
+     th:href="@{/document/main(page=${page<totalPages?page+1:totalPages}, size=${size})}">&gt;</a>
+
+  <!-- 마지막 -->
+  <a th:classappend="${page==totalPages}?' disabled'"
+     th:href="@{/document/main(page=${totalPages}, size=${size})}">&gt;&gt;</a>
+</div>
+
 </div>
 </body>
 </html>
