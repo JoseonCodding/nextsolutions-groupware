@@ -270,6 +270,7 @@ tbody tr:hover {
   display: flex;
   gap: 16px; /* 탭 간격 */
   /*border-bottom: 1px solid #ddd;  전체 구분선 */
+  padding-top: 20px;
 }
 
 .tab-nav a {
@@ -288,4 +289,6 @@ tbody tr:hover {
   background-color: #fff; /* 현재 탭은 배경 흰색 */
   font-weight: bold;
 }
+
+
 
