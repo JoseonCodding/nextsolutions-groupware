@@ -18,14 +18,29 @@ public class EmployeeService {
     @Autowired
     private EmployeeMapper employeeMapper;
 
-    public PageInfo<CmmnMap> getUserList(int pageNum, int pageSize, String keyword) {
+//    public PageInfo<CmmnMap> getUserList(int pageNum, int pageSize, String keyword) {
+//    	
+//    	PageHelper.startPage(pageNum, pageSize);
+//    	
+//    	List<CmmnMap> list = employeeMapper.getUserList(pageNum, pageSize, keyword);
+//    	
+//        return new PageInfo<>(list);
+//    }
+    
+    public List<EmployeeDto> getUserList(int offset, int size, String keyword) {
     	
-    	PageHelper.startPage(pageNum, pageSize);
+    	List<EmployeeDto> list = employeeMapper.getUserList(offset, size, keyword);
     	
-    	List<CmmnMap> list = employeeMapper.getUserList(pageNum, pageSize, keyword);
-    	
-        return new PageInfo<>(list);
+    	return list;
     }
+    
+
+	public int getUserListTotalCount(String keyword) {
+				
+		return employeeMapper.getUserListTotalCount(keyword);
+	}
+
+    
 
     public void toggleActive(CmmnMap params) {
         employeeMapper.toggleActive(params);
@@ -51,6 +66,7 @@ public class EmployeeService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
    
 

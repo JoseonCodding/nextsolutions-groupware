@@ -47,59 +47,109 @@ public class EmployeeController {
  	
 
     /** 사원 목록 페이지 */
+//    @GetMapping("/employee/list")
+//    public String employeeList(@RequestParam(required = false, name = "keyword") String keyword
+//    							,HttpServletRequest request, HttpSession session
+//    							,Model model) {
+//    	
+//    	EmployeeDto user = (EmployeeDto) session.getAttribute("loginUser");
+//    	
+//    	
+//    	if (user == null || !allowedIds.contains(user.getEmployeeId())) {
+//    	    return "redirect:/employee/edit?empSeq="+user.getEmpSeq();
+//    	}
+//  
+//	    // 🔍 검색어 로그 확인 (디버깅용)
+//	   System.out.println("getPjtList Called >>> keyword = " + keyword);
+//	   
+//	   // ① 페이지 번호/사이즈 받아오기 (없으면 기본값)
+//       int pageNum = 1;
+//       int pageSize = 10;
+//       
+//       try {
+//           if (request.getParameter("pageNum") != null) {
+//               pageNum = Integer.parseInt(request.getParameter("pageNum"));
+//           }
+//           if (request.getParameter("pageSize") != null) {
+//               pageSize = Integer.parseInt(request.getParameter("pageSize"));
+//           }
+//       } catch (Exception e) {
+//           log.warn("페이지 번호 파싱 실패, 기본값 사용");
+//       }
+//       
+//       //  리스트 가져오기
+//       PageInfo<CmmnMap>  list = employeeService.getUserList(pageNum, pageSize, keyword);
+//       // ③ model에 값 담기
+//       
+//       if (list == null || list.getList() == null || list.getList().isEmpty()) {
+//    	    log.warn("⚠️ 프로젝트 리스트가 비어있거나 null입니다.");
+//    	    model.addAttribute("employees", List.of());  // 빈 리스트로 넘기기 (NPE 방지)
+//    	} else {
+//    	    log.info("✅ 프로젝트 리스트 로드 성공. 개수: " + list.getList().size());
+//    	    model.addAttribute("employees", list.getList());
+//    	}
+//       
+//       model.addAttribute("employees", list.getList());   // 현재 페이지 데이터
+//       model.addAttribute("pageInfo", list);  
+//       model.addAttribute("pageNum", pageNum);
+//       model.addAttribute("pageSize", pageSize);
+//       model.addAttribute("totalPages", list.getTotal());
+//	   
+//        //model.addAttribute("employees", list);
+//        model.addAttribute("mainUrl", "employee/list");
+//        //System.out.println("/employee/list : "+list);
+//        return "navTap";
+//    }
+    
     @GetMapping("/employee/list")
     public String employeeList(@RequestParam(required = false, name = "keyword") String keyword
     							,HttpServletRequest request, HttpSession session
-    							,Model model) {
+    							,Model model,
+    							@RequestParam(name = "page", defaultValue = "1") int page) {
     	
     	EmployeeDto user = (EmployeeDto) session.getAttribute("loginUser");
-    	
-    	
+    	   	
     	if (user == null || !allowedIds.contains(user.getEmployeeId())) {
     	    return "redirect:/employee/edit?empSeq="+user.getEmpSeq();
     	}
   
-	    // 🔍 검색어 로그 확인 (디버깅용)
-	   System.out.println("getPjtList Called >>> keyword = " + keyword);
-	   
-	   // ① 페이지 번호/사이즈 받아오기 (없으면 기본값)
-       int pageNum = 1;
-       int pageSize = 10;
+    	List<EmployeeDto> employeeDto;
+    	
+       int totalPages;
+       int startPage;
+       int endPage;
+       int size = 10;
+       int offset = (page - 1) * size;
        
-       try {
-           if (request.getParameter("pageNum") != null) {
-               pageNum = Integer.parseInt(request.getParameter("pageNum"));
-           }
-           if (request.getParameter("pageSize") != null) {
-               pageSize = Integer.parseInt(request.getParameter("pageSize"));
-           }
-       } catch (Exception e) {
-           log.warn("페이지 번호 파싱 실패, 기본값 사용");
+
+       // count
+       int totalCount = employeeService.getUserListTotalCount(keyword);
+       
+       
+         
+       totalPages = (int) Math.ceil((double) totalCount / size);
+
+       startPage = Math.max(1, page - 2);
+       endPage = Math.min(totalPages, startPage + 4);
+       if ((endPage - startPage + 1) < 5 && (endPage == totalPages || startPage == 1)) {
+           startPage = Math.max(1, endPage - 4);
        }
+       if (totalPages == 0) endPage = 1;
        
-       //  리스트 가져오기
-       PageInfo<CmmnMap>  list = employeeService.getUserList(pageNum, pageSize, keyword);
+       employeeDto = employeeService.getUserList(offset, size, keyword);
        // ③ model에 값 담기
        
-       if (list == null || list.getList() == null || list.getList().isEmpty()) {
-    	    log.warn("⚠️ 프로젝트 리스트가 비어있거나 null입니다.");
-    	    model.addAttribute("employees", List.of());  // 빈 리스트로 넘기기 (NPE 방지)
-    	} else {
-    	    log.info("✅ 프로젝트 리스트 로드 성공. 개수: " + list.getList().size());
-    	    model.addAttribute("employees", list.getList());
-    	}
+       model.addAttribute("employees", employeeDto);   // 현재 페이지 데이터
+       model.addAttribute("page", page);
+       model.addAttribute("totalPages", totalPages);
+       model.addAttribute("startPage", startPage);
+       model.addAttribute("endPage", endPage);
        
-       model.addAttribute("employees", list.getList());   // 현재 페이지 데이터
-       model.addAttribute("pageInfo", list);             // 페이징 정보      
-	   
-	   
-        //model.addAttribute("employees", list);
-        model.addAttribute("mainUrl", "employee/list");
+       //model.addAttribute("employees", list);
+       model.addAttribute("mainUrl", "employee/list");
         //System.out.println("/employee/list : "+list);
         return "navTap";
-    }
-    
-   
+    }   
 
     /** 활성/비활성 토글 */
     @PostMapping("/employee/toggle")

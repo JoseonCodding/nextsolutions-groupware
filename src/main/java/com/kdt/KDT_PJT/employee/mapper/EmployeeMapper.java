@@ -13,8 +13,12 @@ public interface EmployeeMapper {
 
     List<CmmnMap> getUserList();
 
-    List<CmmnMap> getUserList(int pageNum, int pageSize, @Param("keyword") String keyword);
+   // List<CmmnMap> getUserList(int pageNum, int pageSize, @Param("keyword") String keyword);
 
+    List<EmployeeDto> getUserList(@Param("offset") Integer offset
+    							, @Param("size") Integer size
+    							, @Param("keyword") String keyword);
+    
     void toggleActive(CmmnMap params);
     void insertEmployee(CmmnMap params);
     CmmnMap getEmployeeBySeq(int empSeq);
@@ -28,6 +32,8 @@ public interface EmployeeMapper {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	int getUserListTotalCount(String keyword);
  
 
 }
