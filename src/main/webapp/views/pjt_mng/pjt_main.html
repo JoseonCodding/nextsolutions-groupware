@@ -2,8 +2,7 @@
 <style>
 body {
 	font-family: Arial, sans-serif;
-	margin: 40px;
-	background-color: #f9f9f9;
+	margin: 0px;
 }
 
 table {
@@ -261,10 +260,7 @@ tr:hover {
 				검색</button>
 		</form>
 
-		<!-- 2. 오른쪽: 프로젝트 등록 버튼 -->
-		<button onclick="location.href='/pjtMng/getSavePjtForm'"
-			style="height: 40px; padding: 0 20px; border-radius: 6px; border: none; background-color: #2962ff; color: #fff; cursor: pointer;">
-			프로젝트 등록</button>
+		
 	</div>
 
 	<!-- 🔹 유효성 검사 스크립트 -->
@@ -338,7 +334,15 @@ tr:hover {
 			</tr>
 		</tbody>
 	</table>
-
+	
+	
+	<!-- 오른쪽하단: 프로젝트 등록 버튼 -->
+		<div style="margin-top: 20px; text-align: right;">
+   <button onclick="location.href='/pjtMng/getSavePjtForm'"
+           style="height: 40px; padding: 0 20px; border-radius: 6px; border: none; background-color: #2962ff; color: #fff; cursor: pointer;">
+       프로젝트 등록
+   </button>
+</div>
 	<!-- 페이징 -->
 	<nav class="mt-4 text-center" th:if="${pageInfo != null}">
 		<ul class="pagination justify-content-center">

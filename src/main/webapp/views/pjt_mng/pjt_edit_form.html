@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <title>프로젝트 변경</title>
 
+<div th:if="${errorMessage}" 
+     style="color:red; font-weight:bold; margin-bottom:10px;">
+  [[${errorMessage}]]
+</div>
+
 <!-- 썸머노트 CSS -->
 <link
 	href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css"
@@ -97,6 +102,14 @@ input, select {
 	color: #666 !important; /* 글자도 연한 회색 */
 	cursor: not-allowed; /* 마우스 커서 X 모양 */
 }
+
+/* 체크박스는 가로 100% 강제 적용에서 제외 */
+input[type="checkbox"] {
+  width: auto;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px; /* 체크박스와 글자 간격 */
+}
 </style>
 </head>
 
@@ -105,37 +118,23 @@ input, select {
 	<h1>프로젝트 변경</h1>
 	<!-- ✅ 프로젝트 수정 Form -->
 	<form method="post" action="/pjtMng/updatePjtProc"
-		enctype="multipart/form-data">
+		enctype="multipart/form-data" onsubmit="return validateForm()">
 
 		<!-- hidden 값도 null-safe -->
 		<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN'] ?: ''}" />
-
 		<input type="hidden" name="gid" th:value="${pjt['gid'] ?: ''}" /> 
-		<input
-			type="hidden" name="oldFileName"
-			th:value="${pjt['ATCH_FILE_SN'] ?: ''}"> 
-		<input type="hidden"
-			name="oldOrgFileName" th:value="${pjt['ORG_FILE_NM'] ?: ''}">
-		<input type="hidden" name="firstSign"
-			th:value="${pjt['firstSign'] ?: ''}">
-		<input type="hidden"
-			name="secondSign" th:value="${pjt['secondSign'] ?: ''}"> 
-		<input
-			type="hidden" name="approvedBy" th:value="${pjt['approvedBy'] ?: ''}">
-
-		<input type="hidden" name="oldFileName1"
-			th:value="${pjt['ATCH_FILE_SN1']}" /> 
-		<input type="hidden"
-			name="oldOrgFileName1" th:value="${pjt['ORG_FILE_NM1']}" /> 
-			<input
-			type="hidden" name="oldFileName2" th:value="${pjt['ATCH_FILE_SN2']}" />
-		<input type="hidden" name="oldOrgFileName2"
-			th:value="${pjt['ORG_FILE_NM2']}" />
-		<input type="hidden"
-			name="oldFileName3" th:value="${pjt['ATCH_FILE_SN3']}" /> 
-		<input
-			type="hidden" name="oldOrgFileName3"
-			th:value="${pjt['ORG_FILE_NM3']}" />
+		<input type="hidden" name="oldFileName"   th:value="${pjt['ATCH_FILE_SN'] ?: ''}"> 
+		<input type="hidden" name="oldOrgFileName" th:value="${pjt['ORG_FILE_NM'] ?: ''}">
+		<input type="hidden" name="firstSign" th:value="${pjt['firstSign'] ?: ''}">
+		<input type="hidden" name="secondSign" th:value="${pjt['secondSign'] ?: ''}"> 
+		<input type="hidden" name="approvedBy" th:value="${pjt['approvedBy'] ?: ''}">
+		
+		<input type="hidden" name="oldFileName1" th:value="${pjt['ATCH_FILE_SN1']}" /> 
+		<input type="hidden" name="oldOrgFileName1" th:value="${pjt['ORG_FILE_NM1']}" /> 
+		<input type="hidden" name="oldFileName2" th:value="${pjt['ATCH_FILE_SN2']}" />
+		<input type="hidden" name="oldOrgFileName2" th:value="${pjt['ORG_FILE_NM2']}" />
+		<input type="hidden" name="oldFileName3" th:value="${pjt['ATCH_FILE_SN3']}" /> 
+		<input type="hidden" name="oldOrgFileName3" th:value="${pjt['ORG_FILE_NM3']}" />
 
 		<table>
 			<tr>
@@ -194,17 +193,20 @@ input, select {
 			</tr>
 
 
-
+			<!-- 파일 업로드 창 -->
 			<tr>
 				<th rowspan="3">파일업로드</th>
-				<td><input type="file" name="uploadFile1" id="uploadFile1" />
+				<td>
+				<input type="file" name="uploadFile1" id="uploadFile1" />
 					<div
 						style="margin-top: 8px; background: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
 						<span th:text="${pjt['ORG_FILE_NM1'] ?: '첨부된 파일 없음'}"></span>
-					</div> <label th:if="${pjt['ATCH_FILE_SN1'] != null}"
-					style="display: inline-block; margin-top: 6px;"> <input
-						type="checkbox" name="delFileSlots" value="1"> 삭제
-				</label></td>
+					</div>
+					 <label th:if="${pjt['ATCH_FILE_SN1'] != null}"
+							style="display: inline-block; margin-top: 6px;"> <input
+							type="checkbox" name="delFileSlots" value="1"> 삭제
+				</label>
+				</td>
 			</tr>
 			<tr>
 				<td><input type="file" name="uploadFile2" id="uploadFile2" />
@@ -232,10 +234,10 @@ input, select {
 				<th>등록일</th>
 
 				<td><input type="text" name="FRST_REG_DT"
-					th:value="${pjt['FRST_REG_DT']}" readonly /></td>
+      						 th:value="${pjt['FRST_REG_DT'] != null ? #temporals.format(pjt['FRST_REG_DT'], 'yyyy-MM-dd HH:mm:ss') : ''}"
+      						 readonly /></td>
 			</tr>
 		</table>
-
 
 		<!-- null-safe -->
 		<input type="hidden" name="approvers" id="approversInput"
@@ -257,20 +259,41 @@ input, select {
 
 		</div>
 	</form>
+<script>
+function validateForm() {
+  const FILE_IDS = ['uploadFile1', 'uploadFile2', 'uploadFile3'];
+  const MAX_FILE_MB  = 5;   // 파일당 최대 5MB
+  const MAX_TOTAL_MB = 25;  // 전체 합계 최대 25MB
+  let totalBytes = 0;
+
+  for (const id of FILE_IDS) {
+    const input = document.getElementById(id);
+    if (!input || !input.files || input.files.length === 0) continue;
+
+    for (const f of input.files) {
+      if (f.size > MAX_FILE_MB * 1024 * 1024) {
+        alert(`'${f.name}' 파일은 ${MAX_FILE_MB}MB를 초과했습니다.`);
+        input.value = ""; // 잘못된 파일 초기화
+        return false; // 🚫 저장 중단
+      }
+      totalBytes += f.size;
+    }
+  }
+
+  if (totalBytes > MAX_TOTAL_MB * 1024 * 1024) {
+    alert(`총 업로드 용량이 ${MAX_TOTAL_MB}MB를 초과했습니다.`);
+    FILE_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+    return false;
+  }
+
+  return true;
+}
+</script>
 
 	<script>
- /*  const fileInput = document.getElementById('uploadFile');
-  const fileNameDiv = document.getElementById('fileName');
-
-  if (fileInput) {
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files.length > 0) {
-        fileNameDiv.textContent = `선택한 파일: ${fileInput.files[0].name}`;
-      } else {
-        fileNameDiv.textContent = '';
-      }
-    });
-  } */
   
 //업로드 미리보기 + 간단 검증(확장자/용량)
   (function () {
