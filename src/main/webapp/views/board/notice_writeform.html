@@ -42,39 +42,28 @@
 </head>
 <body>
 
-<!-- 자유게시판 상단 탭 -->
-<div class="board-nav" style="background-color:#f7f9fc; padding:10px 20px; border-bottom:1px solid #dcdcdc;">
-  <ul style="list-style:none; display:flex; padding:0; margin:0;">
-    <li th:classappend="${activeBoard} == 'notice' ? 'active'" style="margin-right:30px;">
-      <a href="/board/notice" style="text-decoration:none; font-weight:bold; color:#000; border-bottom:2px solid #2c3e50;">공지사항</a>
-    </li>
-    <li th:classappend="${activeBoard} == 'free' ? 'active'" style="margin-right:30px;">
-      <a href="/board/free" style="text-decoration:none; font-weight:bold; color:#666;">자유게시판</a>
-    </li>
-  </ul>
-</div>
-
 <!-- 작성 폼 -->
 <div class="container">
   <h2>공지사항 작성</h2>
 
-  <form th:action="@{/board/notice/save}" th:object="${boardDTO}" method="post">
+  <form id="noticeWriteForm" th:action="@{/board/notice/save}" th:object="${boardDTO}" method="post">
     <!-- 제목 -->
     <div class="form-group">
       <label for="title">제목</label>
-      <input type="text" id="title" th:field="*{title}" placeholder="제목을 입력하세요" required />
+      <input type="text" id="title" th:field="*{title}" placeholder="제목을 입력하세요"/>
     </div>
 
     <!-- 내용 -->
     <div class="form-group">
       <label for="content">내용</label>
-      <textarea id="summernote" name="content" th:text="*{content}" rows="12" placeholder="내용을 입력하세요" required></textarea>
+      <textarea id="summernote" name="content" th:text="*{content}" rows="12" placeholder="내용을 입력하세요"></textarea>
     </div>
 
     <!-- 버튼 -->
     <div class="form-actions">
       <button type="submit">등록 승인 요청</button>
-      <a th:href="@{/board/notice}">취소</a>
+      <a th:href="@{/board/notice}"
+      	 th:onclick="|return confirm('내용이 저장되지 않습니다. 취소하시겠습니까?');|">취소</a>
     </div>
   </form>
 </div>
@@ -84,64 +73,90 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
 <script>
 $(document).ready(function () {
-	  $('#summernote').summernote({
-	    lang: 'ko-KR',
-	    placeholder: '내용을 입력하세요',
-	    tabsize: 2,
-	    height: 300,
-	    disableDragAndDrop: true, // ⬅️ 드래그앤드롭 업로드 자체 비활성
-	    toolbar: [
-	      ['style', ['style']],
-	      ['font', ['bold', 'italic', 'underline', 'clear']],
-	      ['fontname', ['fontname']],
-	      ['fontsize', ['fontsize']],
-	      ['color', ['color']],
-	      ['para', ['ul', 'ol', 'paragraph']],
-	      ['height', ['height']],
-	      ['view', ['fullscreen', 'codeview', 'help']]
-	    ],
-	    callbacks: {
-	      onInit: function () {
-	        let $editable = $(this).next('.note-editor').find('.note-editable');
-	        $editable.css('text-align', 'left');
-	      },
+  // ===== Summernote 초기화 =====
+  $('#summernote').summernote({
+    lang: 'ko-KR',
+    placeholder: '내용을 입력하세요',
+    tabsize: 2,
+    height: 300,
+    disableDragAndDrop: true,
+    toolbar: [
+      ['style', ['style']],
+      ['font', ['bold', 'italic', 'underline', 'clear']],
+      ['fontname', ['fontname']],
+      ['fontsize', ['fontsize']],
+      ['color', ['color']],
+      ['para', ['ul', 'ol', 'paragraph']],
+      ['height', ['height']],
+      ['view', ['fullscreen', 'codeview', 'help']]
+    ],
+    callbacks: {
+      onInit: function () {
+        let $editable = $(this).next('.note-editor').find('.note-editable');
+        $editable.css('text-align', 'left');
+      },
+      // 이미지 업로드 차단
+      onImageUpload: function () { /* block */ },
+      // 붙여넣기 시 이미지/태그 차단
+      onPaste: function (e) {
+        const ev = (e.originalEvent || e);
+        const cd = ev.clipboardData;
+        const hasBinaryImage =
+          cd && Array.from(cd.items || []).some(i => i.type && i.type.startsWith('image'));
+        const html = cd ? cd.getData('text/html') : '';
+        const hasImgTag = /<img[\s\S]*?>/i.test(html);
 
-	      // 이미지 업로드 직접 시도 차단
-	      onImageUpload: function () { /* block */ },
+        if (hasBinaryImage || hasImgTag) {
+          e.preventDefault();
+          document.execCommand('insertText', false, (cd && cd.getData('text/plain')) || '');
+        }
+      },
+      // 드래그앤드롭 이미지 차단
+      onDrop: function (e) {
+        const ev = (e.originalEvent || e);
+        const dt = ev.dataTransfer;
+        if (dt && Array.from(dt.files || []).some(f => f.type && f.type.startsWith('image'))) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }
+    }
+  });
 
-	      // 붙여넣기 이미지/HTML <img> 차단
-	      onPaste: function (e) {
-	        const ev = (e.originalEvent || e);
-	        const cd = ev.clipboardData;
+  // ===== 제목/내용 유효성 검사 =====
+  $('#noticeWriteForm').on('submit', function (e) {
+    const $title = $('#title');
+    const rawTitle = ($title.val() || '').trim();
 
-	        // 1) 바이너리 이미지 아이템 존재
-	        const hasBinaryImage =
-	          cd && Array.from(cd.items || []).some(i => i.type && i.type.startsWith('image'));
+    if (!rawTitle) {
+      alert('제목을 입력해주세요.');
+      $title.focus();
+      e.preventDefault();
+      return false;
+    }
 
-	        // 2) HTML 조각 내 <img> 태그 존재
-	        const html = cd ? cd.getData('text/html') : '';
-	        const hasImgTag = /<img[\s\S]*?>/i.test(html);
+    // Summernote 내용 가져오기
+    const html = $('#summernote').summernote('code') || '';
+    const editorEmpty = $('#summernote').summernote('isEmpty');
+    const textOnly = html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+    if (editorEmpty || textOnly.length === 0) {
+      alert('내용을 입력해주세요.');
+      $('#summernote').summernote('focus');
+      e.preventDefault();
+      return false;
+    }
 
-	        if (hasBinaryImage || hasImgTag) {
-	          e.preventDefault();
-	          // 텍스트만 붙여넣고 싶으면 아래 한 줄 사용
-	          document.execCommand('insertText', false, (cd && cd.getData('text/plain')) || '');
-	        }
-	      },
+    // 🔹 검증 통과 후에 확인창
+    if (!confirm('등록 승인 요청하시겠습니까?')) {
+      e.preventDefault();
+      return false;
+    }
 
-	      // 드래그앤드롭 이미지/파일 차단 (+ 새 탭 열림 방지)
-	      onDrop: function (e) {
-	        const ev = (e.originalEvent || e);
-	        const dt = ev.dataTransfer;
-	        if (dt && Array.from(dt.files || []).some(f => f.type && f.type.startsWith('image'))) {
-	          e.preventDefault();
-	          e.stopPropagation(); // ⬅️ 새 탭 열림 방지
-	        }
-	      }
-	    }
-	  });
-	});
-
+    // 통과 시 제출
+    return true;
+  });
+});
 </script>
+
 </body>
 </html>

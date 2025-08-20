@@ -10,30 +10,29 @@
 <div class="container">
   <h2>게시글 수정</h2>
 
-  <form th:action="${activeBoard} == 'free' 
+  <form id="modifyForm"
+  		th:action="${activeBoard} == 'free' 
                    ? @{/board/free/modify} 
                    : @{/board/custom/{boardId}/modify(boardId=${board.boardId})}"
-      method="post">
+      	method="post">
   <input type="hidden" name="postId" th:value="${board.postId}"/>
 
   <div class="form-group">
     <label>제목</label>
-    <input type="text" name="title" th:value="${board.title}" required/>
+    <input type="text" id="title" name="title" th:value="${board.title}"/>
   </div>
 
   <div class="form-group" style="margin-top:8px">
     <label>내용</label>
-    <textarea id="summernote" name="content" th:utext="*{board.content}" rows="12" placeholder="내용을 입력하세요" required></textarea>
+    <textarea id="summernote" name="content" th:utext="*{board.content}" rows="12" placeholder="내용을 입력하세요"></textarea>
   </div>
 
   <div style="margin-top:12px; display:flex; gap:8px">
-    <button type="submit"
-            th:onclick="|return confirm('게시글을 수정하시겠습니까?');|">저장</button>
-
+    <button type="submit">저장</button>
     <a th:href="${activeBoard} == 'free' 
                  ? @{/board/free/detail(postId=${board.postId})}
                  : @{/board/custom/{boardId}/detail(boardId=${board.boardId}, postId=${board.postId})}"
-       th:onclick="|return confirm('수정 중인 내용이 저장되지 않습니다. 취소하시겠습니까?');|">
+       th:onclick="|return confirm('내용이 저장되지 않습니다. 취소하시겠습니까?');|">
       취소
     </a>
   </div>
@@ -46,63 +45,96 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
 <script>
 $(document).ready(function () {
-	  $('#summernote').summernote({
+  // ===== Summernote 초기화 =====
+  $('#summernote').summernote({
+    lang: 'ko-KR',
+    placeholder: '내용을 입력하세요',
+    tabsize: 2,
+    height: 300,
+    disableDragAndDrop: true,
+    toolbar: [
+      ['style', ['style']],
+      ['font', ['bold', 'italic', 'underline', 'clear']],
+      ['fontname', ['fontname']],
+      ['fontsize', ['fontsize']],
+      ['color', ['color']],
+      ['para', ['ul', 'ol', 'paragraph']],
+      ['height', ['height']],
+      ['view', ['fullscreen', 'codeview', 'help']]
+    ],
+    callbacks: {
+      onInit: function () {
+        let $editable = $(this).next('.note-editor').find('.note-editable');
+        $editable.css('text-align', 'left');
+      },
+      // 이미지 업로드 차단
+      onImageUpload: function () { /* block */ },
+      // 붙여넣기 시 이미지/태그 차단
+      onPaste: function (e) {
+        const ev = (e.originalEvent || e);
+        const cd = ev.clipboardData;
+        const hasBinaryImage =
+          cd && Array.from(cd.items || []).some(i => i.type && i.type.startsWith('image'));
+        const html = cd ? cd.getData('text/html') : '';
+        const hasImgTag = /<img[\s\S]*?>/i.test(html);
+
+        if (hasBinaryImage || hasImgTag) {
+          e.preventDefault();
+          document.execCommand('insertText', false, (cd && cd.getData('text/plain')) || '');
+        }
+      },
+      // 드래그앤드롭 이미지 차단
+      onDrop: function (e) {
+        const ev = (e.originalEvent || e);
+        const dt = ev.dataTransfer;
+        if (dt && Array.from(dt.files || []).some(f => f.type && f.type.startsWith('image'))) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }
+    }
+  });
+
+  // ===== 제목/내용 유효성 검사 =====
+  $('#summernote').summernote({
 	    lang: 'ko-KR',
-	    placeholder: '내용을 입력하세요',
-	    tabsize: 2,
 	    height: 300,
-	    disableDragAndDrop: true, // ⬅️ 드래그앤드롭 업로드 자체 비활성
-	    toolbar: [
-	      ['style', ['style']],
-	      ['font', ['bold', 'italic', 'underline', 'clear']],
-	      ['fontname', ['fontname']],
-	      ['fontsize', ['fontsize']],
-	      ['color', ['color']],
-	      ['para', ['ul', 'ol', 'paragraph']],
-	      ['height', ['height']],
-	      ['view', ['fullscreen', 'codeview', 'help']]
-	    ],
-	    callbacks: {
-	      onInit: function () {
-	        let $editable = $(this).next('.note-editor').find('.note-editable');
-	        $editable.css('text-align', 'left');
-	      },
+	    placeholder: '내용을 입력하세요'
+	  });
 
-	      // 이미지 업로드 직접 시도 차단
-	      onImageUpload: function () { /* block */ },
-
-	      // 붙여넣기 이미지/HTML <img> 차단
-	      onPaste: function (e) {
-	        const ev = (e.originalEvent || e);
-	        const cd = ev.clipboardData;
-
-	        // 1) 바이너리 이미지 아이템 존재
-	        const hasBinaryImage =
-	          cd && Array.from(cd.items || []).some(i => i.type && i.type.startsWith('image'));
-
-	        // 2) HTML 조각 내 <img> 태그 존재
-	        const html = cd ? cd.getData('text/html') : '';
-	        const hasImgTag = /<img[\s\S]*?>/i.test(html);
-
-	        if (hasBinaryImage || hasImgTag) {
-	          e.preventDefault();
-	          // 텍스트만 붙여넣고 싶으면 아래 한 줄 사용
-	          document.execCommand('insertText', false, (cd && cd.getData('text/plain')) || '');
-	        }
-	      },
-
-	      // 드래그앤드롭 이미지/파일 차단 (+ 새 탭 열림 방지)
-	      onDrop: function (e) {
-	        const ev = (e.originalEvent || e);
-	        const dt = ev.dataTransfer;
-	        if (dt && Array.from(dt.files || []).some(f => f.type && f.type.startsWith('image'))) {
-	          e.preventDefault();
-	          e.stopPropagation(); // ⬅️ 새 탭 열림 방지
-	        }
-	      }
+	  $('#modifyForm').on('submit', function (e) {
+	    // 🔹 제목
+	    const $title = $('#title'); // ← 방법 B를 택하면 $('input[name="title"]') 로
+	    const rawTitle = ($title.val() || '').trim();
+	    if (!rawTitle) {
+	      alert('제목을 입력해주세요.');
+	      $title.focus();
+	      e.preventDefault();
+	      return false;
 	    }
+
+	    // 🔹 내용 (태그/nbsp 제거 후 공백만인 경우도 빈값)
+	    const html = $('#summernote').summernote('code') || '';
+	    const editorEmpty = $('#summernote').summernote('isEmpty');
+	    const textOnly = html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+	    if (editorEmpty || textOnly.length === 0) {
+	      alert('내용을 입력해주세요.');
+	      $('#summernote').summernote('focus');
+	      e.preventDefault();
+	      return false;
+	    }
+
+	    // 🔹 검증 통과 후에 확인창
+	    if (!confirm('게시글을 수정하시겠습니까?')) {
+	      e.preventDefault();
+	      return false;
+	    }
+
+	    // 통과 시 제출
+	    return true;
 	  });
 	});
 </script>
+
 </body>
 </html>
