@@ -241,8 +241,8 @@ button.save-btn:hover {
 
 		<!-- 🔧 버튼 묶음 -->
 		<div class="button-row">
-			<button type="button" class="back-btn" onclick="history.back()">←
-				목록으로 돌아가기</button>
+			<button type="button" class="back-btn" onclick="history.back()">
+			← 목록으로 </button>
 			<button type="submit" class="save-btn">프로젝트 저장</button>
 		</div>
 	</form>
@@ -277,6 +277,48 @@ button.save-btn:hover {
 							});
 						});
 	</script>
+	
+<script>
+// 달력에서 시작일을 오늘 날짜 이전으로 설정 못하게  (yyyy-mm-dd 형식)
+const today = new Date().toISOString().split('T')[0];
+
+const startDateInput = document.getElementById('pjtBgngDt');
+const endDateInput   = document.getElementById('pjtEndDt');
+
+
+// 1. 최소 날짜를 오늘로 제한
+startDateInput.setAttribute('min', today);
+endDateInput.setAttribute('min', today);
+
+
+//2. 시작일 포커스 시 기본값 오늘로
+startDateInput.addEventListener('focus', () => {
+  if (!startDateInput.value) {
+    startDateInput.value = today;
+  }
+});
+
+// 3. 종료일 포커스 시 기본값 오늘로
+endDateInput.addEventListener('focus', () => {
+  if (!endDateInput.value) {
+    endDateInput.value = today;
+  }
+});
+
+// 4. 시작일이 바뀌면 → 종료일 최소값도 시작일로 맞추기
+startDateInput.addEventListener('change', () => {
+  if (startDateInput.value) {
+    endDateInput.setAttribute('min', startDateInput.value);
+
+    // 만약 종료일이 시작일보다 빠르면 초기화
+    if (endDateInput.value && endDateInput.value < startDateInput.value) {
+      endDateInput.value = "";
+    }
+  }
+});
+</script>
+
+
 
 	<script>
 //✨ Summernote의 "겉만 있는 빈 HTML"까지 깔끔히 제거
