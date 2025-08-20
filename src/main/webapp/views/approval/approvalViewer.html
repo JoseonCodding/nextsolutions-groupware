@@ -337,14 +337,14 @@
 	<!-- if 연차 -->
 	<table th:if="${approvalData != null and approvalData.docType == '연차'}" style="margin-top: 20px;" border="">
 	    <tr>
-	        <th>연차 발생일</th>
+	        <th>발생일</th>
 	        <td><span th:text="${approvalData.leaveCreateDate != null ? #dates.format(approvalData.leaveCreateDate, 'yyyy-MM-dd') : '-'}"></span></td>
 	    </tr>
-	    <tr><th>휴가 사용일</th>
+	    <tr><th>사용일</th>
 	        <td><span th:text="${approvalData.leaveUsedDate != null ? #dates.format(approvalData.leaveUsedDate, 'yyyy-MM-dd') : '-'}"></span></td>
 	    </tr>
 	    <tr>
-	        <th>사용 이유</th>
+	        <th>사유</th>
 	        <td><div th:text="${approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content}"></div></td>
 	    </tr>
 	</table>
@@ -437,7 +437,7 @@
 	    and approvalData.writerId == loginUser.employeeId}">
 	    <a th:href="@{/approval/edit(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status})}">수정</a>
 	    <a th:href="@{/approval/delete(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status})}"
-	       onclick="return confirm('삭제하면 전자결재 목록에서 사라집니다.\n진행하시겠습니까?');">삭제</a>
+	       onclick="return confirm('삭제 시 취소할 수 없습니다.\n진행하시겠습니까?');">삭제</a>
 	</div>
 
 
@@ -459,7 +459,7 @@
 	    <input type="hidden" name="docId"   th:value="${approvalData.docId}" />
 	    <input type="hidden" name="docType" th:value="${approvalData.docType}" />
 	    <button type="submit"
-	            onclick="return confirm('승인 시 상태가 변경됩니다.\n진행하시겠습니까?');">
+	            onclick="return confirm('승인 시 취소할 수 없습니다.\n진행하시겠습니까?');">
 	      승인
 	    </button>
 	  </form>
@@ -469,7 +469,7 @@
 	    <input type="hidden" name="docId"   th:value="${approvalData.docId}" />
 	    <input type="hidden" name="docType" th:value="${approvalData.docType}" />
 	    <button type="submit"
-	            onclick="return confirm('반려 시 상태가 반려로 변경됩니다.\n진행하시겠습니까?');">
+	            onclick="return confirm('반려 시 취소할 수 없습니다.\n진행하시겠습니까?');">
 	      반려
 	    </button>
 	  </form>

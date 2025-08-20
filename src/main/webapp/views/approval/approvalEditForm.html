@@ -120,12 +120,12 @@
             </tr>
         </table>
         
-        <!-- 저장, 취소 버튼 영역 -->
-        <button type="submit">저장</button>
-        
-        <a th:href="@{'/approval/viewer'(docId=${editData.docId}, page=${page}, type=${type}, status=${status})}">
-            <button type="button">취소</button>
-        </a>
+		<!-- 저장, 취소 버튼 영역 -->
+		<button type="submit" id="btnSave">저장</button>
+		
+		<a th:href="@{'/approval/viewer'(docId=${editData.docId}, page=${page}, type=${type}, status=${status})}">
+		    <button type="button" id="btnCancel">취소</button>
+		</a>
     </form>
     
     <!-- Summernote 관련 JS -->
@@ -170,6 +170,22 @@
 	            alert("수정 항목을 최소 1개 이상 선택하세요.");
 	        }
 	    });
+	</script>
+	
+	<script>
+	  // 저장 버튼 클릭 시 알림 후 확인하면 제출
+	  document.getElementById("btnSave").addEventListener("click", function(e) {
+	    if (!confirm("저장 시 취소할 수 없습니다.\n진행하시겠습니까?")) {
+	      e.preventDefault();
+	    }
+	  });
+	
+	  // 취소 버튼 클릭 시 알림 후 확인하면 이동 취소 아니면 이동 유지
+	  document.getElementById("btnCancel").addEventListener("click", function(e) {
+	    if (!confirm("수정을 취소합니다.\n진행하시겠습니까?")) {
+	      e.preventDefault();
+	    }
+	  });
 	</script>
 </body>
 </html>
