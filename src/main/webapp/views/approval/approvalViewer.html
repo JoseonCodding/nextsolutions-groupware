@@ -458,7 +458,7 @@
 	  <form th:action="@{/approval/approve}" method="post" style="display: inline;">
 	    <input type="hidden" name="docId"   th:value="${approvalData.docId}" />
 	    <input type="hidden" name="docType" th:value="${approvalData.docType}" />
-	    <button type="submit"
+	    <button type="submit" class="approval-btn"
 	            onclick="return confirm('승인 시 취소할 수 없습니다.\n진행하시겠습니까?');">
 	      승인
 	    </button>
