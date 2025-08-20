@@ -64,8 +64,8 @@
 				        <tr>
 				            <th>연차 사용일</th>
 				            <td>
-				                <input type="date" name="leaveUsedDate"
-				                    th:value="${editData.leaveUsedDate != null ? #dates.format(editData.leaveUsedDate, 'yyyy-MM-dd') : ''}" />
+								<input type="date" name="leaveUsedDate"
+								       th:value="${editData.leaveUsedDate != null ? #dates.format(editData.leaveUsedDate, 'yyyy-MM-dd') : ''}" />
 				            </td>
 				        </tr>
 				        <tr>
@@ -171,6 +171,54 @@
 	        }
 	    });
 	</script>
+	
+	<script>
+	  document.addEventListener('DOMContentLoaded', function() {
+	    const leaveUsedDateInput = document.querySelector("input[name='leaveUsedDate']");
+	    if (leaveUsedDateInput) {
+	      const today = new Date();
+	      const tomorrow = new Date(today);
+	      tomorrow.setDate(tomorrow.getDate() + 1);
+	      const yyyy = tomorrow.getFullYear();
+	      const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+	      const dd = String(tomorrow.getDate()).padStart(2, '0');
+	      leaveUsedDateInput.min = `${yyyy}-${mm}-${dd}`;
+	    }
+	  });
+	</script>
+
+	<script th:inline="javascript">
+	  var docType = /*[[${editData.docType}]]*/ '';
+	
+	  document.querySelector("form").addEventListener("submit", function(e) {
+	    if (docType === "연차") {
+	      const leaveUsedDateInput = this.querySelector("input[name='leaveUsedDate']");
+	      if (leaveUsedDateInput) {
+	        const selectedDate = new Date(leaveUsedDateInput.value);
+	        const today = new Date();
+	        today.setHours(0, 0, 0, 0);
+	        const tomorrow = new Date(today);
+	        tomorrow.setDate(tomorrow.getDate() + 1);
+	
+	        if (selectedDate < tomorrow) {
+	          e.preventDefault();
+	          alert("연차는 익일부터 사용 가능합니다.");
+	          leaveUsedDateInput.focus();
+	          return;
+	        }
+	      }
+	
+	      const reason = this.querySelector("textarea[name='content']");
+	      if (!reason || reason.value.trim() === "") {
+	        e.preventDefault();
+	        alert("사유를 반드시 입력해야 합니다.");
+	        if (reason) reason.focus();
+	        return;
+	      }
+	    }
+	  });
+	</script>
+
 	
 	<script>
 	  // 저장 버튼 클릭 시 알림 후 확인하면 제출
