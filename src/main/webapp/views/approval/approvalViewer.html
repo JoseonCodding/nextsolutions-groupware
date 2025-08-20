@@ -7,14 +7,15 @@
 </head>
 
 <body>
+	<h1>전자결재</h1>
 
 	<!-- 뷰어 상단 타이틀 -->
-	<h1 th:switch="${approvalData != null ? approvalData.docType : ''}" style="text-align:center; margin-bottom:20px;">
+	<h2 th:switch="${approvalData != null ? approvalData.docType : ''}" style="text-align:center; margin-bottom:20px;">
 	    <span th:case="'프로젝트'">프로젝트 등록 신청</span>
 	    <span th:case="'연차'">연차 사용 신청</span>
 	    <span th:case="'근태'">근태 수정 신청</span>
 	    <span th:case="'공지사항'">공지사항 등록 신청</span>
-	</h1>
+	</h2>
 
 
 	<div style="display: flex;">
@@ -22,7 +23,7 @@
 		<!-- 작성자, 부서, 기안일, 문서번호 영역 -->
 		<table border="">
 			<tr>
-				<td>작성자</td>
+				<td><b>작성자</b></td>
 		    <td>
 		      <span th:if="${approvalData != null}">
 		        <span th:text="${approvalData.writerPosition != null ? approvalData.writerPosition : ''}"></span>
@@ -32,15 +33,15 @@
 		    </td>
 			</tr>
 			<tr>
-				<td>부서</td>
+				<td><b>부서</b></td>
 				<td th:text="${approvalData == null ? '-' : approvalData.deptName}"></td>
 			</tr>
 			<tr>
-				<td>기안일</td>
+				<td><b>기안일</b></td>
 				<td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></td>
 			</tr>
 			<tr>
-				<td>문서번호</td>
+				<td><b>문서번호</b></td>
 				<td th:text="${approvalData == null ? '-' : approvalData.docId}"></td>
 			</tr>
 		</table>
@@ -306,14 +307,14 @@
 	<div style="margin-top: 20px; ">
 		<table border="">
 			<tr>
-				<td>결재 종류</td>
+				<td><b>결재 종류</b></td>
 				<td th:text="${approvalData == null ? '-' : approvalData.docType}"></td>
-				<td>결재 상태</td>
+				<td><b>결재 상태</b></td>
 				<td th:style="${approvalData != null and approvalData.status == '반려' ? 'color:red;' : ''}"
 					th:text="${approvalData == null ? '-' : approvalData.status}"></td>
 			</tr>
 			<tr>
-				<td>제목</td>
+				<td><b>제목</b></td>
 				<td colspan="3" th:text="${approvalData == null ? '존재하지 않는 문서입니다.' : approvalData.title}"></td>
 			</tr>
 		</table>
@@ -322,11 +323,11 @@
 	<!-- (프로젝트) 제목 -->
 	<table th:if="${approvalData != null and approvalData.docType == '프로젝트'}" style="margin-top: 20px;" border="">
 	    <tr>
-	        <td>프로젝트 시작일</td>
+	        <td><b>프로젝트 시작일</b></td>
 	        <td>
 	            <span th:text="${approvalData.pjtBgngDt != null ? #dates.format(approvalData.pjtBgngDt, 'yyyy-MM-dd') : '-'}"></span>
 	        </td>
-	        <td>프로젝트 종료일</td>
+	        <td><b>프로젝트 종료일</b></td>
 	        <td>
 	            <span th:text="${approvalData.pjtEndDt != null ? #dates.format(approvalData.pjtEndDt, 'yyyy-MM-dd') : '-'}"></span>
 	        </td>
@@ -337,14 +338,15 @@
 	<!-- if 연차 -->
 	<table th:if="${approvalData != null and approvalData.docType == '연차'}" style="margin-top: 20px;" border="">
 	    <tr>
-	        <th>발생일</th>
+	        <td><b>연차 발생일</b></td>
 	        <td><span th:text="${approvalData.leaveCreateDate != null ? #dates.format(approvalData.leaveCreateDate, 'yyyy-MM-dd') : '-'}"></span></td>
 	    </tr>
-	    <tr><th>사용일</th>
+	    <tr>
+	    	<td><b>연차 사용일</b></td>
 	        <td><span th:text="${approvalData.leaveUsedDate != null ? #dates.format(approvalData.leaveUsedDate, 'yyyy-MM-dd') : '-'}"></span></td>
 	    </tr>
 	    <tr>
-	        <th>사유</th>
+	        <td><b>연차 사유</b></td>
 	        <td><div th:text="${approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content}"></div></td>
 	    </tr>
 	</table>
@@ -352,39 +354,35 @@
 	<!-- if 근태 -->
 	<table th:if="${approvalData != null and approvalData.docType == '근태'}" style="margin-top: 20px;" border="">
 	    <tr>
-	        <th>출근 시간</th>
+	    	<td><b>수정 항목</b></td>
+	    	<td><span th:text="${approvalData.modifiedBy != null ? approvalData.timeInout : '-'}"></span> 시간</td>
+	    </tr>
+	    <tr>
+	        <td><b>출근 시간</b></td>
 	        <td><span th:text="${approvalData.checkInTime != null ? #dates.format(approvalData.checkInTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
 	    </tr>
 	    <tr>
-	        <th>퇴근 시간</th>
+	        <td><b>퇴근 시간</b></td>
 	        <td><span th:text="${approvalData.checkOutTime != null ? #dates.format(approvalData.checkOutTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
 	    </tr>
-	    <tr>
-	    	<th>수정 항목</th>
-	    	<td><span th:text="${approvalData.modifiedBy != null ? approvalData.timeInout : '-'}"></span></td>
-	    </tr>
+
    	    <tr>
-	        <th>수정 사유</th>
+	        <td><b>수정 사유</b></td>
 	        <td><div th:utext="${approvalData.modificationReason == null or approvalData.modificationReason.isEmpty() ? '내용이 없습니다' : approvalData.modificationReason}"></div></td>
 	    </tr>
-	    <tr>
-	        <th>승인일자</th>
-	        <td><span th:text="${approvalData.modifiedAt != null ? #dates.format(approvalData.modifiedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
-	    </tr>
-
 	</table>
 
 	
 	<!-- if 프로젝트, 공지사항 -->
 	<div th:unless="${approvalData != null and (approvalData.docType == '연차' or approvalData.docType == '근태')}"
-	     style="border:1px solid; margin-top: 20px; background-color: aqua; padding:10px;"
+	     style="border:1px solid; margin-top: 20px; padding:10px;"
 	     th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
 	</div>
 	
 	<!-- 첨부파일 (테이블 3행, ApprovalDTO 바인딩용) -->
 	<table th:if="${approvalData != null and approvalData.docType == '프로젝트'}" style="margin-top: 20px;" border="">
 	  <tr>
-	    <td rowspan="3">첨부파일</td>
+	    <td rowspan="3"><b>첨부파일</b></td>
 	    <td>
 	      <span th:if="${not #strings.isEmpty(approvalData.attachFileUuid1)}">
 	        <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid1} + '&orgName=' + ${approvalData.attachFileOrgName1}}"
