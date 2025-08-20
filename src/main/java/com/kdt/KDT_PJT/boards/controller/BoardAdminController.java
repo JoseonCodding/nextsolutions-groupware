@@ -47,12 +47,14 @@ public class BoardAdminController {
 
             long views = boardMapper.selectTodayViews(boardId);
             long likes = boardMapper.selectTodayLikes(boardId);
+            long posts = boardMapper.selectTodayPosts(boardId);
 
             Map<String, Object> row = new HashMap<>(); 
             row.put("boardId", boardId);
             row.put("boardName", b.getBoardName());
             row.put("viewToday", views);
             row.put("likeToday", likes);
+            row.put("postToday", posts);     
             todayStats.add(row);
         }
         model.addAttribute("todayStats", todayStats);
@@ -158,12 +160,14 @@ public class BoardAdminController {
 
             long views = boardMapper.selectTodayViews(boardId);
             long likes = boardMapper.selectTodayLikes(boardId);
+            long posts = boardMapper.selectTodayPosts(boardId);   
 
             Map<String, Object> row = new HashMap<>();
             row.put("boardId", boardId);
             row.put("boardName", b.getBoardName());
             row.put("viewToday", views);
             row.put("likeToday", likes);
+            row.put("postToday", posts);  
             todayStats.add(row);
         }
         model.addAttribute("todayStats", todayStats);

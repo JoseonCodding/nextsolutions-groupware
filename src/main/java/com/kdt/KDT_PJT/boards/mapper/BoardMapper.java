@@ -456,6 +456,17 @@ public interface BoardMapper {
     """)
     long selectTodayLikes(@Param("boardId") Integer boardId);
 
+    // 오늘 등록 수: NOTICE는 '완료' + created_at=오늘
+    @Select("""
+    	    SELECT COUNT(*)
+    	    FROM board_post p
+    	    WHERE p.board_id = #{boardId}
+    	      AND p.is_deleted = FALSE
+    	      AND DATE(p.created_at) = CURDATE()
+    	      AND (#{boardId} <> 1 OR p.status = '완료')
+    	""")
+    	long selectTodayPosts(@Param("boardId") Integer boardId);
+    
     // (선택) 게시글 열람 시 조회수 1 증가 — 통계 테이블을 daily upsert
     // 사용처: 글 상세 보기 핸들러 끝에서 호출
     @Insert("""
