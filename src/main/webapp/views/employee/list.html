@@ -51,9 +51,6 @@
 </head>
 <body>
 <h1>사원 관리</h1>
-    <button class="regist-btn" onclick="location.href='/employee/register'"> 등록 </button> 
-    <button id="editSelected" class="edit-btn">수정</button>
-
 <div>
   <!-- 검색 form -->
 <form action="/employee/list"  method="get" style="margin-top: 20px; display: flex; gap: 12px;">
@@ -102,7 +99,13 @@
 				</td>
 			</tr>
 		</tbody>
+
+		
 	</table>
+
+	
+    <button class="regist-btn" onclick="location.href='/employee/register'"> 등록 </button> 
+    <button id="editSelected" class="edit-btn">수정</button>
 
 	<!-- ✅ 페이징 UI -->
 <nav class="mt-4" th:if="${pageInfo != null}">
