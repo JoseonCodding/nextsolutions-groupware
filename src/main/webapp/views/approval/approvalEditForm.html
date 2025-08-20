@@ -2,13 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>★전자 결재 문서 수정</title>
-    
-   	<!-- 썸머노트 CSS -->
-	<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
-    
+    <title>★전자 결재 문서 수정</title>   
 </head>
 <body>
+	<h1>전자결재</h1>
+	
+	<!-- 뷰어 상단 타이틀 -->
+	<h2 th:switch="${editData != null ? editData.docType : '-'}" style="text-align:center; margin-bottom:20px;">
+	    <span th:case="'연차'">연차 사용 신청</span>
+	    <span th:case="'근태'">근태 수정 신청</span>
+	</h2>
+	
     <form method="post" th:action="@{/approval/edit}" th:object="${editData}">
         
         <!-- post 후 되돌아가기 위해서 파라미터값 보내기 -->
@@ -20,147 +24,101 @@
                 
         <table>
             <tr>
-                <td>작성자</td>
+                <td><b>작성자</b></td>
                 <td th:text="*{writer}"></td>
             </tr>
             <tr>
-                <td>부서</td>
+                <td><b>부서</b></td>
                 <td th:text="*{deptName}"></td>
             </tr>
             <tr>
-                <td>결재 종류</td>
+                <td><b>결재 종류</b></td>
                 <td th:text="*{docType}"></td>
             </tr>
 			<tr>
-				<td>제목</td>
+				<td><b>제목</b></td>
 				<td>
-					<!-- 연차 또는 근태 : 수정 불가 -->
 					<span th:if="${editData.docType == '연차'}" th:text="*{title}"></span>
-					<span th:if="${editData.docType == '근태'}">근태 수정 신청</span>
+					<span th:if="${editData.docType == '근태'}" th:text="*{title}"></span>
 					
 					<input th:if="${editData.docType == '연차'}" type="hidden" th:field="*{title}" />
-					<input th:if="${editData.docType == '근태'}" type="hidden" name="title" value="근태 수정 신청" />
-					
-					<!-- 나머지 : 수정 가능 -->
-					<input th:if="${editData.docType != '연차' and editData.docType != '근태'}"
-					       type="text" th:field="*{title}"
-					       placeholder="제목 (공백 입력 불가)" pattern=".*\S.*" required />
+					<input th:if="${editData.docType == '근태'}" type="hidden" th:field="*{title}" />
 				</td>
 			</tr>
-            <tr>
-				<td>내용</td>
-				<td>			
-				    <!-- if 연차 -->
-				    <table th:if="${editData.docType == '연차'}"
-				           border="1" style="margin-top:10px; border-collapse:collapse; width:100%; background-color:#fffde4;">
-				        <tr>
-				            <th>연차 발생일</th>
-				            <td>
-				                <span th:text="${editData.leaveCreateDate != null ? #dates.format(editData.leaveCreateDate, 'yyyy-MM-dd') : '-'}"></span>
-				            </td>
-				        </tr>
-				        <tr>
-				        </tr>
-				        <tr>
-				            <th>연차 사용일</th>
-				            <td>
-				                <input type="date" name="leaveUsedDate"
-				                    th:value="${editData.leaveUsedDate != null ? #dates.format(editData.leaveUsedDate, 'yyyy-MM-dd') : ''}" />
-				            </td>
-				        </tr>
-				        <tr>
-				            <th>사유</th>
-				            <td>
-				                <textarea name="content" rows="5" style="width:95%;" th:text="${editData.content}"></textarea>
-				            </td>
-				        </tr>
-				    </table>
-				
-				    <!-- if 공지사항 -->
-				    <textarea id="summernote" name="content"
-				          th:if="${editData.docType == '공지사항'}"
-				          th:text="*{content}"></textarea>
-				              
-					<!-- if 근태 -->
-			        <table th:if="${editData.docType == '근태'}"
-			               border="1" style="margin-top:10px; border-collapse:collapse; width:100%; background-color:#f0faff;">
-			            <tr>
-			                <th style="width:20%;">수정 항목</th>
-			                <td>
-								<div style="display:flex; gap:28px; align-items:center; flex-wrap:wrap; justify-content:center;">
-								  <label style="display:flex; align-items:center; gap:8px; font-size:16px;">
-								    <input class="action-one" type="checkbox" name="actions"  value="IN"
-								           th:checked="${editData != null and (editData.timeInout == '출근' or editData.timeInout == '출퇴근')}" />
-								    정상출근
-								  </label>
-								
-								  <label style="display:flex; align-items:center; gap:8px; font-size:16px;">
-								    <input class="action-one" type="checkbox" name="actions" value="OUT"
-								           th:checked="${editData != null and (editData.timeInout == '퇴근' or editData.timeInout == '출퇴근')}" />
-								    정상퇴근
-								  </label>
-								</div>
-			                </td>
-			            </tr>
-			            <tr>
-			                <th>출근일</th>
-			                <td>
-								<span th:text="${editData.checkInTime != null ? #dates.format(editData.checkInTime, 'yyyy년 MM월 dd일') : '-'}"></span>
-			                </td>
-			            </tr>
-			            <tr>
-			                <th>수정 사유</th>
-			                <td>
-			                    <textarea name="content" rows="5" style="width:95%;" th:text="${editData.content}"></textarea>
-			                </td>
-			            </tr>
-			        </table>
-				
-				</td>
-            </tr>
         </table>
         
-        <!-- 저장, 취소 버튼 영역 -->
-        <button type="submit">저장</button>
+	    <!-- [연차] -->
+	    <table th:if="${editData.docType == '연차'}"
+	           border="1" style="margin-top:10px; border-collapse:collapse; width:100%;">
+	        <tr>
+	            <td><b>연차 발생일</b></td>
+	            <td>
+	                <span th:text="${editData.leaveCreateDate != null ? #dates.format(editData.leaveCreateDate, 'yyyy-MM-dd') : '-'}"></span>
+	            </td>
+	        </tr>
+	        <tr>
+	        </tr>
+	        <tr>
+	            <td><b>연차 사용일</b></td>
+	            <td>
+					<input type="date" name="leaveUsedDate"
+					       th:value="${editData.leaveUsedDate != null ? #dates.format(editData.leaveUsedDate, 'yyyy-MM-dd') : ''}" />
+	            </td>
+	        </tr>
+	        <tr>
+	            <td><b>연차 사유</b></td>
+	            <td>
+	                <textarea name="content" rows="5" style="width:95%;" th:text="${editData.content}"></textarea>
+	            </td>
+	        </tr>
+	    </table>
         
-        <a th:href="@{'/approval/viewer'(docId=${editData.docId}, page=${page}, type=${type}, status=${status})}">
-            <button type="button">취소</button>
-        </a>
+		<!-- [근태] -->
+		<table th:if="${editData.docType == '근태'}"
+		       border="1" style="margin-top:10px; border-collapse:collapse; width:100%;">
+		    <tr>
+		        <td><b>항목</b></td>
+		        <td>
+		            <div style="display:flex; gap:28px; align-items:center; flex-wrap:wrap; justify-content:center;">
+		                <label style="display:flex; align-items:center; gap:8px; font-size:16px;">
+		                    <input class="action-one" type="checkbox" name="actions" value="IN"
+		                      th:checked="${editData != null and (editData.timeInout == '출근' or editData.timeInout == '출퇴근')}" />
+		                    정상출근
+		                </label>
+		                <label style="display:flex; align-items:center; gap:8px; font-size:16px;">
+		                    <input class="action-one" type="checkbox" name="actions" value="OUT"
+		                      th:checked="${editData != null and (editData.timeInout == '퇴근' or editData.timeInout == '출퇴근')}" />
+		                    정상퇴근
+		                </label>
+		            </div>
+		        </td>
+		    </tr>
+		    <tr>
+		        <td><b>출근 시간</b></td>
+		        <td><span th:text="${editData.checkInTime != null ? #dates.format(editData.checkInTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
+		    </tr>
+		    <tr>
+		        <td><b>퇴근 시간</b></td>
+		        <td><span th:text="${editData.checkOutTime != null ? #dates.format(editData.checkOutTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
+		    </tr>
+		    <tr>
+		        <td><b>수정 사유</b></td>
+		        <td>
+		            <textarea name="content" rows="5" style="width:95%;" th:text="${editData.content}"></textarea>
+		        </td>
+		    </tr>
+		</table>
+
+        
+		<!-- 저장, 취소 버튼 영역 -->
+		<button type="submit" id="btnSave">저장</button>
+		
+		<a th:href="@{'/approval/viewer'(docId=${editData.docId}, page=${page}, type=${type}, status=${status})}">
+		    <button type="button" id="btnCancel">취소</button>
+		</a>
     </form>
     
-    <!-- Summernote 관련 JS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
-    <script th:if="${editData.docType == '공지사항'}">
-    $(document).ready(function() {
-      $('#summernote').summernote({
-        lang: 'ko-KR',
-        placeholder: '내용을 입력하세요',
-        tabsize: 2,
-        height: 300,
-        toolbar: [
-          ['style', ['style']],
-          ['font', ['bold', 'italic', 'underline', 'clear']],
-          ['fontname', ['fontname']],
-          ['fontsize', ['fontsize']],
-          ['color', ['color']],
-          ['para', ['ul', 'ol', 'paragraph']],
-          ['height', ['height']],
-          ['insert', ['picture', 'link', 'table']],
-          ['view', ['fullscreen', 'codeview', 'help']]
-        ],
-        callbacks: {
-          onInit: function() {
-            let $editable = $(this).next('.note-editor').find('.note-editable');
-            $editable.css('text-align', 'left');
-          }
-        }
-      });
-    });
-    </script>
-    
-    <!-- (근태) 체크박스 미선택 방지 JS -->
+    <!-- [근태] 유효성 검사 -->
 	<script th:if="${editData != null and editData.docType == '근태'}" th:inline="javascript">
 	    document.querySelector("form").addEventListener("submit", function(e) {
 	        const checkboxes = document.querySelectorAll(".action-one");
@@ -170,6 +128,69 @@
 	            alert("수정 항목을 최소 1개 이상 선택하세요.");
 	        }
 	    });
+	</script>
+	
+	<script>
+	  document.addEventListener('DOMContentLoaded', function() {
+	    const leaveUsedDateInput = document.querySelector("input[name='leaveUsedDate']");
+	    if (leaveUsedDateInput) {
+	      const today = new Date();
+	      const tomorrow = new Date(today);
+	      tomorrow.setDate(tomorrow.getDate() + 1);
+	      const yyyy = tomorrow.getFullYear();
+	      const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+	      const dd = String(tomorrow.getDate()).padStart(2, '0');
+	      leaveUsedDateInput.min = `${yyyy}-${mm}-${dd}`;
+	    }
+	  });
+	</script>
+	
+	<!-- [연차] 유효성 검사 -->
+	<script th:inline="javascript">
+	  var docType = /*[[${editData.docType}]]*/ '';
+	
+	  document.querySelector("form").addEventListener("submit", function(e) {
+	    if (docType === "연차") {
+	      const leaveUsedDateInput = this.querySelector("input[name='leaveUsedDate']");
+	      if (leaveUsedDateInput) {
+	        const selectedDate = new Date(leaveUsedDateInput.value);
+	        const today = new Date();
+	        today.setHours(0, 0, 0, 0);
+	        const tomorrow = new Date(today);
+	        tomorrow.setDate(tomorrow.getDate() + 1);
+	
+	        if (selectedDate < tomorrow) {
+	          e.preventDefault();
+	          alert("연차는 익일부터 사용 가능합니다.");
+	          leaveUsedDateInput.focus();
+	          return;
+	        }
+	      }
+	
+	      const reason = this.querySelector("textarea[name='content']");
+	      if (!reason || reason.value.trim() === "") {
+	        e.preventDefault();
+	        alert("사유를 반드시 입력해야 합니다.");
+	        if (reason) reason.focus();
+	        return;
+	      }
+	    }
+	  });
+	</script>
+
+	
+	<script>
+	  document.getElementById("btnSave").addEventListener("click", function(e) {
+	    if (!confirm("저장 시 취소할 수 없습니다.\n진행하시겠습니까?")) {
+	      e.preventDefault();
+	    }
+	  });
+	
+	  document.getElementById("btnCancel").addEventListener("click", function(e) {
+	    if (!confirm("수정을 취소합니다.\n진행하시겠습니까?")) {
+	      e.preventDefault();
+	    }
+	  });
 	</script>
 </body>
 </html>

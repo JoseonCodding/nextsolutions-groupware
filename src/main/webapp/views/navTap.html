@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <title>Home</title>
+    <!-- 공통 스타링 -->
+    <link rel="stylesheet" href="/css/common.css">
+    <!-- 공통 스타링2222 -->
+    <link rel="stylesheet" href="/css/approvalStyle.css">
+    <!-- 근태관리 스타일 -->
+    <link rel="stylesheet" href="/css/attend.css">
 </head>
 <style>
 *{
@@ -20,7 +26,9 @@
 <div class="wrapper">
 
 	<th:block th:replace="@{/layout/header}"/>
-	<th:block th:replace="@{${navUrl}}"/>
+	
+	<div class="tab-nav"><th:block th:replace="@{${navUrl}}" /></div>
+	
 	<th:block th:replace="@{${mainUrl}}" />
 	<th:block th:replace="@{/layout/footer}"/>
  </div>

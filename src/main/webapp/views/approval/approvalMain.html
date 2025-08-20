@@ -6,6 +6,7 @@
     
 </head>
 <body>
+	<h1>전자결재</h1>
 
 		<!-- 필터 -->
 		<div class="filter-bar">
@@ -27,7 +28,7 @@
 				</select>
 
 			    <button type="submit" class="filter-btn">
-			      <i class="fa fa-search"></i> 조회
+			      <i class="fa fa-search"></i> 검색
 			    </button>
 			    <a href="/approval/main" class="filter-btn">
 			      <i class="fa fa-rotate-left"></i> 초기화
@@ -50,7 +51,7 @@
             
             <tbody>
             	<tr th:if="${#lists.isEmpty(approvalData)}">
-            		<td colspan="6" class="list-empty">필터 조건에 해당하는 게시글이 없습니다.</td>
+            		<td colspan="6" class="list-empty">열람 가능한 게시글이 없습니다.</td>
             	</tr>
             	
                 <tr th:each="dto : ${approvalData}">
