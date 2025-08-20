@@ -61,9 +61,18 @@ public class AttendController {
 
         // 로그인 사용자 아이디 세팅
         attendance.setEmployeeId(loginUser.getEmployeeId());
-    	
     	List<AttendDTO> attendMonthList =  attendMapper.userAttendMonthList(attendance); 
     	
+    	
+    	// 달력 라이브러리 - Map 형태로 변환 --->
+        Map<String, AttendDTO> attendMap = new HashMap<>();
+        for (AttendDTO dto : attendMonthList) {
+            attendMap.put(dto.getWorkDate(), dto);
+        }
+        
+        model.addAttribute("attendMap", attendMap); // 날짜 기준 Map 전달
+        //<---
+        
     	System.out.println("showAttendancePage:"+attendMonthList);
     	
         model.addAttribute("mainData", attendMonthList);
