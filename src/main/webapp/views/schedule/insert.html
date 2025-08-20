@@ -154,60 +154,19 @@
 </script>
 
 <form action="" method="post" >
-
-	<div>일정 등록<a th:href="@{/schedule}">닫힘</a></div>
-	
-				
-	<div>일정명<textarea name="title" cols="30" rows="1" required></textarea></div>
-
-
-	<div >
-		시작:
-		<input type="date" name="startDateStr" required/>
-		<input type="time" name="startTimeStr" required />
-		~ 
-		종료:
-		<input type="date" name="endDateStr"  disabled />
-		<input type="time" name="endTimeStr" disabled>
-
-		<input type="checkbox" name="cate" value="종일"/>종일일정
-	</div>
-	
-	<div>
-		<span>반복일정 : </span>
-		<select  name="repeatCheck" id="repeatCheck">
-			<option value="0">반복 없음</option>
-			<option value="1">매일</option>
-			<option value="2">매주</option>
-			<option value="3">매달</option>
-		</select>
-	</div>
-	
-			<input type="checkbox" name="holiday" value="휴무일"/>휴무일
-
-			<input type="checkbox" name="alarm" value="알림"/>알림 
-
-			<textarea name="content" id="" cols="50" rows="30" required></textarea>
-
-			<input clss="regist-btn" type="submit" value="일정 등록"/>
-
-</form> 
-    
-<!--
-<form action="" method="post" >
-	<table border="" >
-		<tr>
-			<td colspan="3" align="center">
-				일정 등록<a th:href="@{/schedule}">닫힘</a>
-			</td>	
-		</tr>
+	<h2>일정 등록</h2>
+	<table border="">
 		<tr >
-			<td colspan="3">
-				일정명<textarea name="title" cols="30" rows="1" required></textarea>
+			<td>
+				일정명
+			</td>
+			<td colspan="4">
+				<textarea name="title" cols="30" rows="1" required></textarea>
 			</td>
 		</tr>
 		<tr >
-			<td colspan="3">
+			<td>기간</td>
+			<td colspan="4">
 				시작:
 				<input type="date" name="startDateStr" required/>
 				<input type="time" name="startTimeStr" required />
@@ -215,13 +174,13 @@
 				종료:
 				<input type="date" name="endDateStr"  disabled />
 				<input type="time" name="endTimeStr" disabled>
-
-				<input type="checkbox" name="cate" value="종일"/>종일일정
 			</td>
-
 		</tr>
 		<tr>
-			<td>
+			<td>일정 종류</td>
+			<td colspan="4">
+				<input type="checkbox" name="cate" value="종일"/>종일일정
+
 				<span>반복일정 : </span>
 				<select  name="repeatCheck" id="repeatCheck">
 					<option value="0">반복 없음</option>
@@ -229,24 +188,27 @@
 					<option value="2">매주</option>
 					<option value="3">매달</option>
 				</select>
-			</td>
-			<td>
+
 				<input type="checkbox" name="holiday" value="휴무일"/>휴무일
 			</td>
-			<td>
-				<input type="checkbox" name="alarm" value="알림"/>알림 
+		</tr>
+		<tr>
+			<td>알림</td>
+			<td colspan="4">
+				<input type="checkbox" name="alarm" value="알림" />
 			</td>
 		</tr>
-		<tr >
-			<td colspan="3">
+		<tr>
+			<td>내용</td>
+			<td colspan="4">
 				<textarea name="content" id="" cols="50" rows="30" required></textarea>
 			</td>
 		</tr>
 		<tr >
-			<td colspan="3" align="right">
-				<input  clss="regist-btn" type="submit" value="일정 등록"/>
+			<td colspan="5">
+				<a class="close-btn"th:href="@{/schedule}">취소</a>
+				<input  class="attend-regist-btn" type="submit" value="등록"/>
 			</td>
 		</tr>
 	</table>
 </form> 
--->

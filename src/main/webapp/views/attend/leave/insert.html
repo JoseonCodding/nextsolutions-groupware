@@ -2,31 +2,38 @@
 <!--  
 [[${restData}--><!-- ]] -->
 <form  id="leaveForm" action="" method="post" >
+<h2>연차 사용 신청</h2>
 	<table border="">
-		<tr align="center">
-			<td>연차 사용 신청<a th:href="@{/attend/leaveList}">닫힘</a></td>
-		</tr>
-		<tr th:each="dto, vv:${restData}">
+
+		<tr>
+			<td>사용할 연차</td>
 			<td>
+			<div th:each="dto, vv:${restData}">
 				<input type="checkbox" class="leaveChk" th:name="|arr[${vv.index}].useChk|" value="true"/>
 				<span th:text="${dto.createReason}"/> 
 				
 				<input type="hidden" th:name="|arr[${vv.index}].leaveId|" th:value="${dto.leaveId}"/>
 				
 				<input type="date" class="leaveDate" th:name="|arr[${vv.index}].usedDateStr|" value="" disabled />
+			</div>
 			</td>
 		</tr>
 			
 		
-		<tr colspan="2">
-			<td>연차사유
+		<tr>
+			<td>연차사유</td>
+			<td>
 			<textarea name="reason" id="" cols="30" rows="1">개인 사유</textarea></td>
 		</tr>
 		
 
-		<tr colspan="2" align="right">
-			<td><input type="submit" value="결재 신청"/></td>
+		<tr>
+			<td colspan="2">
+			<a class="back-btn" th:href="@{/attend/leaveList}">취소</a>
+			<input class="regist-btn" type="submit" value="신청"/>
+			</td>
 		</tr>
+
 	</table>
 </form>
 
