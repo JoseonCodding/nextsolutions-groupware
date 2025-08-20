@@ -10,6 +10,7 @@
   --approval-btn:#c5edfc;  	/* 승인 버튼*/
   --reject-btn:#80ff00;  	/* 반려 버튼*/
   --search-btn:#0080c0; 	/* 검색 버튼*/
+  --back-btn: #0080c0;
 }
 
 /* 수정 버튼 */ 
@@ -76,6 +77,9 @@
 
 
 /* 승인 버튼 */
+.approval-btn:hover {
+    background: #ff0000;
+}
 .approval-btn {
     background: var(--approval-btn);
     color: #fff;
@@ -108,10 +112,26 @@
 
 /* 검색 버튼 */
 .search-btn:hover {
-    background:var(--edit-btn);
+    background:var(--search-btn);
 }
 .search-btn {
     background: var(--search-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    float: right;
+}
+
+/* 뒤로가기 버튼 */
+.back-btn:hover {
+    background:var(--back-btn);
+}
+.back-btn {
+    background: var(--back-btn);
     color: #fff;
     padding: 10px 20px;
     font-weight: bold;

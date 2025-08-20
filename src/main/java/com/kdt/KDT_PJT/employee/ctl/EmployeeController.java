@@ -113,8 +113,11 @@ public class EmployeeController {
 
     /** 회원가입 폼 */
     @GetMapping("/employee/register")
-    public String registerForm() {
-        return "employee/register";
+    public String registerForm(Model model) {
+
+        model.addAttribute("mainUrl", "employee/register");
+
+        return "navTap";
     }
 
     /** 회원가입 처리 */
@@ -162,7 +165,13 @@ public class EmployeeController {
     	EmployeeDto res = employeeMapper.getDetail(dto);
         model.addAttribute("employee", res);
         System.out.println("/employee/edit : "+res);
-        return "employee/edit";  // templates/employee/edit.html
+        
+        
+
+        model.addAttribute("mainUrl", "employee/edit");
+
+        return "navTap";
+
     }
 
     /** 사원 수정 처리 */
@@ -195,15 +204,7 @@ public class EmployeeController {
     	 
         return "redirect:/employee/list";
     }
-    
-    // 직원 상세 페이지
-    @GetMapping("/employee/detail")
-    public String employeeDetail(@RequestParam("empSeq") int empSeq, Model model) {
-        EmployeeDto emp = employeeService.getEmployeeDetail(empSeq);
-        model.addAttribute("employee", emp);
-        return "employee/detail"; // detail.html로 이동
-    }
-    
+   
     
     
 }
