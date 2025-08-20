@@ -195,7 +195,10 @@ public class EmployeeController {
     	 System.out.println("퇴사일자"+resignStr);
     	 System.out.println("부서명"+dto.getDeptName());
     	 System.out.println("권한"+dto.getRole());
+    	 System.out.println("활성화 : "+dto.getActive());
     	 System.out.println(dto);
+  
+    	 
     	 employeeMapper.update(dto);
 
     	 if (user == null || !allowedIds.contains(user.getEmployeeId())) {

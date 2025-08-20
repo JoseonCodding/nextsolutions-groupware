@@ -17,32 +17,8 @@
     .btn-active:hover { background: #218838; }
     .btn-inactive { background: #dc3545; color: white; }
     .btn-inactive:hover { background: #c82333; }
-    .btn-edit { background: #ff9800; color: white; padding: 6px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; text-decoration: none; }
-    .btn-edit:hover { background: #e68900; }
 
-    .top-buttons {
-        margin-bottom: 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .top-buttons a, .top-buttons button {
-        padding: 8px 12px;
-        border-radius: 4px;
-        border: none;
-        font-size: 14px;
-        font-weight: bold;
-        text-decoration: none;
-        cursor: pointer;
-    }
-    .top-buttons a {
-        background: #4a90e2;
-        color: white;
-    }
-    .top-buttons button {
-        background: #ff9800;
-        color: white;
-    }
+    
     .pagination {
   list-style: none;
   padding-left: 0;
@@ -52,13 +28,13 @@
   list-style: none;
 }
 </style>
+ <!-- CSS 불러오기 -->
+ <link rel="stylesheet" href="../css/common.css">
 </head>
 <body>
 <h1>사원 관리</h1>
-<div class="top-buttons">
-    <a href="/employee/register">사원 등록</a>
-    <button id="editSelected">선택된 사원 수정</button>
-</div>
+    <button class="regist-btn" onclick="location.href='/employee/register'"> 등록 </button> 
+    <button id="editSelected" class="edit-btn">수정</button>
 
 <div>
   <!-- 검색 form -->
