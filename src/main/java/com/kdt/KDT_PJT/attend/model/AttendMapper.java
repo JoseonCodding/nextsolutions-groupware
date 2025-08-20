@@ -17,6 +17,8 @@ public interface AttendMapper {
    //출근 시간 기록
    @Insert("INSERT INTO attendance (employeeId, check_in_time) VALUES (#{employeeId}, #{checkInTime})")
     void insertAttendance(AttendDTO attendance);
+   
+   
 
    //퇴근 시간 기록
    @Update("UPDATE attendance SET check_out_time = #{checkOutTime} WHERE employeeId = #{employeeId} AND DATE(check_in_time) = CURDATE()")
@@ -34,6 +36,8 @@ public interface AttendMapper {
 		    ORDER BY check_in_time
 		""")
    List<AttendDTO> userAttendMonthList( AttendDTO2 attendance);
+   
+
    
    //오늘 출근 조회용
    @Select("""

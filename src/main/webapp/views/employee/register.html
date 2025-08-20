@@ -38,21 +38,9 @@
             border-radius: 6px;
             box-sizing: border-box;
         }
-        .save-btn {
-            background: #4a90e2;
-            color: #fff;
-            padding: 10px 20px;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 20px;
-            float: right;
-        }
-        .save-btn:hover {
-            background: #357abd;
-        }
     </style>
+    <!-- CSS 불러오기 -->
+    <link rel="stylesheet" href="../css/common.css">
 </head>
 <body>
 <div class="container">
@@ -103,6 +91,7 @@
             </tr>
         </table>
 
+		<button class="back-btn" onclick="history.back()">뒤로가기</button>
         <button type="submit" class="save-btn">등록 완료</button>
     </form>
 </div>
