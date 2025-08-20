@@ -56,6 +56,11 @@ public class ProjectMngController {
 
    // 로그 객체 (현재 클래스 이름으로 로거 생성)
    private final Logger log = LoggerFactory.getLogger(getClass());
+   
+   @ModelAttribute("navUrl")
+	String navUrl() {
+		return "pjt_mng/nav";
+	}
 
    // ✅ 프로젝트 목록 화면 조회 (검색어 유무에 따라 분기)
    @GetMapping("/getPjtList")
@@ -185,7 +190,7 @@ public class ProjectMngController {
       model.addAttribute("loginUserRole", loginUser.getRole());
 
       model.addAttribute("mainUrl", "pjt_mng/pjt_main");
-      return "home";
+      return "navTap";
 
    }
    
@@ -236,7 +241,7 @@ public class ProjectMngController {
        model.addAttribute("myApprovalTodoCount", myApprovalTodoCount);
 
        model.addAttribute("mainUrl", "pjt_mng/pjt_list");
-       return "home";
+       return "navTap";
    }
 
 
@@ -283,7 +288,7 @@ public class ProjectMngController {
       model.addAttribute("pjtList", result);
 
       model.addAttribute("mainUrl", "pjt_mng/pjt_main");
-      return "home";
+      return "navTap";
 
    }
 
@@ -302,7 +307,7 @@ public class ProjectMngController {
 
       // 화면 이동
       model.addAttribute("mainUrl", "pjt_mng/pjt_reg_form");
-      return "home";
+      return "navTap";
 
       
    }
@@ -335,7 +340,7 @@ public class ProjectMngController {
 	    model.addAttribute("approverList", approverList);
 		model.addAttribute("pjt", pjtDetail);
 		model.addAttribute("mainUrl", "pjt_mng/pjt_edit_form");
-		return "home";
+		return "navTap";
 	}
 
 
@@ -348,7 +353,7 @@ public class ProjectMngController {
       log.debug("DETAIL keys={}", pjt.keySet());
       model.addAttribute("pjt", pjt);
       model.addAttribute("mainUrl", "pjt_mng/pjt_detail");
-      return "home";
+      return "navTap";
    }
 
    @PostMapping("/updateApprover")

@@ -272,7 +272,7 @@ button.save-btn:hover {
 						  ['color', ['color']],
 						  ['para', ['ul', 'ol', 'paragraph']],
 						  ['height', ['height']],
-						  ['insert', ['picture', 'link', 'table']],
+						  ['insert', [ 'link', 'table']],
 						  ['view', ['fullscreen', 'codeview', 'help']]
 							 ]
 							});
@@ -406,7 +406,7 @@ for (const id of FILE_IDS) {
     // (1) 확장자
     if (!EXT_REGEX.test(f.name)) {
       alert(`허용되지 않은 파일 형식입니다.
-허용: pdf, doc/docx, xls/xlsx, png, jpg/jpeg
+허용: pdf, doc/docx, xls/xlsx, png, jpg/jpeg, txt
 파일: ${f.name}`);
       input.value = ''; // 선택 취소
       return false;
