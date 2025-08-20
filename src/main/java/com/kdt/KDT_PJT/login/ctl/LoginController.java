@@ -32,50 +32,63 @@ public class LoginController {
     }
 
     
+//    @PostMapping("/process")
+//    public String loginProcess(@RequestParam("employeeId") String employeeId,
+//                               @RequestParam("password") String password,
+//                               HttpSession session) {
+//
+//        EmployeeDto user = loginService.login(employeeId, password);
+//        
+//        log.info("user.getActive() " + user.getActive());
+//        	
+//        if (user.getActive() == 0) {
+//        	
+//        	 return "login/loginErrForm";
+//        	
+//        }
+//        
+//        
+//    	
+//    	
+//        if (user != null) {
+//        	
+//        	if (user.getActive() == 1) { 
+//            session.setAttribute("loginUser", user);
+//         
+//           //return ResponseEntity.ok(dto);
+//            return "redirect:/rc";
+//            //return "redirect:/attend";
+//        	}
+//        }
+//        
+//    	
+//        if (user == null) {
+//        	return "redirect:/login?error=true";
+//        }
+//
+//        //return ResponseEntity.status(401).body("로그인 필요");
+//        return "redirect:/login?error=true";
+//    }   
+    
     @PostMapping("/process")
+    @ResponseBody
     public String loginProcess(@RequestParam("employeeId") String employeeId,
                                @RequestParam("password") String password,
                                HttpSession session) {
 
         EmployeeDto user = loginService.login(employeeId, password);
-        
-        log.info("user.getActive() " + user.getActive());
-        	
-        if (user.getActive() == 0) {
-        	
-        	 return "login/loginErrForm";
-        	
-        }
-        
-        
-    	
-    	
-        if (user != null) {
-        	
-        	if (user.getActive() == 1) { 
-            session.setAttribute("loginUser", user);
-         
-           //return ResponseEntity.ok(dto);
-            return "redirect:/rc";
-            //return "redirect:/attend";
-        	}
-        }
-        
-    	
+
         if (user == null) {
-        	return "redirect:/login?error=true";
+            return "<script>alert('아이디 또는 비밀번호가 틀렸습니다.'); location.href='/login';</script>";
         }
-        
-        
 
-        //System.out.println("ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ " +user.getString("employeeId"));
-        
+        if (user.getActive() == 0) {
+            return "<script>alert('비활성 계정입니다.\\n 관리자에게 문의 바랍니다.!'); location.href='/login';</script>";
+        }
 
-        //return ResponseEntity.status(401).body("로그인 필요");
-        return "redirect:/login?error=true";
-    }   
-    
-    
+        session.setAttribute("loginUser", user);
+        return "<script>location.href='/rc';</script>";
+    }
 
     
     

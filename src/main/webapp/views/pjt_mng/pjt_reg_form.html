@@ -180,20 +180,21 @@ button.save-btn:hover {
 
 			<tr>
 				<th>프로젝트명</th>
-				<td><input type="text" name="pjtNm" required /></td>
-			</tr>
+				<td>
+				<input type="text" name="pjtNm" id="pjtNm" placeholder="프로젝트명을 입력하세요" />
+      			</td>
 			<tr>
 				<th>담당자</th>
 				<td>
-				<input type="text" name="employeeId" th:value="${id}"
-					readonly /></td>
+				<input type="text" name="employeeId" th:value="${id}" readonly />
+				</td>
 			</tr>
 
 			<tr>
 				<th>기간</th>
-				<td>시작일: <input type="date" name="pjtBgngDt"
-					style="margin-right: 10px;" /> 종료일: <input type="date"
-					name="pjtEndDt" /></td>
+				<td>시작일: 
+				<input type="date" name="pjtBgngDt"	style="margin-right: 10px;" /> 종료일: <input type="date"	name="pjtEndDt" />
+				</td>
 			</tr>
 			<tr>
 				<th>상태</th>
@@ -272,7 +273,7 @@ button.save-btn:hover {
 						  ['color', ['color']],
 						  ['para', ['ul', 'ol', 'paragraph']],
 						  ['height', ['height']],
-						  ['insert', ['picture', 'link', 'table']],
+						  ['insert', [ 'link', 'table']],
 						  ['view', ['fullscreen', 'codeview', 'help']]
 							 ]
 							});
@@ -295,10 +296,16 @@ function extractTextFromHtml(html) {
 // ✅ 유효성 검사 항목
 function validateForm() {
   const form = document.forms[0];
-  if (!form) return true;
+  if (!form) return false; // 🚫 폼 없으면 막기
+  
 
   // 1) 프로젝트명: 1~35자, 공백 허용, 특수문자 불가
   const name = (form.pjtNm?.value || "").trim();
+  if (name === "") {
+    alert("프로젝트명을 입력하세요.");
+    form.pjtNm?.focus();
+    return false;
+  }
   if (!/^[가-힣A-Za-z0-9\s]{1,35}$/.test(name)) {
     alert("프로젝트명은 공백 가능, 특수문자 없이 1~35자여야 합니다.");
     form.pjtNm?.focus();
@@ -334,6 +341,19 @@ function validateForm() {
     (isNaN(startDate.getTime()) ? form.pjtBgngDt : form.pjtEndDt)?.focus();
     return false;
   }
+  
+//🔒 오늘 이전 금지
+  if (startDate < today) {
+    alert("시작일은 오늘 이전 날짜로 설정할 수 없습니다.");
+    form.pjtBgngDt?.focus();
+    return false;
+  }
+  if (endDate < today) {
+    alert("종료일은 오늘 이전 날짜로 설정할 수 없습니다.");
+    form.pjtEndDt?.focus();
+    return false;
+  }
+  
   if (startDate.getTime() >= endDate.getTime()) {
     alert("종료일은 시작일보다 뒤여야 합니다. (같거나 이전 날짜 불가)");
     form.pjtEndDt?.focus();
@@ -406,7 +426,7 @@ for (const id of FILE_IDS) {
     // (1) 확장자
     if (!EXT_REGEX.test(f.name)) {
       alert(`허용되지 않은 파일 형식입니다.
-허용: pdf, doc/docx, xls/xlsx, png, jpg/jpeg
+허용: pdf, doc/docx, xls/xlsx, png, jpg/jpeg, txt
 파일: ${f.name}`);
       input.value = ''; // 선택 취소
       return false;

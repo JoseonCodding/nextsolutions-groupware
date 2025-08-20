@@ -118,10 +118,11 @@
             </tr>
             <tr>
                 <td>비밀번호 변경</td>
-                <td colspan="3"><input type="password" name="password" placeholder="새 비밀번호 입력"></td>
+                <td colspan="3"><input type="password" name="password" th:value="${employee.password}" placeholder="새 비밀번호 입력"></td>
             </tr>
         </table>
-
+        
+		<input type="hidden" name="active" th:value="${employee.active}" />
 		<button class="back-btn" onclick="history.back()">뒤로가기</button>
         <button type="submit" class="edit-btn">수정</button>
     </form>
