@@ -55,15 +55,15 @@ public class AttendController2 {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         String employeeId = (loginUser != null) ? loginUser.getEmployeeId() : null;
 
-        if (employeeId == null || workDate == null || workDate.isBlank()) {
+        if (employeeId == null || workDate == null || workDate.isBlank() || content == null || content.isBlank()) {
             ra.addFlashAttribute("msg", "필수 정보가 누락되었습니다.");
-            return "redirect:/attend";
+            return "redirect:/attend/attendTimeInsert";
         }
 
         List<String> actions = (actionsArr == null) ? List.of() : Arrays.asList(actionsArr);
         if (actions.isEmpty()) {
             ra.addFlashAttribute("msg", "정정 항목(정상출근/정상퇴근)을 선택하세요.");
-            return "redirect:/attend";
+            return "redirect:/attend/attendTimeInsert";
         }
 
         LocalDateTime now = LocalDateTime.now();

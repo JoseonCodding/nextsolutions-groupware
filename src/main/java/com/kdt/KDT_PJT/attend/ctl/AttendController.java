@@ -2,6 +2,7 @@ package com.kdt.KDT_PJT.attend.ctl;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,6 @@ import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
 import com.kdt.KDT_PJT.attend.model.AttendDTO2;
 import com.kdt.KDT_PJT.attend.model.AttendMapper;
-import com.kdt.KDT_PJT.attend.model.AttendMapper2;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -77,10 +77,12 @@ public class AttendController {
         model.addAttribute("nextMonthStartDay", attendance.getNextMonthStartDay());
         model.addAttribute("nextMonthEndDay", attendance.getNextMonthEndDay());
         model.addAttribute("currentStartDay", attendance.getStartDay());
+
         return "navTap";
         
     }
 
+    
     //출근 시간 기록
     @PostMapping("/in")
     String checkIn(HttpSession session) {
