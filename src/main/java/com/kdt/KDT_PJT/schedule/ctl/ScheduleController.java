@@ -22,10 +22,10 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/schedule")
 public class ScheduleController {
 
-	@ModelAttribute("navUrl")
-	String navUrl() {
-		return "schedule/nav";
-	}
+//	@ModelAttribute("navUrl")
+//	String navUrl() {
+//		return "schedule/nav";
+//	}
 	
 	@Autowired
 	ScheduleMapper mapper;
@@ -71,7 +71,8 @@ public class ScheduleController {
 		model.addAttribute("mainUrl", "schedule/main");
 		
 
-		return "navTap";
+		//return "navTap";
+		return "home";
 	}
 	
 	//일정 등록
@@ -80,7 +81,7 @@ public class ScheduleController {
 
 		model.addAttribute("mainUrl", "schedule/insert");
 
-		return "navTap";
+		return "home";
 	}
 	
 	@PostMapping("/insert")
@@ -107,7 +108,7 @@ public class ScheduleController {
 		model.addAttribute("scd", scheduleDetail);
 		model.addAttribute("mainUrl", "schedule/detail");
 
-		return "navTap";
+		return "home";
 	}
 	
 	//일정 수정
@@ -119,7 +120,7 @@ public class ScheduleController {
 		model.addAttribute("scd", scheduleDetail);
 		model.addAttribute("mainUrl", "schedule/modify");
 
-		return "navTap";
+		return "home";
 	}
 	
 	
