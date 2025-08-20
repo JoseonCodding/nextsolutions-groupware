@@ -1,8 +1,8 @@
 <!-- 근태 관리 출퇴근변경이력 - 근태 관리자 화면 -->
 <form method="get" action="/attend/attendList">
-    <label>날짜: <input type="date" name="workDate" /></label>
-    <label>이름: <input type="text" name="empNm" /></label>
-    <label>수정자: <input type="text" name="modifiedBy" /></label>
+    <label>날짜: <input type="date" name="workDate"  th:value="${param.workDate}" /></label>
+    <label>이름: <input type="text" name="empNm" th:value="${param.empNm}"/></label>
+    <label>수정자: <input type="text" name="modifiedBy" th:value="${param.modifiedBy}"/></label>
 
     <button type="submit">검색</button>
 
@@ -30,9 +30,9 @@
         <th>이름</th>
         <th>출근시간</th>
         <th>퇴근시간</th>
-        <th>수정자</th>
-        <th>수정일</th>
-        <th>수정사유</th>
+        <th>승인자</th>
+        <th>승인일</th>
+        <th>변경사유</th>
       </tr>
     </thead>
 	<tbody>
@@ -42,13 +42,13 @@
 			<td th:text="${dto.empNm}"></td>
 			<td th:text="${dto.checkInHourMinute}"></td>
 			<td th:text="${dto.checkOutHourMinute}"></td>
-			<td th:text="${dto.status == '완료' ? dto.modifiedBy : ''}"></td>
+			<td th:text="${dto.status == '완료' ? dto.mbNm : ''}"></td>
 			<td th:text="${dto.status == '완료' and dto.modifiedAt != null 
               ? #temporals.format(dto.modifiedAt, 'yyyy-MM-dd') : ''}"></td>
 			<td th:text="${dto.status == '완료' ? dto.modificationReason : ''}"></td>
 		</tr>
 	</tbody>
-
+</table>
 
 
 <!-- 페이징 요약 -->

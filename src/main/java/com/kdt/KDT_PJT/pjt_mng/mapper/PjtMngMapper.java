@@ -18,7 +18,7 @@ import java.util.Map;
 public interface PjtMngMapper {
 	
 	
-	@Select(" SELECT * FROM team2_db.employee ")
+	@Select(" SELECT * FROM team2_db.employee where role ='대표'")
     List<CmmnMap> selectApproverCandidates();
 	
     List<CmmnMap> selectProjectList(@Param("param") Map<String, Object> param);
@@ -62,11 +62,13 @@ public interface PjtMngMapper {
    @Select("select count(*) from TB_PJT_BASC WHERE PJT_STTS_CD = '대기'")
    int countPending();
    
-   @Select("select TB_PJT_BASC.* , e1.emp_nm as reg_user, e2.emp_nm as app_user "
-         + "    FROM TB_PJT_BASC, employee e1,  employee e2 "
-         + "    WHERE PJT_SN = #{pjtSn}"
-         + "    and TB_PJT_BASC.employeeid = e1.employeeid "
-         + "    and TB_PJT_BASC.TB_PJT_APR = e2.employeeid ")
+   @Select(" select "
+   			+ " t2.* "
+   			+ ", (SELECT emp_nm from employee where 1=1 and employeeId = t2.employeeId) as reg_user"
+   			+ ", (SELECT emp_nm from employee where 1=1 and employeeId = t2.TB_PJT_APR) as app_user"
+   			+ "    FROM TB_PJT_BASC t2"
+   			+ "    WHERE PJT_SN = #{pjtSn}"
+		   )
     CmmnMap selectPjtDetail(@Param("pjtSn") int pjtSn);
 
    

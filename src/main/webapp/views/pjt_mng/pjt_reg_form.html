@@ -392,9 +392,9 @@ if (approverEl && !approverEl.disabled) {
 
 //7) 파일 검사(확장자 + 파일당 용량 + 전체 합계)
 const FILE_IDS     = ['uploadFile1', 'uploadFile2', 'uploadFile3']; // ← 실제 id와 일치
-const MAX_FILE_MB  = 1;  // 파일당 최대 1MB
+const MAX_FILE_MB  = 5;  // 파일당 최대 1MB
 const MAX_TOTAL_MB = 25;  // 전체 합계 최대 25MB
-const EXT_REGEX    = /\.(pdf|docx?|xlsx?|png|jpe?g)$/i;
+const EXT_REGEX = /\.(pdf|docx?|xlsx?|png|jpe?g|txt)$/i;
 
 let totalBytes = 0;
 

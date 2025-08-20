@@ -8,7 +8,7 @@ const DoughnutChart = ({ chartData, options, centerLabel }) => {
   return (
     <div className="relative">
       <Doughnut data={chartData} options={options} />
-      <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-175%] text-xl font-bold">
+      <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-100%] text-xl font-medium text-gray-600">
         {centerLabel}
       </div>
     </div>

@@ -1,6 +1,7 @@
 package com.kdt.KDT_PJT.attend.ctl;
 
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.scheduling.annotation.Scheduled;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -99,16 +101,20 @@ public class LeaveController {
     public String insertReg(HttpSession session, Model model, LeaveReqDTO reqDto) {
     	
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
+
     	
     	//reqDto = requestDto :연차 사용 요청
     	reqDto.dataCalc();
     	System.out.println("연차 신청 페이지 : "+reqDto.getArr().size());
     	
-    	
-    	
+
     	for (LeaveDTO dto : reqDto.getArr()) {
     		mapper.approvalList(dto);
 		}
+    	
+
+        
+
     	
     	return "redirect:/attend/leaveList";
     }

@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class AttendDTO {
+public class AttendDTO2 {
 
 	private Long id;
-	private String employeeId, service, empNm,mbNm, deptName, position, workingHours;
+	private String employeeId, service, empNm, deptName, position, workingHours, reason;
 	private LocalDateTime checkInTime, checkOutTime;
-	int workCnt;
+	int workCnt, month;
 
 	private String status;
 
@@ -26,12 +26,12 @@ public class AttendDTO {
 	String startDay, endDay;	
 	
 
-    // ✅ 페이징 파라미터 추가
-    int limit = 0;
-    int offset = 0;
-	
-    int pageNum = 1;
-    int pageSize = 10;
+//    // ✅ 페이징 파라미터 추가
+//    int limit = 0;
+//    int offset = 0;
+//	
+//    int pageNum = 1;
+//    int pageSize = 10;
     
     String keyword;
     

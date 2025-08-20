@@ -1,30 +1,39 @@
-import useFetchWithUserId from '../../hooks/useFetchWithUserId';
+import useFetch from '../../hooks/useFetch';
 import DoughnutChart from './DoughnutChart';
 
+// const COLORS = { progress: '#60a5fa', pending: '#fbbf24', complete: '#34d399' };
+const COLORS = {
+  progress: '#ffc619',
+  pending: '#fda300',
+  complete: '#fa841a',
+};
+
 const ProgressChart = () => {
-  const {
-    data: summary,
-    loading,
-    error,
-  } = useFetchWithUserId('/projects/status-summary');
+  const { data, loading, error } = useFetch('/projects');
 
   if (loading) return <p>로딩 중...</p>;
   if (error) return <p>에러: {error.message || '알 수 없는 에러'}</p>;
-  if (!summary) return <p>데이터가 없습니다.</p>;
+  if (!data) return <p>데이터가 없습니다.</p>;
 
-  const total = summary.total ?? 0;
-  const progress = summary.progress ?? 0;
-  const complete = summary.complete ?? 0;
-  const pending = summary.pending ?? 0;
+  console.log('프로젝트 데이터:', data);
+
+  const myApprovalTodo = data.myApprovalTodoCount ?? 0;
+  const myProject = data.myProjectCount ?? 0;
+  const progress = Number(data.progressCount ?? 0);
+  const pending = Number(data.pendingCount ?? 0);
+  const complete = Number(data.completeCount ?? 0);
+  const total = Number(data.totalCount ?? progress + pending + complete) || 0;
+
+  const pct = (v) => (total ? Math.round((v * 100) / total) : 0);
 
   const chartData = {
-    labels: ['진행중', '완료', '대기'],
+    labels: ['진행중', '대기', '완료'],
     datasets: [
       {
         label: '상태 분포',
-        data: [progress, complete, pending],
-        backgroundColor: ['#60a5fa', '#34d399', '#fbbf24'], // 파랑/초록/노랑
-        borderWidth: 1,
+        data: [progress, pending, complete], // 라벨 순서에 맞춤
+        backgroundColor: [COLORS.progress, COLORS.pending, COLORS.complete],
+        borderWidth: 0,
       },
     ],
   };
@@ -32,55 +41,96 @@ const ProgressChart = () => {
   const options = {
     cutout: '70%',
     plugins: {
-      legend: { display: true, position: 'bottom' },
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: {
+          boxWidth: 12,
+          boxHeight: 12,
+          color: '#374151',
+          font: { size: 12 },
+        },
+      },
       tooltip: {
         callbacks: {
           label: (ctx) => {
             const label = ctx.label || '';
             const val = ctx.parsed || 0;
-            const pct = total ? Math.round((val * 1000) / total) / 10 : 0; // 소수 1자리
-            return `${label}: ${val}건 (${pct}%)`;
+            return `${label}: ${val}건 (${pct(val)}%)`;
           },
         },
       },
     },
   };
 
-  // 백엔드에서 percent도 내려주면 우측 요약에 사용 가능
-  const pct = summary.percent || { progress: 0, complete: 0, pending: 0 };
-
   return (
-    <div className="flex flex-col gap-4 p-4 border border-gray-200 rounded-md bg-white">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* 도넛 차트: 중앙에 총 건수 */}
-        <div className="w-full">
-          <DoughnutChart
-            chartData={chartData}
-            options={options}
-            centerLabel={`총 ${total}건`}
-          />
-        </div>
+    <div className="flex flex-col gap-3 px-2 py-4">
+      <div className="w-full">
+        <DoughnutChart
+          chartData={chartData}
+          options={options}
+          centerLabel={`총 ${total}건`}
+        />
+      </div>
 
-        {/* 우측 요약 */}
-        <dl className="flex flex-col justify-center text-sm text-gray-700">
-          <Row label="진행중" value={progress} pct={pct.progress} />
-          <Row label="완료" value={complete} pct={pct.complete} />
-          <Row label="대기" value={pending} pct={pct.pending} />
-        </dl>
+      <div className="flex flex-col justify-center gap-3 text-sm text-gray-600">
+        <Row
+          label="진행중"
+          value={progress}
+          pct={pct(progress)}
+          color={COLORS.progress}
+        />
+        <Row
+          label="대기"
+          value={pending}
+          pct={pct(pending)}
+          color={COLORS.pending}
+        />
+        <Row
+          label="완료"
+          value={complete}
+          pct={pct(complete)}
+          color={COLORS.complete}
+        />
+      </div>
+
+      <div className="flex flex-col justify-center gap-3 text-sm text-gray-600">
+        <Row label="내 참여 프로젝트" value={myProject} withBar={false} />
+        <Row label="내 결재 프로젝트" value={myApprovalTodo} withBar={false} />
       </div>
     </div>
   );
 };
 
-function Row({ label, value = 0, pct = 0 }) {
-  return (
-    <div className="flex items-center justify-between py-1">
-      <dt className="font-bold">{label}</dt>
-      <dd>
-        {value}건 • {pct}%
-      </dd>
-    </div>
-  );
-}
+const Row = ({ label, value, pct, color, withBar = true }) => (
+  <dl className="p-3.5 border border-gray-200 rounded-md">
+    {withBar ? (
+      <>
+        <div className="flex justify-between items-center mb-1">
+          <dt className="text-sm">{label}</dt>
+          <div className="text-right text-sm">
+            {value}건 ({pct}%)
+          </div>
+        </div>
+        <dd>
+          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div
+              className="h-full transition-[width] duration-300"
+              style={{ width: `${pct}%`, backgroundColor: color }}
+            />
+          </div>
+        </dd>
+      </>
+    ) : (
+      <>
+        <dt className="text-sm">{label}</dt>
+        <dd className="flex items-center justify-between">
+          <div className="text-gray-500 text-xs"></div>
+          <div className="text-right text-sm font-medium">{value}건</div>
+        </dd>
+      </>
+    )}
+  </dl>
+);
 
 export default ProgressChart;

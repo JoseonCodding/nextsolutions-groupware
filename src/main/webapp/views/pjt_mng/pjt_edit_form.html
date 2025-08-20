@@ -57,7 +57,6 @@ input, select {
 	box-sizing: border-box;
 }
 
-
 .button-row {
 	display: flex;
 	justify-content: center;
@@ -92,6 +91,12 @@ input, select {
 .back-btn:hover {
 	background-color: #357abd;
 }
+
+.save-btn:disabled {
+	background-color: #ccc !important; /* 회색 */
+	color: #666 !important; /* 글자도 연한 회색 */
+	cursor: not-allowed; /* 마우스 커서 X 모양 */
+}
 </style>
 </head>
 
@@ -100,13 +105,18 @@ input, select {
 	<h1>프로젝트 변경</h1>
 	<!-- ✅ 프로젝트 수정 Form -->
 	<form method="post" action="/pjtMng/updatePjtProc"
-		 enctype="multipart/form-data">
-  
+		enctype="multipart/form-data">
+
 		<!-- hidden 값도 null-safe -->
 		<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN'] ?: ''}" />
+
 		<input type="hidden" name="gid" th:value="${pjt['gid'] ?: ''}" />
 		<input type="hidden" name="oldFileName"  th:value="${pjt['ATCH_FILE_SN'] ?: ''}"> 
 		<input type="hidden" name="oldOrgFileName" th:value="${pjt['ORG_FILE_NM'] ?: ''}">
+		<input type="hidden" name="firstSign" th:value="${pjt['firstSign'] ?: ''}">
+		<input type="hidden" name="secondSign" th:value="${pjt['secondSign'] ?: ''}">
+		<input type="hidden" name="approvedBy" th:value="${pjt['approvedBy'] ?: ''}">
+
 
 
 		<table>
@@ -121,34 +131,32 @@ input, select {
 				<td>
 					<!-- 모델 키가 employeeid 인 듯하여 그대로 사용 --> <input type="text"
 					name="employeeId" th:value="${pjt['employeeId'] ?: ''}"
-					placeholder="담당자 이름 입력" />
+					placeholder="담당자 이름 입력"  readonly />
 				</td>
 			</tr>
 			<tr>
 				<th>기간</th>
 				<td>
-					<!-- 날짜가 문자열이면 그대로, LocalDate면 아래 주석 참고 --> 시작일: <input type="date"
+					<!-- 날짜가 문자열이면 그대로, LocalDate면 아래 주석 참고 --> 
+					시작일: <input type="date"
 					name="pjtBgngDt" style="margin-right: 10px;"
 					th:value="${pjt['PJT_BGNG_DT'] ?: ''}" /> 종료일: <input type="date"
-					name="pjtEndDt" th:value="${pjt['PJT_END_DT'] ?: ''}" /> <!-- ✍️ 만약 LocalDate/LocalDateTime 이면:
+					name="pjtEndDt" th:value="${pjt['PJT_END_DT'] ?: ''}" />
+					 <!-- ✍️ 만약 LocalDate/LocalDateTime 이면:
              th:value="${pjt['PJT_BGNG_DT'] != null ? #dates.format(pjt['PJT_BGNG_DT'], 'yyyy-MM-dd') : ''}" -->
 				</td>
 			</tr>
-			
-			<tr>
+
+			<tr	th:with="stts=${pjt != null ? #strings.trim(pjt['PJT_STTS_CD']) : ''}">
 				<th>상태</th>
 				<td>
-				<input type="text" name="ver" th:value="${pjt['ver']}"	readonly />
-
-				<!-- <input type="text" name="pjtSttsCd" th:value="${pjt['PJT_STTS_CD']}"	readonly /> -->
-				<!-- 상태는 드롭박스로 선택 -->
-  <select name="pjtSttsCd" required>
-    <option value="진행중" th:selected="${pjt['PJT_STTS_CD'] == '진행중'}">진행중</option>
-    <option value="완료" th:selected="${pjt['PJT_STTS_CD'] == '완료'}">완료</option>
-    
-  </select>
-		
-					
+					<!-- 대기: 읽기전용 --> <input type="text" name="pjtSttsCd"
+					th:value="${stts}" th:if="${stts == '대기'}" readonly
+					class="readonly" /> <!-- 대기 아님: 드롭다운 --> <select name="pjtSttsCd"
+					th:if="${stts != '대기'}" required>
+						<option value="진행중" th:selected="${stts == '진행중'}">진행중</option>
+						<option value="완료" th:selected="${stts == '완료'}">완료</option>
+				</select>
 				</td>
 			</tr>
 
@@ -157,7 +165,7 @@ input, select {
 				<td><textarea id="content" name="content"
 						th:text="${pjt['content'] ?: ''}"></textarea></td>
 			</tr>
-			<tr>
+			<!-- <tr>
 				<th>결재자</th>
 				<td><select name="TB_PJT_APR" class="form-select"
 					th:disabled="${!isAdmin}">
@@ -167,6 +175,18 @@ input, select {
 							th:selected="${pjt != null and a.employeeId == pjt.TB_PJT_APR}">
 						</option>
 				</select></td>
+			</tr>
+			 -->
+
+			<tr>
+				<th>결재자</th>
+				<td>
+					<!-- DB로 넘어갈 진짜 값(사번) --> 
+					<input type="hidden" name="TB_PJT_APR" 	th:value="${pjt['TB_PJT_APR']}" />
+					
+					 <!-- 화면 표시용 (읽기 전용) -->
+              		<input type="text" th:value="${pjt['TB_PJT_APR']}" readonly class="form-control" />
+				</td>
 			</tr>
 			
 			<tr>
@@ -188,24 +208,34 @@ input, select {
 						style="margin-top: 8px; color: #333; font-size: 14px; background-color: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
 					</div></td>
 			</tr>
-			
-			<tr><th>등록일</th>
-			
-			<td>
-				<input type="text" name="FRST_REG_DT" th:value="${pjt['FRST_REG_DT']}"	readonly />
-			</td></tr>
+
+			<tr>
+				<th>등록일</th>
+
+				<td><input type="text" name="FRST_REG_DT"
+					th:value="${pjt['FRST_REG_DT']}" readonly /></td>
+			</tr>
 		</table>
 
 
 		<!-- null-safe -->
-		<input type="hidden" name="approvers" id="approversInput"
-			th:value="${pjt['approvers'] ?: ''}" />
+		<input type="hidden" name="approvers" id="approversInput" th:value="${pjt['approvers'] ?: ''}" />
 
+		<input type="hidden" name="ver" id="ver"  th:value="${pjt['ver'] ?: ''}" />
+		
 		<div class="button-row">
-		<button type="button" class="back-btn" onclick="history.back()">←
+			<button type="button" class="back-btn" onclick="history.back()">←
 				돌아가기</button>
-			<button type="submit" class="save-btn">저장</button>
-			
+			<!-- <button type="submit" class="save-btn">저장</button> -->
+
+			<!-- 페이지 어딘가에서 stts를 이미 썼다면 그대로 활용 -->
+			<button type="submit" class="save-btn"
+				th:with="stts=${pjt != null ? #strings.trim(pjt['PJT_STTS_CD']) : ''}"
+				th:disabled="${stts == '대기'}"
+				th:title="${stts == '대기'} ? '대기 상태 프로젝트는 저장할 수 없습니다.' : null">
+				저장</button>
+
+
 		</div>
 	</form>
 

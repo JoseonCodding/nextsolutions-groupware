@@ -17,6 +17,8 @@ public interface AttendMapper {
    //출근 시간 기록
    @Insert("INSERT INTO attendance (employeeId, check_in_time) VALUES (#{employeeId}, #{checkInTime})")
     void insertAttendance(AttendDTO attendance);
+   
+   
 
    //퇴근 시간 기록
    @Update("UPDATE attendance SET check_out_time = #{checkOutTime} WHERE employeeId = #{employeeId} AND DATE(check_in_time) = CURDATE()")
@@ -33,7 +35,9 @@ public interface AttendMapper {
 		      AND DATE(check_in_time) BETWEEN #{startDay} AND #{endDay}
 		    ORDER BY check_in_time
 		""")
-   List<AttendDTO> userAttendMonthList( AttendDTO attendance);
+   List<AttendDTO> userAttendMonthList( AttendDTO2 attendance);
+   
+
    
    //오늘 출근 조회용
    @Select("""
@@ -219,9 +223,10 @@ public interface AttendMapper {
    // 출퇴근 현황(관리자용)
    @Select("""
 	        <script>
-	        SELECT a.*, e.emp_nm, e.deptName
+	        SELECT a.*, e.emp_nm, e.deptName, mb.emp_nm as  mb_nm 
 	        FROM attendance a
 	        JOIN employee e ON a.employeeId = e.employeeId
+	        left outer JOIN employee mb ON a.modified_by = mb.employeeId
 	        WHERE 1=1
 	        <if test="workDate != null and workDate != ''">
 	            AND a.check_in_time &gt;= STR_TO_DATE(CONCAT(#{workDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')

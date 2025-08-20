@@ -2,6 +2,7 @@ package com.kdt.KDT_PJT.attend.ctl;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +21,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
+import com.kdt.KDT_PJT.attend.model.AttendDTO2;
 import com.kdt.KDT_PJT.attend.model.AttendMapper;
-import com.kdt.KDT_PJT.attend.model.AttendMapper2;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,16 +43,13 @@ public class AttendController {
 	
 	@Autowired
     AttendMapper attendMapper;
-	
-	@Autowired
-	AttendMapper2 attendMapper2;
-	
+
    // log 사용을 위함
    private final Logger log = LoggerFactory.getLogger(getClass());
    
 	//사용자 본인의 출퇴근 기록 
     @GetMapping
-    String showAttendancePage(HttpSession session, Model model,AttendDTO attendance) {
+    String showAttendancePage(HttpSession session, Model model,AttendDTO2 attendance) {
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
     	
     	// 현재 조회 기간이 없으면 기본값 세팅 (이번달 시작일 ~ 이번달 말일)
@@ -79,14 +77,16 @@ public class AttendController {
         model.addAttribute("nextMonthStartDay", attendance.getNextMonthStartDay());
         model.addAttribute("nextMonthEndDay", attendance.getNextMonthEndDay());
         model.addAttribute("currentStartDay", attendance.getStartDay());
+
         return "navTap";
         
     }
 
+    
     //출근 시간 기록
     @PostMapping("/in")
     String checkIn(HttpSession session) {
-    	System.out.println("checkIn 작동하나");
+    	System.out.println("checkIn 작동");
         service.recordCheckIn(session);
         return "redirect:/attend";
     }

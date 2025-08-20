@@ -2,13 +2,13 @@ package com.kdt.KDT_PJT.approval.mapper;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
+import com.kdt.KDT_PJT.approval.model.ApproverDTO;
 
 
 @Mapper
@@ -106,7 +106,7 @@ public interface ApprovalMapper {
 	    "   SELECT",
 	    "     CONCAT('attendance-', a.id) AS docId,",
 	    "     '근태' AS docType,",
-	    "     CONCAT('근태 수정 신청 - ', COALESCE(DATE_FORMAT(a.check_in_time, '%Y년 %m월 %d일'), '-'), ' ', COALESCE(a.time_inout, '')) AS title,",
+	    "     CONCAT('근태 수정 신청 - ', COALESCE(DATE_FORMAT(COALESCE(a.check_in_time, a.check_out_time), '%Y년 %m월 %d일'), '-'), ' ', COALESCE(a.time_inout, '')) AS title,",
 	    "     a.modification_reason AS content,",
 	    "     a.status AS status,",
 	    "     e.deptName AS deptName,",
@@ -130,6 +130,7 @@ public interface ApprovalMapper {
 	    ") AS all_data",
 	    "WHERE 1=1",
 
+	    // 기존 역할별 분기(그대로 유지)
 	    "<choose>",
 	    "  <when test='role != \"대표\"'>",
 	    "    <choose>",
@@ -149,6 +150,12 @@ public interface ApprovalMapper {
 	    "  </when>",
 	    "</choose>",
 
+	    // [중요] 대표가 아닌 경우 프로젝트 문서는 본인 글만 보이도록 공통 제한 추가
+	    "<if test='role != \"대표\"'>",
+	    "  AND (docType != '프로젝트' OR writerId = #{employeeId})",
+	    "</if>",
+
+	    // 타입/상태 필터
 	    "<if test='type != null and type != \"\"'>",
 	    "  AND docType = #{type}",
 	    "</if>",
@@ -168,12 +175,12 @@ public interface ApprovalMapper {
 	        @Param("status") String status,
 	        @Param("employeeId") String employeeId
 	);
+
 	
 	/* 글 전체 개수 카운트 -> (페이지네이션) */
 	@Select({
 	    "<script>",
 	    "SELECT COUNT(*) FROM (",
-	    // ──────────────── 공지사항
 	    "   SELECT CONCAT('notice-', b.post_id) AS docId, '공지사항' AS docType, e.employeeId AS writerId, b.status",
 	    "     FROM board_post b",
 	    "     LEFT JOIN employee e ON b.employee_id = e.employeeId",
@@ -181,7 +188,6 @@ public interface ApprovalMapper {
 
 	    "   UNION ALL",
 
-	    // ──────────────── 연차
 	    "   SELECT CONCAT('leave-', l.leave_id) AS docId, '연차' AS docType, e.employeeId AS writerId, l.state_type AS status",
 	    "     FROM annual_leave l",
 	    "     LEFT JOIN employee e ON l.employeeId = e.employeeId",
@@ -189,7 +195,6 @@ public interface ApprovalMapper {
 
 	    "   UNION ALL",
 
-	    // ──────────────── 프로젝트 (gid별 최신 ver만 카운트)
 	    "   SELECT CONCAT('project-', p.PJT_SN) AS docId, '프로젝트' AS docType, p.employeeId AS writerId, p.PJT_STTS_CD AS status",
 	    "     FROM TB_PJT_BASC p",
 	    "     JOIN (",
@@ -200,7 +205,6 @@ public interface ApprovalMapper {
 
 	    "   UNION ALL",
 
-	    // ──────────────── 근태
 	    "   SELECT CONCAT('attendance-', a.id) AS docId, '근태' AS docType, e.employeeId AS writerId, a.status",
 	    "     FROM attendance a",
 	    "     LEFT JOIN employee e ON a.employeeId = e.employeeId",
@@ -208,7 +212,7 @@ public interface ApprovalMapper {
 	    ") AS all_data",
 	    "WHERE 1=1",
 
-	    // --- role + 내글 조건 ---
+	    // 기존 역할별 분기(그대로 유지)
 	    "<choose>",
 	    "  <when test='role != \"대표\"'>",
 	    "    <choose>",
@@ -228,7 +232,12 @@ public interface ApprovalMapper {
 	    "  </when>",
 	    "</choose>",
 
-	    // --- type/status 필터 ---
+	    // [중요] 대표가 아닌 경우 프로젝트 문서는 본인 글만 카운트
+	    "<if test='role != \"대표\"'>",
+	    "  AND (docType != '프로젝트' OR writerId = #{employeeId})",
+	    "</if>",
+
+	    // 타입/상태 필터
 	    "<if test='type != null and type != \"\"'>",
 	    "  AND docType = #{type}",
 	    "</if>",
@@ -245,12 +254,13 @@ public interface ApprovalMapper {
 	    @Param("employeeId") String employeeId
 	);
 
+
 	
 	@Select({
 	    "<script>",
 	    "SELECT * FROM (",
 
-	    // ───── 공지사항
+	    /* 공지사항 */
 	    "   SELECT ",
 	    "     CONCAT('notice-', b.post_id) AS docId,",
 	    "     '공지사항' AS docType,",
@@ -271,18 +281,21 @@ public interface ApprovalMapper {
 	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt,",
 	    "     b.firstSign AS firstSign,",
 	    "     b.secondSign AS secondSign,",
-	    "     (SELECT emp_nm FROM employee WHERE role = '게시판' LIMIT 1) AS approverName,",
-	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
+	    "     (SELECT emp_nm   FROM employee WHERE role = '게시판' LIMIT 1) AS approverName,",
+	    "     NULL AS managerName,",
 	    "     e.position AS writerPosition,",
-	    "     (SELECT position FROM employee WHERE role = '근태' LIMIT 1) AS approverPosition,",
-	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition",
+	    "     (SELECT position FROM employee WHERE role = '게시판'   LIMIT 1) AS approverPosition,",
+	    "     NULL AS managerPosition,",
+	    "     b.approvedBy AS approvedBy,",
+	    "     (SELECT emp_nm   FROM employee WHERE employeeId = b.approvedBy LIMIT 1) AS approvedByName,",
+	    "     (SELECT position FROM employee WHERE employeeId = b.approvedBy LIMIT 1) AS approvedByPosition",
 	    "   FROM board_post b",
 	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
 	    "   WHERE b.board_id = 1 AND b.is_deleted = 0",
 
 	    "   UNION ALL",
 
-	    // ───── 연차
+	    /* 연차 */
 	    "   SELECT",
 	    "     CONCAT('leave-', l.leave_id) AS docId,",
 	    "     '연차' AS docType,",
@@ -303,18 +316,21 @@ public interface ApprovalMapper {
 	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt,",
 	    "     l.firstSign AS firstSign,",
 	    "     l.secondSign AS secondSign,",
-	    "     (SELECT emp_nm FROM employee WHERE role = '근태' LIMIT 1) AS approverName,",
-	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
+	    "     (SELECT emp_nm   FROM employee WHERE role = '근태'   LIMIT 1) AS approverName,",
+	    "     (SELECT emp_nm   FROM employee WHERE role = '대표'   LIMIT 1) AS managerName,",
 	    "     e.position AS writerPosition,",
-	    "     (SELECT position FROM employee WHERE role = '근태' LIMIT 1) AS approverPosition,",
-	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition",
+	    "     (SELECT position FROM employee WHERE role = '근태'   LIMIT 1) AS approverPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표'   LIMIT 1) AS managerPosition,",
+	    "     l.approvedBy AS approvedBy,",
+	    "     (SELECT emp_nm   FROM employee WHERE employeeId = l.approvedBy LIMIT 1) AS approvedByName,",
+	    "     (SELECT position FROM employee WHERE employeeId = l.approvedBy LIMIT 1) AS approvedByPosition",
 	    "   FROM annual_leave l",
 	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
 	    "   WHERE l.state_type IS NOT NULL",
 
 	    "   UNION ALL",
 
-	    // ───── 프로젝트
+	    /* 프로젝트 */
 	    "   SELECT",
 	    "     CONCAT('project-', p.PJT_SN) AS docId,",
 	    "     '프로젝트' AS docType,",
@@ -326,8 +342,8 @@ public interface ApprovalMapper {
 	    "     e.employeeId AS writerId,",
 	    "     p.FRST_REG_DT AS createdAt,",
 	    "     p.ATCH_FILE_SN1 AS attachFileUuid1,   p.ORG_FILE_NM1 AS attachFileOrgName1,",
-	    "     p.ATCH_FILE_SN2 AS attachFileUuid2,  p.ORG_FILE_NM2 AS attachFileOrgName2,",
-	    "     p.ATCH_FILE_SN3 AS attachFileUuid3,  p.ORG_FILE_NM3 AS attachFileOrgName3,",
+	    "     p.ATCH_FILE_SN2 AS attachFileUuid2,   p.ORG_FILE_NM2 AS attachFileOrgName2,",
+	    "     p.ATCH_FILE_SN3 AS attachFileUuid3,   p.ORG_FILE_NM3 AS attachFileOrgName3,",
 	    "     NULL AS leaveCreateDate, NULL AS leaveUsedDate,",
 	    "     NULL AS checkInTime, NULL AS checkOutTime,",
 	    "     NULL AS modifiedBy, NULL AS modifiedAt,",
@@ -335,21 +351,24 @@ public interface ApprovalMapper {
 	    "     p.PJT_BGNG_DT AS pjtBgngDt, p.PJT_END_DT AS pjtEndDt,",
 	    "     p.firstSign AS firstSign,",
 	    "     p.secondSign AS secondSign,",
-	    "     (SELECT emp_nm FROM employee WHERE role = '프로젝트' LIMIT 1) AS approverName,",
-	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
+	    "     (SELECT emp_nm   FROM employee WHERE role = '대표' LIMIT 1) AS approverName,",
+	    "     (SELECT emp_nm   FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
 	    "     e.position AS writerPosition,",
-	    "     (SELECT position FROM employee WHERE role = '근태' LIMIT 1) AS approverPosition,",
-	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition",
+	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS approverPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition,",
+	    "     p.approvedBy AS approvedBy,",
+	    "     (SELECT emp_nm   FROM employee WHERE employeeId = p.approvedBy LIMIT 1) AS approvedByName,",
+	    "     (SELECT position FROM employee WHERE employeeId = p.approvedBy LIMIT 1) AS approvedByPosition",
 	    "   FROM TB_PJT_BASC p",
 	    "   LEFT JOIN employee e ON p.employeeId = e.employeeId",
 
 	    "   UNION ALL",
 
-	    // ───── 근태
+	    /* 근태 */
 	    "   SELECT",
 	    "     CONCAT('attendance-', a.id) AS docId,",
 	    "     '근태' AS docType,",
-	    " 	  CONCAT('근태 수정 신청 - ', COALESCE(DATE_FORMAT(a.check_in_time, '%Y년 %m월 %d일'), '-'), ' ', COALESCE(a.time_inout, '')) AS title,",
+	    "     CONCAT('근태 수정 신청 - ', COALESCE(DATE_FORMAT(a.check_in_time, '%Y년 %m월 %d일'), '-'), ' ', COALESCE(a.time_inout, '')) AS title,",
 	    "     a.modification_reason AS content,",
 	    "     a.status AS status,",
 	    "     e.deptName AS deptName,",
@@ -366,17 +385,21 @@ public interface ApprovalMapper {
 	    "     NULL AS pjtBgngDt, NULL AS pjtEndDt,",
 	    "     a.firstSign AS firstSign,",
 	    "     a.secondSign AS secondSign,",
-	    "     (SELECT emp_nm FROM employee WHERE role = '근태' LIMIT 1) AS approverName,",
-	    "     (SELECT emp_nm FROM employee WHERE role = '대표' LIMIT 1) AS managerName,",
+	    "     (SELECT emp_nm   FROM employee WHERE role = '근태'   LIMIT 1) AS approverName,",
+	    "     (SELECT emp_nm   FROM employee WHERE role = '대표'   LIMIT 1) AS managerName,",
 	    "     e.position AS writerPosition,",
-	    "     (SELECT position FROM employee WHERE role = '근태' LIMIT 1) AS approverPosition,",
-	    "     (SELECT position FROM employee WHERE role = '대표' LIMIT 1) AS managerPosition",
+	    "     (SELECT position FROM employee WHERE role = '근태'   LIMIT 1) AS approverPosition,",
+	    "     (SELECT position FROM employee WHERE role = '대표'   LIMIT 1) AS managerPosition,",
+	    "     a.approvedBy AS approvedBy,",
+	    "     (SELECT emp_nm   FROM employee WHERE employeeId = a.approvedBy LIMIT 1) AS approvedByName,",
+	    "     (SELECT position FROM employee WHERE employeeId = a.approvedBy LIMIT 1) AS approvedByPosition",
 	    "   FROM attendance a",
 	    "   LEFT JOIN employee e ON a.employeeId = e.employeeId",
 
 	    ") AS all_data",
 	    "WHERE docId = #{docId}",
 
+	    /* 역할별 접근 가드 (유지) */
 	    "<choose>",
 	    "  <when test='role != \"대표\"'>",
 	    "    <choose>",
@@ -396,6 +419,12 @@ public interface ApprovalMapper {
 	    "  </when>",
 	    "</choose>",
 
+	    /* 대표가 아닌 경우 프로젝트는 본인 글만 (유지) */
+	    "<if test='role != \"대표\"'>",
+	    "  AND (docType != '프로젝트' OR writerId = #{employeeId})",
+	    "</if>",
+
+	    /* 타입/상태 필터 (유지) */
 	    "<if test='type != null and type != \"\"'>",
 	    "  AND docType = #{type}",
 	    "</if>",
@@ -412,6 +441,9 @@ public interface ApprovalMapper {
 	    @Param("type") String type,
 	    @Param("status") String status
 	);
+
+
+
 	
 	// 공지사항 소프트 삭제
 	@Update("UPDATE board_post SET is_deleted = 1 WHERE post_id = #{id}")
@@ -466,11 +498,11 @@ public interface ApprovalMapper {
 	int editAttendance(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 	
 	
-	// 공지사항 승인 & 반려
 	@Update({
 	    "<script>",
 	    "UPDATE board_post",
 	    "SET status = #{status},",
+	    "    approvedBy = #{approverId},",
 	    "    firstSign = CASE ",
 	    "                 WHEN #{status} IN ('완료','반려') AND firstSign IS NULL THEN NOW()",
 	    "                 ELSE firstSign",
@@ -479,9 +511,13 @@ public interface ApprovalMapper {
 	    "  AND status = #{currentStatus}",
 	    "</script>"
 	})
-	int updateStatusNotice(@Param("id") String id,
-	                       @Param("status") String status,
-	                       @Param("currentStatus") String currentStatus);
+	int updateStatusNotice(
+	    @Param("id") String id,
+	    @Param("status") String status,
+	    @Param("currentStatus") String currentStatus,
+	    @Param("approverId") String approverId
+	);
+
 
 	
 	// 프로젝트 승인 & 반려
@@ -490,19 +526,35 @@ public interface ApprovalMapper {
 	    "UPDATE TB_PJT_BASC",
 	    "SET PJT_STTS_CD = #{status}",
 	    "<choose>",
-	    "  <when test='status == \"진행중\"'> , firstSign = NOW() </when>",
-	    "  <when test='status == \"완료\"'> , secondSign = NOW() </when>",
+	    "  <when test='status == \"진행중\"'>",
+	    "     , firstSign = NOW()",
+	    "     , approvedBy = #{approverId}",
+	    "  </when>",
+	    "  <when test='status == \"완료\"'>",
+	    "     , secondSign = NOW()",
+	    "     , approvedBy = #{approverId}",
+	    "  </when>",
 	    "  <when test='status == \"반려\"'>",
-	    "    <if test='currentStatus == \"대기\"'> , firstSign = NOW() </if>",
-	    "    <if test='currentStatus == \"진행중\"'> , secondSign = NOW() </if>",
+	    "     <if test='currentStatus == \"대기\"'>",
+	    "        , firstSign = NOW()",
+	    "        , approvedBy = #{approverId}",
+	    "     </if>",
+	    "     <if test='currentStatus == \"진행중\"'>",
+	    "        , secondSign = NOW()",
+	    "        , approvedBy = #{approverId}",
+	    "     </if>",
 	    "  </when>",
 	    "</choose>",
 	    "WHERE PJT_SN = #{id}",
 	    "</script>"
 	})
-	int updateStatusProject(@Param("id") String id,
-	                        @Param("status") String status,
-	                        @Param("currentStatus") String currentStatus);
+	int updateStatusProject(
+	    @Param("id") String id,
+	    @Param("status") String status,
+	    @Param("currentStatus") String currentStatus,
+	    @Param("approverId") String approverId
+	);
+
 
 	
 //	// 프로젝트 승인 시, 일정 테이블에 추가   --- PJT_SN 필드 URL 만들기 위해서 넣었는데, 현재 사용안하고 이 메서드도 동작막음
@@ -537,6 +589,7 @@ public interface ApprovalMapper {
 	@Update("""
 		    UPDATE attendance
 		    SET status = #{status},
+		        approvedBy = #{approverId},
 		        firstSign = CASE
 		                      WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW()
 		                      ELSE firstSign
@@ -550,16 +603,20 @@ public interface ApprovalMapper {
 		int rejectAttendance(
 		    @Param("id") int id,
 		    @Param("status") String status,
-		    @Param("role") String role
+		    @Param("role") String role,
+		    @Param("approverId") String approverId
 		);
+
+
     
-	// 근태 승인
+	// 근태 승인 - 기준 날짜를 check_in_time 또는 check_out_time 중 존재하는 값으로 결정
 	@Update({
 	    "<script>",
 	    "UPDATE attendance",
 	    "SET status = '완료',",
 	    "    modified_at = NOW(),",
-	    "    modified_by = #{approverId}",
+	    "    modified_by = #{approverId},",
+	    "    approvedBy  = #{approverId}",
 	    "<choose>",
 	    "  <when test='role == \"근태\"'>",
 	    "    , firstSign = CASE WHEN firstSign IS NULL THEN NOW() ELSE firstSign END",
@@ -570,14 +627,30 @@ public interface ApprovalMapper {
 	    "</choose>",
 	    "<choose>",
 	    "  <when test='timeInout == \"출근\"'>",
-	    "    , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00')",
+	    "    , check_in_time = CASE",
+	    "        WHEN COALESCE(check_in_time, check_out_time) IS NOT NULL",
+	    "          THEN CONCAT(DATE_FORMAT(COALESCE(check_in_time, check_out_time), '%Y-%m-%d'), ' 09:00:00')",
+	    "        ELSE check_in_time",
+	    "      END",
 	    "  </when>",
 	    "  <when test='timeInout == \"퇴근\"'>",
-	    "    , check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
+	    "    , check_out_time = CASE",
+	    "        WHEN COALESCE(check_in_time, check_out_time) IS NOT NULL",
+	    "          THEN CONCAT(DATE_FORMAT(COALESCE(check_in_time, check_out_time), '%Y-%m-%d'), ' 18:00:00')",
+	    "        ELSE check_out_time",
+	    "      END",
 	    "  </when>",
 	    "  <when test='timeInout == \"출퇴근\"'>",
-	    "    , check_in_time = DATE_FORMAT(check_in_time, '%Y-%m-%d 09:00:00'),",
-	    "      check_out_time = DATE_FORMAT(check_out_time, '%Y-%m-%d 18:00:00')",
+	    "    , check_in_time = CASE",
+	    "        WHEN COALESCE(check_in_time, check_out_time) IS NOT NULL",
+	    "          THEN CONCAT(DATE_FORMAT(COALESCE(check_in_time, check_out_time), '%Y-%m-%d'), ' 09:00:00')",
+	    "        ELSE check_in_time",
+	    "      END,",
+	    "      check_out_time = CASE",
+	    "        WHEN COALESCE(check_in_time, check_out_time) IS NOT NULL",
+	    "          THEN CONCAT(DATE_FORMAT(COALESCE(check_in_time, check_out_time), '%Y-%m-%d'), ' 18:00:00')",
+	    "        ELSE check_out_time",
+	    "      END",
 	    "  </when>",
 	    "</choose>",
 	    "WHERE id = #{id}",
@@ -591,30 +664,95 @@ public interface ApprovalMapper {
 	);
 
 
+
     
     // 연차 반려
-    @Update("""
-    	    UPDATE annual_leave
-    	    SET state_type = #{status},
-    	        firstSign = CASE WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW() ELSE firstSign END,
-    	        secondSign = CASE WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW() ELSE secondSign END
-    	    WHERE leave_id = #{id}
-    	""")
-    	int rejectLeave(@Param("id") int id,
-    	                @Param("status") String status,
-    	                @Param("role") String role);
+	@Update("""
+		    UPDATE annual_leave
+		    SET state_type = #{status},
+		        approvedBy  = #{approverId},
+		        firstSign   = CASE WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW() ELSE firstSign END,
+		        secondSign  = CASE WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW() ELSE secondSign END
+		    WHERE leave_id = #{id}
+		""")
+		int rejectLeave(
+		    @Param("id") int id,
+		    @Param("status") String status,
+		    @Param("role") String role,
+		    @Param("approverId") String approverId
+		);
     
     // 연차 승인
     @Update("""
     	    UPDATE annual_leave
     	    SET state_type = '완료',
     	        leave_type  = '사용',
+    	        approvedBy  = #{approverId},
     	        firstSign   = CASE WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW() ELSE firstSign END,
     	        secondSign  = CASE WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW() ELSE secondSign END
     	    WHERE leave_id = #{id}
     	""")
-    	int approveLeave(@Param("id") int id,
-    	                 @Param("role") String role);
+    	int approveLeave(
+    	    @Param("id") int id,
+    	    @Param("role") String role,
+    	    @Param("approverId") String approverId
+    	);
+    
+    @Select({
+        "<script>",
+        "SELECT",
+        "  employeeId,",
+        "  emp_nm   AS name,",
+        "  position,",
+        "  role,",
+        "  CASE",
+        "    WHEN role = '근태'     THEN 1",
+        "    WHEN role = '프로젝트' THEN 1",
+        "    WHEN role = '게시판'   THEN 1",
+        "    WHEN role = '대표'     THEN 2",
+        "    ELSE 99",
+        "  END AS signOrder",
+        "FROM employee",
+        "WHERE 1=1",
+        "  <choose>",
+        "    <when test='docType == \"공지사항\"'>",
+        "      AND role = '게시판'",
+        "    </when>",
+        "    <when test='docType == \"프로젝트\"'>",
+        "      AND role = '대표'",
+        "    </when>",
+        "    <when test='docType == \"연차\" or docType == \"근태\"'>",
+        "      AND role IN ('근태','대표')",
+        "    </when>",
+        "    <otherwise>",
+        "      AND 1=0",
+        "    </otherwise>",
+        "  </choose>",
+        "ORDER BY",
+        "  CASE role",
+        "    WHEN '대표'     THEN 1",
+        "    WHEN '근태'     THEN 2",
+        "    WHEN '게시판'   THEN 3",
+        "    WHEN '프로젝트' THEN 4",
+        "    ELSE 99",
+        "  END ASC,",
+        "  CASE position",
+        "    WHEN '대표'   THEN 1",
+        "    WHEN '사장'   THEN 2",
+        "    WHEN '부사장' THEN 3",
+        "    WHEN '부장'   THEN 4",
+        "    WHEN '과장'   THEN 5",
+        "    WHEN '대리'   THEN 6",
+        "    WHEN '주임'   THEN 7",
+        "    WHEN '사원'   THEN 8",
+        "    ELSE 99",
+        "  END ASC,",
+        "  name ASC",
+        "</script>"
+    })
+    List<ApproverDTO> selectApproversByDocType(@Param("docType") String docType);
+
+
 
 
 }

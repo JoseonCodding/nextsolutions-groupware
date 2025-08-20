@@ -4,14 +4,16 @@
 
   <table style="width:100%; border-collapse:separate; border-spacing:0 18px;">
     <!-- 제목 -->
-<!--     <tr>
+<!--     
+	<tr>
       <td style="width:120px; vertical-align:middle; font-weight:600;">제목</td>
       <td>
         <input type="text" name="title" id="title"
                placeholder="출퇴근 기록 수정 요청서"
                style="width:100%; padding:12px 14px; border:2px solid #222; border-radius:6px; font-size:16px;" required />
       </td>
-    </tr> -->
+    </tr> 
+-->
       <td style="width:80px; text-align:right;">
         <a th:href="@{/attend}" style="font-size:14px; text-decoration:none; color:#444;">닫힘</a>
       </td>
@@ -34,7 +36,7 @@
 
         <div style="margin-top:16px;">
           <label for="dateSelect">출석 날짜 선택</label>
-          <select id="dateSelect" name="workDate" required style="padding:6px; border-radius:4px; width:100%;">
+          <select id="dateSelect" name="workDate"  style="padding:6px; border-radius:4px; width:100%;">
             <option value="">-- 날짜 선택 --</option>
             <option th:each="opt : ${attendOptions}"
         			th:value="${opt.date}"
@@ -52,7 +54,7 @@
       <td colspan="2">
         <textarea name="content" id="content" rows="10"
                   placeholder="사유를 자세히 입력해주세요."
-                  style="width:100%; padding:14px; border:2px solid #222; border-radius:6px; font-size:18px; line-height:1.6;" required></textarea>
+                  style="width:100%; padding:14px; border:2px solid #222; border-radius:6px; font-size:18px; line-height:1.6;" ></textarea>
       </td>
     </tr>
 
@@ -79,7 +81,9 @@
     </tr>
   </table>
 </form>
-
+<script th:if="${msg != null}">
+        alert("[[${msg}]]");
+</script>
 <script>
 // '정상출퇴근' 체크 시 나머지 자동 해제, 개별 체크 시 BOTH 해제
 const both = document.querySelector('.action-both');

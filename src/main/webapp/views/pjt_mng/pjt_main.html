@@ -115,6 +115,12 @@ tr:hover {
 	padding-left: 0; /* 왼쪽 여백 제거 */
 	margin: 0; /* 위아래 여백도 조정 */
 }
+/*완료시 버튼비활성화 */
+.btn-disabled {
+    background-color: #ccc !important;  /* 회색 */
+    color: #666 !important;
+    cursor: not-allowed;
+}
 </style>
 </head>
 <body>
@@ -259,15 +265,32 @@ tr:hover {
 				<td th:text="${pjt['ver']}"></td>
 				<td th:text="${pjt['gid']}"></td>
 				<td>
+				  <!-- 상세보기: 항상 가능 -->
 					<button class="button btn-view"
 						th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
-						상세보기</button> <!--  권한있는 사람에게만 메인에서 변경 버튼이 보임(권한): 대표, 관리자  -->
+						상세보기</button> 
+				<!--  변경하기버튼 : 권한있는 사람에게만 메인에서 변경 버튼이 보임(권한): 대표, 관리자 //완료면 비활성화 
 					<button class="button btn-edit"
 						th:if="${loginUserRole == '프로젝트' or session.loginUser.role == '대표'}"
 						th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''">
-						변경</button>
+						변경</button>			
+						<button class="button btn-edit"
+        th:classappend="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'} ? ' btn-disabled' : ''"
+        th:disabled="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'}"
+        th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''">
+    변경
+</button>					 -->	
+<button class="button btn-edit"
+    th:if="${session.loginUser.role == '대표' or session.loginUser.role == '프로젝트'}"
+    th:classappend="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'} ? ' btn-disabled' : ''"
+    th:disabled="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'}"
+    th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''">
+    변경
+</button>
 
 
+
+											
 				</td>
 			</tr>
 		</tbody>

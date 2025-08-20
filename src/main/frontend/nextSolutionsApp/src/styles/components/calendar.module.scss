@@ -1,11 +1,32 @@
+@use './mixins' as mix;
+
 :global {
   .fc {
-    border: 1px solid #e5e7eb;
-    border-radius: 8px; // rounded-lg
-    overflow: hidden; // 내부 테이블이 모서리를 넘어가지 않게
+    th {
+      font-weight: normal;
+    }
+    .fc-col-header-cell-cushion,
+    .fc-daygrid-day-number {
+      font-size: 14px;
+    }
+
+    .fc-daygrid-body-natural {
+      .fc-daygrid-day-events {
+        margin-bottom: 0.5em;
+      }
+    }
+
+    .fc-daygrid-day {
+      &.fc-day-today {
+        background-color: #edf5fa;
+      }
+    }
 
     .fc-scrollgrid {
-      border: none;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px; // rounded-lg
+      overflow: hidden;
+
       th:last-of-type,
       td:last-of-type {
         border-right-width: 0px;
@@ -16,6 +37,41 @@
       .fc-daygrid-day,
       .fc-timegrid-slot {
         border-color: oklch(87.2% 0.01 258.338); // border-gray-300
+      }
+
+      .fc-day {
+        color: oklch(55.1% 0.027 264.364); //text-gray-500
+
+        &.fc-day-sat {
+          color: #2f8ee0;
+        }
+        &.fc-day-sun {
+          color: #ff5b04;
+        }
+      }
+    }
+
+    .fc-event {
+      border: none;
+
+      span {
+        @include mix.text-ellipsis;
+      }
+
+      &.fc-h-event {
+        background-color: initial;
+      }
+    }
+
+    .fc-popover {
+      border-radius: 0 0 10px 10px;
+
+      .fc-popover-header {
+        background-color: #edf5fa;
+      }
+      /* 팝오버 내부 날짜 행 숨기기 */
+      .fc-more-popover-misc {
+        display: none;
       }
     }
   }

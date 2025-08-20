@@ -74,7 +74,7 @@ public class ProjectMngController {
 	    
 	     // ✅ 뷰에 현재 검색/정렬 상태 전달
 	    model.addAttribute("keywordType", type);
-	    model.addAttribute("keyword", "");  // 입력칸 초기화(유지하려면 keyword 넣어도 됨)
+	    model.addAttribute("keyword", keyword);  // 입력칸 초기화(유지하려면 keyword 넣어도 됨)
 
        
 
@@ -309,7 +309,10 @@ public class ProjectMngController {
 
 
 	@GetMapping("/pjtEditForm")
-	public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn, Model model, HttpSession session) {
+	public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn,
+														Model model, 
+														HttpSession session
+														) {
 		log.info("getPjtEditForm Called >>> {}", pjtSn);
 	    List<CmmnMap> approverList = projectMngService.selectApproverCandidates();
 	    EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
@@ -326,6 +329,8 @@ public class ProjectMngController {
 	    
 		CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
 		log.debug("DETAIL TB_PJT_APR={}", pjtDetail.get("TB_PJT_APR")); // 값 확인
+		
+		
 		model.addAttribute("isAdmin", isAdmin);
 	    model.addAttribute("approverList", approverList);
 		model.addAttribute("pjt", pjtDetail);
@@ -402,8 +407,7 @@ public class ProjectMngController {
 		   @RequestParam(value = "TB_PJT_APR", required = false) String TB_PJT_APR,
          @RequestParam(value = "empNm", required = false) String empNm,
          @RequestParam(value = "ver", required = false) Integer ver,
-         @RequestParam(value = "gid", required = false) Integer gid,
-         
+         @RequestParam(value = "gid", required = false) Integer gid,         
          @RequestParam(value = "FRST_REG_DT", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime FRST_REG_DT,
          @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
          @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
@@ -418,10 +422,13 @@ public class ProjectMngController {
          @RequestParam(value = "oldOrgFileName2", required = false) String oldOrgFileName2,
          @RequestParam(value = "uploadFile3", required = false) MultipartFile uploadFile3,
          @RequestParam(value = "oldFileName3", required = false) String oldFileName3,
-         @RequestParam(value = "oldOrgFileName3", required = false) String oldOrgFileName3)
+         @RequestParam(value = "oldOrgFileName3", required = false) String oldOrgFileName3,
+   @RequestParam(value = "firstSign", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime firstSign,
+   @RequestParam(value = "secondSign", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime secondSign,
+   @RequestParam(value = "approvedBy", required = false) String approvedBy)
    
    {
-	   
+	  
    
       Safelist customSafelist = Safelist.basicWithImages()
             .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td", "col", "colgroup", "caption")
@@ -448,13 +455,17 @@ public class ProjectMngController {
       params.put("PJT_STTS_CD", pjtSttsCd);
       params.put("content", safeContent);
       params.put("APPROVERS", approvers);
+      params.put("firstSign", firstSign);
+      params.put("secondSign", secondSign);
+      params.put("approvedBy", approvedBy);
+      
 
       String uploadDir = "C:/upload/";
       String newFileName = oldFileName1 != null ? oldFileName1 : "";
       String newOrgFileName = oldOrgFileName1 != null ? oldOrgFileName1 : "";
 
-      // 업로드 할 수 있는  파일 갯수 1~3까지 
 
+      //  업로드 할 수 있는  파일 갯수 1~3까지 
       if (uploadFile1 != null && !uploadFile1.isEmpty()) {
          String extension = uploadFile1.getOriginalFilename()
                .substring(uploadFile1.getOriginalFilename().lastIndexOf("."));
@@ -469,6 +480,7 @@ public class ProjectMngController {
 
          try {
             uploadFile1.transferTo(dest);
+       
             // 기존 파일 삭제
             if (oldFileName1 != null && !oldFileName1.isEmpty()) {
                File prevFile = new File(uploadDir + oldFileName1);

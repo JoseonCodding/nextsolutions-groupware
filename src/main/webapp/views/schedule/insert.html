@@ -16,27 +16,16 @@
             const isDaily  = repeatSelect.value === "1";
             const isHoliday = holidayCheckbox.checked;
 
+            
             // 1) 매일 반복이 최우선 제약
             if (isDaily) {
-                // 종일/휴무일 해제 및 비활성화
-                allDayCheckbox.checked = false;
-                allDayCheckbox.disabled = true;
-
+                // 휴무일 해제 및 비활성화
                 holidayCheckbox.checked = false;
                 holidayCheckbox.disabled = true;
 
-                // 종료일/종료시간 비활성화 및 초기화
-                endDateInput.disabled = true;
-              	endDateInput.value = "";
-                endTimeInput.disabled = false;
-                //endTimeInput.value = "";
-
-                // 시작시간은 사용 가능
-                startTimeInput.disabled = false;
                 return; // 매일 규칙이 최상위이므로 여기서 종료
             } else {
                 // 매일 아님 → 다시 활성화
-                allDayCheckbox.disabled = false;
                 holidayCheckbox.disabled = false;
                 
             }
@@ -50,25 +39,47 @@
                 repeatSelect.disabled = false;
             }
 
-            // 3) 종일 여부에 따른 시간 입력 제어
+            // 3) 종일이면
             const isAllDay = allDayCheckbox.checked;
+            console.log('isAllDay : ',isAllDay)
             startTimeInput.disabled = isAllDay;
-            endTimeInput.disabled   = isAllDay;
+            //endTimeInput.disabled   = isAllDay;
             if (isAllDay) {
+				// 시간선택 비활성화
                 startTimeInput.value = "";
                 endTimeInput.value = "";
             }
-
-            // 매일이 아니므로 종료일은 사용 가능
-            endDateInput.disabled = false;
+			
+            
+         	
+            
+         
         }
         
      	// 시작일 변경 시 종료일 최소값 제한
         startDateInput.addEventListener("change", function() {
+
+        	console.log("startDateInput : ", startDateInput)
+            if(startDateInput.value != ""){
+            	endDateInput.disabled = false;
+            }
             endDateInput.min = startDateInput.value;
+            
+         // 시작일을 지정 후 종료일 비지정시 단일 일정 처리
+            if (startDateInput.value !== "" && endDateInput.value === "") {
+                endDateInput.value = startDateInput.value;
+            }
+            
             if (endDateInput.value && endDateInput.value < startDateInput.value) {
                 endDateInput.value = startDateInput.value;
             }
+        });
+ 
+     	
+     	// 시작일을 지정해야 종료일 선택 가능
+        endDateInput.addEventListener("change", function() {
+            
+            
         });
 
         // 이벤트 바인딩
@@ -91,16 +102,18 @@
 		</tr>
 		<tr >
 			<td colspan="3">
-				일정명<textarea name="title" cols="30" rows="1"></textarea>
+				일정명<textarea name="title" cols="30" rows="1" required></textarea>
 			</td>
 		</tr>
 		<tr >
 			<td colspan="3">
 				시작:
-				<input type="date" name="startDateStr" /><input type="time" name="startTimeStr" >
+				<input type="date" name="startDateStr" required/>
+				<input type="time" name="startTimeStr" required />
 				~ 
 				종료:
-				<input type="date" name="endDateStr" /><input type="time" name="endTimeStr" >
+				<input type="date" name="endDateStr"  disabled />
+				<input type="time" name="endTimeStr" disabled>
 
 				<input type="checkbox" name="cate" value="종일"/>종일일정
 			</td>
@@ -126,7 +139,7 @@
 		</tr>
 		<tr >
 			<td colspan="3">
-				<textarea name="content" id="" cols="50" rows="30"></textarea>
+				<textarea name="content" id="" cols="50" rows="30" required></textarea>
 			</td>
 		</tr>
 		<tr >
