@@ -49,10 +49,76 @@
     dialog .content { padding: 16px; }
 
     .stats2 { display:grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
-    .today .kpi { padding:16px; border:1px solid var(--border); border-radius:12px; background:#fff; }
-    .today .kpi + .kpi { margin-top: 8px; }
-    .today .label { font-size:12px; color:#6b7280; margin-bottom:6px; }
-    .today .value { font-size:28px; font-weight:800; color:#111827; }
+    .today .kpi {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+}
+.today .kpi + .kpi {
+  margin-top: 8px;
+}
+.today .label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+.today .value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* KPI 카드 공통 (today 에서도 사용) */
+.stat-card {
+  --accent: #1976d2;
+  --bg: #fff;
+
+  background: var(--bg);
+  border-left: 6px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+  cursor: default;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: box-shadow .18s ease, transform .18s ease;
+}
+
+/* Hover 효과는 KPI용이므로 살짝만 강조 */
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+}
+
+/* 내부 텍스트 */
+.stat-card .label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.stat-card .value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+/* 키보드 포커스 접근성 */
+.stat-card:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* 오늘 통계 내 stat-card 간격 */
+.today .stat-card + .stat-card {
+  margin-top: 12px;
+}
+
 
     .boardlist { border:1px solid var(--border); border-radius:12px; overflow:hidden; background:#fff; }
     .boardlist .list-head { background: var(--table-head); font-weight:700; padding:10px; display:flex; justify-content:space-between; }

@@ -91,8 +91,8 @@ public class BoardAdminController {
         
         // ✅ 최대 6개 제한
         int count = boardMapper.countBoards();
-        if (count >= 6) {
-            redirect.addFlashAttribute("error", "게시판은 최대 6개까지만 생성할 수 있습니다.");
+        if (count >= 7) {
+            redirect.addFlashAttribute("error", "게시판은 최대 7개까지만 생성할 수 있습니다.");
             return "redirect:/admin/boards";
         }
 

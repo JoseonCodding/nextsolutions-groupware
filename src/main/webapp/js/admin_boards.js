@@ -1,29 +1,57 @@
-  function openEdit(btn) {
-    const dlg = document.getElementById('editDialog');
-    const id = btn.getAttribute('data-id');
-    const name = btn.getAttribute('data-name');
-    const rolesCsv = (btn.getAttribute('data-roles') || '').split(',').map(s => s.trim()).filter(Boolean);
-    const cmt = btn.getAttribute('data-cmt') === 'true';
-    const like = btn.getAttribute('data-like') === 'true';
+function openEdit(btn) {
+  const dlg   = document.getElementById('editDialog');
+  const id    = btn.getAttribute('data-id');
+  const name  = btn.getAttribute('data-name');
+  const rolesCsv = (btn.getAttribute('data-roles') || '')
+                    .split(',')
+                    .map(s => s.trim())
+                    .filter(Boolean);
+  const cmt   = btn.getAttribute('data-cmt') === 'true';
+  const like  = btn.getAttribute('data-like') === 'true';
 
-    document.getElementById('edit-boardId').value = id;
-    document.getElementById('edit-boardName').value = name;
+  document.getElementById('edit-boardId').value   = id;
+  document.getElementById('edit-boardName').value = name;
 
-    const roleUser = document.getElementById('edit-role-user');
-    const roleAdmin = document.getElementById('edit-role-admin');
-    const roleNm = document.getElementById('edit-role-nm');
-    [roleUser, roleAdmin, roleNm].forEach(el => el && (el.checked = false));
-    rolesCsv.forEach(r => {
-      if (r === 'USER' && roleUser) roleUser.checked = true;
-      if (r === 'ADMIN' && roleAdmin) roleAdmin.checked = true;
-      if (r === 'NOTICE_MANAGER' && roleNm) roleNm.checked = true;
-    });
+  const roleUser  = document.getElementById('edit-role-user');
+  const roleAdmin = document.getElementById('edit-role-admin');
+  const roleNm    = document.getElementById('edit-role-nm');
 
-    document.getElementById('edit-useComment').checked = cmt;
-    document.getElementById('edit-useLike').checked = like;
+  [roleUser, roleAdmin, roleNm].forEach(el => el && (el.checked = false));
 
-    if (!dlg.open) dlg.showModal();
-  }
+  rolesCsv.forEach(r => {
+    if (r === 'USER'           && roleUser)  roleUser.checked  = true;
+    if (r === 'ADMIN'          && roleAdmin) roleAdmin.checked = true;
+    if (r === 'NOTICE_MANAGER' && roleNm)    roleNm.checked    = true;
+  });
+
+  document.getElementById('edit-useComment').checked = cmt;
+  document.getElementById('edit-useLike').checked    = like;
+
+  if (!dlg.open) dlg.showModal();
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  
+  $(".aaa").on("change", function(){
+	
+	let count = $(".aaa:checked").length;
+	
+	//    alert("체크된 개수: " + count);
+	if(count ==0){
+		alert("최소 1개 이상 선택 필요");
+		$(this).prop("checked", true); 
+	}
+	
+  });
+  
+});
+
+(function () {
+    const el = document.getElementById('errBox');
+    if (!el) return;                 // 에러 없으면 아무 것도 안 함
+    alert(el.dataset.msg);           // alert만 띄움
+    el.remove();                     // (선택) DOM 정리
+  })();
 
   // ===== 오늘 통계 =====
 const USE_FETCH = true; // 서버에서 최신 통계 호출. 초기 todayStats만 쓰려면 false로
@@ -86,3 +114,4 @@ async function loadToday(liEl) {
   const first = document.querySelector('#stat-board-list .row');
   if (first) loadToday(first);
 })();
+
