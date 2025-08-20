@@ -1,26 +1,35 @@
-import { useSelector } from 'react-redux';
-import ProfileImage from '../common/ProfileImage';
-import SetIcon from '../common/icon/SetIcon';
+import useFetch from '../../hooks/useFetch';
+import Logo from '../common/Logo';
 
 const EmployeeProfile = () => {
-  const { user } = useSelector((state) => state.auth);
+  const { data, loading, error } = useFetch('/employees'); // 필요 시 params 전달
+
+  const user = data;
+
+  console.log('프로필 :', data);
+
+  if (loading) return <div>불러오는 중...</div>;
+  if (error) return <div>오류 발생: {error.message}</div>;
 
   if (!user) return <div>프로필 정보가 없습니다.</div>;
 
   return (
     <div className="flex flex-col items-center">
-      <ProfileImage
-        src={user.photo} // 없으면 ProfileIcon 사용
-        alt={user.empNm}
-        size={128}
-      />
-      <h3 className="text-base font-bold">{user.empNm}</h3>
-      <p className="flex items-center gap-1 text-sm text-gray-600">
-        <span>{user.position}</span>
-        <a href="/employee/edit">
-          <SetIcon size="20px" />
-        </a>
-      </p>
+      {/* <ProfileImage src={user.photo} alt={user.empNm} size={128} /> */}
+      <div className="flex flex-col items-center gap-0.5 mb-6">
+        <div className="w-[60px] h-[60px] p-2 bg-gray-300 rounded-full">
+          <Logo fillColor="fill-white" />
+        </div>
+        <h3 className="text-sm uppercase tracking-tight text-gray-300">
+          nextSolutions
+        </h3>
+      </div>
+      <div>
+        <h3 className="text-center text-base font-medium text-gray-600">
+          {user.empNm}
+        </h3>
+        <p className="text-center text-sm text-gray-600">{user.position}</p>
+      </div>
     </div>
   );
 };
