@@ -11,7 +11,7 @@
 
 </form>
 
-
+<!-- 
  <form>   
 <table border="" th:each="dto : ${mainData}">
 	<tr>
@@ -28,3 +28,107 @@
 	</tr>
 </table>
 </form>
+ -->
+ 
+<!-- attendCalender.html -->
+<div id="calendar"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet"/>
+
+<script th:inline="javascript">
+/* 서버에서 전달한 Map을 JS 객체로 변환 */
+var attendMap = /*[[${attendMap}]]*/ {};
+
+var events = [];
+
+Object.keys(attendMap).forEach(function(date) {
+    var dto = attendMap[date];
+
+    // 출근 이벤트
+    if(dto.checkInHourMinute) {
+        events.push({
+            title: '출근 ' + dto.checkInHourMinute,
+            start: date ,
+            color: '#3788d8' // 출근 색상
+        });
+    }
+
+    // 퇴근 이벤트
+    if(dto.checkOutHourMinute) {
+        events.push({
+            title: '퇴근 ' + dto.checkOutHourMinute,
+            start: date ,
+            color: '#d8573c' // 퇴근 색상
+        });
+    }
+});
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+	 var calendarEl = document.getElementById('calendar');
+	    var calendar = new FullCalendar.Calendar(calendarEl, {
+	        initialView: 'dayGridMonth',
+	        events: events,
+	        headerToolbar: {
+	            left: 'prevMonthButton,nextMonthButton',
+	            center: 'title',
+	            right: ''
+	        },
+	        customButtons: {
+	            prevMonthButton: {
+	                text: '◀ 이전달',
+	                click: function() {
+	                    // 서버로 이동: form 방식으로 GET
+	                    const form = document.createElement('form');
+	                    form.method = 'get';
+	                    form.action = '/attend';
+
+	                    const startInput = document.createElement('input');
+	                    startInput.type = 'hidden';
+	                    startInput.name = 'startDay';
+	                    startInput.value = /*[[${prevMonthStartDay}]]*/ '';
+
+	                    const endInput = document.createElement('input');
+	                    endInput.type = 'hidden';
+	                    endInput.name = 'endDay';
+	                    endInput.value = /*[[${prevMonthEndDay}]]*/ '';
+
+	                    form.appendChild(startInput);
+	                    form.appendChild(endInput);
+
+	                    document.body.appendChild(form);
+	                    form.submit();
+	                }
+	            },
+	            nextMonthButton: {
+	                text: '다음달 ▶',
+	                click: function() {
+	                    const form = document.createElement('form');
+	                    form.method = 'get';
+	                    form.action = '/attend';
+
+	                    const startInput = document.createElement('input');
+	                    startInput.type = 'hidden';
+	                    startInput.name = 'startDay';
+	                    startInput.value = /*[[${nextMonthStartDay}]]*/ '';
+
+	                    const endInput = document.createElement('input');
+	                    endInput.type = 'hidden';
+	                    endInput.name = 'endDay';
+	                    endInput.value = /*[[${nextMonthEndDay}]]*/ '';
+
+	                    form.appendChild(startInput);
+	                    form.appendChild(endInput);
+
+	                    document.body.appendChild(form);
+	                    form.submit();
+	                }
+	            }
+	        }
+	    });
+	    calendar.render();
+});
+</script>
