@@ -1,0 +1,7 @@
+@charset "UTF-8";
+
+/* 출퇴근 달력 영역 호버 제외 */
+tbody tr:hover:not(.no-hover tr) {
+    background: initial; /* 또는 background-color: unset; */
+}
+
