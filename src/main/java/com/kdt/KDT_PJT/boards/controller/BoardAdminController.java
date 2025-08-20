@@ -24,6 +24,12 @@ public class BoardAdminController {
     /* =========================
        1) 게시판 목록/상세/신규 폼
        ========================= */
+    
+    @ModelAttribute("navUrl")
+	String navUrl() {
+    	System.out.println("navUrl 진입");
+		return "board/boardNav";
+	}
 
     // 전체 게시판 관리 목록
     @GetMapping
@@ -56,7 +62,7 @@ public class BoardAdminController {
 
         // 공용 템플릿 지정
         model.addAttribute("mainUrl", "board/admin_boards");
-        return "home";
+        return "navTap";
     }
 
 
@@ -72,7 +78,7 @@ public class BoardAdminController {
 
         model.addAttribute("board", dto);
         model.addAttribute("mainUrl", "board/admin_boards"); // 공용 폼(신규/수정 겸용)
-        return "home";
+        return "navTap";
     }
 
     /* =========================
@@ -91,8 +97,8 @@ public class BoardAdminController {
         
         // ✅ 최대 6개 제한
         int count = boardMapper.countBoards();
-        if (count >= 6) {
-            redirect.addFlashAttribute("error", "게시판은 최대 6개까지만 생성할 수 있습니다.");
+        if (count >= 7) {
+            redirect.addFlashAttribute("error", "게시판은 최대 7개까지만 생성할 수 있습니다.");
             return "redirect:/admin/boards";
         }
 
@@ -163,7 +169,7 @@ public class BoardAdminController {
         model.addAttribute("todayStats", todayStats);
 
         model.addAttribute("mainUrl", "board/admin_boards");
-        return "home";
+        return "navTap";
     }
 
     // 단일 보드의 “오늘” 통계(JSON) — 프론트에서 개별 보드 KPI로 호출

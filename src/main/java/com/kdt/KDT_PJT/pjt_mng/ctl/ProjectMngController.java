@@ -186,14 +186,13 @@ public class ProjectMngController {
       
       System.out.println("list:"+list.getList());
       
-      // 권찬 받아오기
+      // 권한 받아오기
       model.addAttribute("loginUserRole", loginUser.getRole());
 
       model.addAttribute("mainUrl", "pjt_mng/pjt_main");
       return "navTap";
 
-   }
-   
+   }  
    
    
    

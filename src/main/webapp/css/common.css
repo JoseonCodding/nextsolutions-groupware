@@ -11,6 +11,7 @@
   --reject-btn:#80ff00;  	/* 반려 버튼*/
   --search-btn:#0080c0; 	/* 검색 버튼*/
   --back-btn: #0080c0;
+  --detail-btn: #b062ff;	/* 상세 버튼*/
 }
 
 /* 수정 버튼 */ 
@@ -28,6 +29,8 @@
     margin-top: 20px;
     float: right;
 }
+
+
 
 /* 저장 버튼*/
 .save-btn:hover {
@@ -142,4 +145,19 @@
     float: right;
 }
 
+/* 상세 버튼 */ 
+.detail-btn:hover {
+    background:var(--detail-btn);
+}
+.detail-btn {
+    background:var(--detail-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    float: right;
+}
 

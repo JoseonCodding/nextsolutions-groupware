@@ -31,6 +31,11 @@ import lombok.RequiredArgsConstructor;
 public class DocumentController {
 
     private final DocumentMapper documentMapper;
+    
+    @ModelAttribute("navUrl")
+	String navUrl() {
+		return "document/documentNav";
+	}
 
     /** 문서관리 메인: gid별 최신 버전 목록 (상태: 진행중/완료) */
     @GetMapping("/main")
@@ -69,7 +74,7 @@ public class DocumentController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("mainUrl", "document/document_list");
-        return "home";
+        return "navTap";
     }
 
     /** 문서 상세보기: ver 없으면 해당 gid의 '진행중/완료' 최신버전 */
@@ -100,7 +105,7 @@ public class DocumentController {
         model.addAttribute("size", size);
         model.addAttribute("keyword", keyword);
         model.addAttribute("mainUrl", "document/document_detail");
-        return "home";
+        return "navTap";
     }
 
     /** 버전 목록: 같은 gid의 모든 버전 (소유자 또는 관리자만 접근) */
@@ -128,7 +133,7 @@ public class DocumentController {
         model.addAttribute("gid", gid);
         model.addAttribute("versions", versions);
         model.addAttribute("mainUrl", "document/document_versionlist");
-        return "home";
+        return "navTap";
     }
 
     /** 버전 상세: 지정 ver 1건 (소유자 또는 관리자만 접근) */
@@ -150,7 +155,7 @@ public class DocumentController {
 
         model.addAttribute("doc", doc);
         model.addAttribute("mainUrl", "document/version_detail");
-        return "home";
+        return "navTap";
     }
     
 //    @GetMapping("/download")

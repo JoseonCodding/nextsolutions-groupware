@@ -9,7 +9,7 @@
 	<h1>전자결재</h1>
 
 		<!-- 필터 -->
-		<div class="filter-bar">
+		<div class="filter">
 		    <form method="get" action="/approval/main">
 				<select name="type" class="filter-selector">
 				    <option value="" th:selected="${type == null or type == ''}">결재 종류</option>
@@ -40,12 +40,12 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width:200px;">기안일</th>
-                    <th style="width:100px;">결재 종류</th>
+                    <th style="width:150px;">기안일</th>
+                    <th style="width:75px;">결재 종류</th>
                     <th>제목</th>
-                    <th style="width:100px;">작성자</th>
-                    <th style="width:100px;">부서</th>
-                    <th style="width:100px;">결재 상태</th>
+                    <th style="width:75px;">작성자</th>
+                    <th style="width:75px;">부서</th>
+                    <th style="width:75px;">결재 상태</th>
                 </tr>
             </thead>
             

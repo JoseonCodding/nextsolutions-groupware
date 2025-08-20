@@ -1,9 +1,8 @@
 
 <style>
-body {
+/* body {
 	font-family: Arial, sans-serif;
-	margin: 40px;
-	background-color: #f9f9f9;
+	margin: 0px;
 }
 
 table {
@@ -26,7 +25,7 @@ th {
 tr:hover {
 	background-color: #f5f5f5;
 }
-
+ 
 .button {
 	padding: 6px 12px;
 	font-size: 14px;
@@ -55,7 +54,7 @@ tr:hover {
 	color: white;
 	margin-top: 20px;
 }
-
+*/
 /* 🔧 여기부터: 정렬+검색 오른쪽 정렬 */
 .toolbar-right {
 	display: flex;
@@ -117,204 +116,133 @@ tr:hover {
 }
 /*완료시 버튼비활성화 */
 .btn-disabled {
-    background-color: #ccc !important;  /* 회색 */
-    color: #666 !important;
-    cursor: not-allowed;
+	background-color: #ccc !important; /* 회색 */
+	color: #666 !important;
+	cursor: not-allowed;
 }
 
-
 /* 레이아웃 */
-.cards-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:16px;
-  margin-top:20px;
+.cards-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 16px;
+	margin-top: 20px;
 }
 
 /* 카드 공통 */
-.stat-card{
-  /* 포인트 색상: 인라인 style="--accent:#xxxxxx"로 들어온 값 사용 */
-  --accent:#1976d2;   /* 보더 색 */
-  --bg:#f9fbfd; 
-
-  background:var(--bg);
-  border-left:6px solid var(--accent);
-  border-radius:10px;
-  padding:16px 18px;
-  box-shadow:0 1px 3px rgba(0,0,0,.08);
-  cursor:pointer;
-
-  display:flex;
-  align-items:center;
-  transition:box-shadow .18s ease, transform .18s ease;
+.stat-card {
+	/* 포인트 색상: 인라인 style="--accent:#xxxxxx"로 들어온 값 사용 */
+	--accent: #1976d2; /* 보더 색 */
+	--bg: #f9fbfd;
+	background: var(--bg);
+	border-left: 6px solid var(--accent);
+	border-radius: 10px;
+	padding: 16px 18px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	transition: box-shadow .18s ease, transform .18s ease;
 }
 
 /* 호버 효과 */
-.stat-card:hover{
-  transform:translateY(-3px);
-  box-shadow:0 6px 16px rgba(0,0,0,.10);
+.stat-card:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 6px 16px rgba(0, 0, 0, .10);
 }
 
 /* 내부 텍스트 */
-.stat-card .label{
-  font-size:13px;
-  font-weight:700;
-  color:#666;
-  letter-spacing:.3px;
+.stat-card .label {
+	font-size: 13px;
+	font-weight: 700;
+	color: #666;
+	letter-spacing: .3px;
 }
-.stat-card .value{
-  margin-top:4px;
-  font-size:24px;
-  font-weight:800;
-  color:#222;
+
+.stat-card .value {
+	margin-top: 4px;
+	font-size: 24px;
+	font-weight: 800;
+	color: #222;
 }
 
 /* 접근성: 키보드 포커스 */
-.stat-card:focus-visible{
-  outline:3px solid var(--accent);
-  outline-offset:2px;
-  border-radius:10px;
+.stat-card:focus-visible {
+	outline: 3px solid var(--accent);
+	outline-offset: 2px;
+	border-radius: 10px;
 }
-
-
-
-
 </style>
 </head>
 <body>
 
-	<h1>프로젝트 관리</h1>
-
-
+	<h1 style="margin-bottom: 50px;">프로젝트 관리</h1>
 	<!-- 카드 요약 -->
-	
 	<div class="cards-grid">
 
-  <!-- 총 프로젝트 -->
-  <div class="stat-card" style="--accent:#90caf9;" 
-       onclick="location.href='/pjtMng/getPjtList'">
-    <div class="meta">
-      <div class="label">총 프로젝트</div>
-      <div class="value" th:text="${totalCount != null ? totalCount : 0}">0</div>
-    </div>
-  </div>
-
-  <!-- 내 참여 프로젝트 -->
-  <div class="stat-card" style="--accent:#ce93d8;" 
-       onclick="location.href='/pjtMng/getPjtList?keywordType=my&keyword=참여'">
-    <div class="meta">
-      <div class="label">내 참여 프로젝트</div>
-      <div class="value" th:text="${myProjectCount}">0</div>
-    </div>
-  </div>
-
-  <!-- 내 결재 프로젝트 -->
-  <div class="stat-card" style="--accent:#ffb3b3;" 
-       onclick="location.href='/pjtMng/getPjtList?keywordType=myApproval&keyword=결재'">
-    <div class="meta">
-      <div class="label">내 결재 프로젝트</div>
-      <div class="value" th:text="${myApprovalTodoCount}">0</div>
-    </div>
-  </div>
-
-  <!-- 진행중인 프로젝트 -->
-  <div class="stat-card" style="--accent:#ffe082;" 
-       onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=진행중'">
-    <div class="meta">
-      <div class="label">진행중인 프로젝트</div>
-      <div class="value" th:text="${progressCount}">0</div>
-    </div>
-  </div>
-  
-<!-- 대기 -->
-  <div class="stat-card" style="--accent:#ef9a9a;" 
-       onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=대기'">
-    <div class="meta">
-      <div class="label">대기중인 프로젝트</div>
-      <div class="value" th:text="${pendingCount}">0</div>
-    </div>
-  </div>
-  <!-- 완료 -->
-  <div class="stat-card" style="--accent:#81c784;" 
-       onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=완료'">
-    <div class="meta">
-      <div class="label">완료된 프로젝트</div>
-      <div class="value" th:text="${completeCount}">0</div>
-    </div>
-  </div>
-
-  
-
-</div>
-	
-	
-	
-	
-	
-	<!-- <div style="display: flex; gap: 16px; margin-top: 20px;">
-		총 프로젝트
-		<div
-			style="flex: 1; background: #e3f2fd; border: 1px solid #90caf9; border-radius: 6px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); cursor: pointer;"
+		<!-- 총 프로젝트 -->
+		<div class="stat-card" style="--accent: #90caf9;"
 			onclick="location.href='/pjtMng/getPjtList'">
-			<div style="font-size: 14px; color: #0d47a1;">총 프로젝트</div>
-			<div style="font-size: 22px; font-weight: bold; color: #0d47a1;"
-				th:text="${totalCount != null ? totalCount : 0}">0</div>
+			<div class="meta">
+				<div class="label">총 프로젝트</div>
+				<div class="value" th:text="${totalCount != null ? totalCount : 0}">0</div>
+			</div>
 		</div>
 
-		내 참여 프로젝트
-		<div
-			style="flex: 1; background: #f3e5f5; border: 1px solid #ce93d8; border-radius: 6px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); cursor: pointer;"
+		<!-- 내 참여 프로젝트 -->
+		<div class="stat-card" style="--accent: #ce93d8;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=my&keyword=참여'">
-			<div style="font-size: 14px; color: #6a1b9a;">내 참여 프로젝트</div>
-			<div style="font-size: 22px; font-weight: bold; color: #6a1b9a;"
-				th:text="${myProjectCount}"></div>
+			<div class="meta">
+				<div class="label">내 참여 프로젝트</div>
+				<div class="value" th:text="${myProjectCount}">0</div>
+			</div>
 		</div>
 
-		내 결재 프로젝트
-		<div
-			style="flex: 1; background: #ffe0e0; border: 1px solid #ffb3b3; border-radius: 6px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); cursor: pointer;"
+		<!-- 내 결재 프로젝트 -->
+		<div class="stat-card" style="--accent: #ffb3b3;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=myApproval&keyword=결재'">
-			<div style="font-size: 14px; color: #b71c1c;">내 결재 프로젝트</div>
-			<div style="font-size: 22px; font-weight: bold; color: #d32f2f;"
-				th:text="${myApprovalTodoCount}"></div>
+			<div class="meta">
+				<div class="label">내 결재 프로젝트</div>
+				<div class="value" th:text="${myApprovalTodoCount}">0</div>
+			</div>
 		</div>
 
-		진행중인 프로젝트
-		<div
-			style="flex: 1; background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); cursor: pointer;"
+		<!-- 진행중인 프로젝트 -->
+		<div class="stat-card" style="--accent: #ffe082;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=진행중'">
-			<div style="font-size: 14px; color: #f57f17;">진행중인 프로젝트</div>
-			<div style="font-size: 22px; font-weight: bold; color: #f57f17;"
-				th:text="${progressCount != null ? progressCount : 0}"></div>
+			<div class="meta">
+				<div class="label">진행중인 프로젝트</div>
+				<div class="value" th:text="${progressCount}">0</div>
+			</div>
 		</div>
 
-		완료된 프로젝트
-		<div
-			style="flex: 1; background: #e8f5e9; border: 1px solid #81c784; border-radius: 6px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); cursor: pointer;"
-			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=완료'">
-			<div style="font-size: 14px; color: #1b5e20;">완료된 프로젝트</div>
-			<div style="font-size: 22px; font-weight: bold; color: #1b5e20;"
-				th:text="${completeCount != null ? completeCount : 0}"></div>
-		</div>
-
-		대기중인 프로젝트
-		<div
-			style="flex: 1; background: #ffebee; border: 1px solid #ef9a9a; border-radius: 6px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); cursor: pointer;"
+		<!-- 대기 -->
+		<div class="stat-card" style="--accent: #ef9a9a;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=대기'">
-			<div style="font-size: 14px; color: #b71c1c;">대기중인 프로젝트</div>
-			<div style="font-size: 22px; font-weight: bold; color: #b71c1c;"
-				th:text="${pendingCount != null ? pendingCount : 0}"></div>
+			<div class="meta">
+				<div class="label">대기중인 프로젝트</div>
+				<div class="value" th:text="${pendingCount}">0</div>
+			</div>
 		</div>
-	</div> -->
+		<!-- 완료 -->
+		<div class="stat-card" style="--accent: #81c784;"
+			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=완료'">
+			<div class="meta">
+				<div class="label">완료된 프로젝트</div>
+				<div class="value" th:text="${completeCount}">0</div>
+			</div>
+		</div>
+	</div>
 
 
 	<!-- 🔹 검색 + 등록 버튼 한 줄 배치 -->
-	<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px;">
+	<div
+		style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px;">
 
 		<!-- 1. 왼쪽: 정렬 + 검색 -->
 		<form action="/pjtMng/getPjtList" method="get"
 			onsubmit="return validateSearchForm(this);"
-			style="display: flex; align-items: center; gap: 12px; margin: 0;">
+			style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
 
 			<select name="keywordType"
 				style="height: 40px; width: 160px; font-size: 14px; padding: 0 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; outline: none; background: #fff;">
@@ -332,10 +260,7 @@ tr:hover {
 				검색</button>
 		</form>
 
-		<!-- 2. 오른쪽: 프로젝트 등록 버튼 -->
-		<button onclick="location.href='/pjtMng/getSavePjtForm'"
-			style="height: 40px; padding: 0 20px; border-radius: 6px; border: none; background-color: #2962ff; color: #fff; cursor: pointer;">
-			프로젝트 등록</button>
+		
 	</div>
 
 	<!-- 🔹 유효성 검사 스크립트 -->
@@ -361,23 +286,29 @@ tr:hover {
 	<table>
 		<thead>
 			<tr>
-				<th>순번</th>
-				<th>프로젝트명</th>
-				<th>담당자</th>
-				<th>진행상태</th>
+				<th style="width:35px; text-align: center;">순번</th>
+				<th style="width: 140px;">프로젝트명</th>
+				<th style="width: 50px;">담당자</th>
+				<th style="width: 60px;">진행상태</th>
 				<th>시작일</th>
 				<th>종료일</th>
 				<th>결재자</th>
 				<th>버전</th>
-				<th>gid</th>
-				<th>비고</th>
+				<!--  <th>gid</th>-->
+				<th style="width: 130px;">비고</th>
 			</tr>
 		</thead>
 		<tbody>
+			<!-- ✅ 검색 결과 없을 때 -->
+   			 <tr th:if="${#lists.isEmpty(pjtList)}">
+       		 <td colspan="9" style="text-align: center; vertical-align: middle; font-weight: bold; color: #444;">
+  					  검색 조건에 맞는 프로젝트가 없습니다.
+			</td>
+		    <!-- ✅ 검색 결과 있을 때 반복 출력 -->
 			<tr th:each="pjt, stat : ${pjtList}">
-				<!-- 페이지 순번 처리  -->
-				<td
-					th:text="${pageInfo != null ? (pageInfo.pageSize * (pageInfo.pageNum - 1) + stat.index + 1) : (stat.index + 1)}"></td>
+			
+			<!-- 페이지 순번 처리  -->
+				<td	th:text="${pageInfo != null ? (pageInfo.pageSize * (pageInfo.pageNum - 1) + stat.index + 1) : (stat.index + 1)}" style="text-align: center;"></td>
 				<td th:text="${pjt['PJT_NM']}">프로젝트명</td>
 				<td th:text="${pjt['employeeId']}">담당자</td>
 				<td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>
@@ -385,39 +316,33 @@ tr:hover {
 				<td th:text="${pjt['PJT_END_DT']}">종료일</td>
 				<td th:text="${pjt['TB_PJT_APR']}">결재자</td>
 				<td th:text="${pjt['ver']}"></td>
-				<td th:text="${pjt['gid']}"></td>
+				<!--  <td th:text="${pjt['gid']}"></td> -->
 				<td>
-				  <!-- 상세보기: 항상 가능 -->
-					<button class="button btn-view"
+					<!-- 상세보기: 항상 가능 -->
+					<button class="detail-btn"
 						th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
-						상세</button> 
-				<!--  변경하기버튼 : 권한있는 사람에게만 메인에서 변경 버튼이 보임(권한): 대표, 관리자 //완료면 비활성화 
-					<button class="button btn-edit"
-						th:if="${loginUserRole == '프로젝트' or session.loginUser.role == '대표'}"
+						상세
+					</button>
+            <!-- 수정 버튼 -->
+					<button class="edit-btn"
+						th:if="${session.loginUser.role == '대표' or session.loginUser.role == '프로젝트'}"
+						th:classappend="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'} ? ' btn-disabled' : ''"
+						th:disabled="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'}"
 						th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''">
-						변경</button>			
-						<button class="button btn-edit"
-        th:classappend="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'} ? ' btn-disabled' : ''"
-        th:disabled="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'}"
-        th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''">
-    변경
-</button>					 -->	
-<button class="button btn-edit"
-    th:if="${session.loginUser.role == '대표' or session.loginUser.role == '프로젝트'}"
-    th:classappend="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'} ? ' btn-disabled' : ''"
-    th:disabled="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'}"
-    th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''">
-    수정
-</button>
-
-
-
-											
+						수정</button>
 				</td>
 			</tr>
 		</tbody>
 	</table>
-
+	
+	
+	<!-- 오른쪽하단: 프로젝트 등록 버튼 -->
+		<div style="margin-top: 20px; text-align: right;">
+   <button onclick="location.href='/pjtMng/getSavePjtForm'"
+           style="height: 40px; padding: 0 20px; border-radius: 6px; border: none; background-color: #2962ff; color: #fff; cursor: pointer;">
+       프로젝트 등록
+   </button>
+</div>
 	<!-- 페이징 -->
 	<nav class="mt-4 text-center" th:if="${pageInfo != null}">
 		<ul class="pagination justify-content-center">

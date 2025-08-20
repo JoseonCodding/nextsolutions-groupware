@@ -1,20 +1,16 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>게시판 관리자</title>
+
   <link rel="stylesheet" href="/css/admin_boards.css" th:href="@{/css/admin_boards.css}">
   <!-- <link rel="stylesheet" href="/css/approvalStyle.css"> -->
+  <script src='/js/jquery-3.7.1.min.js'></script>
 </head>
 <body>
-<header>
+<!--  <header>
   <div class="container">
     <h1>게시판 관리자</h1>
     <p class="muted" style="margin:6px 0 0">게시판 생성/수정, 활성화 관리</p>
     <a class="btn" style="margin-top:8px;" th:href="@{/board/notice}">목록으로</a>
   </div>
-</header>
+</header> -->
 
 <div class="container">
   <div class="grid">
@@ -33,9 +29,9 @@
           <div class="row">
             <label>접근 권한 (중복선택)</label>
             <div class="actions" style="gap:16px">
-              <label><input type="checkbox" name="accessRoles" value="USER" checked> USER</label>
-              <label><input type="checkbox" name="accessRoles" value="ADMIN"> ADMIN</label>
-              <label><input type="checkbox" name="accessRoles" value="NOTICE_MANAGER"> NOTICE_MANAGER</label>
+              <label><input type="checkbox" class='aaa' name="accessRoles" value="USER" checked> USER</label>
+              <label><input type="checkbox" class='aaa'  name="accessRoles" value="ADMIN"> ADMIN</label>
+              <label><input type="checkbox" class='aaa'  name="accessRoles" value="NOTICE_MANAGER"> NOTICE_MANAGER</label>
             </div>
           </div>
 
@@ -50,10 +46,7 @@
           <div class="actions" style="margin-top: 12px;">
             <button class="btn primary" type="submit">생성</button>
           </div>
-          <div th:if="${error}" class="alert alert-danger">
-  			[[${error}]]
-		</div>
-          
+		  <div id="errBox" th:if="${error}" th:attr="data-msg=${error}"></div>   
         </form>
       </div>
     </div>
@@ -89,8 +82,8 @@
       </div>
 
       <!-- ➡️ 오른쪽: 선택된 보드 KPI (해당 보드만) -->
-      <div class="today">
-  <div class="kpi">
+<div class="today">
+  <div class="stat-card" style="--accent:#3949ab;">
     <div class="label">
       오늘 조회수
       <span id="kpi-boardname" class="muted" style="margin-left:6px"></span>
@@ -98,10 +91,9 @@
     <div id="kpi-views" class="value">0</div>
   </div>
 
-  <div class="kpi">
+  <div class="stat-card" style="--accent:#ef4444;">
     <div class="label">
       오늘 좋아요수
-      <!-- ✅ 이 줄 추가 -->
       <span id="kpi-boardname-dup" class="muted" style="margin-left:6px"></span>
     </div>
     <div id="kpi-likes" class="value">0</div>
@@ -224,5 +216,3 @@
 
 <script th:src="@{/js/admin_boards.js}"></script>
 
-</body>
-</html>
