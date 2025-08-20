@@ -1,6 +1,6 @@
 
 <style>
-body {
+/* body {
 	font-family: Arial, sans-serif;
 	margin: 0px;
 }
@@ -25,7 +25,7 @@ th {
 tr:hover {
 	background-color: #f5f5f5;
 }
-
+ 
 .button {
 	padding: 6px 12px;
 	font-size: 14px;
@@ -54,7 +54,7 @@ tr:hover {
 	color: white;
 	margin-top: 20px;
 }
-
+*/
 /* 🔧 여기부터: 정렬+검색 오른쪽 정렬 */
 .toolbar-right {
 	display: flex;
@@ -176,7 +176,7 @@ tr:hover {
 </head>
 <body>
 
-	<h1>프로젝트 관리</h1>
+	<h1 style="margin-top: 50px;">프로젝트 관리</h1>
 	<!-- 카드 요약 -->
 	<div class="cards-grid">
 
@@ -286,7 +286,7 @@ tr:hover {
 	<table>
 		<thead>
 			<tr>
-				<th>순번</th>
+				<th style="width:50px; text-align: center;">순번</th>
 				<th>프로젝트명</th>
 				<th>담당자</th>
 				<th>진행상태</th>
@@ -308,7 +308,7 @@ tr:hover {
 			<tr th:each="pjt, stat : ${pjtList}">
 			
 			<!-- 페이지 순번 처리  -->
-				<td	th:text="${pageInfo != null ? (pageInfo.pageSize * (pageInfo.pageNum - 1) + stat.index + 1) : (stat.index + 1)}"></td>
+				<td	th:text="${pageInfo != null ? (pageInfo.pageSize * (pageInfo.pageNum - 1) + stat.index + 1) : (stat.index + 1)}" style="text-align: center;"></td>
 				<td th:text="${pjt['PJT_NM']}">프로젝트명</td>
 				<td th:text="${pjt['employeeId']}">담당자</td>
 				<td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>
@@ -319,12 +319,12 @@ tr:hover {
 				<!--  <td th:text="${pjt['gid']}"></td> -->
 				<td>
 					<!-- 상세보기: 항상 가능 -->
-					<button class="button btn-view"
+					<button class="detail-btn"
 						th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
 						상세
 					</button>
             <!-- 수정 버튼 -->
-					<button class="button btn-edit"
+					<button class="edit-btn"
 						th:if="${session.loginUser.role == '대표' or session.loginUser.role == '프로젝트'}"
 						th:classappend="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'} ? ' btn-disabled' : ''"
 						th:disabled="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'}"
