@@ -342,17 +342,6 @@ function validateForm() {
     return false;
   }
   
-//🔒 오늘 이전 금지
-  if (startDate < today) {
-    alert("시작일은 오늘 이전 날짜로 설정할 수 없습니다.");
-    form.pjtBgngDt?.focus();
-    return false;
-  }
-  if (endDate < today) {
-    alert("종료일은 오늘 이전 날짜로 설정할 수 없습니다.");
-    form.pjtEndDt?.focus();
-    return false;
-  }
   
   if (startDate.getTime() >= endDate.getTime()) {
     alert("종료일은 시작일보다 뒤여야 합니다. (같거나 이전 날짜 불가)");
