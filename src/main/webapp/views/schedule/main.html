@@ -1,6 +1,7 @@
 <script th:if="${msg != null}">
         alert("[[${msg}]]");
 </script>
+
 <script src="/js/jquery-3.7.1.min.js"></script>
 <script th:inline="javascript">
 
@@ -49,18 +50,14 @@
             */
             
             if(schOne.holiday == '휴무일'){
-                color = "red";  // 휴무일
-                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' style='color:"+color+"'>"+escapeHtml(schOne.title)+"</a>";
+                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' class='sche-comm holiday-sche'>"+escapeHtml(schOne.title)+"</a>";
 
             }else if(schOne.holiday == '프로젝트'){
-                color = "blue"; // 프로젝트
-                clickBox = "<a href='/pjtMng/pjtDetail?pjtSn="+ schOne.pjtSn +"' style='color:"+color+"'>"+schOne.title+"</a>";
+                clickBox = "<a href='/pjtMng/pjtDetail?pjtSn="+ schOne.pjtSn +"' class='sche-comm project-sche'>"+schOne.title+"</a>";
             }else if(schOne.holiday == '연차'){
-                color = "green"; // 연차
-                clickBox = "<span style='color:"+color+"'>"+schOne.title+"</span>";
+                clickBox = "<span class='sche-comm leave'>"+schOne.title+"</span>";
             }else{
-                color = "black"; // 일반 일정
-                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' style='color:"+color+"'>"+escapeHtml(schOne.title)+"</a>";
+                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' class='sche-comm normal-sche'>"+escapeHtml(schOne.title)+"</a>";
             }
 
             return clickBox + "<br/>";
@@ -409,7 +406,7 @@
 </div>
 
 <!-- 월별 보기 -->
-<table border="" id="diary_body">
+<table class="sche-table" id="diary_body">
 </table>
 
 

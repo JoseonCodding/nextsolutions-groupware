@@ -1,29 +1,28 @@
-
+<link rel="stylesheet" href="/css/leaveList.css">
 <!-- 연차 관리 사용자용 -->
 <form action="" method="">
 <!-- 잔여 연차 요약 -->
-	<table border="">
+	<table class="leave-count">
 		<tr>
-			<td>이름</td>
+			<td class="name-th">이름</td>
 			<td>총 연차</td>
 			<td>사용 연차</td>
 			<td>잔여 연차</td>
 		</tr>
-		
+		<tr>
 		    <td th:text="${listData.empNm}"></td>
 		    <td th:text="${listData.total}"/>
 		    <td th:text="${listData.used}"/>
-
 		    <td th:text="${listData.getRest}"></td>
 
 		</tr>
 	</table>
 	
-	<table border="">
-    <thead>
+	<table class="leave-detail">
+    <thead >
         <tr>
-            <th>발생 날짜</th>
-            <th>연차 발생 이유</th>
+            <th class="th-top">발생 날짜</th>
+            <th class="th-reason">연차 발생 이유</th>
             <th>사용 여부</th>
             <th>사용일</th>
             <th>결재상태</th>

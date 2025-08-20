@@ -1,9 +1,30 @@
-
-<div >
-<a th:href="@{/attend}">출퇴근 기록</a>
-<a th:href="@{/attend/leaveList}">내 연차</a>
-<a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
-   th:href="@{/attend/attendList}">출퇴근 현황</a>
-<a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
-   th:href="@{/attend/leaveListMng}">연차 관리</a>
+<style>
+    .board-nav { background-color:#f7f9fc; padding:10px 20px; border-bottom:1px solid #dcdcdc; }
+    .board-nav ul { list-style:none; padding:0; margin:0; display:flex; }
+    .board-nav ul li { margin-right:30px; }
+    .board-nav ul li a { text-decoration:none; font-weight:bold; color:#666; padding:8px 12px; border-bottom:2px solid transparent; transition:all .2s; }
+    .board-nav ul li.active a { color:#000; border-bottom:2px solid #2c3e50; }
+    .board-nav ul { display:flex; }
+    .board-nav ul li.admin { margin-left:auto; }
+    .board-nav ul li.admin a { color:#6b7280; font-weight:700; }
+    .board-nav ul li.admin a:hover { color:#111827; }
+    .ico-gear { width:16px; height:16px; vertical-align:-2px; fill:currentColor; }
+  </style>
+<div class="board-nav">
+	<ul>
+		<li>
+			<a th:href="@{/attend}">출퇴근 기록</a>
+		</li>
+		<li>
+			<a th:href="@{/attend/leaveList}">내 연차</a>
+		</li>
+		<li>
+			<a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
+		   th:href="@{/attend/attendList}">출퇴근 현황</a>
+		</li>
+		<li>
+			<a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
+		   th:href="@{/attend/leaveListMng}">연차 관리</a>
+		</li>
+   </ul>
 </div>

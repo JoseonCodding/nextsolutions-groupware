@@ -1,5 +1,6 @@
 package com.kdt.KDT_PJT.attend.model;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,12 +37,24 @@ public class AttendDTO2 {
     String keyword;
     
     
+    //출퇴근 기록 달력에 연차 날짜 가져오기
+    Date usedDate;
+    
 //	work_hours DECIMAL(4,1) NULL,           -- 근무시간 (예: 8.0)
 //	ADD COLUMN is_normal_work BOOLEAN DEFAULT FALSE,   -- 정상근무 여부
 //	ADD COLUMN modified_by VARCHAR(20) NULL,           -- 수정자 ID
 //	ADD COLUMN modified_at DATETIME NULL,              -- 수정일
 //	ADD COLUMN modification_reason VARCHAR(255) NULL;
 
+    //연차 날짜
+    public String getUsedDateStr() {
+		if (usedDate == null) {
+	        return "";
+	    }
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		return sdf.format(usedDate);
+		
+	}
 	 
     public String getWorkDate() {
         // checkInTime이 있을 때만 yyyy-MM-dd 반환
