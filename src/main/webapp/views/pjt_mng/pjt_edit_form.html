@@ -110,14 +110,32 @@ input, select {
 		<!-- hidden 값도 null-safe -->
 		<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN'] ?: ''}" />
 
-		<input type="hidden" name="gid" th:value="${pjt['gid'] ?: ''}" />
-		<input type="hidden" name="oldFileName"  th:value="${pjt['ATCH_FILE_SN'] ?: ''}"> 
-		<input type="hidden" name="oldOrgFileName" th:value="${pjt['ORG_FILE_NM'] ?: ''}">
-		<input type="hidden" name="firstSign" th:value="${pjt['firstSign'] ?: ''}">
-		<input type="hidden" name="secondSign" th:value="${pjt['secondSign'] ?: ''}">
-		<input type="hidden" name="approvedBy" th:value="${pjt['approvedBy'] ?: ''}">
+		<input type="hidden" name="gid" th:value="${pjt['gid'] ?: ''}" /> 
+		<input
+			type="hidden" name="oldFileName"
+			th:value="${pjt['ATCH_FILE_SN'] ?: ''}"> 
+		<input type="hidden"
+			name="oldOrgFileName" th:value="${pjt['ORG_FILE_NM'] ?: ''}">
+		<input type="hidden" name="firstSign"
+			th:value="${pjt['firstSign'] ?: ''}">
+		<input type="hidden"
+			name="secondSign" th:value="${pjt['secondSign'] ?: ''}"> 
+		<input
+			type="hidden" name="approvedBy" th:value="${pjt['approvedBy'] ?: ''}">
 
-
+		<input type="hidden" name="oldFileName1"
+			th:value="${pjt['ATCH_FILE_SN1']}" /> 
+		<input type="hidden"
+			name="oldOrgFileName1" th:value="${pjt['ORG_FILE_NM1']}" /> 
+			<input
+			type="hidden" name="oldFileName2" th:value="${pjt['ATCH_FILE_SN2']}" />
+		<input type="hidden" name="oldOrgFileName2"
+			th:value="${pjt['ORG_FILE_NM2']}" />
+		<input type="hidden"
+			name="oldFileName3" th:value="${pjt['ATCH_FILE_SN3']}" /> 
+		<input
+			type="hidden" name="oldOrgFileName3"
+			th:value="${pjt['ORG_FILE_NM3']}" />
 
 		<table>
 			<tr>
@@ -131,23 +149,22 @@ input, select {
 				<td>
 					<!-- 모델 키가 employeeid 인 듯하여 그대로 사용 --> <input type="text"
 					name="employeeId" th:value="${pjt['employeeId'] ?: ''}"
-					placeholder="담당자 이름 입력"  readonly />
+					placeholder="담당자 이름 입력" readonly />
 				</td>
 			</tr>
 			<tr>
 				<th>기간</th>
 				<td>
-					<!-- 날짜가 문자열이면 그대로, LocalDate면 아래 주석 참고 --> 
-					시작일: <input type="date"
+					<!-- 날짜가 문자열이면 그대로, LocalDate면 아래 주석 참고 --> 시작일: <input type="date"
 					name="pjtBgngDt" style="margin-right: 10px;"
 					th:value="${pjt['PJT_BGNG_DT'] ?: ''}" /> 종료일: <input type="date"
-					name="pjtEndDt" th:value="${pjt['PJT_END_DT'] ?: ''}" />
-					 <!-- ✍️ 만약 LocalDate/LocalDateTime 이면:
+					name="pjtEndDt" th:value="${pjt['PJT_END_DT'] ?: ''}" /> <!-- ✍️ 만약 LocalDate/LocalDateTime 이면:
              th:value="${pjt['PJT_BGNG_DT'] != null ? #dates.format(pjt['PJT_BGNG_DT'], 'yyyy-MM-dd') : ''}" -->
 				</td>
 			</tr>
 
-			<tr	th:with="stts=${pjt != null ? #strings.trim(pjt['PJT_STTS_CD']) : ''}">
+			<tr
+				th:with="stts=${pjt != null ? #strings.trim(pjt['PJT_STTS_CD']) : ''}">
 				<th>상태</th>
 				<td>
 					<!-- 대기: 읽기전용 --> <input type="text" name="pjtSttsCd"
@@ -165,49 +182,51 @@ input, select {
 				<td><textarea id="content" name="content"
 						th:text="${pjt['content'] ?: ''}"></textarea></td>
 			</tr>
-			<!-- <tr>
-				<th>결재자</th>
-				<td><select name="TB_PJT_APR" class="form-select"
-					th:disabled="${!isAdmin}">
-						<option value="">-- 결재자 선택 --</option>
-						<option th:each="a : ${approverList}" th:value="${a.employeeId}"
-							th:text="${a.employeeId}"
-							th:selected="${pjt != null and a.employeeId == pjt.TB_PJT_APR}">
-						</option>
-				</select></td>
-			</tr>
-			 -->
 
 			<tr>
 				<th>결재자</th>
 				<td>
-					<!-- DB로 넘어갈 진짜 값(사번) --> 
-					<input type="hidden" name="TB_PJT_APR" 	th:value="${pjt['TB_PJT_APR']}" />
-					
-					 <!-- 화면 표시용 (읽기 전용) -->
-              		<input type="text" th:value="${pjt['TB_PJT_APR']}" readonly class="form-control" />
+					<!-- DB로 넘어갈 진짜 값(사번) --> <input type="hidden" name="TB_PJT_APR"
+					th:value="${pjt['TB_PJT_APR']}" /> <!-- 화면 표시용 (읽기 전용) --> <input
+					type="text" th:value="${pjt['TB_PJT_APR']}" readonly
+					class="form-control" />
 				</td>
 			</tr>
-			
+
+
+
 			<tr>
 				<th rowspan="3">파일업로드</th>
 				<td><input type="file" name="uploadFile1" id="uploadFile1" />
-					<div id="fileName" th:text="${pjt['ORG_FILE_NM1'] ?: '첨부된 파일 없음'}"
-						style="margin-top: 8px; color: #333; font-size: 14px; background-color: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
-					</div></td>
+					<div
+						style="margin-top: 8px; background: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
+						<span th:text="${pjt['ORG_FILE_NM1'] ?: '첨부된 파일 없음'}"></span>
+					</div> <label th:if="${pjt['ATCH_FILE_SN1'] != null}"
+					style="display: inline-block; margin-top: 6px;"> <input
+						type="checkbox" name="delFileSlots" value="1"> 삭제
+				</label></td>
 			</tr>
 			<tr>
 				<td><input type="file" name="uploadFile2" id="uploadFile2" />
-					<div id="fileName" th:text="${pjt['ORG_FILE_NM2'] ?: '첨부된 파일 없음'}"
-						style="margin-top: 8px; color: #333; font-size: 14px; background-color: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
-					</div></td>
+					<div
+						style="margin-top: 8px; background: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
+						<span th:text="${pjt['ORG_FILE_NM2'] ?: '첨부된 파일 없음'}"></span>
+					</div> <label th:if="${pjt['ATCH_FILE_SN2'] != null}"
+					style="display: inline-block; margin-top: 6px;"> <input
+						type="checkbox" name="delFileSlots" value="2"> 삭제
+				</label></td>
 			</tr>
 			<tr>
 				<td><input type="file" name="uploadFile3" id="uploadFile3" />
-					<div id="fileName" th:text="${pjt['ORG_FILE_NM3'] ?: '첨부된 파일 없음'}"
-						style="margin-top: 8px; color: #333; font-size: 14px; background-color: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
-					</div></td>
+					<div
+						style="margin-top: 8px; background: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
+						<span th:text="${pjt['ORG_FILE_NM3'] ?: '첨부된 파일 없음'}"></span>
+					</div> <label th:if="${pjt['ATCH_FILE_SN3'] != null}"
+					style="display: inline-block; margin-top: 6px;"> <input
+						type="checkbox" name="delFileSlots" value="3"> 삭제
+				</label></td>
 			</tr>
+
 
 			<tr>
 				<th>등록일</th>
@@ -219,10 +238,10 @@ input, select {
 
 
 		<!-- null-safe -->
-		<input type="hidden" name="approvers" id="approversInput" th:value="${pjt['approvers'] ?: ''}" />
+		<input type="hidden" name="approvers" id="approversInput"
+			th:value="${pjt['approvers'] ?: ''}" /> <input type="hidden"
+			name="ver" id="ver" th:value="${pjt['ver'] ?: ''}" />
 
-		<input type="hidden" name="ver" id="ver"  th:value="${pjt['ver'] ?: ''}" />
-		
 		<div class="button-row">
 			<button type="button" class="back-btn" onclick="history.back()">←
 				돌아가기</button>
@@ -240,7 +259,7 @@ input, select {
 	</form>
 
 	<script>
-  const fileInput = document.getElementById('uploadFile');
+ /*  const fileInput = document.getElementById('uploadFile');
   const fileNameDiv = document.getElementById('fileName');
 
   if (fileInput) {
@@ -251,7 +270,43 @@ input, select {
         fileNameDiv.textContent = '';
       }
     });
-  }
+  } */
+  
+//업로드 미리보기 + 간단 검증(확장자/용량)
+  (function () {
+    const ALLOWED = /\.(pdf|docx?|xlsx?|png|jpe?g)$/i;
+    const MAX_MB = 10;
+
+    const pairs = [
+      { input: 'uploadFile1', label: 'fileName1' },
+      { input: 'uploadFile2', label: 'fileName2' },
+      { input: 'uploadFile3', label: 'fileName3' },
+    ];
+
+    pairs.forEach(p => {
+      const $in = document.getElementById(p.input);
+      const $lb = document.getElementById(p.label);
+      if (!$in || !$lb) return;
+
+      $in.addEventListener('change', () => {
+        if (!$in.files || $in.files.length === 0) { $lb.textContent = ''; return; }
+        const f = $in.files[0];
+
+        if (!ALLOWED.test(f.name)) {
+          alert('허용되지 않은 파일 형식입니다. (pdf, doc/docx, xls/xlsx, png, jpg/jpeg)');
+          $in.value = ''; $lb.textContent = ''; return;
+        }
+        if (f.size > MAX_MB * 1024 * 1024) {
+          alert(`파일 용량은 최대 ${MAX_MB}MB입니다.`);
+          $in.value = ''; $lb.textContent = ''; return;
+        }
+
+        $lb.textContent = `선택한 파일: ${f.name}`;
+      });
+    });
+  })();
+  
+  
 
   const workflowContainer = document.getElementById('workflow-container');
   let approverCount = 0;
@@ -316,7 +371,7 @@ input, select {
 				['color', ['color']],
 				['para', ['ul', 'ol', 'paragraph']],
 				['height', ['height']],
-				['insert', [ 'link', 'table']],
+				['insert', ['picture', 'link', 'table']],
 				['view', ['fullscreen', 'codeview', 'help']]
 			]
 		});
