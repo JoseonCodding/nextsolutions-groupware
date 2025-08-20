@@ -117,6 +117,10 @@ h1 {
 }
 
 /* 게시판 필터 */
+.filter {
+	margin-bottom: 20px;
+}
+
 .filter-bar {
   background: #f8fafd;
   border: 1px solid #e3e7ed;
