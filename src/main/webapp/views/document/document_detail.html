@@ -60,7 +60,7 @@
 
   <!-- 액션 -->
   <div style="display:flex; gap:8px;">
-    <a class="btn btn-secondary" th:href="@{/document/main(page=${page}, size=${size}, keyword=${keyword})}">목록</a>
+    <a class="btn btn-secondary" th:href="@{/document/main(page=${page}, size=${size}, keyword=${keyword}, sort=${sort})}">목록</a>
     <a class="btn btn-outline-primary" th:href="@{/document/versions(gid=${doc.gid})}">버전 목록</a>
 
   </div>
