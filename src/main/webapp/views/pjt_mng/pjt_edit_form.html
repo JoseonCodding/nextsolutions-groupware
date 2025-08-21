@@ -202,9 +202,9 @@ input[type="checkbox"] {
 						style="margin-top: 8px; background: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
 						<span th:text="${pjt['ORG_FILE_NM1'] ?: '첨부된 파일 없음'}"></span>
 					</div>
-					 <label th:if="${pjt['ATCH_FILE_SN1'] != null}"
+					 <label th:if="${pjt['ATCH_FILE_SN1'] != null && pjt['ATCH_FILE_SN1'] != ''}"
 							style="display: inline-block; margin-top: 6px;"> <input
-							type="checkbox" name="delFileSlots" value="1"> 삭제
+							type="checkbox" name="delFileSlots1" value="true"> 삭제
 				</label>
 				</td>
 			</tr>
@@ -213,9 +213,9 @@ input[type="checkbox"] {
 					<div
 						style="margin-top: 8px; background: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
 						<span th:text="${pjt['ORG_FILE_NM2'] ?: '첨부된 파일 없음'}"></span>
-					</div> <label th:if="${pjt['ATCH_FILE_SN2'] != null}"
+					</div> <label th:if="${pjt['ATCH_FILE_SN2'] != null && pjt['ATCH_FILE_SN2'] != ''}"
 					style="display: inline-block; margin-top: 6px;"> <input
-						type="checkbox" name="delFileSlots" value="2"> 삭제
+						type="checkbox" name="delFileSlots2" value="true"> 삭제
 				</label></td>
 			</tr>
 			<tr>
@@ -223,9 +223,9 @@ input[type="checkbox"] {
 					<div
 						style="margin-top: 8px; background: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
 						<span th:text="${pjt['ORG_FILE_NM3'] ?: '첨부된 파일 없음'}"></span>
-					</div> <label th:if="${pjt['ATCH_FILE_SN3'] != null}"
+					</div> <label th:if="${pjt['ATCH_FILE_SN3'] != null && pjt['ATCH_FILE_SN3'] != ''}"
 					style="display: inline-block; margin-top: 6px;"> <input
-						type="checkbox" name="delFileSlots" value="3"> 삭제
+						type="checkbox" name="delFileSlots3" value="true"> 삭제
 				</label></td>
 			</tr>
 
