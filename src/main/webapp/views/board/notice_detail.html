@@ -1,7 +1,4 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
+
     <title>공지사항 상세보기</title>
     <style>
       .like-btn{border:1px solid #ddd;border-radius:9999px;padding:.3rem .7rem;background:#fff}
@@ -69,5 +66,4 @@
          th:href="@{'/board/notice/delete'(postId=${board.postId}, page=${page}, size=${size}, sort=${sort}, keyword=${keyword})}"
          th:onclick="|return confirm('게시글을 삭제하시겠습니까?');|">삭제</a>
     </div>
-  </body>
-</html>
+ 
