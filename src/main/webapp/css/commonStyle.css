@@ -117,7 +117,7 @@ a:hover {
 }
 
 
-/* 게시글 목록 제목용 (class="board-title") (직접 style="width:000px"으로 너비 적용해야함) */
+/* 게시글 목록 제목용 (class="board-title") (a태그에 직접 style="width:000px"으로 너비 적용해야함) */
 .board-title a {
 	text-align: center;
 	display: inline-block;     /* 줄 바꿈 방지 위해 inline-block 또는 block */

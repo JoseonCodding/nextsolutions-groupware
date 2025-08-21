@@ -24,8 +24,8 @@
 	 		<!-- 작성자, 부서, 작성일, 문서번호 영역 -->
 			<table border="" style="width:400px;">
 				<tr>
-					<th style="width:100px;">작성자</th>
-			    <td>
+					<th style="width:200px;">작성자</th>
+			    <td style="width:200px;">
 			      <span th:if="${approvalData != null}">
 			        <span th:text="${approvalData.writer != null ? ' ' + approvalData.writer : ' -'}">-</span>
 			        <span th:text="${approvalData.writerPosition != null ? approvalData.writerPosition : ''}"></span>
@@ -363,10 +363,16 @@
 	
 		
 		<!-- if 프로젝트, 공지사항 -->
-		<div th:unless="${approvalData != null and (approvalData.docType == '연차' or approvalData.docType == '근태')}"
-		     style="border:1px solid; margin-top: 20px; padding:10px;"
-		     th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
-		</div>
+		<table border="" style="margin-top: 20px;"
+		       th:if="${approvalData != null and (approvalData.docType == '프로젝트' or approvalData.docType == '공지사항')}">
+		  <tr>
+		    <th>내용</th>
+		    <td th:unless="${approvalData != null and (approvalData.docType == '연차' or approvalData.docType == '근태')}"
+		        style="border:1px solid; margin-top: 20px; padding:10px;"
+		        th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
+		    </td>
+		  </tr>
+		</table>
 	</div>
 	
 	<!-- 첨부파일 (테이블 3행, ApprovalDTO 바인딩용) -->
