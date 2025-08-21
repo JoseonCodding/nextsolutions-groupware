@@ -48,10 +48,10 @@
 
 		<!-- 공지사항 전용 결재선 -->
 		<th:block th:if="${approvalData.docType == '공지사항'}">
-		  <table border="" style="margin-left: 50px; width:400px; ">
+		  <table border="" style="margin-left: 50px;">
 		    <tr>
-		      <th style="height:24px;"><b>상신자</b></th>
-		      <th>
+		      <th style="height:24px; width:200px;"><b>상신자</b></th>
+		      <th style="height:24px; width:200px;">
 		        <b th:text="${approvalData.status == '대기' ? '결재권한자' : '결재자'}">결재자</b>
 		      </th>
 		    </tr>
@@ -109,8 +109,8 @@
 		<th:block th:if="${approvalData.docType == '프로젝트'}">
 		  <table border="" style="margin-left: 50px; width:400px; ">
 		    <tr>
-		      <th style="height:24px;"><b>상신자</b></th>
-		      <th>
+		      <th style="height:24px; width:200px;"><b>상신자</b></th>
+		      <th style="height:24px; width:200px;">
 		        <b th:text="${approvalData.status == '대기' ? '결재권한자' : '결재자'}">결재자</b>
 		      </th>
 		    </tr>
@@ -180,8 +180,8 @@
 		<th:block th:if="${approvalData.docType == '근태'}">
 		  <table border="" style="margin-left: 50px; width:400px; ">
 		    <tr>
-		      <th style="height:24px;"><b>상신자</b></th>
-		      <th>
+		      <th style="height:24px; width:200px;"><b>상신자</b></th>
+		      <th style="height:24px; width:200px;">
 		        <b th:text="${approvalData.status == '대기' ? '결재권한자' : '결재자'}">결재자</b>
 		      </th>
 		    </tr>
@@ -242,15 +242,15 @@
 		<th:block th:if="${approvalData.docType == '연차'}">
 		  <table border="" style="margin-left: 50px; width:400px; ">
 		    <tr>
-		      <th style="height:24px;"><b>상신자</b></th>
-		      <th>
+		      <th style="height:24px; width:200px;"><b>상신자</b></th>
+		      <th style="height:24px; width:200px;">
 		        <b th:text="${approvalData.status == '대기' ? '결재권한자' : '결재자'}">결재자</b>
 		      </th>
 		    </tr>
 		
 		    <tr>
 		      <!-- 상신자: 이름 + 직책 -->
-		      <td>
+		      <td >
 		        <span th:text="${approvalData.writer != null ? ' ' + approvalData.writer : ' -'}">-</span>
 		        <span th:text="${approvalData.writerPosition != null ? approvalData.writerPosition : ''}"></span>
 		      </td>

@@ -41,23 +41,22 @@
         <table>
             <thead>
                 <tr>
-
+                	<th style="width:50px;">번호</th>
                     <th style="width:75px;">결재 종류</th>
                     <th>제목</th>
-                    <th style="width:75px;">작성자</th>
-                    <th style="width:75px;">부서</th>
+                    <th>작성자</th>
                     <th style="width:75px;">결재 상태</th>
-                    <th style="width:150px;">작성일</th>
+                    <th>작성일</th>
                 </tr>
             </thead>
             
             <tbody>
             	<tr th:if="${#lists.isEmpty(approvalData)}">
-            		<td colspan="6" class="list-empty">열람 가능한 게시글이 없습니다.</td>
+            		<td colspan="7" class="list-empty">열람 가능한 게시글이 없습니다.</td>
             	</tr>
             	
-                <tr th:each="dto : ${approvalData}">
-
+                <tr th:each="dto, stat : ${approvalData}">
+                	<td th:text="${(page - 1) * 10 + stat.index + 1}">1</td>
             		<td th:text="${dto.docType}"></td>
 				    <td class="board-title">
 				    	<a style="width:500px;"
@@ -65,11 +64,10 @@
 				    		th:text="${dto.title}">
 				    	</a>
 				    </td>
-					<td>
+					<td style="width: 110px;">
 					  <span th:text="${dto.writer}"></span>
 					  <span th:text="${dto.writerPosition}"></span>
 					</td>
-				    <td th:text="${dto.deptName}"></td>
 				    <td th:text="${dto.status}"></td>
 				    <td th:text="${#dates.format(dto.createdAt, 'yyyy/MM/dd')}"></td>
 				</tr>
