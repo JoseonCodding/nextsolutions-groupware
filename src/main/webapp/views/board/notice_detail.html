@@ -1,69 +1,140 @@
-
+<!doctype html>
+<html lang="ko" class="h-full scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
     <title>공지사항 상세보기</title>
-    <style>
-      .like-btn{border:1px solid #ddd;border-radius:9999px;padding:.3rem .7rem;background:#fff}
-      .like-btn.liked{color:#e11d48;border-color:#e11d48}
-      .like-count{margin-left:.25rem;font-weight:600}
-      /* 본문과 구분선/버튼들 사이 간격 */
-      .text{ margin:20px 0 28px; }
-      /* hr 기본 간격도 살짝 넓게 */
-      hr{ margin:16px 0; }
-      /* 목록/삭제 버튼 간격 */
-      .board-actions{
-        margin-top: 20px;       /* 내용과 버튼 간격 */
-        display: flex;          /* 가로 정렬 */
-        gap: 10px;              /* 버튼 사이 간격 */
-        align-items: center;    /* 세로축 정렬 */
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // 다크모드: OS 설정 자동 추종
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['ui-sans-serif', 'system-ui', 'Apple SD Gothic Neo', 'Noto Sans KR', 'sans-serif'] }
+          }
+        }
       }
-      /* .board-actions 바로 뒤에 오는 삭제 버튼을 띄워줌 */
-      .board-actions + .btn-danger{
-        margin-left: 12px;     /* 목록으로/수정과 삭제 사이 가로 간격 */
-      }
-      /* 혹시 버튼들이 너무 붙어 보이면 개별 버튼에 여백 살짝 */
-      .btn{ display:inline-block; padding:6px 10px; }
-    </style>
+    </script>
   </head>
-  <body>
-    <h2 th:text="${board.title}">게시글 제목</h2>
 
-    <div class="board-meta">
-      <span>작성자: <strong th:text="${#strings.isEmpty(board.empNm) ? board.employeeId : board.empNm}"></strong></span>
-      <p>
-        <span>작성일:</span>
-        <strong th:text="${board.createdAt != null ? #dates.format(board.createdAt,'yyyy-MM-dd HH:mm') : '정보 없음'}"></strong>
-      </p>
-      <span>조회: <strong th:text="${board.viewCount}">0</strong></span>
-      <span>좋아요: <strong th:text="${board.likeCount} ?: 0">0</strong></span>
-    </div>
+  <body class="min-h-full bg-gray-50 text-gray-800 antialiased dark:bg-gray-950 dark:text-gray-100">
+    <header class="border-b bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-gray-900/70">
+      <div class="mx-auto max-w-5xl px-4 py-4">
+        <a href="/" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M9.707 14.707a1 1 0 01-1.414 0L3.586 10l4.707-4.707a1 1 0 011.414 1.414L6.414 9H17a1 1 0 110 2H6.414l3.293 3.293a1 1 0 010 1.414z"/></svg>
+          홈
+        </a>
+      </div>
+    </header>
 
-    <!-- 좋아요 토글 -->
-    <div class="like-toggle" th:if="${useLike}">
-      <form th:action="@{/board/notice/like/toggle}" method="post">
-        <input type="hidden" name="postId" th:value="${board.postId}" />
-        <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
-        <button type="submit" class="like-btn" th:classappend="${likedByMe} ? ' liked' : ''">
-          <span th:text="${likedByMe} ? '♥' : '♡'">♡</span>
-          <span>좋아요</span>
-        </button>
-        <span class="like-count" th:text="${likeCount}">0</span>
-      </form>
-    </div>
+    <main class="mx-auto max-w-5xl px-4 py-8">
+      <!-- 카드 -->
+      <article class="rounded-2xl border bg-white shadow-sm ring-1 ring-black/[0.03] dark:border-gray-800 dark:bg-gray-900 dark:shadow-none">
+        <!-- 헤더 -->
+        <div class="flex flex-col gap-4 p-6 md:p-8">
+          <h2 class="text-2xl font-semibold tracking-tight md:text-3xl" th:text="${board.title}">게시글 제목</h2>
 
-    <hr />
+          <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+            <span class="inline-flex items-center gap-1.5">
+              작성자:
+              <strong class="font-medium text-gray-800 dark:text-gray-100" th:text="${#strings.isEmpty(board.empNm) ? board.employeeId : board.empNm}">홍길동</strong>
+            </span>
 
-    <!-- 본문 -->
-    <div class="text" th:utext="${board.content}">내용</div>
+            <span class="h-1 w-1 rounded-full bg-gray-300 dark:bg-gray-600"></span>
 
-    <hr />
+            <span class="inline-flex items-center gap-1.5">
+              작성일:
+              <strong class="font-medium text-gray-800 dark:text-gray-100" th:text="${board.createdAt != null ? #dates.format(board.createdAt,'yyyy-MM-dd HH:mm') : '정보 없음'}">2025-07-16 23:48</strong>
+            </span>
 
-    <div class="board-actions">
-      <!-- 목록으로: 현재 페이지 상태 유지 -->
-      <a th:href="@{/board/notice(page=${page},size=${size},sort=${sort},keyword=${keyword})}" class="btn">목록으로</a>
+            <span class="h-1 w-1 rounded-full bg-gray-300 dark:bg-gray-600"></span>
 
-      <!-- 삭제: 관리자만 / 현재 페이지 상태 유지 -->
-      <a class="btn btn-danger"
-         th:if="${session.loginUser != null and (#strings.equals(session.loginUser.employeeId, '20250004'))}"
-         th:href="@{'/board/notice/delete'(postId=${board.postId}, page=${page}, size=${size}, sort=${sort}, keyword=${keyword})}"
-         th:onclick="|return confirm('게시글을 삭제하시겠습니까?');|">삭제</a>
-    </div>
- 
+            <span class="inline-flex items-center gap-1.5">
+              조회:
+              <strong class="font-semibold" th:text="${board.viewCount}">0</strong>
+            </span>
+
+            <span class="h-1 w-1 rounded-full bg-gray-300 dark:bg-gray-600"></span>
+
+            <span class="inline-flex items-center gap-1.5">
+              좋아요:
+              <strong class="font-semibold" th:text="${board.likeCount} ?: 0">0</strong>
+            </span>
+          </div>
+
+          <!-- 좋아요 토글 -->
+          <div class="pt-2" th:if="${useLike}">
+            <form th:action="@{/board/notice/like/toggle}" method="post" class="inline-flex items-center gap-3">
+              <input type="hidden" name="postId" th:value="${board.postId}" />
+              <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+
+              <button
+                type="submit"
+                class="group inline-flex select-none items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium shadow-sm transition
+                       hover:shadow active:scale-[.98] focus:outline-none focus-visible:ring
+                       border-gray-300 bg-white text-gray-700
+                       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                th:classappend="${likedByMe} ? ' !border-rose-500 !text-rose-600 dark:!border-rose-400 dark:!text-rose-300' : ''"
+                aria-label="좋아요 토글"
+              >
+                <span class="grid h-5 w-5 place-items-center">
+                  <!-- 빈 하트 -->
+                  <svg th:if="${!likedByMe}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="h-5 w-5 transition group-hover:scale-110">
+                    <path stroke="currentColor" stroke-width="1.5" d="M21 8.25c0 4.556-5.4 8.05-8.153 9.53a1.5 1.5 0 01-1.494 0C8.6 16.3 3 12.806 3 8.25A4.75 4.75 0 017.75 3.5c1.62 0 3.05.785 4.25 2.089A5.72 5.72 0 0116.25 3.5 4.75 4.75 0 0121 8.25z"/>
+                  </svg>
+                  <!-- 채운 하트 -->
+                  <svg th:if="${likedByMe}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-5 w-5 animate-[pop_200ms_ease-out] text-rose-500 dark:text-rose-400" fill="currentColor">
+                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.122-2.94C4.688 15.36 3 13.232 3 10.75A4.75 4.75 0 017.75 6c1.457 0 2.74.66 3.6 1.694A4.58 4.58 0 0115 6a4.75 4.75 0 014.75 4.75c0 2.482-1.688 4.61-4.111 6.987a25.18 25.18 0 01-4.122 2.94 15.247 15.247 0 01-.383.218l-.022.012-.007.003-.003.002a.75.75 0 01-.683 0l-.003-.002z"/>
+                  </svg>
+                </span>
+                <span>좋아요</span>
+              </button>
+
+              <span class="text-base font-semibold tabular-nums" th:text="${likeCount}">0</span>
+            </form>
+          </div>
+        </div>
+
+        <!-- 구분선 -->
+        <div class="border-t dark:border-gray-800"></div>
+
+        <!-- 본문 -->
+        <div class="prose prose-zinc max-w-none p-6 md:p-8 dark:prose-invert">
+          <div class="text-[1.05rem] leading-7" th:utext="${board.content}">
+            내용
+          </div>
+        </div>
+
+        <!-- 구분선 -->
+        <div class="border-t dark:border-gray-800"></div>
+
+        <!-- 액션 영역 -->
+        <div class="flex flex-wrap items-center gap-3 p-6 md:p-8">
+          <!-- 목록으로 -->
+          <a
+            th:href="@{/board/notice(page=${page},size=${size},sort=${sort},keyword=${keyword})}"
+            class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 hover:shadow focus:outline-none focus-visible:ring dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-750"
+          >
+            목록으로
+          </a>
+
+          <!-- 삭제 (관리자만) -->
+          <a
+            class="btn btn-danger inline-flex items-center justify-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-700 focus:outline-none focus-visible:ring disabled:opacity-60 disabled:cursor-not-allowed"
+            th:if="${session.loginUser != null and (#strings.equals(session.loginUser.employeeId, '20250004'))}"
+            th:href="@{'/board/notice/delete'(postId=${board.postId}, page=${page}, size=${size}, sort=${sort}, keyword=${keyword})}"
+            th:onclick="|return confirm('게시글을 삭제하시겠습니까?');|"
+          >
+            삭제
+          </a>
+        </div>
+      </article>
+    </main>
+
+    <!-- 작은 팝 애니메이션 -->
+    <style>
+      @keyframes pop { 0%{transform:scale(.9);opacity:.6} 100%{transform:scale(1);opacity:1} }
+    </style>
+  </body>
+</html>

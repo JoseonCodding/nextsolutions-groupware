@@ -4,7 +4,6 @@
       --surface: #ffffff; --ink: #1f2937; --muted: #6b7280; --border: #e5e7eb; --table-head: #eef2ff;
     }
     * { box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, Arial, sans-serif; margin: 0; color: var(--ink); background: #f8fafc; }
     header { padding: 20px 0; position: sticky; top: 0; z-index: 10; color: #fff; background: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
     header h1 { margin: 0; font-size: 20px; color: #fff }
     header .muted { color: rgba(255,255,255,0.9); }
@@ -163,7 +162,6 @@
     #stat-board-list .row { padding:10px 12px; cursor:pointer; display:grid; grid-template-columns: 1fr auto; gap: 8px; align-items:center; border-top:1px solid #f1f5f9; }
     #stat-board-list .row:hover { background:#f8fafc; }
     #stat-board-list .row.active { background:#eef2ff; color:#1d4ed8; }
-    .pill { font-size:12px; padding:2px 8px; border:1px solid #e5e7eb; border-radius:999px; background:#fff; }
     .muted { color: var(--muted); }
 
     @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } .row { grid-template-columns: 1fr; } }
