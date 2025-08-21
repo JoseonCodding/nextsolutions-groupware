@@ -1,22 +1,23 @@
 <!-- 상단 네비게이션 바 (Topbar) -->
+
+	    <link rel="stylesheet" href="/css/common.css">
     <header class="topbar">
+
         <div class="logo">
         
-        	<a th:href="@{/rc}" >NEXTSOLUTIONS</a>
+        	<a th:href="@{/rc}" class="ns-brand">NEXTSOLUTIONS</a>
         
         </div>
         <nav class="menu">
-            <a th:href="@{/schedule}">일정관리</a>
-			<a th:href="@{/attend}">근태관리</a>
-			<a th:href="@{/pjtMng/getPjtList}">프로젝트관리</a>
-            <a th:href="@{/approval/main}">전자결재</a>
-            <a th:href="@{/board/notice}">게시판</a>
-            <a th:href="@{/document/main}">문서관리</a>
-            <a th:href="@{/employee/list}">사원관리</a>
-            
-	            <div th:if="${session.loginUser != null}">
-	    			<a th:href="@{/login/logout}" class="logout-btn">로그아웃</a>
-				</div>
+			<a th:href="@{/schedule}" th:classappend="${httpServletRequest.requestURI.startsWith('/schedule')} ? 'active' : ''">일정관리</a>
+			<a th:href="@{/attend}" th:classappend="${httpServletRequest.requestURI.startsWith('/attend')} ? 'active' : ''">근태관리</a>
+			<a th:href="@{/pjtMng/getPjtList}" th:classappend="${httpServletRequest.requestURI.startsWith('/pjtMng/getPjtList')} ? 'active' : ''">프로젝트관리</a>
+			<a th:href="@{/approval/main}" th:classappend="${httpServletRequest.requestURI.startsWith('/approval/main')} ? 'active' : ''">전자결재</a>
+			<a th:href="@{/board/notice}" th:classappend="${httpServletRequest.requestURI.startsWith('/board/notice')} ? 'active' : ''">게시판</a>
+			<a th:href="@{/document/main}" th:classappend="${httpServletRequest.requestURI.startsWith('/document/main')} ? 'active' : ''">문서관리</a>
+			<a th:href="@{/employee/list}" th:classappend="${httpServletRequest.requestURI.startsWith('/employee/list')} ? 'active' : ''">사원관리</a>
+			<a th:if="${session.loginUser != null}" th:href="@{/login/logout}" class="logout-btn">로그아웃</a>
+
 <!-- 	        <span class="help-icon" title="도움말">
 	            <i class="fa-solid fa-circle-question fa-2xl"></i>
 	        </span> -->

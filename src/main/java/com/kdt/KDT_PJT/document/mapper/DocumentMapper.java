@@ -123,4 +123,88 @@ public interface DocumentMapper {
   """)
   int updateLatestStatus(@Param("gid") String gid,
                          @Param("pjtSttsCd") String pjtSttsCd);
+  
+//목록(최신버전) - 검색 포함
+ @Select("""
+   <script>
+   SELECT t.*, e.emp_nm AS empNm
+   FROM TB_PJT_BASC t
+   JOIN (
+     SELECT gid, MAX(ver) AS max_ver
+     FROM TB_PJT_BASC
+     GROUP BY gid
+   ) m ON t.gid = m.gid AND t.ver = m.max_ver
+   LEFT JOIN employee e ON e.employeeId = t.employeeId
+   WHERE t.PJT_STTS_CD IN ('진행중','완료')
+   <if test="!isAdmin">
+     AND t.employeeId = #{employeeId}
+   </if>
+
+   <if test="keywordType != null and keyword != null and keyword.trim() != ''">
+     <choose>
+       <when test="keywordType == 'writer'">
+         AND e.emp_nm LIKE CONCAT('%', #{keyword}, '%')
+       </when>
+       <when test="keywordType == 'project'">
+         AND t.PJT_NM LIKE CONCAT('%', #{keyword}, '%')
+       </when>
+       <when test="keywordType == 'status'">
+         AND t.PJT_STTS_CD = #{keyword}
+       </when>
+     </choose>
+   </if>
+
+   ORDER BY t.FRST_REG_DT DESC, t.gid DESC
+   LIMIT #{limit} OFFSET #{offset}
+   </script>
+ """)
+ List<DocumentDTO> findDocsForManageWithSearch(@Param("employeeId") String employeeId,
+                                               @Param("isAdmin") boolean isAdmin,
+                                               @Param("keywordType") String keywordType,
+                                               @Param("keyword") String keyword,
+                                               @Param("sort") String sort,      // 현재 newest만
+                                               @Param("limit") int limit,
+                                               @Param("offset") int offset);
+
+ 	@Select("""
+		    <script>
+		    SELECT COUNT(*)
+		    FROM (
+		      SELECT 1
+		      FROM TB_PJT_BASC t
+		      JOIN (
+		        SELECT gid, MAX(ver) AS max_ver
+		        FROM TB_PJT_BASC
+		        GROUP BY gid
+		      ) m ON t.gid = m.gid AND t.ver = m.max_ver
+		      LEFT JOIN employee e ON e.employeeId = t.employeeId
+		      WHERE t.PJT_STTS_CD IN ('진행중','완료')
+		      <if test="!isAdmin">
+		        AND t.employeeId = #{employeeId}
+		      </if>
+
+		      <if test="keywordType != null and keyword != null and keyword.trim() != ''">
+		        <choose>
+		          <when test="keywordType == 'writer'">
+		            AND e.emp_nm LIKE CONCAT('%', #{keyword}, '%')
+		          </when>
+		          <when test="keywordType == 'project'">
+		            AND t.PJT_NM LIKE CONCAT('%', #{keyword}, '%')
+		          </when>
+		          <when test="keywordType == 'status'">
+		            AND t.PJT_STTS_CD = #{keyword}
+		          </when>
+		        </choose>
+		      </if>
+		    ) x
+		    </script>
+		  """)
+		  int countDocsForManageWithSearch(@Param("employeeId") String employeeId,
+		                                   @Param("isAdmin") boolean isAdmin,
+		                                   @Param("keywordType") String keywordType,
+		                                   @Param("keyword") String keyword);
+
+  
 }
+
+
