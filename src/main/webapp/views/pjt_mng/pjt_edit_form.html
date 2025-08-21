@@ -57,7 +57,7 @@ input, select {
 	box-sizing: border-box;
 }
 
-.button-row {
+/* .button-row {
 	display: flex;
 	justify-content: center;
 	gap: 10px;
@@ -93,11 +93,11 @@ input, select {
 }
 
 .save-btn:disabled {
-	background-color: #ccc !important; /* 회색 */
-	color: #666 !important; /* 글자도 연한 회색 */
-	cursor: not-allowed; /* 마우스 커서 X 모양 */
+	background-color: #ccc !important; /* 회색 
+	color: #666 !important; /* 글자도 연한 회색 
+	cursor: not-allowed; /* 마우스 커서 X 모양 
 }
-
+ */
 /* 체크박스는 가로 100% 강제 적용에서 제외 */
 input[type="checkbox"] {
   width: auto;
@@ -149,7 +149,6 @@ input[type="checkbox"] {
 			<tr>
 				<th>기간</th>
 				<td>
-					<!-- 날짜가 문자열이면 그대로, LocalDate면 아래 주석 참고 --> 
 					시작일: <input type="date" name="pjtBgngDt" style="width:150px; border-radius:3px; margin-right: 10px;"
 					th:value="${pjt['PJT_BGNG_DT'] ?: ''}" /> 종료일:
 					<input type="date" name="pjtEndDt" style="width:150px; border-radius:3px;" th:value="${pjt['PJT_END_DT'] ?: ''}" /> 
@@ -242,7 +241,7 @@ input[type="checkbox"] {
 
 		<div class="button-row">
 			<button type="button" class="back-btn" onclick="history.back()">
-			← 목록으로 </button>
+			목록 </button>
 			<!-- <button type="submit" class="save-btn">저장</button> -->
 
 			<!-- 페이지 어딘가에서 stts를 이미 썼다면 그대로 활용 -->

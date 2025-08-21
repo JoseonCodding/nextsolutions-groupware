@@ -67,7 +67,7 @@
         <td th:text="'v' +${pjt['ver']}"></td>
 
  		<th>등록일</th>
-        <td th:text="${pjt['FRST_REG_DT']}">
+		<td th:text="${#strings.replace(pjt['FRST_REG_DT'], 'T', ' ')}"></td>
        
         </td>
       </tr>

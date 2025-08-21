@@ -47,30 +47,15 @@ tr:last-child td {
 	border-bottom: none;
 }
 
-button {
-	display: block;
-	margin: 40px auto 0;
-	padding: 12px 24px;
-	background-color: #4a90e2;
-	color: white;
-	border: none;
-	border-radius: 6px;
-	font-size: 16px;
-	cursor: pointer;
-	transition: background-color 0.2s;
+
+input, select {
+	padding: 8px;
+	width: 100%;
+	box-sizing: border-box;
 }
 
-button:hover {
-	background-color: #357abd;
-}
 
-button.save-btn {
-	background-color: #28a745;
-}
 
-button.save-btn:hover {
-	background-color: #218838;
-}
 /* 워크플로우 라인 스타일 */
 .workflow-step {
 	display: flex;
@@ -117,7 +102,7 @@ button.save-btn:hover {
 	background-color: #0056b3;
 }
 
-/* 버튼 묶음: 가운데 정렬 */
+/*  버튼 묶음: 가운데 정렬 */
 .button-row {
 	display: flex;
 	justify-content: center; /* 가로 가운데 정렬 */
@@ -127,7 +112,42 @@ button.save-btn:hover {
 	width: 100%;
 }
 
-/* 공통 버튼 스타일 */
+
+
+
+
+
+
+/*버튼 스타일 
+button {
+	display: block;
+	margin: 40px auto 0;
+	padding: 12px 24px;
+	background-color: #4a90e2;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+button:hover {
+	background-color: #357abd;
+}
+
+button.save-btn {
+	background-color: #28a745;
+}
+
+button.save-btn:hover {
+	background-color: #218838;
+} */
+
+
+
+
+/* 공통 버튼 스타일 
 .button-row button {
 	margin: 0;
 	width: 200px;
@@ -140,7 +160,7 @@ button.save-btn:hover {
 	transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-/* 저장 버튼 */
+/* 저장 버튼 
 .button-row .save-btn {
 	background-color: #28a745;
 	color: white;
@@ -151,7 +171,7 @@ button.save-btn:hover {
 	transform: scale(1.03);
 }
 
-/* 돌아가기 버튼 */
+/* 돌아가기 버튼 
 .button-row .back-btn {
 	background-color: #4a90e2;
 	color: white;
@@ -160,7 +180,7 @@ button.save-btn:hover {
 .button-row .back-btn:hover {
 	background-color: #357abd;
 	transform: scale(1.03);
-}
+} */
 </style>
 </head>
 
@@ -186,7 +206,8 @@ button.save-btn:hover {
 			<tr>
 				<th>기간</th>
 				<td>시작일: <input type="date" name="pjtBgngDt" id="pjtBgngDt"
-					style="margin-right: 10px;" required /> 종료일: <input type="date"
+					style="margin-right: 10px;" required /> 종료일: 
+					<input type="date"
 					name="pjtEndDt" id="pjtEndDt" required />
 				</td>
 			</tr>
@@ -237,8 +258,8 @@ button.save-btn:hover {
 		<!-- 🔧 버튼 묶음 -->
 		<div class="button-row">
 			<button type="button" class="back-btn" onclick="history.back()">
-			← 목록으로 </button>
-			<button type="submit" class="save-btn">프로젝트 저장</button>
+			 목록 </button>
+			<button type="submit" class="save-btn">저장</button>
 		</div>
 	</form>
 
