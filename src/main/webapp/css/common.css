@@ -3,14 +3,21 @@
 :root {
   --main-color: #3949ab;
   --accent-color: #ffc107;
+  
   --font-size-base: 16px;
+  --font-size-base: 14px;      /* 버튼 글자 크기*/
+  
   --header-height: 60px;
+  
+  
+  --regist-btn : black;			/* 등록 버튼*/
   --save-btn : #ff0000;		/* 저장 버튼*/
-  --edit-btn:#ff80ff;		/* 수정 버튼*/
+  --edit-btn:#ff80ff;			/* 수정 버튼*/
   --approval-btn:#c5edfc;  	/* 승인 버튼*/
   --reject-btn:#80ff00;  	/* 반려 버튼*/
   --search-btn:#0080c0; 	/* 검색 버튼*/
-  --back-btn: #0080c0;
+  --back-btn: #0080c0;	/* 목록, 뒤로가기 버튼*/
+  --detail-btn: #b062ff;	/* 상세 버튼*/
 }
 
 /* 수정 버튼 */ 
@@ -28,6 +35,8 @@
     margin-top: 20px;
     float: right;
 }
+
+
 
 /* 저장 버튼*/
 .save-btn:hover {
@@ -49,7 +58,7 @@
     background: #ff0000;
 }
 .regist-btn {
-    background: #ff9800;
+    background:var(--regist-btn);
     color: #fff;
     padding: 10px 20px;
     font-weight: bold;
@@ -64,7 +73,7 @@
     background: #ff0000;
 }
 .search-btn {
-    background: #ff9800;
+    background:var(--search-btn);
     color: #fff;
     padding: 10px 20px;
     font-weight: bold;
@@ -142,4 +151,19 @@
     float: right;
 }
 
+/* 상세 버튼 */ 
+.detail-btn:hover {
+    background:var(--detail-btn);
+}
+.detail-btn {
+    background:var(--detail-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    float: right;
+}
 

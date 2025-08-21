@@ -23,8 +23,11 @@ import com.kdt.KDT_PJT.attend.di.Attendance;
 import com.kdt.KDT_PJT.attend.model.AttendDTO;
 import com.kdt.KDT_PJT.attend.model.AttendDTO2;
 import com.kdt.KDT_PJT.attend.model.AttendMapper;
+import com.kdt.KDT_PJT.attend.model.LeaveDTO;
+import com.kdt.KDT_PJT.attend.model.LeaveMapper;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -43,6 +46,7 @@ public class AttendController {
 	
 	@Autowired
     AttendMapper attendMapper;
+	
 
    // log 사용을 위함
    private final Logger log = LoggerFactory.getLogger(getClass());
@@ -63,6 +67,8 @@ public class AttendController {
         attendance.setEmployeeId(loginUser.getEmployeeId());
     	List<AttendDTO> attendMonthList =  attendMapper.userAttendMonthList(attendance); 
     	
+    	// 연차 날짜 가져오기용
+    	List<LeaveDTO> leaveDate = attendMapper.searchLeaveDate(attendance); 
     	
     	// 달력 라이브러리 - Map 형태로 변환 --->
         Map<String, AttendDTO> attendMap = new HashMap<>();
@@ -70,11 +76,18 @@ public class AttendController {
             attendMap.put(dto.getWorkDate(), dto);
         }
         
+        Map<String, LeaveDTO> attendMapLeave = new HashMap<>();
+        for (LeaveDTO leave : leaveDate) {
+            attendMapLeave.put(leave.getUsedDateStr(), leave);
+        }
+        
         model.addAttribute("attendMap", attendMap); // 날짜 기준 Map 전달
+        model.addAttribute("attendMapLeave", attendMapLeave);
         //<---
         
     	System.out.println("showAttendancePage:"+attendMonthList);
     	
+    	model.addAttribute("leaveDate", leaveDate);
         model.addAttribute("mainData", attendMonthList);
         model.addAttribute("mainUrl", "attend/check");
         model.addAttribute("attendDTO", attendance);   // 조회 조건 유지용

@@ -5,3 +5,36 @@ tbody tr:hover:not(.no-hover tr) {
     background: initial; /* 또는 background-color: unset; */
 }
 
+/*출퇴근 버튼 - 위치변경을 위해 등록버튼 변형*/
+/* 등록 버튼 */
+.attend-regist-btn:hover {
+    background: #ff0000;
+}
+.attend-regist-btn {
+    background: #ff9800;
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+
+}
+
+/*달력 보기 방식 버튼*/
+/* 검색 버튼 변형*/
+.view-select button:hover {
+    background:var(--search-btn);
+}
+.view-select button {
+    background: var(--search-btn);
+    color: #fff;
+    padding: 10px 20px;
+    
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px 10px 20px 0px;
+    float: right;
+}

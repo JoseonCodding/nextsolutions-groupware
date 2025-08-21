@@ -1,7 +1,7 @@
 
 
 <!-- 일정 상세보기 -->
-    <h2>일정 상세보기</h2><a href="/schedule">닫힘</a>
+    <h2>일정 상세보기</h2>
 	
     <div>
         <label>제목:</label>
@@ -43,8 +43,9 @@
         <label>알람:</label>
         <span th:text="${scd.alarm}"></span>
     </div>
+<a href="/schedule" class="back-btn">목록으로</a>
 <!-- employId가 일치하거나 권한자만 수정,삭제 버튼 보이도록 -->													
-<a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '일정' or session.loginUser.role == '대표'}" th:href="@{|/schedule/modify?scheduleId=${scd.scheduleId}|}">수정</a>
-<a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '일정' or session.loginUser.role == '대표'}" th:href="@{|/schedule/delete?scheduleId=${scd.scheduleId}|}">삭제</a>																
+<a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '일정' or session.loginUser.role == '대표'}" th:href="@{|/schedule/modify?scheduleId=${scd.scheduleId}|}" class="edit-btn">수정</a>
+<a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '일정' or session.loginUser.role == '대표'}" th:href="@{|/schedule/delete?scheduleId=${scd.scheduleId}|}" class="reject-btn">삭제</a>																
 
 

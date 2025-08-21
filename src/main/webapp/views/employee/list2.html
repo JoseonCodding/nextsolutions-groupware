@@ -107,53 +107,41 @@
     <button class="regist-btn" onclick="location.href='/employee/register'"> 등록 </button> 
     <button id="editSelected" class="edit-btn">수정</button>
 
+	<!-- ✅ 페이징 UI -->
+<nav class="pagination" th:if="${pageInfo != null}">
 
+  <ul class="pagination justify-content-center">
 
-       <!-- 페이지네이션 -->
-	<nav class="pagination">
-	  <!-- Previous 버튼 -->
-	  <a th:if="${page > 1}" 
-	  th:href="@{/employee/list(page=${page-5 > 1 ? page-5 : 1}, keyword=${keyword})}"
-	  class="prev">&#x2039; Previous</a>
-	
-	  <!-- 첫 페이지 -->
-	  <span 
-	  th:if="${startPage > 1 and page == 1}" 
-	  class="page-number now-page disabled" 
-	  th:text="1">
-	  </span>
-	  
-	  <a 
-	  th:if="${startPage > 1 and page != 1}" 
-	  th:href="@{/employee/list(page=1, keyword=${keyword})}" 
-	  th:text="1" 
-	  class="page-number"></a>
-	
-	  <span 
-	  th:if="${startPage > 2}" 
-	  class="ellipsis">...</span>
-	
-	  <!-- 페이지 숫자들 -->
-	  <span 
-	  th:each="i : ${#numbers.sequence(startPage, endPage)}">
-	    <span th:if="${i == page}" class="page-number now-page disabled" th:text="${i}"></span>
-	    <a th:if="${i != page}" th:href="@{/employee/list(page=${i}, keyword=${keyword})}" th:text="${i}" class="page-number"></a>
-	  </span>
-	
-	  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
-	
-	  <!-- 마지막 페이지 -->
-	  <span th:if="${endPage < totalPages and page == totalPages}" class="page-number now-page disabled" th:text="${totalPages}"></span>
-	  <a th:if="${endPage < totalPages and page != totalPages}" 
-	  th:href="@{/employee/list(page=${totalPages}, keyword=${keyword})}" th:text="${totalPages}" class="page-number"></a>
-	
-	  <!-- Next 버튼 -->
-	  <a th:if="${page < totalPages}" th:href="@{/employee/list(page=${page+5 < totalPages ? page+5 : totalPages}, keyword=${keyword})}">Next &#x203A;</a>
-	</nav>
+    <!-- 이전 페이지 -->
+    <li class="page-item" 
+        th:classappend="${pageInfo.prePage == 0} ? 'disabled'">
+      <a class="page-link" aria-label="Previous"
+         th:href="@{/employee/list(pageNum=${pageInfo.prePage}, pageSize=${pageInfo.pageSize}, keyword=${keyword})}">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
 
+    <!-- 페이지 번호 -->
+    <li class="page-item"
+        th:each="page : ${#numbers.sequence(pageInfo.navigateFirstPage, pageInfo.navigateLastPage)}"
+        th:classappend="${page == pageInfo.pageNum} ? 'active'">
+      <a class="page-link"
+         th:text="${page}"
+         th:href="@{/employee/list(pageNum=${page}, pageSize=${pageInfo.pageSize}, keyword=${keyword})}">
+      </a>
+    </li>
 
+    <!-- 다음 페이지 -->
+    <li class="page-item" 
+        th:classappend="${pageInfo.nextPage == 0} ? 'disabled'">
+      <a class="page-link" aria-label="Next"
+         th:href="@{/employee/list(pageNum=${pageInfo.nextPage}, pageSize=${pageInfo.pageSize}, keyword=${keyword})}">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
 
-
+  </ul>
+</nav>
 
 
 

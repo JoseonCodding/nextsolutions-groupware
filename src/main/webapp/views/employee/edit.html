@@ -4,64 +4,74 @@
     <meta charset="UTF-8">
     <title>사원 정보 수정</title>
     <style>
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            padding: 0px;
-        }
-        .container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 800px;
-            margin: auto;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        h2 {
-            margin-bottom: 20px;
-            font-size: 22px;
-            font-weight: bold;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-spacing: 0;
-        }
-        table td {
-            padding: 10px;
-            vertical-align: middle;
-        }
-        input, select {
-            padding: 8px;
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
+body {
+	font-family: 'Noto Sans KR', sans-serif;
+	justify-content: center;
+	padding: 0px;
+}
 
+.container {
+	margin-top: 45px;
+}
 
-    </style>
+h1 {
+	margin-bottom: 20px;
+	text-align: center;
+	font-size: 22px;
+	font-weight: bold;
+	color: #333;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 20px 0;
+	font-size: 16px;
+}
+
+th, td {
+	padding: 14px 18px;
+	border: 1px solid #ddd;
+}
+
+th {
+	background-color: #f5f7fa;
+	text-align: right; /* 라벨은 오른쪽 정렬 */
+	font-weight: bold;
+	width: 20%;
+	color: #333;
+}
+
+input, select {
+	padding: 8px;
+	width: 100%;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	box-sizing: border-box;
+}
+</style>
     <!-- CSS 불러오기 -->
 	<link rel="stylesheet" href="/css/commonStyle.css">
     <link rel="stylesheet" href="../css/common.css">
 </head>
 <body>
 <div class="container">
-    <h2>사원 정보 수정</h2>
+    <h1>사원 정보 수정</h1>
     
     <form id="employeeUpdateForm" action="/employee/update" method="post" enctype="multipart/form-data">
         <input type="hidden" name="empSeq" th:value="${employee.empSeq}" />
 
-        <table>
+<!--         <table>
 				<tr>
 					<td>사번</td>
 					<td><input type="text" name="employeeId"
 						th:value="${employee.employeeId}" readonly></td>
 					<td>이름</td>
 					<td>
-						<!-- role이 1이나 6일 경우: 수정 가능 --> 
-<!-- 						<input type="text" name="empNm" th:value="${employee.empNm}" th:if="${employee.role == '대표' or employee.role == '사원'}"> 그 외 role일 경우: 수정 불가
+						role이 1이나 6일 경우: 수정 가능 
+						<input type="text" name="empNm" th:value="${employee.empNm}" th:if="${employee.role == '대표' or employee.role == '사원'}"> 그 외 role일 경우: 수정 불가
 						<input type="text" name="empNm" th:value="${employee.empNm}" disabled th:unless="${employee.role == '대표' or employee.role == '사원'}">
-						 -->
+						
 						<input type="text" name="empNm" th:value="${employee.empNm}" th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
 					</td>
 				</tr>
@@ -84,13 +94,13 @@
             <tr>
                 <td>부서명</td>
                 <td>
-        <!-- 대표 or 사원일 경우 -->
+        대표 or 사원일 경우
         <input type="text" name="deptName" th:value="${employee.deptName}"
                 th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
     </td>
                 <td>직위</td>
                     <td>
-        <!-- 대표 or 사원일 경우 -->
+        대표 or 사원일 경우
         <input type="text" name="position" th:value="${employee.position}"
                 th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
 
@@ -100,7 +110,7 @@
                 <td>권한</td>
                 <td colspan="3">
                 
-    <!-- 대표 or 사원관리일 때만 수정 가능 -->
+    대표 or 사원관리일 때만 수정 가능
 <select name="role" th:value="${employee.role}"
         th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
 
@@ -120,7 +130,81 @@
                 <td>비밀번호 변경</td>
                 <td colspan="3"><input type="password" name="password" th:value="${employee.password}" placeholder="새 비밀번호 입력"></td>
             </tr>
-        </table>
+        </table> -->
+        
+<table>
+    <tr>
+        <th>사번</th>
+        <td>
+            <input type="text" name="employeeId" th:value="${employee.employeeId}" readonly>
+        </td>
+        <th>이름</th>
+        <td>
+            <input type="text" name="empNm" th:value="${employee.empNm}"
+                   th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+        </td>
+    </tr>
+    <tr>
+        <th>휴대폰 번호</th>
+        <td>
+            <input type="text" name="phone" th:value="${employee.phone}">
+        </td>
+        <th>생년월일</th>
+        <td>
+            <input type="date" name="birth"
+                   th:value="${employee.birth != null ? #dates.format(employee.birth, 'yyyy-MM-dd') : null}">
+        </td>
+    </tr>
+    <tr>
+        <th>입사일</th>
+        <td>
+            <input type="date" name="hireDate"
+                   th:value="${employee.hireDate != null ? #dates.format(employee.hireDate, 'yyyy-MM-dd') : null}"
+                   th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+        </td>
+        <th>퇴사일</th>
+        <td>
+            <input type="date" name="resignDate"
+                   th:value="${employee.resignDate != null ? #dates.format(employee.resignDate, 'yyyy-MM-dd') : null}"
+                   th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+        </td>
+    </tr>
+    <tr>
+        <th>부서명</th>
+        <td>
+            <input type="text" name="deptName" th:value="${employee.deptName}"
+                   th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+        </td>
+        <th>직위</th>
+        <td>
+            <input type="text" name="position" th:value="${employee.position}"
+                   th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+        </td>
+    </tr>
+    <tr>
+        <th>권한</th>
+        <td colspan="3">
+            <select name="role" th:value="${employee.role}"
+                    th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+                <option value="대표" th:selected="${employee.role == '대표'}">대표</option>
+                <option value="프로젝트" th:selected="${employee.role == '프로젝트'}">프로젝트</option>
+                <option value="근태" th:selected="${employee.role == '근태'}">근태/연차</option>
+                <option value="게시판" th:selected="${employee.role == '게시판'}">게시판</option>
+                <option value="문서관리" th:selected="${employee.role == '문서관리'}">문서관리</option>
+                <option value="사원" th:selected="${employee.role == '사원'}">사원</option>
+                <option value="공지사항" th:selected="${employee.role == '공지사항'}">공지사항</option>
+                <option value="일정관리" th:selected="${employee.role == '일정관리'}">일정관리</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th>비밀번호 변경</th>
+        <td colspan="3">
+            <input type="password" name="password" th:value="${employee.password}" placeholder="새 비밀번호 입력">
+        </td>
+    </tr>
+</table>
+
         
 		<input type="hidden" name="active" th:value="${employee.active}" />
 		<button class="back-btn" onclick="history.back()">뒤로가기</button>

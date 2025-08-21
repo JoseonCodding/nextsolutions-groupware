@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8" />
     <title>Home</title>
-    <!-- 공통 스타링 -->
+    
+    <!-- 폰트어썸 아이콘 스타일시트 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 공통 스타일시트 -->
     <link rel="stylesheet" href="/css/common.css">
-    <!-- 공통 스타링2222 -->
-    <link rel="stylesheet" href="/css/approvalStyle.css">
-    <!-- 근태관리 스타일 -->
+    <link rel="stylesheet" href="/css/commonStyle.css">
+    
+    <!-- 근태관리 스타일시트 -->
     <link rel="stylesheet" href="/css/attend.css">
+
 </head>
 <style>
 *{
@@ -26,10 +31,8 @@
 <div class="wrapper">
 
 	<th:block th:replace="@{/layout/header}"/>
-	
-	<div class="tab-nav"><th:block th:replace="@{${navUrl}}" /></div>
-	
-	<th:block th:replace="@{${mainUrl}}" />
+	<th:block th:replace="@{${navUrl}}" />
+	<th:block th:replace="@{${mainUrl}}" />	
 	<th:block th:replace="@{/layout/footer}"/>
  </div>
 </body>
