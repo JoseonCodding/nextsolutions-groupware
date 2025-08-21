@@ -10,6 +10,8 @@
     .board-nav ul li.admin a:hover { color:#111827; }
     .ico-gear { width:16px; height:16px; vertical-align:-2px; fill:currentColor; }
   </style>
+  
+ 
 <div class="board-nav">
 	<ul class="active">
 		<li >
@@ -28,3 +30,12 @@
 		</li>
    </ul>
 </div>
+ <script>
+(function(){
+  var path = location.pathname;
+  document.querySelectorAll('.board-nav a').forEach(function(a){
+    var href = new URL(a.getAttribute('href'), location.origin).pathname;
+    if (path === href) a.parentElement.classList.add('active');
+  });
+})();
+</script>
