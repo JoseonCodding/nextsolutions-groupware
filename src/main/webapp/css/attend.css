@@ -22,8 +22,9 @@
 
 }
 /* 출퇴근 달력 영역 호버 제외 */
-tbody tr:hover:not(.no-hover tr) {
-    background: initial; /* 또는 background-color: unset; */
+
+tr:hover:not(.no-hover tr) td {
+  background: initial;     
 }
 
 
@@ -47,15 +48,28 @@ fc-thead {
 .fc-daygrid-day {
     height: 120px; /*달력 셀 높이 지정*/
     padding: 5px;
-    margin: 0px;
-    background: red;
+    margin: 0px;   
 }
 
 .fc-event-title {
-	background: yellow;
     text-align: right;
     display: flex;
     justify-content: center; /* 가로 중앙 */
     align-items: bottom;     /* 세로 중앙 */
     height: 100%;            /* 셀 높이 채우기 */
+}
+
+
+.fc-header-toolbar {
+	
+}
+.fc-toolbar {
+	background: orange;
+}
+.fc-toolbar .fc-toolbar-chunk{
+	background: green;
+	float: left;
+}
+.fc-toolbar-ltr {
+	
 }
