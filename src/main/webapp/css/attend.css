@@ -21,20 +21,3 @@ tbody tr:hover:not(.no-hover tr) {
 
 }
 
-/*달력 보기 방식 버튼*/
-/* 검색 버튼 변형*/
-.view-select button:hover {
-    background:var(--search-btn);
-}
-.view-select button {
-    background: var(--search-btn);
-    color: #fff;
-    padding: 10px 20px;
-    
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px 10px 20px 0px;
-    float: right;
-}
