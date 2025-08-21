@@ -18,12 +18,12 @@
 	</h2>
 
 
-	<div style="display: flex;">
+	<div style="display: flex; justify-content: space-between;">
 	
 		<!-- 작성자, 부서, 기안일, 문서번호 영역 -->
-		<table border="">
+		<table border="" style="width:400px;">
 			<tr>
-				<th style="width: 150px;"><b>작성자</b></th>
+				<th style="width:100px;"><b>작성자</b></th>
 		    <td>
 		      <span th:if="${approvalData != null}">
 		        <span th:text="${approvalData.writerPosition != null ? approvalData.writerPosition : ''}"></span>
@@ -48,9 +48,9 @@
 
 		<!-- 공지사항 전용 결재선 -->
 		<th:block th:if="${approvalData.docType == '공지사항'}">
-		  <table border="" style="margin-left: 50px;">
+		  <table border="" style="margin-left: 50px; width:400px; ">
 		    <tr>
-		      <th><b>상신자</b></th>
+		      <th style="height:24px;"><b>상신자</b></th>
 		      <th>
 		        <b th:text="${approvalData.status == '대기' ? '결재권한자' : '결재자'}">결재자</b>
 		      </th>
@@ -107,9 +107,9 @@
 			
 		<!-- 프로젝트 전용 결재선 -->
 		<th:block th:if="${approvalData.docType == '프로젝트'}">
-		  <table border="" style="margin-left: 50px;">
+		  <table border="" style="margin-left: 50px; width:400px; ">
 		    <tr>
-		      <th><b>상신자</b></th>
+		      <th style="height:24px;"><b>상신자</b></th>
 		      <th>
 		        <b th:text="${approvalData.status == '대기' ? '결재권한자' : '결재자'}">결재자</b>
 		      </th>
@@ -178,9 +178,9 @@
 			
 		<!-- 근태 전용 결재선 -->
 		<th:block th:if="${approvalData.docType == '근태'}">
-		  <table border="" style="margin-left: 50px;">
+		  <table border="" style="margin-left: 50px; width:400px; ">
 		    <tr>
-		      <th><b>상신자</b></th>
+		      <th style="height:24px;"><b>상신자</b></th>
 		      <th>
 		        <b th:text="${approvalData.status == '대기' ? '결재권한자' : '결재자'}">결재자</b>
 		      </th>
@@ -240,9 +240,9 @@
 		
 		<!-- 연차 전용 결재선 -->
 		<th:block th:if="${approvalData.docType == '연차'}">
-		  <table border="" style="margin-left: 50px;">
+		  <table border="" style="margin-left: 50px; width:400px; ">
 		    <tr>
-		      <th><b>상신자</b></th>
+		      <th style="height:24px;"><b>상신자</b></th>
 		      <th>
 		        <b th:text="${approvalData.status == '대기' ? '결재권한자' : '결재자'}">결재자</b>
 		      </th>

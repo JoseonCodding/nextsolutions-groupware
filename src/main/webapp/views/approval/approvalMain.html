@@ -57,7 +57,7 @@
                 <tr th:each="dto : ${approvalData}">
                 	<td th:text="${#dates.format(dto.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></td>
             		<td th:text="${dto.docType}"></td>
-				    <td class="title">
+				    <td style="text-align: left;" class="title">
 				    	<a th:href="@{/approval/viewer(docId=${dto.docId}, page=${page}, type=${type}, status=${status})}" th:text="${dto.title}"></a>
 				    </td>
    				    <td th:text="${dto.writer}"></td>
