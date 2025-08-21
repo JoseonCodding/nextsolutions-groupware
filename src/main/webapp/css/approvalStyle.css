@@ -1,14 +1,5 @@
-/* @charset "UTF-8";
+@charset "UTF-8";
 
-.board-title a {
-  display: inline-block;     줄 바꿈 방지 위해 inline-block 또는 block
-  width: 500px;              너비 조절, 35글자 정도 너비로 맞춤 (폰트 크기에 따라 조절 필요)
-  white-space: nowrap;       한 줄로 유지
-  overflow: hidden;          넘치는 텍스트 숨김
-  text-overflow: ellipsis;   넘친 부분을 ... 으로 표시
+td {
+	text-align:left;
 }
-
-.board-title a:hover {
-	text-decoration: underline;
-}
- */

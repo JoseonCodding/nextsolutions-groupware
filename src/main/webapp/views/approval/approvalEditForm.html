@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>★전자 결재 문서 수정</title>   
+    
+	<link rel="stylesheet" href="/css/approvalStyle.css">
+    
 </head>
 <body>
 	<h1 style="margin-top:45px;">전자결재</h1>
@@ -24,19 +27,19 @@
                 
         <table>
             <tr>
-                <td><b>작성자</b></td>
+                <th>작성자</th>
                 <td th:text="*{writer}"></td>
             </tr>
             <tr>
-                <td><b>부서</b></td>
+                <th>부서</th>
                 <td th:text="*{deptName}"></td>
             </tr>
             <tr>
-                <td><b>결재 종류</b></td>
+                <th>결재 종류</th>
                 <td th:text="*{docType}"></td>
             </tr>
 			<tr>
-				<td><b>제목</b></td>
+				<th>제목</th>
 				<td>
 					<span th:if="${editData.docType == '연차'}" th:text="*{title}"></span>
 					<span th:if="${editData.docType == '근태'}" th:text="*{title}"></span>
@@ -51,7 +54,7 @@
 	    <table th:if="${editData.docType == '연차'}"
 	           border="1" style="margin-top:10px; border-collapse:collapse; width:100%;">
 	        <tr>
-	            <td><b>연차 발생일</b></td>
+	            <th>연차 발생일</th>
 	            <td>
 	                <span th:text="${editData.leaveCreateDate != null ? #dates.format(editData.leaveCreateDate, 'yyyy-MM-dd') : '-'}"></span>
 	            </td>
@@ -59,14 +62,14 @@
 	        <tr>
 	        </tr>
 	        <tr>
-	            <td><b>연차 사용일</b></td>
+	            <th>연차 사용일</th>
 	            <td>
 					<input type="date" name="leaveUsedDate"
 					       th:value="${editData.leaveUsedDate != null ? #dates.format(editData.leaveUsedDate, 'yyyy-MM-dd') : ''}" />
 	            </td>
 	        </tr>
 	        <tr>
-	            <td><b>연차 사유</b></td>
+	            <th>연차 사유</th>
 	            <td>
 	                <textarea name="content" rows="5" style="width:95%;" th:text="${editData.content}"></textarea>
 	            </td>
@@ -77,9 +80,9 @@
 		<table th:if="${editData.docType == '근태'}"
 		       border="1" style="margin-top:10px; border-collapse:collapse; width:100%;">
 		    <tr>
-		        <td><b>항목</b></td>
+		        <th>항목</th>
 		        <td>
-		            <div style="display:flex; gap:28px; align-items:center; flex-wrap:wrap; justify-content:center;">
+		            <div style="display:flex; gap:28px; align-items:center; flex-wrap:wrap; justify-content:flex-start;">
 		                <label style="display:flex; align-items:center; gap:8px; font-size:16px;">
 		                    <input class="action-one" type="checkbox" name="actions" value="IN"
 		                      th:checked="${editData != null and (editData.timeInout == '출근' or editData.timeInout == '출퇴근')}" />
@@ -94,15 +97,15 @@
 		        </td>
 		    </tr>
 		    <tr>
-		        <td><b>출근 시간</b></td>
+		        <th>출근 시간</th>
 		        <td><span th:text="${editData.checkInTime != null ? #dates.format(editData.checkInTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
 		    </tr>
 		    <tr>
-		        <td><b>퇴근 시간</b></td>
+		        <th>퇴근 시간</th>
 		        <td><span th:text="${editData.checkOutTime != null ? #dates.format(editData.checkOutTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
 		    </tr>
 		    <tr>
-		        <td><b>수정 사유</b></td>
+		        <th>수정 사유</th>
 		        <td>
 		            <textarea name="content" rows="5" style="width:95%;" th:text="${editData.content}"></textarea>
 		        </td>
