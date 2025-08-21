@@ -288,17 +288,17 @@ tr:hover {
 		<thead>
 			<tr>
 				<th style="width:35px; text-align: center;">번호</th>
-				<th style="width: 140px;">제목</th>
+				<th style="width: 350px;">제목</th>
 				<th style="width: 50px;">담당자</th>
-				<th style="width: 60px;">진행상태</th>
+				<th style="width: 90px;">진행상태</th>
 				
 				<th>기간</th>
 				<!-- <th>시작일</th>
 				<th>종료일</th> -->
-				<th>결재자</th>
-				<th>버전</th>
+				<th style="width: 50px;">결재자</th>
+				<th style="width: 50px;">버전</th>
 				<!--  <th>gid</th>-->
-				<th style="width: 130px;">비고</th>
+				<th style="width: 70px;">　</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -312,7 +312,9 @@ tr:hover {
 			
 			<!-- 페이지 순번 처리  -->
 				<td	th:text="${pageInfo != null ? (pageInfo.pageSize * (pageInfo.pageNum - 1) + stat.index + 1) : (stat.index + 1)}" style="text-align: center;"></td>
-				<td th:text="${pjt['PJT_NM']}">프로젝트명</td>
+				<td>
+					<a th:text="${pjt['PJT_NM']}" class="board-title" th:href="@{/pjtMng/pjtDetail(pjtSn=${pjt['PJT_SN']})}"></a>
+				</td>
 				<td th:text="${pjt['employeeId']} ">담당자</td>					
 				<td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>				
 				<td th:text="${pjt['PJT_BGNG_DT']} + ' ~ ' + ${pjt['PJT_END_DT']}">기간</td>
@@ -321,11 +323,11 @@ tr:hover {
 				<td th:text="'v' +${pjt['ver']}"></td>
 				<!--  <td th:text="${pjt['gid']}"></td> -->
 				<td>
-					<!-- 상세보기: 항상 가능 -->
-					<button class="detail-btn"
+					<!-- 상세보기: 항상 가능 // 미사용 --> 
+					<!-- <button class="detail-btn"
 						th:onclick="'location.href=\'/pjtMng/pjtDetail?pjtSn=' + ${pjt['PJT_SN']} + '\''">
 						상세
-					</button>
+					</button> -->
             <!-- 수정 버튼 -->
 					<button class="edit-btn"
 						th:if="${session.loginUser.role == '대표' or session.loginUser.role == '프로젝트'}"
