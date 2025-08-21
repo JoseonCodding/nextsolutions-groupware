@@ -1,18 +1,4 @@
-<style>
 
-.fc-daygrid-day {
-    height: 120px; /*달력 셀 높이 지정*/
-}
-
-.fc-event-title {
-
-    text-align: center;
-    display: flex;
-    justify-content: center; /* 가로 중앙 */
-    align-items: center;     /* 세로 중앙 */
-    height: 100%;            /* 셀 높이 채우기 */
-}
-</style>
 <form method="get" th:action="@{/attend}">
     <input type="hidden" name="startDay" th:value="${prevMonthStartDay}"/>
     <input type="hidden" name="endDay" th:value="${prevMonthEndDay}"/>
@@ -103,6 +89,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	 var calendarEl = document.getElementById('calendar');
 	    var calendar = new FullCalendar.Calendar(calendarEl, {
 	        initialView: 'dayGridMonth',
+	        height: 'auto',       // 높이 자동 맞춤
+	        contentHeight: 'auto',
+	        aspectRatio: 1,      // 가로세로 비율 (조정 가능)
 	        events: events,
 	        headerToolbar: {
 	            left: 'prevMonthButton,title,nextMonthButton',
