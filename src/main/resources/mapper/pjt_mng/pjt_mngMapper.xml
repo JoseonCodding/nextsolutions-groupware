@@ -209,12 +209,14 @@
  , t2.PJT_NM
  , t2.PJT_STTS_CD
  , ( SELECT emp_nm from employee where 1=1 and employeeId = t2.employeeId ) AS employeeId
+  , ( SELECT position from employee where 1=1 and employeeId = t2.employeeId ) AS position
  , t2.USE_YN
  , t2.FRST_REG_DT
  , t2.LAST_MDFR_ID
  , t2.PJT_BGNG_DT
  , t2.PJT_END_DT
  , ( SELECT emp_nm from employee where 1=1 and employeeId = t2.TB_PJT_APR ) AS TB_PJT_APR 
+  , ( SELECT position from employee where 1=1 and employeeId = t2.TB_PJT_APR ) AS position_APR 
  , t2.TB_PJT_BASCcol
  , t2.docType
  , t2.content
@@ -255,6 +257,7 @@
  , t2.PJT_NM
  , t2.PJT_STTS_CD
  , ( SELECT emp_nm from employee where 1=1 and employeeId = t2.employeeId ) AS employeeId
+ , ( SELECT position from employee where 1=1 and employeeId = t2.employeeId ) AS position
  , t2.USE_YN
  , t2.FRST_REG_DT
  , t2.LAST_MDFR_ID
