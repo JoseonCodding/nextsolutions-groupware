@@ -1,15 +1,5 @@
 @charset "UTF-8";
 
-/*초기화*/
-*{
-	margin:0;
-	padding:0;
-}
-.wrapper{
-	width:1200px;
-	margin: 0 auto;
-	background-color: rgb(255, 255, 255); /*영역 확인용*/
-} 
 
 
 /*======== 메인 헤더와 통일 ===============*/
@@ -128,11 +118,15 @@ a:hover {
 
 
 /* 게시글 목록의 제목 (class="board-title") */
-.board-title {
+.board-title a {
 	text-align: center;
+	display: inline-block;     /* 줄 바꿈 방지 위해 inline-block 또는 block */
+	white-space: nowrap;       /* 한 줄로 유지 */
+	overflow: hidden;          /* 넘치는 텍스트 숨김 */
+	text-overflow: ellipsis;   /* 넘친 부분을 ... 으로 표시 */
 }
 
-.board-title:hover {
+.board-title:hover a {
 	text-decoration: underline;
 }
 

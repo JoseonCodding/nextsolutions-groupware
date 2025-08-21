@@ -57,7 +57,48 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
 <script th:inline="javascript">
+/* 서버에서 전달한 Map을 JS 객체로 변환 */
+//var attendMap = /*[[${attendMap}]]*/ {};
+//var attendMapLeave = /*[[${attendMapLeave}]]*/ {};
 
+
+//var events = [];
+/*
+Object.keys(attendMap).forEach(function(date) {
+    var dto = attendMap[date];
+    
+    // 출근 이벤트
+    if(dto.checkInHourMinute) {
+        events.push({
+            title: '출근 ' + dto.checkInHourMinute,
+            start: date ,
+            color: '#3788d8' // 출근 색상
+        });
+    }
+
+    // 퇴근 이벤트
+    if(dto.checkOutHourMinute) {
+        events.push({
+            title: '퇴근 ' + dto.checkOutHourMinute ,
+            start: date ,
+            color: '#d8573c' // 퇴근 색상
+        });
+    }
+});
+
+Object.keys(attendMapLeave).forEach(function(leaveDate) {
+    var leave = attendMapLeave[leaveDate];
+
+    if (leave && leave.usedDateStr) {
+        events.push({
+			 title:'연차',
+        	 start: leave.usedDateStr,   // 시작일
+             end: leave.usedDateStr,     // 종료일도 지정 (같은 날이면 그대로)
+             display: 'background',      // 배경으로 표시
+             backgroundColor: '#ccffcc'  // 연두색 (미색 연두로 변경 가능)
+        });
+    }
+});
 
 // 달 이동 버튼
 function fetchAttendanceData(startDate, endDate) {
@@ -86,7 +127,7 @@ function fetchAttendanceData(startDate, endDate) {
 	}
 
 
-
+*/
 
 document.addEventListener('DOMContentLoaded', function() {
 

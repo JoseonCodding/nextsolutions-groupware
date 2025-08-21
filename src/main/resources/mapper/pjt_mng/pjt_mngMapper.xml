@@ -119,11 +119,14 @@
     WHERE PJT_SN = #{pjtSn}
   </select>
 
-  <!-- 프로젝트 목록조회 (검색/페이징/필터 포함) -->
+  <!-- 프로젝트 목록조회 (검색/페이징/필터/담당자 이름/직책 포함) -->
   <select id="selectProjectList" parameterType="map"
           resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
           /* com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.selectProjectList*/
-    SELECT B.PJT_SN, B.PJT_NM, B.PJT_STTS_CD, B.employeeId,
+    SELECT B.PJT_SN,
+    	  B.PJT_NM,
+         B.PJT_STTS_CD,
+          B.employeeId,
            B.FRST_REG_DT, B.LAST_MDFCN_DT,
            B.PJT_BGNG_DT, B.PJT_END_DT, B.TB_PJT_APR, B.ver
     FROM TB_PJT_BASC B

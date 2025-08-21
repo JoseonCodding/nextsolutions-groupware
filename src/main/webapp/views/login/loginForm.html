@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
@@ -39,12 +39,12 @@
   </form>
 </div>
 
-<!-- 로그인 실패 시 alert -->
+로그인 실패 시 alert
 <script th:if="${param.error}">
   alert("사번과 비밀번호가 맞지 않습니다. 다시 입력해주세요.");
 </script>
 
-<!-- 숫자 8자리 강제 스크립트 -->
+숫자 8자리 강제 스크립트
 <script>
   const idEl = document.getElementById('employeeId');
   const form = document.getElementById('loginForm');
@@ -66,3 +66,188 @@
 
 </body>
 </html>
+ -->
+ 
+ <!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>NextSolutions - 로그인</title>
+<style>
+  :root{
+    --primary: #3949ab;
+    --primary-dark: #283593;
+    --accent: #64b5f6;
+    --ink: #1f2937;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --bg1: #eef2ff;
+    --bg2: #f5f7ff;
+  }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    margin:0;
+    padding:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+  }
+
+  .login-container {
+    width:100%;
+    max-width:420px;
+    background:rgba(255,255,255,.85);
+    border:1px solid rgba(57,73,171,.12);
+    backdrop-filter: blur(8px);
+    border-radius:16px;
+    padding:34px 28px;
+    box-shadow:0 6px 20px rgba(0,0,0,.1);
+    animation: pop 420ms cubic-bezier(.2,.8,.2,1);
+  }
+
+  @keyframes pop {
+    from { transform: translateY(8px) scale(.98); opacity:0; }
+    to   { transform: translateY(0) scale(1); opacity:1; }
+  }
+
+  .logo {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:20px;
+  }
+
+.logo span {
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -0.5px;
+
+  margin-left: -40px;  /* 👈 살짝(많이) 왼쪽으로 당김 */
+}
+
+  h1 {
+    text-align:center;
+    margin:0 0 26px;
+    font-weight:700;
+    font-size:20px;
+    color: var(--ink);
+  }
+
+  #loginForm { display:grid; gap:14px; }
+
+  label {
+    font-size:13px;
+    color:var(--muted);
+    font-weight:600;
+    letter-spacing:.2px;
+  }
+
+  input {
+    width:93%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1px solid #c7cbe6;
+    background:#fff;
+    font-size:15px;
+    transition: border-color .18s ease, box-shadow .18s ease;
+  }
+
+  input::placeholder { color:#9aa3b2; }
+
+  input:focus {
+    outline:none;
+    border-color: var(--primary);
+    box-shadow:0 0 0 4px rgba(57,73,171,.15);
+  }
+
+  button {
+    width:100%;
+    padding:12px 14px;
+    border:none;
+    border-radius:10px;
+    color:#fff;
+    font-weight:700;
+    font-size:16px;
+    cursor:pointer;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    box-shadow: 0 8px 16px rgba(57,73,171,.25);
+    transition: transform .06s ease, box-shadow .18s ease, filter .18s ease;
+  }
+
+  button:hover { filter: brightness(1.05); box-shadow: 0 12px 22px rgba(57,73,171,.3); }
+  button:active { transform: translateY(1px); }
+
+  @media (max-width:420px){
+    .login-container{ margin:20px; padding:26px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="login-container">
+
+  <!-- ✅ Inline SVG 로고 -->
+  <div class="logo">
+    <!-- 네가 업로드한 favicon.svg의 코드 그대로 삽입 -->
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    <svg width="42" height="42" viewBox="0 0 100 100" version="1.1">
+    </svg>
+    <span>NextSolutions</span>
+  </div>
+
+  <h1>로그인</h1>
+
+  <form action="/login/process" method="post" id="loginForm">
+    <label for="employeeId">아이디</label>
+    <input
+      type="text"
+      id="employeeId"
+      name="employeeId"
+      placeholder="사번 입력"
+      required
+      inputmode="numeric"
+      maxlength="8"
+      pattern="[0-9]{8}"
+      title="아이디는 숫자 8자리여야 합니다."
+      autocomplete="username"
+    />
+
+    <label for="password">비밀번호</label>
+    <input type="password" id="password" name="password" placeholder="비밀번호" autocomplete="current-password"/>
+
+    <button type="submit">로그인</button>
+  </form>
+</div>
+
+<!-- 로그인 실패 시 alert -->
+<script th:if="${param.error}">
+  alert("사번과 비밀번호가 맞지 않습니다. 다시 입력해주세요.");
+</script>
+
+<script>
+  const idEl = document.getElementById('employeeId');
+  const form = document.getElementById('loginForm');
+
+  idEl.addEventListener('input', () => {
+    idEl.value = idEl.value.replace(/\D/g, '').slice(0, 8);
+  });
+
+  form.addEventListener('submit', (e) => {
+    if (!/^\d{8}$/.test(idEl.value)) {
+      alert('아이디는 숫자 8자리여야 합니다.');
+      idEl.focus();
+      e.preventDefault();
+    }
+  });
+</script>
+
+</body>
+</html>
+ 

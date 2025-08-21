@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -67,27 +68,31 @@ public class AttendController {
         attendance.setEmployeeId(loginUser.getEmployeeId());
     	List<AttendDTO> attendMonthList =  attendMapper.userAttendMonthList(attendance); 
     	
-    	// 연차 날짜 가져오기용
-    	List<LeaveDTO> leaveDate = attendMapper.searchLeaveDate(attendance); 
-    	
-    	// 달력 라이브러리 - Map 형태로 변환 --->
-        Map<String, AttendDTO> attendMap = new HashMap<>();
-        for (AttendDTO dto : attendMonthList) {
-            attendMap.put(dto.getWorkDate(), dto);
-        }
-        
-        Map<String, LeaveDTO> attendMapLeave = new HashMap<>();
-        for (LeaveDTO leave : leaveDate) {
-            attendMapLeave.put(leave.getUsedDateStr(), leave);
-        }
-        
-        model.addAttribute("attendMap", attendMap); // 날짜 기준 Map 전달
-        model.addAttribute("attendMapLeave", attendMapLeave);
-        //<---
+//    	// 연차 날짜 가져오기용
+//    	List<LeaveDTO> leaveDate = attendMapper.searchLeaveDate(attendance); 
+//    	
+//    	// 달력 라이브러리 - Map 형태로 변환 --->
+//        Map<String, AttendDTO> attendMap = new HashMap<>();
+//        for (AttendDTO dto : attendMonthList) {
+//            attendMap.put(dto.getWorkDate(), dto);
+//        }
+//        
+//        Map<String, LeaveDTO> attendMapLeave = new HashMap<>();
+//        for (LeaveDTO leave : leaveDate) {
+//            attendMapLeave.put(leave.getUsedDateStr(), leave);
+//        }
+//        
+//        model.addAttribute("attendMap", attendMap); // 날짜 기준 Map 전달
+//        model.addAttribute("attendMapLeave", attendMapLeave);
+//        
+//        model.addAttribute("StartDay", attendance.getStartDay());
+//        model.addAttribute("EndDay", attendance.getEndDay());
+//        
+//        //<---
         
     	System.out.println("showAttendancePage:"+attendMonthList);
     	
-    	model.addAttribute("leaveDate", leaveDate);
+    	//model.addAttribute("leaveDate", leaveDate);
         model.addAttribute("mainData", attendMonthList);
         model.addAttribute("mainUrl", "attend/check");
         model.addAttribute("attendDTO", attendance);   // 조회 조건 유지용
@@ -103,6 +108,46 @@ public class AttendController {
         return "navTap";
         
     }
+    
+    //FullCalendar - 
+    @PostMapping("/attend/json")
+    @ResponseBody
+    public Map<String, Object> getAttendanceJson(HttpSession session, AttendDTO2 attendance) {
+        EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+        attendance.setEmployeeId(loginUser.getEmployeeId());
+
+        // 해당 기간 데이터 조회
+        List<AttendDTO> attendMonthList = attendMapper.userAttendMonthList(attendance);
+        List<LeaveDTO> leaveDate = attendMapper.searchLeaveDate(attendance);
+
+        // 배열 형태로 변환
+        List<Map<String, String>> attendArray = new ArrayList<>();
+        for (AttendDTO dto : attendMonthList) {
+            Map<String, String> map = new HashMap<>();
+            map.put("date", dto.getWorkDate());
+            map.put("checkIn", dto.getCheckInHourMinute());
+            map.put("checkOut", dto.getCheckOutHourMinute());
+            attendArray.add(map);
+        }
+
+        
+        
+        List<Map<String, String>> leaveArray = new ArrayList<>();
+        for (LeaveDTO leave : leaveDate) {
+            Map<String, String> map = new HashMap<>();
+            map.put("date", leave.getUsedDateStr());
+
+            leaveArray.add(map);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("attendArray", attendArray);
+        result.put("leaveArray", leaveArray);
+
+        return result;
+    }
+
+
 
     
     //출근 시간 기록
