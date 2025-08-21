@@ -37,8 +37,9 @@ public class AttendDTO2 {
     String keyword;
     
     
-    //출퇴근 기록 달력에 연차 날짜 가져오기
+    //출퇴근 기록 달력에 연차 날짜 ,휴무일 가져오기
     Date usedDate;
+    String title;
     
 //	work_hours DECIMAL(4,1) NULL,           -- 근무시간 (예: 8.0)
 //	ADD COLUMN is_normal_work BOOLEAN DEFAULT FALSE,   -- 정상근무 여부

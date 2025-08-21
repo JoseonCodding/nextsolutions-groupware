@@ -61,9 +61,10 @@
 /* 서버에서 전달한 Map을 JS 객체로 변환 */
 var attendMap = /*[[${attendMap}]]*/ {};
 var attendMapLeave = /*[[${attendMapLeave}]]*/ {};
+var holidayArr = /*[[${holidayArr}]]*/ {};
 var attendDTO2 = /*[[${attendDTO2}]]*/ {};
 var currDay = new Date(attendDTO2.startDay);
-//console.log(currDay)
+console.log(holidayArr)
 
 //console.log(attendDTO2)
 
@@ -104,6 +105,21 @@ Object.keys(attendMapLeave).forEach(function(leaveDate) {
              backgroundColor: '#ccffcc'  // 연두색 (미색 연두로 변경 가능)
         });
     }
+});
+
+
+holidayArr.forEach(function(holiday, idx) {
+    
+	
+    
+     events.push({
+		title:holiday.title,
+     	 start: holiday.startDateStr,   // 시작일
+          end: holiday.endDateStr,     // 종료일도 지정 (같은 날이면 그대로)
+          display: 'background',      // 배경으로 표시
+          backgroundColor: '#ffd6d6'  
+     });
+    
 });
 /*
 // 달 이동 버튼

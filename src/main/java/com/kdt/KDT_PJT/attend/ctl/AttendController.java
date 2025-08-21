@@ -28,6 +28,7 @@ import com.kdt.KDT_PJT.attend.model.AttendMapper;
 import com.kdt.KDT_PJT.attend.model.LeaveDTO;
 import com.kdt.KDT_PJT.attend.model.LeaveMapper;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
+import com.kdt.KDT_PJT.schedule.model.ScheduleDTO;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -72,6 +73,14 @@ public class AttendController {
     	// 연차 날짜 가져오기용
     	List<LeaveDTO> leaveDate = attendMapper.searchLeaveDate(attendance); 
     	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
     	// 달력 라이브러리 - Map 형태로 변환 --->
         Map<String, AttendDTO> attendMap = new HashMap<>();
         for (AttendDTO dto : attendMonthList) {
@@ -83,8 +92,15 @@ public class AttendController {
             attendMapLeave.put(leave.getUsedDateStr(), leave);
         }
         
+        
+     
+    	//System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ holiday  :"+holiday);
+        
+        
         model.addAttribute("attendMap", attendMap); // 날짜 기준 Map 전달
         model.addAttribute("attendMapLeave", attendMapLeave);
+        
+        model.addAttribute("holidayArr", attendMapper.searchHoliday(attendance));
 
         model.addAttribute("StartDay", attendance.getStartDay());
         model.addAttribute("EndDay", attendance.getEndDay());
