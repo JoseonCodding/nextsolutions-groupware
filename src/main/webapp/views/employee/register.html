@@ -3,52 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <title>사원 등록</title>
-    <style>
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            padding: 0px;
-        }
-        .container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 800px;
-            margin: auto;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        h2 {
-            margin-bottom: 20px;
-            font-size: 22px;
-            font-weight: bold;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-spacing: 0;
-        }
-        table td {
-            padding: 10px;
-            vertical-align: middle;
-        }
-        input, select {
-            padding: 8px;
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-    </style>
-    <!-- CSS 불러오기 -->
+<style>
+body {
+	font-family: 'Noto Sans KR', sans-serif;
+	justify-content: center;
+	padding: 0px;
+}
+
+.container {
+	margin-top: 45px;
+}
+
+h1 {
+	margin-bottom: 20px;
+	text-align: center;
+	font-size: 22px;
+	font-weight: bold;
+	color: #333;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 20px 0;
+	font-size: 16px;
+}
+
+th, td {
+	padding: 14px 18px;
+	border: 1px solid #ddd;
+}
+
+th {
+	background-color: #f5f7fa;
+	text-align: right; /* 라벨은 오른쪽 정렬 */
+	font-weight: bold;
+	width: 20%;
+	color: #333;
+}
+
+td {
+	background: #fff;
+}
+
+input, select {
+	width: 95%;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+input, select {
+	padding: 8px;
+	width: 100%;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	box-sizing: border-box;
+}
+</style>
+<!-- CSS 불러오기 -->
 	<link rel="stylesheet" href="/css/commonStyle.css">
     <link rel="stylesheet" href="../css/common.css">
 </head>
 <body>
 <div class="container">
-    <h2>사원 등록</h2>
+    <h1>사원 등록</h1>
     
     <form id="employeeForm" action="/employee/register" method="post" enctype="multipart/form-data">
 
-        <table>
+<!--         <table>
             <tr>
                 <td>사번</td>
                 <td><input type="text" name="employeeId" required></td>
@@ -89,8 +112,49 @@
                     </select>
                 </td>
             </tr>
-        </table>
-
+        </table> -->
+        
+<table>
+    <tr>
+        <th>사번</th>
+        <td><input type="text" name="employeeId" required></td>
+        <th>비밀번호</th>
+        <td><input type="password" name="password" required></td>
+    </tr>
+    <tr>
+        <th>이름</th>
+        <td><input type="text" name="empNm" required></td>
+        <th>휴대폰 번호</th>
+        <td><input type="text" name="phone"></td>
+    </tr>
+    <tr>
+        <th>생년월일</th>
+        <td><input type="date" name="birth"></td>
+        <th>입사일</th>
+        <td><input type="date" name="hireDate"></td>
+    </tr>
+    <tr>
+        <th>부서명</th>
+        <td><input type="text" name="deptName"></td>
+        <th>직위</th>
+        <td><input type="text" name="position"></td>
+    </tr>
+    <tr>
+        <th>권한</th>
+        <td colspan="3">
+            <select name="role">
+                <option value="대표">대표</option>
+                <option value="프로젝트">프로젝트</option>
+                <option value="근태">근태/연차</option>
+                <option value="게시판">게시판</option>
+                <option value="문서">문서관리</option>
+                <option value="사원">사원관리</option>
+                <option value="공지사항">공지사항</option>
+                <option value="일정">일정관리</option>
+            </select>
+        </td>
+    </tr>
+</table>
 		<button class="back-btn" onclick="history.back()">뒤로가기</button>
         <button type="submit" class="save-btn">등록 완료</button>
     </form>
