@@ -28,7 +28,8 @@ public interface AttendMapper {
    @Select("select * from attendance where employeeId = #{employeeId} ")
    List<AttendDTO> userAttendList(EmployeeDto loginUser);
    
-   //사용자 본인의 출퇴근 기록 한달 기준 보기
+   
+   //사용자 본인의 출퇴근 기록 한달 기준 보기  //DTO2 - limit 없는 버전
    @Select("""
 		    SELECT * FROM attendance
 		    WHERE employeeId = #{employeeId}
@@ -37,7 +38,14 @@ public interface AttendMapper {
 		""")
    List<AttendDTO> userAttendMonthList( AttendDTO2 attendance);
    
-
+   //출퇴근 기록에 연차 날짜 가져오기
+   @Select("""
+   		select used_date from annual_leave where employeeId = #{employeeId}
+   			AND DATE(used_date) BETWEEN #{startDay} AND #{endDay}
+		    ORDER BY used_date
+   		""")
+   List<LeaveDTO> searchLeaveDate(AttendDTO2 attendance);
+   
    
    //오늘 출근 조회용
    @Select("""
@@ -47,6 +55,7 @@ public interface AttendMapper {
          """)
    AttendDTO findTodayAttendance(@Param("employeeId") String employeeId);
    
+   // 출퇴근 기록 수정 신청
    @Insert("INSERT INTO attendance (modified_by, modified_at, modification_reason) VALUES (#{modified_at}, #{modification_reason})")
    void attendSave(AttendDTO attendance);
 

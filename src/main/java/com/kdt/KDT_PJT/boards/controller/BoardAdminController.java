@@ -47,12 +47,14 @@ public class BoardAdminController {
 
             long views = boardMapper.selectTodayViews(boardId);
             long likes = boardMapper.selectTodayLikes(boardId);
+            long posts = boardMapper.selectTodayPosts(boardId);
 
             Map<String, Object> row = new HashMap<>(); 
             row.put("boardId", boardId);
             row.put("boardName", b.getBoardName());
             row.put("viewToday", views);
             row.put("likeToday", likes);
+            row.put("postToday", posts);     
             todayStats.add(row);
         }
         model.addAttribute("todayStats", todayStats);
@@ -97,8 +99,8 @@ public class BoardAdminController {
         
         // ✅ 최대 6개 제한
         int count = boardMapper.countBoards();
-        if (count >= 7) {
-            redirect.addFlashAttribute("error", "게시판은 최대 7개까지만 생성할 수 있습니다.");
+        if (count >= 6) {
+            redirect.addFlashAttribute("error", "게시판은 최대 6개까지만 생성할 수 있습니다.");
             return "redirect:/admin/boards";
         }
 
@@ -158,12 +160,14 @@ public class BoardAdminController {
 
             long views = boardMapper.selectTodayViews(boardId);
             long likes = boardMapper.selectTodayLikes(boardId);
+            long posts = boardMapper.selectTodayPosts(boardId);   
 
             Map<String, Object> row = new HashMap<>();
             row.put("boardId", boardId);
             row.put("boardName", b.getBoardName());
             row.put("viewToday", views);
             row.put("likeToday", likes);
+            row.put("postToday", posts);  
             todayStats.add(row);
         }
         model.addAttribute("todayStats", todayStats);

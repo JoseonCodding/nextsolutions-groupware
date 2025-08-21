@@ -1,0 +1,54 @@
+@charset "UTF-8";
+
+.sche-table {
+	border: 1px solid black;
+}
+.sche-table-month {
+	
+}
+.sche-table-week {
+	
+}
+.sche-table-day {
+	
+}
+.daygrid-day {
+	
+    height: 100px; /*달력 셀 높이 지정*/
+    padding: 5px;
+    margin: 0px;
+}
+
+.sche-comm {
+	font-size: 12px;
+	width: 150px;
+	color: white;
+	text-align: center;
+    display: flex;
+    justify-content: center; /* 가로 중앙 */
+    border-radius: 5px;
+    text-decoration: none; 
+    margin:0px;
+}
+
+.leave {
+	
+	background: green;
+    
+}
+.normal-sche {
+	
+	background: #0080ff;
+   
+}
+.holiday-sche {
+	
+	background: #ff0000;
+                /* 셀 높이 채우기 */
+}
+.project-sche {
+	
+	background: #ff8000;
+    
+}
+

@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
-<div class="document-detail">
-
   <!-- 헤더 -->
   <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:12px;">
     <h2 th:text="${doc.pjtNm}">프로젝트명</h2>
@@ -38,20 +29,25 @@
   <div style="margin-bottom:16px;">
     <h4 style="margin:0 0 8px;">첨부파일</h4>
     <ul style="margin:0; padding-left:18px;">
-      <li th:if="${!#strings.isEmpty(doc.orgFileNm1)}">
-  <a th:href="@{/document/download(path=${doc.atchFileSn1}, fileName=${doc.orgFileNm1})}"
-     th:text="${doc.orgFileNm1}">파일1</a>
-</li>
-<li th:if="${!#strings.isEmpty(doc.orgFileNm2)}"> ... </li>
-<li th:if="${!#strings.isEmpty(doc.orgFileNm3)}"> ... </li>
+  <li th:if="${!#strings.isEmpty(doc.orgFileNm1)}">
+    <a th:href="@{/document/download(fileName=${doc.atchFileSn1}, orgName=${doc.orgFileNm1})}"
+       th:text="${doc.orgFileNm1}">파일1</a>
+  </li>
+  <li th:if="${!#strings.isEmpty(doc.orgFileNm2)}">
+    <a th:href="@{/document/download(fileName=${doc.atchFileSn2}, orgName=${doc.orgFileNm2})}"
+       th:text="${doc.orgFileNm2}">파일2</a>
+  </li>
+  <li th:if="${!#strings.isEmpty(doc.orgFileNm3)}">
+    <a th:href="@{/document/download(fileName=${doc.atchFileSn3}, orgName=${doc.orgFileNm3})}"
+       th:text="${doc.orgFileNm3}">파일3</a>
+  </li>
+  <li th:if="${#strings.isEmpty(doc.orgFileNm1) and
+             #strings.isEmpty(doc.orgFileNm2) and
+             #strings.isEmpty(doc.orgFileNm3)}">
+    첨부 없음
+  </li>
+</ul>
 
-<li th:if="${#strings.isEmpty(doc.orgFileNm1) and
-           #strings.isEmpty(doc.orgFileNm2) and
-           #strings.isEmpty(doc.orgFileNm3)}">
-  첨부 없음
-</li>
-
-    </ul>
   </div>
 
   <!-- 내용 -->
@@ -70,6 +66,3 @@
   </div>
 
 </div>
-
-</body>
-</html>

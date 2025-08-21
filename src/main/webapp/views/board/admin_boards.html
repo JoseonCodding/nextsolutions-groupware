@@ -70,20 +70,18 @@
                 data-id=${s.boardId},
                 data-name=${s.boardName},
                 data-views=${s.viewToday},
-                data-likes=${s.likeToday}
+                data-likes=${s.likeToday},
+                data-posts=${s.postToday} 
               "
               onclick="loadToday(this)">
             <span th:text="${s.boardName}">게시판명</span>
-            <!-- <span class="pill"
-                  th:text="${#numbers.formatInteger(s.viewToday,0)} + ' · ' + ${#numbers.formatInteger(s.likeToday,0)}">0 · 0</span> -->
-          </li>
           <li th:if="${#lists.isEmpty(todayStats)}" class="row muted">표시할 통계가 없습니다.</li>
         </ul>
       </div>
 
       <!-- ➡️ 오른쪽: 선택된 보드 KPI (해당 보드만) -->
 <div class="today">
-  <div class="stat-card" style="--accent:#3949ab;">
+  <div class="stat-card" style="--accent: #ef9a9a;">
     <div class="label">
       오늘 조회수
       <span id="kpi-boardname" class="muted" style="margin-left:6px"></span>
@@ -91,13 +89,21 @@
     <div id="kpi-views" class="value">0</div>
   </div>
 
-  <div class="stat-card" style="--accent:#ef4444;">
+  <div class="stat-card" style="--accent: #ffe082;">
     <div class="label">
       오늘 좋아요수
       <span id="kpi-boardname-dup" class="muted" style="margin-left:6px"></span>
     </div>
     <div id="kpi-likes" class="value">0</div>
   </div>
+  
+  <div class="stat-card" style="--accent: #81c784;">
+    <div class="label">
+      오늘 게시글 등록 수
+      <span id="kpi-boardname-dup" class="muted" style="margin-left:6px"></span>
+    </div>
+  	<div id="kpi-posts" class="value">0</div>
+	</div>
 </div>
     </div>
   </div>
@@ -131,7 +137,8 @@
                   <span th:text="${#dates.format(b.updatedAt, 'yyyy-MM-dd')}"></span>
                   <div class="btn-row">
                     <button class="btn" type="button"
-                            th:disabled="${#strings.equalsIgnoreCase(b.boardType, 'NOTICE')}"
+                            th:unless="${#strings.equalsIgnoreCase(b.boardType,'NOTICE') or
+                    					 #strings.equalsIgnoreCase(b.boardType,'FREE')}"
                             th:attr="
                               data-id=${b.boardId},
                               data-name=${b.boardName},
@@ -148,7 +155,9 @@
                       <button class="btn ghost" th:text="${b.isActive} ? '비활성화' : '활성화'"></button>
                     </form>
 
-                    <form th:action="@{/admin/boards/delete}" method="post">
+                    <form th:unless="${#strings.equalsIgnoreCase(b.boardType,'NOTICE') or
+                  					   #strings.equalsIgnoreCase(b.boardType,'FREE')}"
+                    	  th:action="@{/admin/boards/delete}" method="post">
                       <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
                       <input type="hidden" name="boardId" th:value="${b.boardId}" />
                       <button type="submit" class="btn danger"
