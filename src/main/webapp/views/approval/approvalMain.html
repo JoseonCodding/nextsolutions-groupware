@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>★전자 결재 메인</title>
     
+    <link rel="stylesheet" href="/css/approvalStyle.css">
 </head>
 <body>
 	<h1 style="margin-top:45px;">전자결재</h1>
@@ -40,12 +41,13 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width:150px;">기안일</th>
+
                     <th style="width:75px;">결재 종류</th>
                     <th>제목</th>
                     <th style="width:75px;">작성자</th>
                     <th style="width:75px;">부서</th>
                     <th style="width:75px;">결재 상태</th>
+                    <th style="width:150px;">작성일</th>
                 </tr>
             </thead>
             
@@ -55,14 +57,21 @@
             	</tr>
             	
                 <tr th:each="dto : ${approvalData}">
-                	<td th:text="${#dates.format(dto.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></td>
+
             		<td th:text="${dto.docType}"></td>
 				    <td class="board-title">
-				    	<a th:href="@{/approval/viewer(docId=${dto.docId}, page=${page}, type=${type}, status=${status})}" th:text="${dto.title}"></a>
+				    	<a style="width:500px;"
+				    		th:href="@{/approval/viewer(docId=${dto.docId}, page=${page}, type=${type}, status=${status})}" 
+				    		th:text="${dto.title}">
+				    	</a>
 				    </td>
-   				    <td th:text="${dto.writer}"></td>
+					<td>
+					  <span th:text="${dto.writer}"></span>
+					  <span th:text="${dto.writerPosition}"></span>
+					</td>
 				    <td th:text="${dto.deptName}"></td>
 				    <td th:text="${dto.status}"></td>
+				    <td th:text="${#dates.format(dto.createdAt, 'yyyy/MM/dd')}"></td>
 				</tr>
             </tbody>
         </table>
