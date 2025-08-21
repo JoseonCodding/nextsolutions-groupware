@@ -128,11 +128,11 @@ a:hover {
 
 
 /* 게시글 목록의 제목 (class="board-title") */
-.board-title {
+.board-title a {
 	text-align: center;
 }
 
-.board-title:hover {
+.board-title:hover a {
 	text-decoration: underline;
 }
 
