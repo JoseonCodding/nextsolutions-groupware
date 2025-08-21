@@ -376,40 +376,36 @@
 	</div>
 	
 	<!-- 첨부파일 (테이블 3행, ApprovalDTO 바인딩용) -->
-	<table th:if="${approvalData != null and approvalData.docType == '프로젝트'}" style="margin-top: 20px;" border="">
-	  <tr>
-	    <th rowspan="3">첨부파일</th>
-	    <td>
-	      <span th:if="${not #strings.isEmpty(approvalData.attachFileUuid1)}">
-	        <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid1} + '&orgName=' + ${approvalData.attachFileOrgName1}}"
-	           th:text="${approvalData.attachFileOrgName1}">첨부파일 다운로드</a>
-	      </span>
-	      <span th:unless="${not #strings.isEmpty(approvalData.attachFileUuid1)}">
-	        첨부파일이 없습니다.
-	      </span>
-	    </td>
-	  </tr>
-	
-	  <tr>
-	    <td>
-	      <span th:if="${not #strings.isEmpty(approvalData.attachFileUuid2)}">
-	        <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid2} + '&orgName=' + ${approvalData.attachFileOrgName2}}"
-	           th:text="${approvalData.attachFileOrgName2}">첨부파일 다운로드</a>
-	      </span>
-	      <span th:unless="${not #strings.isEmpty(approvalData.attachFileUuid2)}">첨부파일이 없습니다.</span>
-	    </td>
-	  </tr>
-	
-	  <tr>
-	    <td>
-	      <span th:if="${not #strings.isEmpty(approvalData.attachFileUuid3)}">
-	        <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid3} + '&orgName=' + ${approvalData.attachFileOrgName3}}"
-	           th:text="${approvalData.attachFileOrgName3}">첨부파일 다운로드</a>
-	      </span>
-	      <span th:unless="${not #strings.isEmpty(approvalData.attachFileUuid3)}">첨부파일이 없습니다.</span>
-	    </td>
-	  </tr>
-	</table>
+<table th:if="${approvalData != null and approvalData.docType == '프로젝트'}" style="margin-top: 20px;" border="">
+  <tr>
+    <th style="width: 100px; text-align: center;">첨부파일</th>
+    <td>
+      <ul style="list-style: disc; padding-left: 20px;" th:if="${not #strings.isEmpty(approvalData.attachFileUuid1) 
+                                                          or not #strings.isEmpty(approvalData.attachFileUuid2)
+                                                          or not #strings.isEmpty(approvalData.attachFileUuid3)}">
+        <li th:if="${not #strings.isEmpty(approvalData.attachFileUuid1)}">
+          <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid1} + '&orgName=' + ${approvalData.attachFileOrgName1}}"
+             th:text="${approvalData.attachFileOrgName1}">첨부파일 다운로드</a>
+        </li>
+        <li th:if="${not #strings.isEmpty(approvalData.attachFileUuid2)}">
+          <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid2} + '&orgName=' + ${approvalData.attachFileOrgName2}}"
+             th:text="${approvalData.attachFileOrgName2}">첨부파일 다운로드</a>
+        </li>
+        <li th:if="${not #strings.isEmpty(approvalData.attachFileUuid3)}">
+          <a th:href="@{'/approval/downloadFile?fileName=' + ${approvalData.attachFileUuid3} + '&orgName=' + ${approvalData.attachFileOrgName3}}"
+             th:text="${approvalData.attachFileOrgName3}">첨부파일 다운로드</a>
+        </li>
+      </ul>
+      <span style="color:rgb(119, 119, 119);"
+      th:if="${#strings.isEmpty(approvalData.attachFileUuid1) 
+                  and #strings.isEmpty(approvalData.attachFileUuid2)
+                  and #strings.isEmpty(approvalData.attachFileUuid3)}">
+        첨부파일이 없습니다.
+      </span>
+    </td>
+  </tr>
+</table>
+
 
 
 
