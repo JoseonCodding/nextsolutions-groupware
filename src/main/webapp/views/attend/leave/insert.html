@@ -9,12 +9,12 @@
 			<td>사용할 연차</td>
 			<td>
 			<div th:each="dto, vv:${restData}">
-				<input type="checkbox" class="leaveChk" th:name="|arr[${vv.index}].useChk|" value="true"/>
+				<input type="checkbox" class="leaveChk" th:name="|arr[${vv.index}].useChk|" th:target_data="|ud${vv.index}|" value="true" />
 				<span th:text="${dto.createReason}"/> 
 				
 				<input type="hidden" th:name="|arr[${vv.index}].leaveId|" th:value="${dto.leaveId}"/>
 				
-				<input type="date" class="leaveDate" th:name="|arr[${vv.index}].usedDateStr|" value="" disabled />
+				<input type="date" class="leaveDate" th:id="|ud${vv.index}|" th:name="|arr[${vv.index}].usedDateStr|" value="" disabled />
 			</div>
 			</td>
 		</tr>
@@ -36,19 +36,52 @@
 
 	</table>
 </form>
-
+<script src="/js/jquery-3.7.1.min.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // 오늘 날짜 yyyy-MM-dd 형식으로 세팅
-    const today = new Date();
+
+ //금일 이후 유효성 빠진 ver
+$(function(){
+
+	// 오늘 날짜 yyyy-MM-dd 형식으로 세팅
+	const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate() + 1).padStart(2, '0');
     const todayStr = `${yyyy}-${mm}-${dd}`;
+    
+	$(".leaveChk").change(function(){
+		
+		//console.log('눌렀으냐',$(this).prop('checked'))
+		//console.log($('#'+$(this).attr('target_data'))  )
+		//console.log($(this).attr('target_data'))  
+		//$('#'+$(this).attr('target_data')).prop('disabled',!$(this).prop('checked'))
+		
+		const targetId = $(this).attr('target_data');
+        const $dateInput = $('#' + targetId);
 
+        // 체크 여부에 따라 disabled 제어
+        $dateInput.prop('disabled', !$(this).prop('checked'));
+		if ($(this).prop('checked')) {
+            // 오늘 이후 날짜만 선택 가능
+            $dateInput.attr('min', todayStr);
+        } else {
+            // 비활성화 시 값 초기화
+            $dateInput.val('');
+            $dateInput.removeAttr('min'); // min 속성 제거
+        }
+	})
+})
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    
+    
+    /*
     // 체크박스 클릭 시 날짜 활성화/비활성화 처리
-    document.querySelectorAll(".leaveChk").forEach(chk => {
+     document.querySelectorAll(".leaveChk").forEach(chk => {
         chk.addEventListener("change", function() {
+            //const dateInput = chk.closest("td").querySelector(".leaveDate");
             const dateInput = chk.closest("td").querySelector(".leaveDate");
             if (chk.checked) {
                 dateInput.disabled = false;
@@ -58,8 +91,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 dateInput.value = ""; // 값 초기화
             }
         });
-    });
-
+    }); 
+     */
+    
     // 폼 제출 시 유효성 검사
     document.getElementById("leaveForm").addEventListener("submit", function(e) {
         const checkboxes = document.querySelectorAll(".leaveChk");
@@ -88,5 +122,6 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
     });
+     
 });
 </script>
