@@ -412,7 +412,7 @@ public class ProjectMngController {
          @RequestParam(value = "empNm", required = false) String empNm,
          @RequestParam(value = "ver", required = false) Integer ver,
          @RequestParam(value = "gid", required = false) Integer gid,         
-         @RequestParam(value = "FRST_REG_DT", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime FRST_REG_DT,
+         @RequestParam(value = "FRST_REG_DT", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime FRST_REG_DT,
          @RequestParam(value = "pjtBgngDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtBgngDt,
          @RequestParam(value = "pjtEndDt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate pjtEndDt,
          @RequestParam(value = "pjtSttsCd", required = false) String pjtSttsCd,
@@ -427,6 +427,9 @@ public class ProjectMngController {
          @RequestParam(value = "uploadFile3", required = false) MultipartFile uploadFile3,
          @RequestParam(value = "oldFileName3", required = false) String oldFileName3,
          @RequestParam(value = "oldOrgFileName3", required = false) String oldOrgFileName3,
+         @RequestParam(value = "delFileSlots1", required = false) Boolean delFileSlots1,
+         @RequestParam(value = "delFileSlots2", required = false) Boolean delFileSlots2,
+         @RequestParam(value = "delFileSlots3", required = false) Boolean delFileSlots3,
    @RequestParam(value = "firstSign", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime firstSign,
    @RequestParam(value = "secondSign", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime secondSign,
    @RequestParam(value = "approvedBy", required = false) String approvedBy)
@@ -462,6 +465,7 @@ public class ProjectMngController {
       params.put("firstSign", firstSign);
       params.put("secondSign", secondSign);
       params.put("approvedBy", approvedBy);
+
       
 
       String uploadDir = "C:/upload/";
@@ -581,6 +585,19 @@ public class ProjectMngController {
     	  params.put("gid", gid);
     	  params.put("ver", ver+1);
     	  params.put("FRST_REG_DT",FRST_REG_DT);
+    	  
+    	  if(delFileSlots1!= null && delFileSlots1) {
+    		  params.put("ATCH_FILE_SN1", null);
+    	      params.put("ORG_FILE_NM1", null);
+    	  }
+    	  if(delFileSlots2!= null && delFileSlots2) {
+    		  params.put("ATCH_FILE_SN2", null);
+    	      params.put("ORG_FILE_NM2", null);
+    	  }
+    	  if(delFileSlots3!= null && delFileSlots3) {
+    		  params.put("ATCH_FILE_SN3", null);
+    	      params.put("ORG_FILE_NM3", null);
+    	  }
     	  
        	  
     	  pjtSn = projectMngService.savePjtProcForVersion(params)+"";      
