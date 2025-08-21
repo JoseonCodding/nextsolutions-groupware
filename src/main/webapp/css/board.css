@@ -1,13 +1,3 @@
-<!--
-:root {
-  --primary: #3b82f6;      /* 파란색 포인트 */
-  --primary-hover: #2563eb;
-  --border: #e5e7eb;
-  --muted: #6b7280;
-  --surface: #ffffff;
-  --bg: #f9fafb;
-  --radius: 10px;
-}
 /* 정렬 & 검색 & 글쓰기 컨트롤 영역 */
 .board-controls {
   display: flex;

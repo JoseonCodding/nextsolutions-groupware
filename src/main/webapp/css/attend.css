@@ -1,5 +1,10 @@
 @charset "UTF-8";
 
+ .check-container {
+    border: 1px solid black;
+    height: 950px;
+    background-color: yellow;
+}
 
 /*출퇴근 버튼 - 위치변경을 위해 등록버튼 변형*/
 /* 등록 버튼 */
@@ -17,8 +22,9 @@
 
 }
 /* 출퇴근 달력 영역 호버 제외 */
-tbody tr:hover:not(.no-hover tr) {
-    background: initial; /* 또는 background-color: unset; */
+
+tr:hover:not(.no-hover tr) td {
+  background: initial;     
 }
 
 
@@ -28,19 +34,42 @@ tbody tr:hover:not(.no-hover tr) {
 #calendar {
   width: 100% !important;  /* 캘린더를 부모 기준 100%로 */
   max-width: 100%;         /* 혹시 모를 제한 해제 */
+  background: blue;
+  height: 800px;
 }
 
+fc-thead {
+    display: table-header-group;
+    vertical-align: middle;
+    unicode-bidi: isolate;
+    border-color: inherit;
+    background: green;
+}
 .fc-daygrid-day {
     height: 120px; /*달력 셀 높이 지정*/
     padding: 5px;
-    margin: 0px;
+    margin: 0px;   
 }
 
 .fc-event-title {
-
-    text-align: center;
+    text-align: right;
     display: flex;
     justify-content: center; /* 가로 중앙 */
-    align-items: center;     /* 세로 중앙 */
+    align-items: bottom;     /* 세로 중앙 */
     height: 100%;            /* 셀 높이 채우기 */
+}
+
+
+.fc-header-toolbar {
+	
+}
+.fc-toolbar {
+	background: orange;
+}
+.fc-toolbar .fc-toolbar-chunk{
+	background: green;
+	float: left;
+}
+.fc-toolbar-ltr {
+	
 }
