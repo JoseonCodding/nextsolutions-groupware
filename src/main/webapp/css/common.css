@@ -10,9 +10,9 @@
   --header-height: 60px;
   
   
-  --regist-btn : black;			/* 등록 버튼*/
+  --regist-btn : #8080c0;			/* 등록 버튼*/
   --save-btn : #ff0000;		/* 저장 버튼*/
-  --edit-btn:#ff80ff;			/* 수정 버튼*/
+  --edit-btn:#00ffff;			/* 수정 버튼*/
   --approval-btn:#c5edfc;  	/* 승인 버튼*/
   --reject-btn:#80ff00;  	/* 반려 버튼*/
   --search-btn:#0080c0; 	/* 검색 버튼*/
