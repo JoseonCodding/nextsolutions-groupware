@@ -1,7 +1,6 @@
 @charset "UTF-8";
 
 
-
 /*출퇴근 버튼 - 위치변경을 위해 등록버튼 변형*/
 /* 등록 버튼 */
 .attend-regist-btn:hover {
@@ -21,6 +20,27 @@
 tbody tr:hover:not(.no-hover tr) {
     background: initial; /* 또는 background-color: unset; */
 }
-.attend-calender {
-	width:1200px;
+
+
+
+/**************************************/
+/*fullcalender 스타일 적용 - 출퇴근 기록 달력*/
+#calendar {
+  width: 100% !important;  /* 캘린더를 부모 기준 100%로 */
+  max-width: 100%;         /* 혹시 모를 제한 해제 */
+}
+
+.fc-daygrid-day {
+    height: 120px; /*달력 셀 높이 지정*/
+    padding: 5px;
+    margin: 0px;
+}
+
+.fc-event-title {
+
+    text-align: center;
+    display: flex;
+    justify-content: center; /* 가로 중앙 */
+    align-items: center;     /* 세로 중앙 */
+    height: 100%;            /* 셀 높이 채우기 */
 }
