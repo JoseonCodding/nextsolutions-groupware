@@ -1,7 +1,16 @@
 @charset "UTF-8";
 
-.sche-table {
+.sche-container {
 	border: 1px solid black;
+	background: blue;
+	margin-top: 45px;
+}
+
+table[class=sche-table] {
+	margin: 0px;
+}
+.sche-table {
+	
 }
 .sche-table-month {
 	
@@ -52,3 +61,24 @@
     
 }
 
+/*달력 보기 방식 버튼*/
+/* 검색 버튼 변형*/
+.view-select {
+    background: 1px solid black;
+}
+.view-select button {
+    background: var(--search-btn);
+    
+    color: #fff;
+    padding: 10px 20px;
+    
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 20px 10px 20px 0px;
+    float: right;
+}
+.view-select button:hover {
+    background: var(--search-btn);
+}
