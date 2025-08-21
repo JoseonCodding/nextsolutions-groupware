@@ -39,6 +39,7 @@ public interface AttendMapper {
 		""")
    List<AttendDTO> userAttendMonthList( AttendDTO2 attendance);
    
+   
    //출퇴근 기록에 연차 날짜 가져오기
    @Select("""
    		select used_date from annual_leave where employeeId = #{employeeId}

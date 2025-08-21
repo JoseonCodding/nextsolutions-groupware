@@ -146,7 +146,7 @@ public class AttendController {
     	
     	//model.addAttribute("leaveDate", leaveDate);
         model.addAttribute("mainData", attendMonthList);
-        model.addAttribute("mainUrl", "attend/check");
+        model.addAttribute("mainUrl", "attend/check_test"); /////////////////////////////////////////////////////////////////////////////
         //model.addAttribute("attendDTO", attendance);   // 조회 조건 유지용
        
         
@@ -218,6 +218,7 @@ public class AttendController {
         return "redirect:/attend";
     }
     
+
     //출퇴근 기록 수정 신청 
     @GetMapping("/attendTimeInsert")
     String attendTimeInsert(HttpSession session, Model model) {
