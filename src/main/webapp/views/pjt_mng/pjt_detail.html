@@ -34,17 +34,18 @@
         <th style="width:15%;">프로젝트명</th>
         <td style="width:35%;" th:text="${pjt['PJT_NM']}"></td>
 
-        <th style="width:15%;">담당자</th>
-        <td style="width:35%;" th:text="${pjt['employeeId']}"></td>
+		<th>담당자</th>
+        <td th:text="${pjt['reg_user']}"></td>
+        
       </tr>
 
-      <!-- 2행: 등록자 / 상태 -->
-      <tr>
-        <th>등록자</th>
-        <td th:text="${pjt['reg_user']}"></td>
-
+      <!-- 2행:  상태 /결재자 -->
+      <tr>  
         <th>상태</th>
         <td th:text="${pjt['PJT_STTS_CD']}"></td>
+        
+         <th>결재자</th>
+        <td th:text="${pjt['TB_PJT_APR']}"></td>
       </tr>
 
       <!-- 3행: 시작일 / 종료일 -->
@@ -61,33 +62,24 @@
       </tr>
 
       <!-- 4행: 버전 / 등록일 (필요 없으면 지워도 됨) -->
-      <tr>
-        <th>버전</th>
-        <td th:text="${pjt['ver']}">1</td>
+      <tr>           
+        <th>문서버전</th>
+        <td th:text="'v' +${pjt['ver']}"></td>
 
-        <th>등록일</th>
+ 		<th>등록일</th>
         <td th:text="${pjt['FRST_REG_DT']}">
-          <!-- (선택) th:text="${#temporals.format(pjt['FRST_REG_DT'],'yyyy-MM-dd HH:mm:ss')}" -->
+       
         </td>
       </tr>
 
-      <!-- 5행:결재자/승인자 (필드명이 다르면 맞춰 수정)-->
-      <tr>
-        <th>결재자</th>
-        <td th:text="${pjt['TB_PJT_APR']}"></td>
-
-        <th>승인자</th>
-        <td th:text="${pjt['app_user']}"></td>
-      </tr>
-       <!-- 6행:  내용 (한 줄 전체)  -->
+       <!-- 5행:  내용/ 첨부파일 (한 줄 전체)  -->
       <tr>
         <th>내용</th>
         <!-- HTML 저장이라면 utext 유지(서버에서 sanitize 가정) -->
         <td colspan="3" th:utext="${pjt['content']}"></td>
       </tr>
-      
 
-      <!-- 7행: 첨부파일 (한 줄에 리스트) -->
+      <!-- 6행: 첨부파일 (한 줄에 리스트) -->
       <tr>
         <th>첨부파일</th>
         <td colspan="3">
