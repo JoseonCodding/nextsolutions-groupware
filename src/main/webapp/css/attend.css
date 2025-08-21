@@ -1,9 +1,6 @@
 @charset "UTF-8";
 
-/* 출퇴근 달력 영역 호버 제외 */
-tbody tr:hover:not(.no-hover tr) {
-    background: initial; /* 또는 background-color: unset; */
-}
+
 
 /*출퇴근 버튼 - 위치변경을 위해 등록버튼 변형*/
 /* 등록 버튼 */
@@ -20,4 +17,10 @@ tbody tr:hover:not(.no-hover tr) {
     cursor: pointer;
 
 }
-
+/* 출퇴근 달력 영역 호버 제외 */
+tbody tr:hover:not(.no-hover tr) {
+    background: initial; /* 또는 background-color: unset; */
+}
+.attend-calender {
+	width:1200px;
+}

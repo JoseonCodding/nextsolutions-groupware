@@ -378,7 +378,6 @@
     });
 </script>
 
-<div class="sche-container">
 <h3 id="diary_title"></h3>
 
 <div class="view-select">
@@ -395,20 +394,19 @@
 </div>
 
 <!-- 주 이동 버튼 -->
-<div id="weekNav">
+<div id="weekNav" align="center" style="display:none;">
     <button id="prevWeek">이전주</button>
     <button id="nextWeek">다음주</button>
 </div>
 
 <!-- 일 이동 버튼 -->
-<div id="dayNav" >
+<div id="dayNav" align="center" style="display:none;">
     <button id="prevDay">전날</button>
     <button id="nextDay">다음날</button>
 </div>
 
 <!-- 월별 보기 -->
-<table id="diary_body" class="sche-table">
-
+<table class="sche-table" id="diary_body">
 </table>
 
 
@@ -417,4 +415,4 @@
 <!-- 권한자만 등록 버튼 보이도록 -->
 <a th:if="${session.loginUser.role == '일정' or session.loginUser.role == '대표'}"
    th:href="@{/schedule/insert}" class="regist-btn">일정 등록</a>
-</div>
+
