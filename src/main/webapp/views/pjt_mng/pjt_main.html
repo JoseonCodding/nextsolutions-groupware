@@ -129,6 +129,7 @@ tr:hover {
 	margin-top: 20px;
 }
 
+
 /* 카드 공통 */
 .stat-card {
 	/* 포인트 색상: 인라인 style="--accent:#xxxxxx"로 들어온 값 사용 */
@@ -137,19 +138,32 @@ tr:hover {
 	background: var(--bg);
 	border-left: 6px solid var(--accent);
 	border-radius: 10px;
-	padding: 16px 18px;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	transition: box-shadow .18s ease, transform .18s ease;
+	height: 30px;  
+	padding: 12px 14px;
+	 
+}
+/* 1) meta를 가로 정렬로: 라벨 왼쪽 / 숫자 오른쪽 */
+.stat-card .meta{
+  display:flex;
+  flex-direction:row;
+  align-items:center;          /* 세로 가운데 정렬 */
+  justify-content:space-between; /* ← 라벨은 왼쪽, 숫자는 오른쪽 끝 */
+  width:100%;
 }
 
-/* 호버 효과 */
-.stat-card:hover {
-	transform: translateY(-3px);
-	box-shadow: 0 6px 16px rgba(0, 0, 0, .10);
+/* 2) 숫자가 아래로 내려가지 않게 위 여백 제거 + 높이에 맞는 폰트 */
+.stat-card .value{
+  margin-top:0;                /* 기존 margin-top:4px 제거 */
+  font-size:18px;              /* height:50px이면 18~20px 권장 */
+  font-weight:800;
+  color:#222;
 }
+
 
 /* 내부 텍스트 */
 .stat-card .label {
@@ -165,6 +179,11 @@ tr:hover {
 	font-weight: 800;
 	color: #222;
 }
+/* 호버 효과 */
+.stat-card:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 6px 16px rgba(0, 0, 0, .10);
+}
 
 /* 접근성: 키보드 포커스 */
 .stat-card:focus-visible {
@@ -176,7 +195,7 @@ tr:hover {
 </head>
 <body>
 
-	<h1 style="margin-bottom: 45px;">프로젝트 관리</h1>
+	<h1 style="margin-top: 45px;">프로젝트 관리</h1>
 	<!-- 카드 요약 -->
 	<div class="cards-grid">
 
@@ -193,7 +212,7 @@ tr:hover {
 		<div class="stat-card" style="--accent: #ce93d8;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=my&keyword=참여'">
 			<div class="meta">
-				<div class="label">내 참여 프로젝트</div>
+				<div class="label">내 참여 </div>
 				<div class="value" th:text="${myProjectCount}">0</div>
 			</div>
 		</div>
@@ -202,7 +221,7 @@ tr:hover {
 		<div class="stat-card" style="--accent: #ffb3b3;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=myApproval&keyword=결재'">
 			<div class="meta">
-				<div class="label">내 결재 프로젝트</div>
+				<div class="label">내 결재</div>
 				<div class="value" th:text="${myApprovalTodoCount}">0</div>
 			</div>
 		</div>
@@ -211,7 +230,7 @@ tr:hover {
 		<div class="stat-card" style="--accent: #ffe082;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=진행중'">
 			<div class="meta">
-				<div class="label">진행중인 프로젝트</div>
+				<div class="label">진행중</div>
 				<div class="value" th:text="${progressCount}">0</div>
 			</div>
 		</div>
@@ -220,7 +239,7 @@ tr:hover {
 		<div class="stat-card" style="--accent: #ef9a9a;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=대기'">
 			<div class="meta">
-				<div class="label">대기중인 프로젝트</div>
+				<div class="label">대기중</div>
 				<div class="value" th:text="${pendingCount}">0</div>
 			</div>
 		</div>
@@ -228,7 +247,7 @@ tr:hover {
 		<div class="stat-card" style="--accent: #81c784;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=완료'">
 			<div class="meta">
-				<div class="label">완료된 프로젝트</div>
+				<div class="label">완료</div>
 				<div class="value" th:text="${completeCount}">0</div>
 			</div>
 		</div>
@@ -288,14 +307,13 @@ tr:hover {
 		<thead>
 			<tr>
 				<th style="width:35px; text-align: center;">번호</th>
-				<th style="width: 350px;">제목</th>
-				<th style="width: 50px;">담당자</th>
-				<th style="width: 90px;">진행상태</th>
+				<th style="width: 340px;">제목</th>
+				<th style="width: 90px;">담당자</th>
+				<th style="width: 70px;">진행상태</th>
 				
 				<th>기간</th>
-				<!-- <th>시작일</th>
-				<th>종료일</th> -->
-				<th style="width: 50px;">결재자</th>
+				
+				<th style="width: 80px;">결재자</th>
 				<th style="width: 50px;">버전</th>
 				<!--  <th>gid</th>-->
 				<th style="width: 70px;">　</th>
@@ -315,11 +333,13 @@ tr:hover {
 				<td>
 					<a th:text="${pjt['PJT_NM']}" class="board-title" th:href="@{/pjtMng/pjtDetail(pjtSn=${pjt['PJT_SN']})}"></a>
 				</td>
-				<td th:text="${pjt['employeeId']} ">담당자</td>					
+				<!-- <td th:utext="${pjt['employeeId']+'<br/>'+pjt['position']}">담당자</td>	 이름,직책 두줄처리된거 -->
+				<td th:utext="${pjt['employeeId']+' '+pjt['position']}">담당자</td>  <!-- 이름,직책 한줄처리된거 -->
+								
 				<td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>				
 				<td th:text="${pjt['PJT_BGNG_DT']} + ' ~ ' + ${pjt['PJT_END_DT']}">기간</td>
 			
-				<td th:text="${pjt['TB_PJT_APR']}">결재자</td>
+				<td th:utext="${pjt['TB_PJT_APR']+'<br/>'+pjt['position_APR']}">결재자</td>
 				<td th:text="'v' +${pjt['ver']}"></td>
 				<!--  <td th:text="${pjt['gid']}"></td> -->
 				<td>
@@ -345,7 +365,7 @@ tr:hover {
 		<div style="margin-top: 20px; text-align: right;">
    <button onclick="location.href='/pjtMng/getSavePjtForm'"
            style="height: 40px; padding: 0 20px; border-radius: 6px; border: none; background-color: #2962ff; color: #fff; cursor: pointer;">
-       프로젝트 등록
+        등록
    </button>
 </div>
 	<!-- 페이지네이션 -->

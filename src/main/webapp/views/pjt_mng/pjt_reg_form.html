@@ -19,11 +19,6 @@ body {
 	color: #333;
 }
 
-h1 {
-	color: #4a4a4a;
-	text-align: center;
-	margin-bottom: 40px;
-}
 
 table {
 	width: 75%;
@@ -172,7 +167,7 @@ button.save-btn:hover {
 <body>
 	<!-- 생략된 <head>와 스타일은 그대로 유지 -->
 
-	<h1>프로젝트 등록</h1>
+	<h1 class="detail-title">프로젝트 등록</h1>
 
 	<form onsubmit="return validateForm()" action="/pjtMng/savePjtProc"
 		method="post" enctype="multipart/form-data">

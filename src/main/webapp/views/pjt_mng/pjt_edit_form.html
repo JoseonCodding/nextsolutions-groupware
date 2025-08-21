@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>프로젝트 변경</title>
+<title>프로젝트 수정</title>
 
 <div th:if="${errorMessage}" 
      style="color:red; font-weight:bold; margin-bottom:10px;">
@@ -19,14 +19,9 @@
 body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	margin: 50px;
+	margin-top: 45px;
 	background-color: #f5f7fa;
 	color: #333;
-}
-
-h1 {
-	color: #4a4a4a;
-	text-align: center;
-	margin-bottom: 40px;
 }
 
 table {
@@ -115,7 +110,7 @@ input[type="checkbox"] {
 
 <body>
 
-	<h1>프로젝트 변경</h1>
+	<h1 class="detail-title">프로젝트 수정</h1>
 	<!-- ✅ 프로젝트 수정 Form -->
 	<form method="post" action="/pjtMng/updatePjtProc"
 		enctype="multipart/form-data" onsubmit="return validateForm()">
@@ -154,16 +149,16 @@ input[type="checkbox"] {
 			<tr>
 				<th>기간</th>
 				<td>
-					<!-- 날짜가 문자열이면 그대로, LocalDate면 아래 주석 참고 --> 시작일: <input type="date"
-					name="pjtBgngDt" style="margin-right: 10px;"
-					th:value="${pjt['PJT_BGNG_DT'] ?: ''}" /> 종료일: <input type="date"
-					name="pjtEndDt" th:value="${pjt['PJT_END_DT'] ?: ''}" /> <!-- ✍️ 만약 LocalDate/LocalDateTime 이면:
-             th:value="${pjt['PJT_BGNG_DT'] != null ? #dates.format(pjt['PJT_BGNG_DT'], 'yyyy-MM-dd') : ''}" -->
+					<!-- 날짜가 문자열이면 그대로, LocalDate면 아래 주석 참고 --> 
+					시작일: <input type="date" name="pjtBgngDt" style="width:150px; border-radius:3px; margin-right: 10px;"
+					th:value="${pjt['PJT_BGNG_DT'] ?: ''}" /> 종료일:
+					<input type="date" name="pjtEndDt" style="width:150px; border-radius:3px;" th:value="${pjt['PJT_END_DT'] ?: ''}" /> 
 				</td>
 			</tr>
 
 			<tr
-				th:with="stts=${pjt != null ? #strings.trim(pjt['PJT_STTS_CD']) : ''}">
+				th:with="stts=${pjt != null ? #strings.trim(pjt['PJT_STTS_CD']) : ''}" 
+				style="border-radius:3px;">
 				<th>상태</th>
 				<td>
 					<!-- 대기: 읽기전용 --> <input type="text" name="pjtSttsCd"
@@ -185,7 +180,8 @@ input[type="checkbox"] {
 			<tr>
 				<th>결재자</th>
 				<td>
-					<!-- DB로 넘어갈 진짜 값(사번) --> <input type="hidden" name="TB_PJT_APR"
+					<!-- DB로 넘어갈 진짜 값(사번) --> 
+					<input type="hidden" name="TB_PJT_APR"
 					th:value="${pjt['TB_PJT_APR']}" /> <!-- 화면 표시용 (읽기 전용) --> <input
 					type="text" th:value="${pjt['TB_PJT_APR']}" readonly
 					class="form-control" />
@@ -394,7 +390,7 @@ function validateForm() {
 				['color', ['color']],
 				['para', ['ul', 'ol', 'paragraph']],
 				['height', ['height']],
-				['insert', ['picture', 'link', 'table']],
+				['insert', ['link', 'table']],
 				['view', ['fullscreen', 'codeview', 'help']]
 			]
 		});

@@ -14,17 +14,16 @@
     .actions{ text-align:right; margin-top:16px; }
     .muted{ color:#777; }
    
-    /* 테이블 폭/중앙 정렬 — 공통에서 처리되면 제거 가능 */
-    .wrap{ max-width:1200px; margin:0 auto; }
-    h2{  margin:24px 0; }
-    td{text-align: left;}
+   td {
+   	text-align: left;
+   }
     
   </style>
 </head>
 <body>
 <div class="wrap">
 
-  <h1 style="text-align: center; margin-top:45px;">프로젝트 상세 정보</h1>
+  <h1 style="text-align: center; margin-top:45px;">프로젝트 정보</h1>
 
   <!-- 상세 테이블: 라벨/값 × 2열 구조 -->
   <table class="table table-bordered">
@@ -37,6 +36,7 @@
 		<th>담당자</th>
         <td th:text="${pjt['reg_user']}"></td>
         
+
       </tr>
 
       <!-- 2행:  상태 /결재자 -->
