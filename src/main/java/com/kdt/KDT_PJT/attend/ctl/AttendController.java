@@ -128,7 +128,7 @@ public class AttendController {
         
         for (ScheduleDTO holiday : holidayArr) {
 			if(holiday.getStartDateStr().compareTo(nowStr)<= 0 && 
-					holiday.getEndDateStr().compareTo(nowStr)> 0) {
+					holiday.getEndDateStr().compareTo(nowStr)> 0) {  //fullcalender가 인지하는 마지막 날 때문에 =은 제외
 				attendance.setNowIsHoliday(true);
 			}
 		}
