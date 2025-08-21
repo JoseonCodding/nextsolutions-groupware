@@ -312,8 +312,8 @@ tr:hover {
 			
 			<!-- 페이지 순번 처리  -->
 				<td	th:text="${pageInfo != null ? (pageInfo.pageSize * (pageInfo.pageNum - 1) + stat.index + 1) : (stat.index + 1)}" style="text-align: center;"></td>
-				<td>
-					<a th:text="${pjt['PJT_NM']}" class="board-title" th:href="@{/pjtMng/pjtDetail(pjtSn=${pjt['PJT_SN']})}"></a>
+				<td class="board-title">
+					<a th:text="${pjt['PJT_NM']}" th:href="@{/pjtMng/pjtDetail(pjtSn=${pjt['PJT_SN']})}"></a>
 				</td>
 				<td th:text="${pjt['employeeId']} ">담당자</td>					
 				<td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>				
@@ -370,6 +370,15 @@ tr:hover {
 		</ul>
 	</nav>
 
+	<!-- 게시판 리스트 호버링 적용 JS -->
 	<script>
-		
+		document.querySelectorAll('td.board-title').forEach(td => {
+			  td.parentElement.addEventListener('mouseenter', () => {
+			    td.parentElement.classList.add('hover-row');
+			  });
+			  td.parentElement.addEventListener('mouseleave', () => {
+			    td.parentElement.classList.remove('hover-row');
+			  });
+			});
 	</script>
+</body>

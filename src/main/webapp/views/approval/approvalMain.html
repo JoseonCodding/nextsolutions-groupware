@@ -45,7 +45,7 @@
                     <th>제목</th>
                     <th>작성자</th>
                     <th style="width:75px;">결재 상태</th>
-                    <th>작성일</th>
+                    <th style="width:85px;">작성일</th>
                 </tr>
             </thead>
             
@@ -58,7 +58,7 @@
                 	<td th:text="${(page - 1) * 10 + stat.index + 1}">1</td>
             		<td th:text="${dto.docType}"></td>
 				    <td class="board-title">
-				    	<a style="width:500px;"
+				    	<a style="width:588px;"
 				    		th:href="@{/approval/viewer(docId=${dto.docId}, page=${page}, type=${type}, status=${status})}" 
 				    		th:text="${dto.title}">
 				    	</a>
@@ -100,5 +100,16 @@
 		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages}, type=${type}, status=${status})}">Next &#x203A;</a>
 		</nav>
 	
+	<!-- 게시판 리스트 호버링 적용 JS -->
+	<script>
+		document.querySelectorAll('td.board-title').forEach(td => {
+			  td.parentElement.addEventListener('mouseenter', () => {
+			    td.parentElement.classList.add('hover-row');
+			  });
+			  td.parentElement.addEventListener('mouseleave', () => {
+			    td.parentElement.classList.remove('hover-row');
+			  });
+			});
+	</script>
 </body>
 </html>

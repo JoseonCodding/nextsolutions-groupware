@@ -126,9 +126,12 @@ a:hover {
 	text-overflow: ellipsis;   /* 넘친 부분을 ... 으로 표시 */
 }
 
-.board-title:hover a {
-	text-decoration: underline;
+table tbody tr.hover-row {
+  /* background-color: #f4f5ff; */
+  background-color: red;
 }
+
+
 
 /* 버튼 */
 .btn {

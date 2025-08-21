@@ -114,10 +114,10 @@
 
         
 		<!-- 저장, 취소 버튼 영역 -->
-		<button type="submit" id="btnSave">저장</button>
+		<button type="submit" class="save-btn">저장</button>
 		
 		<a th:href="@{'/approval/viewer'(docId=${editData.docId}, page=${page}, type=${type}, status=${status})}">
-		    <button type="button" id="btnCancel">취소</button>
+		    <button type="button" class="back-btn">취소</button>
 		</a>
     </form>
     

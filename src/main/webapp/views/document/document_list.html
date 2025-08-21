@@ -43,11 +43,9 @@
       <td th:text="${doc.gid}"></td>
 
       <!-- 제목 클릭 시 항상 최신 상세로 (ver 파라미터 생략) -->
-      <td>
-      <div class="board-title">
+      <td class="board-title">
         <a th:href="@{/document/detail(gid=${doc.gid}, page=${page}, size=${size}, keyword=${keyword})}"
            th:text="${doc.pjtNm}"></a>
-      </div>
       </td>
 
       <td th:text="${doc.empNm}"></td>
@@ -108,3 +106,16 @@
 </div>
 
 </div>
+
+	<!-- 게시판 리스트 호버링 적용 JS -->
+	<script>
+		document.querySelectorAll('td.board-title').forEach(td => {
+			  td.parentElement.addEventListener('mouseenter', () => {
+			    td.parentElement.classList.add('hover-row');
+			  });
+			  td.parentElement.addEventListener('mouseleave', () => {
+			    td.parentElement.classList.remove('hover-row');
+			  });
+			});
+	</script>
+</body>
