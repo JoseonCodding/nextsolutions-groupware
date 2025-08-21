@@ -1,48 +1,38 @@
 <title>문서관리</title>
-</head>
 <body>
 <div class="document-list">
   <h1>문서 관리</h1>
   <div class="board-controls">
-      <!-- 정렬: 변경 즉시 자동 적용 -->
-      <!-- (A) 검색유형 셀렉트: 변경 시 자동 제출 -->
-	<form th:action="@{/document/main}" method="get" class="search-form" id="sortForm">
-  		<!-- 현재 검색어/사이즈/정렬 유지 + 페이지 1로 초기화 -->
-  		<input type="hidden" name="keyword" th:value="${keyword}">
-  		<input type="hidden" name="size" th:value="${size}">
-  		<input type="hidden" name="sort" th:value="${sort}">
-  		<input type="hidden" name="page" value="1">
+<form th:action="@{/document/main}" method="get" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+    <input type="hidden" name="size" th:value="${size}">
+    <input type="hidden" name="sort" th:value="${sort}">
+    <input type="hidden" name="page" value="1">
 
-  	<select name="keywordType" id="keywordType">
-    	<option value="" disabled th:selected="${#strings.isEmpty(keywordType)}">선택</option>
-    	<option value="writer"  th:selected="${keywordType == 'writer'}">작성자명</option>
-    	<option value="project" th:selected="${keywordType == 'project'}">프로젝트명</option>
-    	<option value="status"  th:selected="${keywordType == 'status'}">진행상태</option>
-  	</select>
+    <select name="keywordType" onchange="this.form.submit()"
+        	style="height: 40px; width: 160px; font-size: 14px; padding: 0 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; outline: none; background: #fff;">
+  	<option value="" disabled
+          th:selected="${keywordType == null or #strings.isEmpty(keywordType)}">선택</option>
+  	<option value="writer"  th:selected="${keywordType == 'writer'}">작성자명</option>
+  	<option value="project" th:selected="${keywordType == 'project'}">프로젝트명</option>
+  	<option value="status"  th:selected="${keywordType == 'status'}">진행상태</option>
+	</select>
 
-  	<noscript><button type="submit">정렬 적용</button></noscript>
-	</form>
 
-		<!-- (B) 검색어 입력: 버튼 눌러 적용 -->
-	<form th:action="@{/document/main}" method="get">
-  		<input type="text" name="keyword" th:value="${keyword}" placeholder="검색어 입력">
-  		<!-- 현재 정렬/사이즈/유형 유지 + 페이지 1로 초기화 -->
-  		<input type="hidden" name="keywordType" th:value="${keywordType}">
-  		<input type="hidden" name="sort" th:value="${sort}">
-  		<input type="hidden" name="size" th:value="${size}">
-  		<input type="hidden" name="page" value="1">
-  	<button type="submit"><i class="fa fa-search"></i>검색</button>
- 	</form>
-      </div>
+    <input type="text" name="keyword" th:value="${keyword}" placeholder="검색어 입력"
+           style="height: 40px; padding: 0 12px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+    <button type="submit" style="height: 40px; padding: 0 20px; border-radius: 6px; border: none; background-color: #2962ff; color: #fff; cursor: pointer;">
+    <i class="fa fa-search"></i>검색</button>
+  </form>
+</div>
 
   <table class="table table-bordered table-hover">
     <thead>
     <tr>
-      <th>NO</th>
+      <th>번호</th>
       <th>프로젝트명</th>
       <th>담당자</th>
-      <th>진행상태</th>
       <th>등록일</th>
+      <th>진행상태</th>
       <th>버전</th>
     </tr>
     </thead>
@@ -61,8 +51,8 @@
       </td>
 
       <td th:text="${doc.empNm}"></td>
-      <td th:text="${doc.pjtSttsCd}"></td>
       <td th:text="${#dates.format(doc.frstRegDt, 'yyyy-MM-dd')}">-</td>
+      <td th:text="${doc.pjtSttsCd}"></td>
 
       <!-- 버전: v {ver} -->
       <td>
@@ -96,36 +86,25 @@
 
   <!-- 페이징 -->
   <div class="pagination" style="display:flex;gap:6px;align-items:center">
-  <!-- 처음 -->
-  <a th:classappend="${page==1}?' disabled'"
-     th:href="@{/document/main(page=1, size=${size})}">&lt;&lt;</a>
+<!-- 페이징: 검색/정렬 파라미터 유지 -->
+<a th:classappend="${page==1}?' disabled'"
+   th:href="@{/document/main(page=1, size=${size}, keywordType=${keywordType}, keyword=${keyword}, sort=${sort})}">&lt;&lt;</a>
 
-  <!-- 이전 -->
-  <a th:classappend="${page==1}?' disabled'"
-     th:href="@{/document/main(page=${page>1?page-1:1}, size=${size})}">&lt;</a>
+<a th:classappend="${page==1}?' disabled'"
+   th:href="@{/document/main(page=${page>1?page-1:1}, size=${size}, keywordType=${keywordType}, keyword=${keyword}, sort=${sort})}">&lt;</a>
 
-  <!-- 번호 -->
-  <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
-    <a th:if="${p!=page}"
-       th:href="@{/document/main(page=${p}, size=${size})}"
-       th:text="${p}"></a>
-    <span th:if="${p==page}" th:text="${p}"
-          style="font-weight:700;padding:2px 6px;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff"></span>
-  </span>
+<span th:each="p : ${#numbers.sequence(startPage, endPage)}">
+  <a th:if="${p!=page}"
+     th:href="@{/document/main(page=${p}, size=${size}, keywordType=${keywordType}, keyword=${keyword}, sort=${sort})}"
+     th:text="${p}"></a>
+  <span th:if="${p==page}" th:text="${p}" style="font-weight:700;padding:2px 6px;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff"></span>
+</span>
 
-  <!-- 다음 -->
-  <a th:classappend="${page==totalPages}?' disabled'"
-     th:href="@{/document/main(page=${page<totalPages?page+1:totalPages}, size=${size})}">&gt;</a>
+<a th:classappend="${page==totalPages}?' disabled'"
+   th:href="@{/document/main(page=${page<totalPages?page+1:totalPages}, size=${size}, keywordType=${keywordType}, keyword=${keyword}, sort=${sort})}">&gt;</a>
 
-  <!-- 마지막 -->
-  <a th:classappend="${page==totalPages}?' disabled'"
-     th:href="@{/document/main(page=${totalPages}, size=${size})}">&gt;&gt;</a>
+<a th:classappend="${page==totalPages}?' disabled'"
+   th:href="@{/document/main(page=${totalPages}, size=${size}, keywordType=${keywordType}, keyword=${keyword}, sort=${sort})}">&gt;&gt;</a>
 </div>
 
 </div>
-<script>
-  // 셀렉트 바꾸면 자동 제출 (JS 가능 환경)
-  document.getElementById('keywordType')?.addEventListener('change', function () {
-    document.getElementById('sortForm')?.submit();
-  });
-</script>
