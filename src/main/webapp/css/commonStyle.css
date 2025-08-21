@@ -307,5 +307,38 @@ tbody tr:hover {
   font-weight: bold;
 }
 
+/* 사원 수정, 등록 통합 css(동현) */ 
+.container {
+	margin-top: 45px;
+}
+
+h1 {
+	margin-bottom: 20px;
+	text-align: center;
+	font-size: 22px;
+	font-weight: bold;
+	color: #333;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 20px 0;
+	font-size: 16px;
+}
+
+th, td {
+	padding: 14px 18px;
+	border: 1px solid #ddd;
+}
+
+th {
+	background-color: #f5f7fa;
+	text-align: right; /* 라벨은 오른쪽 정렬 */
+	font-weight: bold;
+	width: 20%;
+	color: #333;
+}
+
 
 
