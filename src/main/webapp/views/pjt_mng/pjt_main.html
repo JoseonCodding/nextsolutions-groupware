@@ -263,6 +263,7 @@ tr:hover {
 		
 	</div>
 
+
 	<!-- 🔹 유효성 검사 스크립트 -->
 	<script>
 		function validateSearchForm(form) {
@@ -286,12 +287,14 @@ tr:hover {
 	<table>
 		<thead>
 			<tr>
-				<th style="width:35px; text-align: center;">순번</th>
-				<th style="width: 140px;">프로젝트명</th>
+				<th style="width:35px; text-align: center;">번호</th>
+				<th style="width: 140px;">제목</th>
 				<th style="width: 50px;">담당자</th>
 				<th style="width: 60px;">진행상태</th>
-				<th>시작일</th>
-				<th>종료일</th>
+				
+				<th>기간</th>
+				<!-- <th>시작일</th>
+				<th>종료일</th> -->
 				<th>결재자</th>
 				<th>버전</th>
 				<!--  <th>gid</th>-->
@@ -310,12 +313,12 @@ tr:hover {
 			<!-- 페이지 순번 처리  -->
 				<td	th:text="${pageInfo != null ? (pageInfo.pageSize * (pageInfo.pageNum - 1) + stat.index + 1) : (stat.index + 1)}" style="text-align: center;"></td>
 				<td th:text="${pjt['PJT_NM']}">프로젝트명</td>
-				<td th:text="${pjt['employeeId']}">담당자</td>
-				<td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>
-				<td th:text="${pjt['PJT_BGNG_DT']}">시작일</td>
-				<td th:text="${pjt['PJT_END_DT']}">종료일</td>
+				<td th:text="${pjt['employeeId']} ">담당자</td>					
+				<td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>				
+				<td th:text="${pjt['PJT_BGNG_DT']} + ' ~ ' + ${pjt['PJT_END_DT']}">기간</td>
+			
 				<td th:text="${pjt['TB_PJT_APR']}">결재자</td>
-				<td th:text="${pjt['ver']}"></td>
+				<td th:text="'v' +${pjt['ver']}"></td>
 				<!--  <td th:text="${pjt['gid']}"></td> -->
 				<td>
 					<!-- 상세보기: 항상 가능 -->
