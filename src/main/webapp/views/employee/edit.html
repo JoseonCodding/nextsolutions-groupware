@@ -14,32 +14,11 @@ body {
 	margin-top: 45px;
 }
 
-h1 {
-	margin-bottom: 20px;
-	text-align: center;
-	font-size: 22px;
-	font-weight: bold;
-	color: #333;
-}
-
-table {
-	width: 100%;
-	border-collapse: collapse;
-	margin: 20px 0;
-	font-size: 16px;
-}
-
-th, td {
-	padding: 14px 18px;
-	border: 1px solid #ddd;
-}
-
-th {
-	background-color: #f5f7fa;
-	text-align: right; /* 라벨은 오른쪽 정렬 */
-	font-weight: bold;
-	width: 20%;
-	color: #333;
+input, select {
+	width: 95%;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
 }
 
 input, select {
@@ -49,6 +28,8 @@ input, select {
 	border-radius: 6px;
 	box-sizing: border-box;
 }
+
+
 </style>
     <!-- CSS 불러오기 -->
 	<link rel="stylesheet" href="/css/commonStyle.css">
@@ -56,7 +37,7 @@ input, select {
 </head>
 <body>
 <div class="container">
-    <h1>사원 정보 수정</h1>
+    <h1 class="detail-title">사원 정보 수정</h1>
     
     <form id="employeeUpdateForm" action="/employee/update" method="post" enctype="multipart/form-data">
         <input type="hidden" name="empSeq" th:value="${employee.empSeq}" />
