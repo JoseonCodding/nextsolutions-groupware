@@ -10,8 +10,7 @@
        <input type="hidden" name="keyword" th:value="${keyword}">
        <input type="hidden" name="size" th:value="${size}">
        <input type="hidden" name="page" value="1">
-       <select name="sort" onchange="this.form.submit()">
-  <option value="" disabled th:selected="${sort == null}">선택</option>
+       <select name="sort" th:value="${sort}" onchange="document.getElementById('sortForm').submit()">
          <option value="newest" th:selected="${sort}=='newest'">최신순</option>
          <option value="views"  th:selected="${sort}=='views'">조회수순</option>
          <option value="likes"  th:selected="${sort}=='likes'">추천순</option>

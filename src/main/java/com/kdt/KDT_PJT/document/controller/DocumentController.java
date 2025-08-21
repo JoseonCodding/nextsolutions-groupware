@@ -1,21 +1,12 @@
 package com.kdt.KDT_PJT.document.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import org.springframework.http.MediaType;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,7 +37,10 @@ public class DocumentController {
     public String documentMain(Model model,
                                HttpSession session,
                                @RequestParam(name = "page", defaultValue = "1") int page,
-                               @RequestParam(name = "size", defaultValue = "10") int size) {
+                               @RequestParam(name = "size", defaultValue = "10") int size,
+                               @RequestParam(name = "keywordType", required = false) String keywordType,
+                               @RequestParam(name = "keyword", required = false) String keyword,
+                               @RequestParam(name = "sort", defaultValue = "newest") String sort) {
 
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) return "redirect:/login";
@@ -55,12 +49,24 @@ public class DocumentController {
         boolean isAdmin = isAdmin(employeeId);
 
         int limit  = Math.max(1, size);
-        int offset = (page - 1) * limit;
-
-        List<DocumentDTO> list = documentMapper.findDocsForManage(employeeId, isAdmin, limit, offset);
-        int total = documentMapper.countDocsForManage(employeeId, isAdmin);
-        int totalPages = Math.max(1, (int) Math.ceil(total / (double) limit));
+        int offset = (Math.max(1, page) - 1) * limit;
         
+        // 화이트리스트
+        String typeKey = null;
+        if ("writer".equalsIgnoreCase(keywordType) ||
+            "project".equalsIgnoreCase(keywordType) ||
+            "status".equalsIgnoreCase(keywordType)) {
+            typeKey = keywordType.toLowerCase();
+        }
+        String sortKey = "newest"; // views/likes 미지원이므로 기본값만
+        if ("newest".equalsIgnoreCase(sort)) sortKey = "newest";
+
+        // 조회
+        List<DocumentDTO> list = documentMapper.findDocsForManage(
+                employeeId, isAdmin, limit, offset);
+        int total = documentMapper.countDocsForManage(
+                employeeId, isAdmin);
+        int totalPages = Math.max(1, (int) Math.ceil(total / (double) limit));
         page = Math.min(Math.max(1, page), totalPages);
         
 
@@ -69,14 +75,18 @@ public class DocumentController {
         int startPage = ((page - 1) / win) * win + 1;
         int endPage   = Math.min(startPage + win - 1, totalPages);
 
-
-        model.addAttribute("approvalData", list);  // 기존 뷰 키 그대로 사용
+        model.addAttribute("approvalData", list);
         model.addAttribute("page", page);
         model.addAttribute("size", size);
         model.addAttribute("total", total);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+
+        // ▼ 폼 상태 유지
+        model.addAttribute("keywordType", typeKey);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("sort", sortKey);
         model.addAttribute("mainUrl", "document/document_list");
         return "navTap";
     }
