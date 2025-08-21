@@ -1,5 +1,9 @@
+<script th:if="${msg != null}">
+        alert("[[${msg}]]");
+</script>
 <script src="/js/jquery-3.7.1.min.js"></script>
 <script th:inline="javascript">
+
 	const arr = /*[[ ${scheduleList}]]*/;
 	const dto = /*[[ ${scheduleDTO}]]*/
 	//console.log(arr)
@@ -17,6 +21,16 @@
         let weekRef = null;
         // 현재 주차(주별 보기 시 유지용)
         let currentWeekNo = null;
+
+        // XSS 방어
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
         // 일정 1개 HTML 변환
         function scheduleOneView(schOne){
@@ -36,7 +50,8 @@
             
             if(schOne.holiday == '휴무일'){
                 color = "red";  // 휴무일
-                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' style='color:"+color+"'>"+schOne.title+"</a>";
+                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' style='color:"+color+"'>"+escapeHtml(schOne.title)+"</a>";
+
             }else if(schOne.holiday == '프로젝트'){
                 color = "blue"; // 프로젝트
                 clickBox = "<a href='/pjtMng/pjtDetail?pjtSn="+ schOne.pjtSn +"' style='color:"+color+"'>"+schOne.title+"</a>";
@@ -45,14 +60,14 @@
                 clickBox = "<span style='color:"+color+"'>"+schOne.title+"</span>";
             }else{
                 color = "black"; // 일반 일정
-                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' style='color:"+color+"'>"+schOne.title+"</a>";
+                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' style='color:"+color+"'>"+escapeHtml(schOne.title)+"</a>";
             }
 
             return clickBox + "<br/>";
             
         }
 
-        // 월-> 각 일별 스케줄
+        // 월 -> 각 일별 스케줄
         function dayScheduleGet(todayStr){
         	var today = new Date(todayStr)
         	var lastDay = new Date(today.getYear(), today.getMonth()+1,0).getDate()  // 월 마지막 날 
@@ -128,7 +143,7 @@
         // 월별 렌더
         function monthDiaryView(){
             console.log("monthDiaryView() 실행");
-            $("#diary_title").html(monthFirst.getYear()+1900+'년 '+(monthFirst.getMonth()+1) + '월 일정');
+            $("#diary_title").html(monthFirst.getYear()+1900+'년 '+(monthFirst.getMonth()+1) + '월');
             monthFirst.setDate(1);
             var first = monthFirst.getDay();
             monthFirst = new Date(monthFirst.getFullYear(),monthFirst.getMonth()+1,0);
@@ -177,7 +192,7 @@
             currentWeekNo = weekOfMonth(weekRef);
 
             $("#diary_title").html(
-                weekRef.getFullYear() + '년 ' + (weekRef.getMonth()+1) + '월 ' + currentWeekNo + '주 일정'
+                weekRef.getFullYear() + '년 ' + (weekRef.getMonth()+1) + '월 ' + currentWeekNo + '주'
             );
 
             const weekStart = getSundayOfWeek(weekRef);
@@ -227,7 +242,7 @@
         // 일별 렌더
         function dayDiaryView(){
             console.log("dayDiaryView() 실행:");
-            $("#diary_title").html(dayOne.getYear()+1900+'년 '+(dayOne.getMonth()+1) + '월 '+dayOne.getDate()+'일 일정');
+            $("#diary_title").html(dayOne.getYear()+1900+'년 '+(dayOne.getMonth()+1) + '월 '+dayOne.getDate()+'일');
 
             $("#diary_body").empty();
             var title = $("<tr><th>시간</th><th>"+dayOne.getDate()+"일("+weekTitle[dayOne.getDay()]+")</th></tr>");
@@ -366,10 +381,9 @@
     });
 </script>
 
-
 <h3 id="diary_title"></h3>
 
-<div align="right">
+<div class="view-select">
     <!-- 보기 전환 버튼 -->
     <button id="viewMonth">월별</button>
     <button id="viewWeek">주별</button>
@@ -403,5 +417,5 @@
 
 <!-- 권한자만 등록 버튼 보이도록 -->
 <a th:if="${session.loginUser.role == '일정' or session.loginUser.role == '대표'}"
-   th:href="@{/schedule/insert}">일정 등록</a>
+   th:href="@{/schedule/insert}" class="regist-btn">일정 등록</a>
 
