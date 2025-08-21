@@ -1,8 +1,10 @@
 package com.kdt.KDT_PJT.attend.ctl;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,8 +90,30 @@ public class AttendController {
         }
         
         Map<String, LeaveDTO> attendMapLeave = new HashMap<>();
+        
+        
+        
+        
+        
+        //// 출퇴근 버튼 보이기
+        Date now = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String nowStr = sdf.format(now);
+        
+        if(now.getDay()==0 ||now.getDay()==6 ) {
+        	attendance.setNowIsHoliday(true);
+        	
+        }
+        
+        // 연차
         for (LeaveDTO leave : leaveDate) {
             attendMapLeave.put(leave.getUsedDateStr(), leave);
+            //System.out.println(leave.getUsedDateStr()+" : "+nowStr);
+            
+            // 연차가 오늘이면 출퇴근 버튼 안보이게
+            if(leave.getUsedDateStr().equals(nowStr)) {
+            	attendance.setNowIsHoliday(true);
+            }
         }
         
         
@@ -100,7 +124,18 @@ public class AttendController {
         model.addAttribute("attendMap", attendMap); // 날짜 기준 Map 전달
         model.addAttribute("attendMapLeave", attendMapLeave);
         
-        model.addAttribute("holidayArr", attendMapper.searchHoliday(attendance));
+        List<ScheduleDTO> holidayArr = attendMapper.searchHoliday(attendance);
+        
+        for (ScheduleDTO holiday : holidayArr) {
+			if(holiday.getStartDateStr().compareTo(nowStr)<= 0 && 
+					holiday.getEndDateStr().compareTo(nowStr)> 0) {
+				attendance.setNowIsHoliday(true);
+			}
+		}
+        
+        model.addAttribute("holidayArr", holidayArr);
+        
+        
 
         model.addAttribute("StartDay", attendance.getStartDay());
         model.addAttribute("EndDay", attendance.getEndDay());
@@ -112,7 +147,7 @@ public class AttendController {
     	//model.addAttribute("leaveDate", leaveDate);
         model.addAttribute("mainData", attendMonthList);
         model.addAttribute("mainUrl", "attend/check");
-        model.addAttribute("attendDTO", attendance);   // 조회 조건 유지용
+        //model.addAttribute("attendDTO", attendance);   // 조회 조건 유지용
        
         
         // DTO에 구현한 메서드 호출

@@ -24,7 +24,8 @@ public class AttendDTO2 {
 	private String modifiedBy;               // 수정자 ID
 	private LocalDateTime modifiedAt;        // 수정일시
 	private String modificationReason;      // 수정 사유
-	String startDay, endDay,StartDayStr,YearMonth;	
+	String startDay, endDay,StartDayStr,YearMonth;
+	boolean nowIsHoliday = false;
 	
 
 //    // ✅ 페이징 파라미터 추가

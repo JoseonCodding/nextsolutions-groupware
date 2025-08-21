@@ -47,7 +47,7 @@ public interface AttendMapper {
    		""")
    List<LeaveDTO> searchLeaveDate(AttendDTO2 attendance);
    
-   //출퇴근 기록에 휴무일 가져오기
+   //출퇴근 기록에 휴무일 가져오기      //date_add(end_date, INTERVAL 1 DAY) : fullcalender가 마지막 날 인지를 못해서 +1일 처리
    @Select("""
    		SELECT title, start_date,  date_add(end_date, INTERVAL 1 DAY) as end_date  FROM schedule 
    		WHERE holiday= '휴무일' and start_date <= #{endDay}  AND  end_date >= #{startDay}
