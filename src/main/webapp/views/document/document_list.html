@@ -1,12 +1,39 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8" />
-  <title>문서관리</title>
+<title>문서관리</title>
 </head>
 <body>
 <div class="document-list">
-  <h2>문서 관리</h2>
+  <h1>문서 관리</h1>
+  <div class="board-controls">
+      <!-- 정렬: 변경 즉시 자동 적용 -->
+      <!-- (A) 검색유형 셀렉트: 변경 시 자동 제출 -->
+	<form th:action="@{/document/main}" method="get" class="search-form" id="sortForm">
+  		<!-- 현재 검색어/사이즈/정렬 유지 + 페이지 1로 초기화 -->
+  		<input type="hidden" name="keyword" th:value="${keyword}">
+  		<input type="hidden" name="size" th:value="${size}">
+  		<input type="hidden" name="sort" th:value="${sort}">
+  		<input type="hidden" name="page" value="1">
+
+  	<select name="keywordType" id="keywordType">
+    	<option value="" disabled th:selected="${#strings.isEmpty(keywordType)}">선택</option>
+    	<option value="writer"  th:selected="${keywordType == 'writer'}">작성자명</option>
+    	<option value="project" th:selected="${keywordType == 'project'}">프로젝트명</option>
+    	<option value="status"  th:selected="${keywordType == 'status'}">진행상태</option>
+  	</select>
+
+  	<noscript><button type="submit">정렬 적용</button></noscript>
+	</form>
+
+		<!-- (B) 검색어 입력: 버튼 눌러 적용 -->
+	<form th:action="@{/document/main}" method="get">
+  		<input type="text" name="keyword" th:value="${keyword}" placeholder="검색어 입력">
+  		<!-- 현재 정렬/사이즈/유형 유지 + 페이지 1로 초기화 -->
+  		<input type="hidden" name="keywordType" th:value="${keywordType}">
+  		<input type="hidden" name="sort" th:value="${sort}">
+  		<input type="hidden" name="size" th:value="${size}">
+  		<input type="hidden" name="page" value="1">
+  	<button type="submit"><i class="fa fa-search"></i>검색</button>
+ 	</form>
+      </div>
 
   <table class="table table-bordered table-hover">
     <thead>
@@ -17,7 +44,6 @@
       <th>진행상태</th>
       <th>등록일</th>
       <th>버전</th>
-      <th>파일명</th>
     </tr>
     </thead>
     <tbody>
@@ -28,8 +54,10 @@
 
       <!-- 제목 클릭 시 항상 최신 상세로 (ver 파라미터 생략) -->
       <td>
+      <div class="board-title">
         <a th:href="@{/document/detail(gid=${doc.gid}, page=${page}, size=${size}, keyword=${keyword})}"
            th:text="${doc.pjtNm}"></a>
+      </div>
       </td>
 
       <td th:text="${doc.empNm}"></td>
@@ -41,7 +69,7 @@
         <span th:text="'v ' + (${doc.ver} ?: '-')"></span>
       </td>
 	
-      <!-- 첨부: 빈 문자열도 제외 -->
+      <!-- 첨부: 빈 문자열도 제외 
       <td>
         <a th:if="${!#strings.isEmpty(doc.orgFileNm1)}"
    		   th:href="@{/document/download(fileName=${doc.atchFileSn1}, orgName=${doc.orgFileNm1})}"
@@ -56,7 +84,7 @@
 		<a th:if="${!#strings.isEmpty(doc.orgFileNm3)}"
    		   th:href="@{/document/download(fileName=${doc.atchFileSn3}, orgName=${doc.orgFileNm3})}"
    		   th:text="${doc.orgFileNm3}"></a>
-      </td>
+      </td> -->
     </tr>
 
     <tr th:if="${#lists.isEmpty(approvalData)}">
@@ -95,5 +123,9 @@
 </div>
 
 </div>
-</body>
-</html>
+<script>
+  // 셀렉트 바꾸면 자동 제출 (JS 가능 환경)
+  document.getElementById('keywordType')?.addEventListener('change', function () {
+    document.getElementById('sortForm')?.submit();
+  });
+</script>

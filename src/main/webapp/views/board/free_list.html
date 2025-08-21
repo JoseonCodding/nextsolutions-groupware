@@ -27,8 +27,9 @@
         <input type="hidden" name="size" th:value="${size}">
         <input type="hidden" name="page" value="1">
         <button type="submit"><i class="fa fa-search"></i>검색</button>
-        </div>
-      </form>
+       </form>
+       </div>
+      
 
       <!-- 글쓰기 -->
       <a th:href="@{/board/free/write(page=${page}, size=${size}, sort=${sort}, keyword=${keyword})}"
@@ -39,7 +40,7 @@
     <table class="board-table" style="width:100%; border-collapse:collapse;">
       <thead style="background:#f5f5f5;">
         <tr>
-          <th style="padding:10px; border-bottom:1px solid #ddd;">NO</th>
+          <th style="padding:10px; border-bottom:1px solid #ddd;">번호</th>
           <th style="padding:10px; border-bottom:1px solid #ddd;">제목</th>
           <th style="padding:10px; border-bottom:1px solid #ddd;">작성자</th>
           <th style="padding:10px; border-bottom:1px solid #ddd;">작성일</th>
@@ -51,11 +52,12 @@
         <tr th:each="b, stat : ${boards}">
           <td style="padding:10px; text-align:center;" th:text="${offset + stat.count}">1</td>
           <td style="padding:10px;">
+          <div class="board-title">
             <a th:href="@{/board/free/detail(
                            postId=${b.postId},
                            page=${page}, size=${size}, sort=${sort}, keyword=${keyword}
                          )}"
-               th:text="${b.title}">제목</a>
+               th:text="${b.title}">제목</a></div>
           </td>
           <td style="padding:10px; text-align:center;" th:text="${b.empNm}">작성자</td>
           <td style="padding:10px; text-align:center;"
