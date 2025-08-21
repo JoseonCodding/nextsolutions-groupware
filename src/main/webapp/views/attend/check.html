@@ -5,7 +5,7 @@
         alert("[[${msg}]]");
 </script>
 
-<div>
+<div class="check-container">
 	<form method="post" th:action="@{/attend/in}">
 	    <button class="regist-btn" type="submit">출근</button>
 	</form>
@@ -13,7 +13,161 @@
 	    <button class="regist-btn" type="submit">퇴근</button>
 	</form>
 	
-	<div th:replace="attend/attendCalender" class="attend-calender"></div>
+	<div class="attend-calender">
+		 
+	<form method="get" th:action="@{/attend}">
+	    <input type="hidden" name="startDay" th:value="${prevMonthStartDay}"/>
+	    <input type="hidden" name="endDay" th:value="${prevMonthEndDay}"/>
+	    <button type="submit">◀ 이전달</button>
 	
-	<a class="regist-btn" th:href="@{/attend/attendTimeInsert}" >출퇴근 기록 수정 신청</a>
+	</form>
+	<form method="get" th:action="@{/attend}">
+	    <input type="hidden" name="startDay" th:value="${nextMonthStartDay}"/>
+	    <input type="hidden" name="endDay" th:value="${nextMonthEndDay}"/>
+	    <button type="submit">다음달 ▶</button>
+
+	</form>
+
+<!-- 
+ <form>   
+<table class="no-hover" border="" th:each="dto : ${mainData}">
+	<tr>
+		<td>날짜</td>
+		<td th:text="${dto.workDate}"></td>
+	</tr>
+	<tr>
+		<td>출근시간</td>
+		<td th:text="${dto.checkInHourMinute}" />
+	</tr>
+	<tr>
+		<td>퇴근시간</td>
+		<td th:text="${dto.checkOutHourMinute}" />
+	</tr>
+</table>
+</form>
+ -->
+		 
+	<!-- FullCalender 라이브러리 -->
+	<div id="calendar"></div>
+
+		<a class="regist-btn" th:href="@{/attend/attendTimeInsert}" >출퇴근 기록 수정 신청</a>
+	</div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script th:inline="javascript">
+/* 서버에서 전달한 Map을 JS 객체로 변환 */
+var attendMap = /*[[${attendMap}]]*/ {};
+var attendMapLeave = /*[[${attendMapLeave}]]*/ {};
+
+
+var events = [];
+
+Object.keys(attendMap).forEach(function(date) {
+    var dto = attendMap[date];
+    
+    // 출근 이벤트
+    if(dto.checkInHourMinute) {
+        events.push({
+            title: '출근 ' + dto.checkInHourMinute,
+            start: date ,
+            color: '#3788d8' // 출근 색상
+        });
+    }
+
+    // 퇴근 이벤트
+    if(dto.checkOutHourMinute) {
+        events.push({
+            title: '퇴근 ' + dto.checkOutHourMinute ,
+            start: date ,
+            color: '#d8573c' // 퇴근 색상
+        });
+    }
+});
+
+Object.keys(attendMapLeave).forEach(function(leaveDate) {
+    var leave = attendMapLeave[leaveDate];
+
+    if (leave && leave.usedDateStr) {
+        events.push({
+			 title:'연차',
+        	 start: leave.usedDateStr,   // 시작일
+             end: leave.usedDateStr,     // 종료일도 지정 (같은 날이면 그대로)
+             display: 'background',      // 배경으로 표시
+             backgroundColor: '#ccffcc'  // 연두색 (미색 연두로 변경 가능)
+        });
+    }
+});
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+	 var calendarEl = document.getElementById('calendar');
+	    var calendar = new FullCalendar.Calendar(calendarEl, {
+	        initialView: 'dayGridMonth',
+	        height: 'auto',       // 높이 자동 맞춤
+	        contentHeight: 'auto',
+	        aspectRatio: 1,      // 가로세로 비율 (조정 가능)
+	        events: events,
+	        headerToolbar: {
+	            left: 'prevMonthButton,title,nextMonthButton',
+	            
+	        },
+	        customButtons: {
+	            prevMonthButton: {
+	                text: '◀ 이전달',
+	                click: function() {
+	                    // 서버로 이동: form 방식으로 GET
+	                    const form = document.createElement('form');
+	                    form.method = 'get';
+	                    form.action = '/attend';
+
+	                    const startInput = document.createElement('input');
+	                    startInput.type = 'hidden';
+	                    startInput.name = 'startDay';
+	                    startInput.value = /*[[${prevMonthStartDay}]]*/ '';
+
+	                    const endInput = document.createElement('input');
+	                    endInput.type = 'hidden';
+	                    endInput.name = 'endDay';
+	                    endInput.value = /*[[${prevMonthEndDay}]]*/ '';
+
+	                    form.appendChild(startInput);
+	                    form.appendChild(endInput);
+
+	                    document.body.appendChild(form);
+	                    form.submit();
+	                }
+	            },
+	            nextMonthButton: {
+	                text: '다음달 ▶',
+	                click: function() {
+	                    const form = document.createElement('form');
+	                    form.method = 'get';
+	                    form.action = '/attend';
+
+	                    const startInput = document.createElement('input');
+	                    startInput.type = 'hidden';
+	                    startInput.name = 'startDay';
+	                    startInput.value = /*[[${nextMonthStartDay}]]*/ '';
+
+	                    const endInput = document.createElement('input');
+	                    endInput.type = 'hidden';
+	                    endInput.name = 'endDay';
+	                    endInput.value = /*[[${nextMonthEndDay}]]*/ '';
+
+	                    form.appendChild(startInput);
+	                    form.appendChild(endInput);
+
+	                    document.body.appendChild(form);
+	                    form.submit();
+	                }
+	            }
+	        }
+	    });
+	    calendar.render();
+});
+</script>
