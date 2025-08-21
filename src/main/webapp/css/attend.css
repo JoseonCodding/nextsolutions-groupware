@@ -1,9 +1,9 @@
 @charset "UTF-8";
 
  .check-container {
-    border: 5px solid black;
-    height: 1100px;
-    background-color: #ff0;
+    border: 1px solid black;
+    height: 950px;
+    background-color: yellow;
 }
 
 /*출퇴근 버튼 - 위치변경을 위해 등록버튼 변형*/
@@ -35,7 +35,7 @@ tr:hover:not(.no-hover tr) td {
   width: 100% !important;  /* 캘린더를 부모 기준 100%로 */
   max-width: 100%;         /* 혹시 모를 제한 해제 */
   background: blue;
-  height: 1000px;
+  height: 800px;
 }
 
 fc-thead {
