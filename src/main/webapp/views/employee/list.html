@@ -35,12 +35,15 @@
 <h1>사원 관리</h1>
 <div>
   <!-- 검색 form -->
-<form action="/employee/list"  method="get" style="margin-top: 20px; display: flex; gap: 12px;">
-  <input type="text" name="keyword" placeholder="사원명 검색" class="form-control" 
+<form action="/employee/list"  method="get" style="margin-top: 20px; display: flex;">
+  <input type="text" name="keyword"  th:value="${keyword}" placeholder="사원명 검색" class="form-control" 
          style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;" />
-  <button type="submit" class="button" style="background-color: #2962ff; color: white;">
+  <button type="submit" class="filter-btn" style="background-color: #2962ff; color: white;"><i class="fa fa-search"></i>
     검색
   </button>
+   <a href="/employee/list" class="filter-btn"><i class="fa fa-rotate-left"></i> 초기화 </a>
+ 
+			   
 </form>
 </div>
 

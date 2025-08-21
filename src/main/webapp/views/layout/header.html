@@ -16,10 +16,8 @@
             <a th:href="@{/board/notice}">게시판</a>
             <a th:href="@{/document/main}">문서관리</a>
             <a th:href="@{/employee/list}">사원관리</a>
-            
-	            <div th:if="${session.loginUser != null}">
-	    			<a th:href="@{/login/logout}" class="logout-btn">로그아웃</a>
-				</div>
+	    	<a th:if="${session.loginUser != null}" th:href="@{/login/logout}" class="logout-btn">로그아웃</a>
+
 <!-- 	        <span class="help-icon" title="도움말">
 	            <i class="fa-solid fa-circle-question fa-2xl"></i>
 	        </span> -->
