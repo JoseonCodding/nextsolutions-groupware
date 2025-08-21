@@ -4,11 +4,53 @@
 	border: 1px solid black;
 	background: blue;
 	margin-top: 45px;
+	margin-bottom: 45px;
 }
 
-table[class=sche-table] {
+table[id=diary_title] {
 	margin: 0px;
 	width: 100%;
+}
+.no-hover:hover > td{
+  background: initial;     
+}
+/* 연도와 달 표시*/
+h2[id=diary_title] {
+
+	float: left;
+	margin-left: 100px;
+}
+/*달 이동 버튼*/
+.search-btn:hover {
+    background: #ff0000;
+}
+.month-nav{
+	position:relative;
+
+}
+.month-btn1 {
+    background:var(--search-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+	margin-right: 10px;
+    position:absolute;
+    left: 200px;
+}
+.month-btn2 {
+    background:var(--search-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+	margin-left: 150px;
+	position:absolute;
+    left: 280px;
 }
 .sche-table {
 	
@@ -22,16 +64,16 @@ table[class=sche-table] {
 .sche-table-day {
 	
 }
-.daygrid-day {
+.monthgrid-day {
 	
     height: 100px; /*달력 셀 높이 지정*/
-    padding-left: 0px;
-    margin: 0px;
+
+
 }
 
 .sche-comm {
 	font-size: 12px;
-	width: 150px;
+
 	color: white;
 	text-align: center;
     display: flex;

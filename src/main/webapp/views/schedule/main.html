@@ -128,7 +128,7 @@
         // (월별) 날짜 셀 생성
         function oneDayToSchTd(i){
             monthFirst.setDate(i);
-            var td= $("<td></td>");
+            var td= $("<td class='monthgrid-day'></td>");
             var ttt = i+"<br/>";
             for(var vv of dayScheduleGet(dateToStr(monthFirst))){
                 ttt += scheduleOneView(vv);
@@ -148,16 +148,16 @@
 
             $("#diary_body").empty();
             $("#diary_body").append("<tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr>");
-            var trLine = $("<tr valign='top'></tr>");
+            var trLine = $("<tr valign='top' class='no-hover'></tr>");
             $("#diary_body").append(trLine);
 
             for(var i = 1; i <= first;i++){
-                trLine.append($("<td></td>"));
+                trLine.append($("<td class='monthgrid-day'></td>"));
             }
             for(var i = 1; i <= last;i++){
                 trLine.append(oneDayToSchTd(i));
                 if(monthFirst.getDay()==6){
-                    trLine = $("<tr valign='top'></tr>");
+                    trLine = $("<tr valign='top' class='no-hover'></tr>");
                     $("#diary_body").append(trLine);
                 }
             }
@@ -208,7 +208,7 @@
             $("#diary_body").append(title);
 
             // 종일
-            title = $("<tr><th>종일</th></tr>");
+            title = $("<tr class='no-hover'><th>종일</th></tr>");
             for(var dd of weekArr){
                 var ttdd = $("<td   valign='top'></td>");
                 var ttt = "";
@@ -377,42 +377,44 @@
         setView('month');
     });
 </script>
-
-<h3 id="diary_title"></h3>
-
-<div class="view-select">
-    <!-- 보기 전환 버튼 -->
-    <button id="viewMonth">월별</button>
-    <button id="viewWeek">주별</button>
-    <button id="viewDay">일별</button>
+<div class="sche-container">
+<h1>일정 관리</h1>
+	<h2 id="diary_title" ></h2>
+	
+	<div class="view-select">
+	    <!-- 보기 전환 버튼 -->
+	    <button id="viewMonth">월별</button>
+	    <button id="viewWeek">주별</button>
+	    <button id="viewDay">일별</button>
+	</div>
+	
+	<!-- 월 이동 버튼 -->
+	<div id="monthNav" class=".month-nav" >
+	    <button id="prevMonth" class=" month-btn1">이전달</button>
+	    <button id="nextMonth" class=" month-btn2">다음달</button>
+	</div>
+	
+	<!-- 주 이동 버튼 -->
+	<div id="weekNav" align="center" style="display:none;">
+	    <button id="prevWeek">이전주</button>
+	    <button id="nextWeek">다음주</button>
+	</div>
+	
+	<!-- 일 이동 버튼 -->
+	<div id="dayNav" align="center" style="display:none;">
+	    <button id="prevDay">전날</button>
+	    <button id="nextDay">다음날</button>
+	</div>
+	
+	<!-- 월별 보기 -->
+	<table class="sche-table no-hover" id="diary_body">
+	</table>
+	
+	
+	<br />
+	
+	<!-- 권한자만 등록 버튼 보이도록 -->
+	<a th:if="${session.loginUser.role == '일정' or session.loginUser.role == '대표'}"
+	   th:href="@{/schedule/insert}" class="regist-btn">일정 등록</a>
 </div>
-
-<!-- 월 이동 버튼 -->
-<div id="monthNav">
-    <button id="prevMonth">이전달</button>
-    <button id="nextMonth">다음달</button>
-</div>
-
-<!-- 주 이동 버튼 -->
-<div id="weekNav" align="center" style="display:none;">
-    <button id="prevWeek">이전주</button>
-    <button id="nextWeek">다음주</button>
-</div>
-
-<!-- 일 이동 버튼 -->
-<div id="dayNav" align="center" style="display:none;">
-    <button id="prevDay">전날</button>
-    <button id="nextDay">다음날</button>
-</div>
-
-<!-- 월별 보기 -->
-<table class="sche-table" id="diary_body">
-</table>
-
-
-<br />
-
-<!-- 권한자만 등록 버튼 보이도록 -->
-<a th:if="${session.loginUser.role == '일정' or session.loginUser.role == '대표'}"
-   th:href="@{/schedule/insert}" class="regist-btn">일정 등록</a>
 

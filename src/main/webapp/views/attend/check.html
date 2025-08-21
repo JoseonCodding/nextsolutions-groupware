@@ -19,10 +19,10 @@
 	    <input type="hidden" name="startDay" th:value="${prevMonthStartDay}"/>
 	    <input type="hidden" name="endDay" th:value="${prevMonthEndDay}"/>
 	    <button type="submit">◀ 이전달</button>
-	
-	<div type="text" th:value="${StartDay}"></div>
-	
 	</form>
+	<div id="monthTitle"></div>
+	
+
 	<form method="get" th:action="@{/attend}">
 	    <input type="hidden" name="startDay" th:value="${nextMonthStartDay}"/>
 	    <input type="hidden" name="endDay" th:value="${nextMonthEndDay}"/>
@@ -62,8 +62,12 @@
 var attendMap = /*[[${attendMap}]]*/ {};
 var attendMapLeave = /*[[${attendMapLeave}]]*/ {};
 var attendDTO2 = /*[[${attendDTO2}]]*/ {};
+var currDay = new Date(attendDTO2.startDay);
+//console.log(currDay)
 
-console.log(attendDTO2)
+//console.log(attendDTO2)
+
+document.querySelector("#monthTitle").innerHTML = currDay.getFullYear()+"년 "+(currDay.getMonth()+1)+"월"
 var events = [];
 
 Object.keys(attendMap).forEach(function(date) {
