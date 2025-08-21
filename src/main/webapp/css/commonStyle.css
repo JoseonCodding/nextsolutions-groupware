@@ -117,7 +117,7 @@ a:hover {
 }
 
 
-/* 게시글 목록의 제목 (class="board-title") */
+/* 게시글 목록 제목용 (class="board-title") (직접 style="width:000px"으로 너비 적용해야함) */
 .board-title a {
 	text-align: center;
 	display: inline-block;     /* 줄 바꿈 방지 위해 inline-block 또는 block */
@@ -126,12 +126,10 @@ a:hover {
 	text-overflow: ellipsis;   /* 넘친 부분을 ... 으로 표시 */
 }
 
+/* class="board-title"과 같은 행에 적용 (html에 JS 있어야 동작함) */
 table tbody tr.hover-row {
-  /* background-color: #f4f5ff; */
-  background-color: red;
+  background-color: #f3fafe;
 }
-
-
 
 /* 버튼 */
 .btn {

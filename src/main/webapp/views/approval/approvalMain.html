@@ -100,7 +100,7 @@
 		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages}, type=${type}, status=${status})}">Next &#x203A;</a>
 		</nav>
 	
-	<!-- 게시판 리스트 호버링 적용 JS -->
+	<!-- 게시판 리스트 호버링 적용 JS (다른 페이지 테이블과 CSS 충돌방지용) -->
 	<script>
 		document.querySelectorAll('td.board-title').forEach(td => {
 			  td.parentElement.addEventListener('mouseenter', () => {

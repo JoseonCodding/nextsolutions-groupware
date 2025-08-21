@@ -51,13 +51,12 @@
       <tbody>
         <tr th:each="b, stat : ${boards}">
           <td style="padding:10px; text-align:center;" th:text="${offset + stat.count}">1</td>
-          <td style="padding:10px;">
-          <div class="board-title">
+          <td class="board-title" style="padding:10px;">
             <a th:href="@{/board/notice/detail(
                            postId=${b.postId},
                            page=${page}, size=${size}, sort=${sort}, keyword=${keyword}
                          )}"
-               th:text="${b.title}">제목</a></div>
+               th:text="${b.title}">제목</a>
           </td>
           <td style="padding:10px; text-align:center;" th:text="${b.empNm}">작성자</td>
           <td style="padding:10px; text-align:center;"
@@ -97,3 +96,15 @@
          th:href="@{/board/notice(page=${totalPages}, size=${size}, sort=${sort}, keyword=${keyword})}">&gt;&gt;</a>
     </div>
   </div>
+  
+	<!-- 게시판 리스트 호버링 적용 JS (다른 페이지 테이블과 CSS 충돌방지용) -->
+	<script>
+		document.querySelectorAll('td.board-title').forEach(td => {
+			  td.parentElement.addEventListener('mouseenter', () => {
+			    td.parentElement.classList.add('hover-row');
+			  });
+			  td.parentElement.addEventListener('mouseleave', () => {
+			    td.parentElement.classList.remove('hover-row');
+			  });
+			});
+	</script>
