@@ -1,4 +1,17 @@
 @charset "UTF-8";
+
+/*초기화*/
+*{
+	margin:0;
+	padding:0;
+}
+.wrapper{
+	width:1200px;
+	margin: 0 auto;
+	background-color: rgb(255, 255, 255); /*영역 확인용*/
+} 
+
+
 /*======== 메인 헤더와 통일 ===============*/
 /* 상단바 전체 */
 .topbar {

@@ -1,9 +1,12 @@
 <title th:text="${board != null ? board.boardName : '커스텀 게시판'}">커스텀 게시판</title>
+<link rel="stylesheet" href="/css/board.css">
 <!-- 본문 -->
+<h1>게시판</h1>
 <div class="container">
-  <div class="board-controls" style="display:flex; justify-content:space-between; margin:20px 0;">
+  <div class="board-controls">
      <!-- 정렬 -->
-     <form th:action="@{/board/custom/{boardId}(boardId=${activeBoardId})}" method="get" id="sortForm">
+     <form th:action="@{/board/custom/{boardId}(boardId=${activeBoardId})}" method="get" class="search-form" id="sortForm">
+     <div class="form-group">
        <input type="hidden" name="keyword" th:value="${keyword}">
        <input type="hidden" name="size" th:value="${size}">
        <input type="hidden" name="page" value="1">
@@ -22,6 +25,7 @@
        <input type="hidden" name="size" th:value="${size}">
        <input type="hidden" name="page" value="1">
        <button type="submit"><i class="fa fa-search"></i>검색</button>
+       </div>
      </form>
 
      <!-- 글쓰기 -->
