@@ -60,9 +60,15 @@
 
             		<td th:text="${dto.docType}"></td>
 				    <td class="board-title">
-				    	<a th:href="@{/approval/viewer(docId=${dto.docId}, page=${page}, type=${type}, status=${status})}" th:text="${dto.title}"></a>
+				    	<a style="width:500px;"
+				    		th:href="@{/approval/viewer(docId=${dto.docId}, page=${page}, type=${type}, status=${status})}" 
+				    		th:text="${dto.title}">
+				    	</a>
 				    </td>
-   				    <td th:text="${dto.writer}"></td>
+					<td>
+					  <span th:text="${dto.writer}"></span>
+					  <span th:text="${dto.writerPosition}"></span>
+					</td>
 				    <td th:text="${dto.deptName}"></td>
 				    <td th:text="${dto.status}"></td>
 				    <td th:text="${#dates.format(dto.createdAt, 'yyyy/MM/dd')}"></td>

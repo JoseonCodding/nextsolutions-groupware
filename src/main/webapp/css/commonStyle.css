@@ -130,6 +130,10 @@ a:hover {
 /* 게시글 목록의 제목 (class="board-title") */
 .board-title a {
 	text-align: center;
+	display: inline-block;     /* 줄 바꿈 방지 위해 inline-block 또는 block */
+	white-space: nowrap;       /* 한 줄로 유지 */
+	overflow: hidden;          /* 넘치는 텍스트 숨김 */
+	text-overflow: ellipsis;   /* 넘친 부분을 ... 으로 표시 */
 }
 
 .board-title:hover a {
