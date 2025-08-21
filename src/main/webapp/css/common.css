@@ -18,6 +18,8 @@
   --search-btn:#0080c0; 	/* 검색 버튼*/
   --back-btn: #0080c0;	/* 목록, 뒤로가기 버튼*/
   --detail-btn: #b062ff;	/* 상세 버튼*/
+  --primary:#3949ab; /* 헤더 로고 스타일 */
+  --accent:#64b5f6; /* 헤더 로고 스타일 */
 }
 
 /* 수정 버튼 */ 
@@ -166,4 +168,21 @@
     margin-top: 20px;
     float: right;
 }
+
+/* 헤더 로고 스타일(동현)*/
+.ns-brand{
+  display:inline-block;            /* 클릭 영역 확보 */
+  font-size:22px;
+  font-weight:800;
+  text-decoration:none;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent; /* 중요: 사파리/일부 환경 */
+  letter-spacing:-0.5px;
+  transition:opacity .2s;
+  cursor:pointer;
+}
+.ns-brand:hover{ opacity:.8; }
 
