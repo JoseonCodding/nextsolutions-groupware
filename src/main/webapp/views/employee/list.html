@@ -5,26 +5,7 @@
 <title>사원 관리</title>
 <style>
     body { font-family: 'Noto Sans KR', sans-serif;  margin: 0; padding: 0px; }
-    h1 {
-    font-size: 2em;
-    font-weight: 700;
-    margin-bottom: 18px;
-    color: #283593;
-    letter-spacing: -1px;
-}
-    table { border-collapse: collapse; width: 100%; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    th, td {
-	text-align: center;
-    padding: 12px 25px;
-}
-    th {
-    color: #3949ab;
-    font-size: 1em;
-    font-weight: 600;
-    border-bottom: 2px solid #d1d5db;
-    background: #eceff1;
-}
-    tr:hover { background-color: #f0f8ff; }
+
     .status-active { color: #28a745; font-weight: bold; }
     .status-inactive { color: #dc3545; font-weight: bold; }
     .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
@@ -50,15 +31,19 @@
  	<link rel="stylesheet" href="../css/common.css">
 </head>
 <body>
+<div class="container">
 <h1>사원 관리</h1>
 <div>
   <!-- 검색 form -->
-<form action="/employee/list"  method="get" style="margin-top: 20px; display: flex; gap: 12px;">
-  <input type="text" name="keyword" placeholder="사원명 검색" class="form-control" 
+<form action="/employee/list"  method="get" style="margin-bottom: 20px; display: flex;">
+  <input type="text" name="keyword"  th:value="${keyword}" placeholder="사원명 검색" class="form-control" 
          style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;" />
-  <button type="submit" class="button" style="background-color: #2962ff; color: white;">
+  <button type="submit" class="filter-btn" style="background-color: #2962ff; color: white;"><i class="fa fa-search"></i>
     검색
   </button>
+   <a href="/employee/list" class="filter-btn"><i class="fa fa-rotate-left"></i> 초기화 </a>
+ 
+			   
 </form>
 </div>
 
@@ -102,7 +87,7 @@
 
 		
 	</table>
-
+</div>
 	
     <button class="regist-btn" onclick="location.href='/employee/register'"> 등록 </button> 
     <button id="editSelected" class="edit-btn">수정</button>

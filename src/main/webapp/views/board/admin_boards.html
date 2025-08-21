@@ -1,22 +1,12 @@
-
+	<!-- <link rel="stylesheet" href="/css/board.css"> -->
   <link rel="stylesheet" href="/css/admin_boards.css" th:href="@{/css/admin_boards.css}">
-  <!-- <link rel="stylesheet" href="/css/approvalStyle.css"> -->
   <script src='/js/jquery-3.7.1.min.js'></script>
 </head>
 <body>
-<!--  <header>
-  <div class="container">
-    <h1>게시판 관리자</h1>
-    <p class="muted" style="margin:6px 0 0">게시판 생성/수정, 활성화 관리</p>
-    <a class="btn" style="margin-top:8px;" th:href="@{/board/notice}">목록으로</a>
-  </div>
-</header> -->
-
 <div class="container">
-  <div class="grid">
-<div class='twoRow'>
+  <div class="grid-top">
     <!-- 생성 카드 -->
-    <div class="card">
+    <div class="card full-height">
       <h2>새 게시판 생성</h2>
       <div class="content">
         <form th:action="@{/admin/boards/create}" method="post">
@@ -50,9 +40,8 @@
         </form>
       </div>
     </div>
-
 <!-- 오늘 통계 카드 -->
-<div class="card">
+<div class="card full-height">
   <h2>게시판 통계</h2>
   <div class="content">
     <div class="stats2">
@@ -75,11 +64,11 @@
               "
               onclick="loadToday(this)">
             <span th:text="${s.boardName}">게시판명</span>
+            </li>
           <li th:if="${#lists.isEmpty(todayStats)}" class="row muted">표시할 통계가 없습니다.</li>
         </ul>
       </div>
-
-      <!-- ➡️ 오른쪽: 선택된 보드 KPI (해당 보드만) -->
+<!-- ➡️ 오른쪽: 선택된 보드 KPI (해당 보드만) -->
 <div class="today">
   <div class="stat-card" style="--accent: #ef9a9a;">
     <div class="label">
@@ -103,24 +92,21 @@
       <span id="kpi-boardname-dup" class="muted" style="margin-left:6px"></span>
     </div>
   	<div id="kpi-posts" class="value">0</div>
-	</div>
-</div>
+	  </div>
     </div>
   </div>
+ </div>
 </div>
-
 </div>
-
-
     <!-- 목록 카드 -->
-    <div class="card">
+    <div class="card wide">
       <h2>게시판 목록</h2>
       <div class="content">
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>ID</th><th>이름</th><th>권한</th><th>활성</th><th>생성</th><th>수정</th>
+                <th>ID</th><th>이름</th><th>권한</th><th>활성</th><th>생성일</th><th>수정일</th>
               </tr>
             </thead>
             <tbody>
@@ -222,6 +208,7 @@
     <p class="muted" style="margin-top:8px">NOTICE 유형은 컨트롤러에서 수정이 차단됩니다.</p>
   </div>
 </dialog>
+</div>
 
 <script th:src="@{/js/admin_boards.js}"></script>
 

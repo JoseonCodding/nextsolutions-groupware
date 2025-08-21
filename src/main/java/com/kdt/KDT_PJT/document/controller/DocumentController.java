@@ -1,21 +1,12 @@
 package com.kdt.KDT_PJT.document.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import org.springframework.http.MediaType;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,68 +37,90 @@ public class DocumentController {
     public String documentMain(Model model,
                                HttpSession session,
                                @RequestParam(name = "page", defaultValue = "1") int page,
-                               @RequestParam(name = "size", defaultValue = "10") int size) {
-
+                               @RequestParam(name = "size", defaultValue = "10") int size,
+                               @RequestParam(name = "keywordType", required = false) String keywordType,
+                               @RequestParam(name = "keyword", required = false) String keyword,
+                               @RequestParam(name = "sort", defaultValue = "newest") String sort) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) return "redirect:/login";
+        String me = loginUser.getEmployeeId();
+        boolean isAdmin = isAdmin(me);
 
-        String employeeId = loginUser.getEmployeeId();
-        boolean isAdmin = isAdmin(employeeId);
+        int pageSafe = Math.max(1, page);
+        int sizeSafe = Math.min(Math.max(1, size), 100);
+        int offset = (pageSafe - 1) * sizeSafe;
 
-        int limit  = Math.max(1, size);
-        int offset = (page - 1) * limit;
+        // 검색/정렬 화이트리스트
+        String typeKey = ("writer".equalsIgnoreCase(keywordType) ||
+                          "project".equalsIgnoreCase(keywordType) ||
+                          "status".equalsIgnoreCase(keywordType)) ? keywordType.toLowerCase() : null;
+        String kw = (keyword == null) ? null : keyword.trim();
+        boolean hasSearch = (typeKey != null && kw != null && !kw.isEmpty());
+        String sortKey = "newest"; // 확장 여지
 
-        List<DocumentDTO> list = documentMapper.findDocsForManage(employeeId, isAdmin, limit, offset);
-        int total = documentMapper.countDocsForManage(employeeId, isAdmin);
-        int totalPages = Math.max(1, (int) Math.ceil(total / (double) limit));
-        
-        page = Math.min(Math.max(1, page), totalPages);
-        
+        // 데이터 조회
+        List<DocumentDTO> rows = hasSearch
+                ? documentMapper.findDocsForManageWithSearch(me, isAdmin, typeKey, kw, sortKey, sizeSafe, offset)
+                : documentMapper.findDocsForManage(me, isAdmin, sizeSafe, offset);
+        int total = hasSearch
+                ? documentMapper.countDocsForManageWithSearch(me, isAdmin, typeKey, kw)
+                : documentMapper.countDocsForManage(me, isAdmin);
 
-        // 👇 페이지 버튼 묶음 계산 (자유게시판과 동일)
+        int totalPages = Math.max(1, (int) Math.ceil(total / (double) sizeSafe));
+        pageSafe = Math.min(pageSafe, totalPages);
+
+        // 페이지 버튼(묶음 5개)
         int win = 5;
-        int startPage = ((page - 1) / win) * win + 1;
+        int startPage = ((pageSafe - 1) / win) * win + 1;
         int endPage   = Math.min(startPage + win - 1, totalPages);
 
-
-        model.addAttribute("approvalData", list);  // 기존 뷰 키 그대로 사용
-        model.addAttribute("page", page);
-        model.addAttribute("size", size);
+        // 모델
+        model.addAttribute("approvalData", rows);
+        model.addAttribute("page", pageSafe);
+        model.addAttribute("size", sizeSafe);
         model.addAttribute("total", total);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+
+        // 폼 상태 유지
+        model.addAttribute("keywordType", typeKey);
+        model.addAttribute("keyword", kw);
+        model.addAttribute("sort", sortKey);
+
         model.addAttribute("mainUrl", "document/document_list");
         return "navTap";
     }
 
     /** 문서 상세보기: ver 없으면 해당 gid의 '진행중/완료' 최신버전 */
     @GetMapping("/detail")
-    public String documentDetail(@RequestParam("gid") String gid,
-                                 @RequestParam(value = "ver", required = false) Integer ver,
-                                 @RequestParam(value="page", defaultValue="1") int page,
-                                 @RequestParam(value="size", defaultValue="10") int size,
-                                 @RequestParam(value="keyword", required=false) String keyword,
-                                 Model model,
-                                 HttpSession session) {
+    public String documentDetail(@RequestParam(name = "gid") String gid,
+            					 @RequestParam(name = "ver", required = false) Integer ver,
+            					 @RequestParam(name = "page", defaultValue = "1") int page,
+            					 @RequestParam(name = "size", defaultValue = "10") int size,
+            					 @RequestParam(name = "keywordType", required = false) String keywordType,
+            					 @RequestParam(name = "keyword", required = false) String keyword,
+            					 @RequestParam(name = "sort", defaultValue = "newest") String sort,
+                                 Model model, HttpSession session) {
 
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) return "redirect:/login";
-
         String me = loginUser.getEmployeeId();
         boolean isAdmin = isAdmin(me);
 
         DocumentDTO doc = (ver != null)
                 ? documentMapper.findByGidAndVer(gid, ver)
                 : documentMapper.findLatestApprovedByGid(gid); // 진행중/완료 최신 1건
-
         if (doc == null) return "redirect:/document/main";
+     // 권한: 관리자 또는 소유자만
         if (!isAdmin && !me.equals(doc.getEmployeeId())) return "redirect:/document/main";
 
         model.addAttribute("doc", doc);
         model.addAttribute("page", page);
         model.addAttribute("size", size);
         model.addAttribute("keyword", keyword);
+        model.addAttribute("keywordType", keywordType);
+        model.addAttribute("sort", sort);
         model.addAttribute("mainUrl", "document/document_detail");
         return "navTap";
     }

@@ -13,9 +13,9 @@
     
     <!-- 근태관리 스타일시트 -->
     <link rel="stylesheet" href="/css/attend.css">
-
-</head>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet"/>
 <style>
+/*초기화*/
 *{
 	margin:0;
 	padding:0;
@@ -24,8 +24,10 @@
 	width:1200px;
 	margin: 0 auto;
 	background-color: rgb(255, 255, 255); /*영역 확인용*/
-}
+} 
+
 </style>
+</head>
 <body>
 
 <div class="wrapper">
@@ -34,6 +36,6 @@
 	<th:block th:replace="@{${navUrl}}" />
 	<th:block th:replace="@{${mainUrl}}" />	
 	<th:block th:replace="@{/layout/footer}"/>
- </div>
+</div>
 </body>
 </html>
