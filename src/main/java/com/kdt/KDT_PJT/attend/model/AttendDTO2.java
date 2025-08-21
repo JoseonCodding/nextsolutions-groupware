@@ -24,7 +24,7 @@ public class AttendDTO2 {
 	private String modifiedBy;               // 수정자 ID
 	private LocalDateTime modifiedAt;        // 수정일시
 	private String modificationReason;      // 수정 사유
-	String startDay, endDay;	
+	String startDay, endDay,StartDayStr,YearMonth;	
 	
 
 //    // ✅ 페이징 파라미터 추가
@@ -53,6 +53,14 @@ public class AttendDTO2 {
 	    }
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		return sdf.format(usedDate);
+		
+	}//연차 날짜
+    public String setStartDay() {
+		if (startDay == null) {
+	        return "";
+	    }
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		return sdf.format(startDay);
 		
 	}
 	 
@@ -97,7 +105,7 @@ public class AttendDTO2 {
     public LocalDate getEndLocalDate() {
         return endDay != null ? LocalDate.parse(endDay) : null;
     }
-
+    
     // 이전달 시작일 (기준 startDay 기준)
     public String getPrevMonthStartDay() {
         LocalDate base = getStartLocalDate();
@@ -112,7 +120,7 @@ public class AttendDTO2 {
         LocalDate prevMonth = base.minusMonths(1);
         return prevMonth.withDayOfMonth(prevMonth.lengthOfMonth()).toString();
     }
-
+    
     // 다음달 시작일
     public String getNextMonthStartDay() {
         LocalDate base = getStartLocalDate();
