@@ -2,6 +2,8 @@ package com.kdt.KDT_PJT.document.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,6 +12,7 @@ import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,7 @@ import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.document.mapper.DocumentMapper;
 import com.kdt.KDT_PJT.document.model.DocumentDTO;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -158,36 +162,26 @@ public class DocumentController {
         return "navTap";
     }
     
-//    @GetMapping("/download")
-//    public ResponseEntity<Resource> downloadFile(
-//        @RequestParam("fileName") String fileName,
-//        @RequestParam("orgName") String orgName
-//    ) throws UnsupportedEncodingException {
-//
-//        java.nio.file.Path baseDir = java.nio.file.Paths.get("C:/upload").toAbsolutePath().normalize();
-//        java.nio.file.Path target = baseDir.resolve(fileName).normalize();
-//
-//        // 디렉토리 탈출 방지
-//        if (!target.startsWith(baseDir)) {
-//            return ResponseEntity.status(403).build();
-//        }
-//
-//        java.io.File file = target.toFile();
-//        if (!file.exists() || !file.isFile()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        Resource resource = new FileSystemResource(file);
-//
-//        String encodedOrgName = URLEncoder.encode(orgName, "UTF-8").replaceAll("\\+", " ");
-//        // 헤더 주입 방지: 개행/쿼트 제거
-//        encodedOrgName = encodedOrgName.replace("\r", "").replace("\n", "").replace("\"", "");
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedOrgName + "\"");
-//        headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-//        return ResponseEntity.ok().headers(headers).body(resource);
-//    }
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadFile(
+        @RequestParam("fileName") String fileName,
+        @RequestParam("orgName") String orgName,
+        HttpServletRequest request
+    ) throws Exception { 
+    	//파일 저장
+    			//String dirPath = request.getServletContext().getRealPath("fff")+"\\";
+    			
+    			String dirPath = "C:/upload/";
+    			Path fPath = Paths.get(dirPath+fileName).normalize();
+    			
+    			Resource source = new UrlResource(fPath.toUri());
+    			
+    			return ResponseEntity
+    					.ok()
+    					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName)
+    					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+    					.body(source);
+    }
 
     /** 관리자 사번 판별 (업무 규칙 반영) */
     private boolean isAdmin(String employeeId) {
