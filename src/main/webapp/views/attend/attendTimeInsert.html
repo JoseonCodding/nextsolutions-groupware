@@ -23,8 +23,8 @@
           <select id="dateSelect" name="workDate">
             <option value="">-- 날짜 선택 --</option>
             <option th:each="opt : ${attendOptions}"
-        			th:value="${opt.date}"
-        			th:text="${opt.date}">
+        			th:value="${opt.workDate}"
+        			th:text="${opt.workDate}">
 			</option>
 
           </select>

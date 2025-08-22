@@ -194,7 +194,7 @@ input[type="checkbox"] {
 				<td>
 				<input type="file" name="uploadFile1" id="uploadFile1" />
 					<div
-						style="margin-top: 8px; background: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
+						style="margin-top: 8px; background-color: #f0f0f0; padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc;">
 						<span th:text="${pjt['ORG_FILE_NM1'] ?: '첨부된 파일 없음'}"></span>
 					</div>
 					 <label th:if="${pjt['ATCH_FILE_SN1'] != null && pjt['ATCH_FILE_SN1'] != ''}"
@@ -206,17 +206,18 @@ input[type="checkbox"] {
 			<tr>
 				<td><input type="file" name="uploadFile2" id="uploadFile2" />
 					<div
-						style="margin-top: 8px; background: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
+						style="margin-top: 8px; background-color: #f0f0f0; padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc;">
 						<span th:text="${pjt['ORG_FILE_NM2'] ?: '첨부된 파일 없음'}"></span>
-					</div> <label th:if="${pjt['ATCH_FILE_SN2'] != null && pjt['ATCH_FILE_SN2'] != ''}"
-					style="display: inline-block; margin-top: 6px;"> <input
-						type="checkbox" name="delFileSlots2" value="true"> 삭제
+					</div>
+					 <label th:if="${pjt['ATCH_FILE_SN2'] != null && pjt['ATCH_FILE_SN2'] != ''}"
+					style="display: inline-block; margin-top: 6px;">
+					 <input type="checkbox" name="delFileSlots2" value="true"> 삭제
 				</label></td>
 			</tr>
 			<tr>
 				<td><input type="file" name="uploadFile3" id="uploadFile3" />
 					<div
-						style="margin-top: 8px; background: #f0f0f0; padding: 6px 10px; border-radius: 4px;">
+						style="margin-top: 8px; background-color: #f0f0f0; padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc;">
 						<span th:text="${pjt['ORG_FILE_NM3'] ?: '첨부된 파일 없음'}"></span>
 					</div> <label th:if="${pjt['ATCH_FILE_SN3'] != null && pjt['ATCH_FILE_SN3'] != ''}"
 					style="display: inline-block; margin-top: 6px;"> <input

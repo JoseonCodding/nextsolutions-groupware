@@ -77,6 +77,7 @@ public class AttendController {
     	
     	
     	
+
     	
     	
     	
@@ -92,7 +93,18 @@ public class AttendController {
         Map<String, LeaveDTO> attendMapLeave = new HashMap<>();
         
         
-        
+        // 오늘 날짜 문자열
+    	String today = LocalDate.now().toString();
+
+    	// 오늘 출퇴근 기록 가져오기
+    	AttendDTO todayAttend = attendMap.get(today);
+
+    	boolean hasCheckIn = todayAttend != null && todayAttend.getCheckInTime() != null;
+    	boolean hasCheckOut = todayAttend != null  && todayAttend.getCheckInTime() != null && todayAttend.getCheckOutTime() == null;
+
+    	// DTO에 상태 저장
+    	attendance.setTodayCheckIn(hasCheckIn);
+    	attendance.setTodayCheckOut(hasCheckOut);
         
         
         //// 출퇴근 버튼 보이기
@@ -100,6 +112,7 @@ public class AttendController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String nowStr = sdf.format(now);
         
+        // 주말에 안 보이게
         if(now.getDay()==0 ||now.getDay()==6 ) {
         	attendance.setNowIsHoliday(true);
         	
@@ -146,7 +159,7 @@ public class AttendController {
     	
     	//model.addAttribute("leaveDate", leaveDate);
         model.addAttribute("mainData", attendMonthList);
-        model.addAttribute("mainUrl", "attend/check_test"); /////////////////////////////////////////////////////////////////////////////
+        model.addAttribute("mainUrl", "attend/check"); 
         //model.addAttribute("attendDTO", attendance);   // 조회 조건 유지용
        
         
@@ -220,27 +233,51 @@ public class AttendController {
     
 
     //출퇴근 기록 수정 신청 
+//    @GetMapping("/attendTimeInsert")
+//    String attendTimeInsert(HttpSession session, Model model) {
+//        System.out.println("attendTimeInsert 작동하나");
+//
+//        EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+//        List<AttendDTO> attendInfoList =  attendMapper.userAttendList(loginUser);
+//
+//        // 날짜만 표시 (yyyy-MM-dd), value는 id
+//        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//
+//        List<Map<String, Object>> attendOptions = attendInfoList.stream()
+//            .filter(a -> a.getCheckInTime() != null) // 날짜 없는 데이터 제외
+//            .map(a -> {
+//                Map<String, Object> map = new HashMap<>();
+//                map.put("id", a.getId()); // <option value>
+//                map.put("date", a.getCheckInTime().toLocalDate().format(dateFmt)); // 표시용 텍스트(날짜만)
+//                return map;
+//            })
+//            // 필요 시 최신 날짜 먼저 보이게 정렬 (선택)
+//            .sorted((m1, m2) -> ((String)m2.get("date")).compareTo((String)m1.get("date")))
+//            .toList();
+//
+//        model.addAttribute("attendOptions", attendOptions);
+//        model.addAttribute("mainUrl", "attend/attendTimeInsert");
+//        return "navTap";
+//    }
+    
     @GetMapping("/attendTimeInsert")
     String attendTimeInsert(HttpSession session, Model model) {
         System.out.println("attendTimeInsert 작동하나");
 
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        List<AttendDTO> attendInfoList =  attendMapper.userAttendList(loginUser);
+        AttendDTO2 attendance = new AttendDTO2();
+        
+        attendance.setEmployeeId(loginUser.getEmployeeId());
+        
+        if(attendance.getStartDay() == null || attendance.getEndDay() == null) {
+            LocalDate now = LocalDate.now();  
+            attendance.setStartDay(now.withDayOfMonth(1).toString());      // 이번달 1일
+            attendance.setEndDay(now.withDayOfMonth(now.lengthOfMonth()).toString()); // 이번달 마지막 날
+        }
+        
+        List<AttendDTO> attendOptions =  attendMapper.userAttendMonthAppr(attendance);
 
-        // 날짜만 표시 (yyyy-MM-dd), value는 id
-        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        List<Map<String, Object>> attendOptions = attendInfoList.stream()
-            .filter(a -> a.getCheckInTime() != null) // 날짜 없는 데이터 제외
-            .map(a -> {
-                Map<String, Object> map = new HashMap<>();
-                map.put("id", a.getId()); // <option value>
-                map.put("date", a.getCheckInTime().toLocalDate().format(dateFmt)); // 표시용 텍스트(날짜만)
-                return map;
-            })
-            // 필요 시 최신 날짜 먼저 보이게 정렬 (선택)
-            .sorted((m1, m2) -> ((String)m2.get("date")).compareTo((String)m1.get("date")))
-            .toList();
+        
 
         model.addAttribute("attendOptions", attendOptions);
         model.addAttribute("mainUrl", "attend/attendTimeInsert");

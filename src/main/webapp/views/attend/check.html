@@ -7,10 +7,10 @@
 
 <div class="check-container">
 <th:block th:unless="${attendDTO2.nowIsHoliday}">
-	<form method="post" th:action="@{/attend/in}">
+	<form method="post" th:action="@{/attend/in}" th:unless="${attendDTO2.todayCheckIn}">
 	    <button class="regist-btn" type="submit">출근</button>
 	</form>
-	<form method="post" th:action="@{/attend/out}">
+	<form method="post" th:action="@{/attend/out}" th:if="${attendDTO2.todayCheckOut}">
 	    <button class="regist-btn" type="submit">퇴근</button>
 	</form>
 </th:block>
@@ -115,9 +115,7 @@ Object.keys(attendMapLeave).forEach(function(leaveDate) {
 
 
 holidayArr.forEach(function(holiday, idx) {
-    
-	
-    
+
      events.push({
 		title:holiday.title,
      	 start: holiday.startDateStr,   // 시작일

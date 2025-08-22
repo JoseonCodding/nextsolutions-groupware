@@ -40,6 +40,17 @@ public interface AttendMapper {
    List<AttendDTO> userAttendMonthList( AttendDTO2 attendance);
    
    
+   
+ //사용자 본인의 출퇴근 기록 한달 기준 보기  //DTO2 - limit 없는 버전
+   @Select("""
+		    SELECT * FROM attendance
+		    WHERE employeeId = #{employeeId}
+		      AND DATE(check_in_time) BETWEEN #{startDay} AND #{endDay}
+		    ORDER BY check_in_time
+		""")
+   List<AttendDTO> userAttendMonthAppr( AttendDTO2 attendance);
+   
+   
    //출퇴근 기록에 연차 날짜 가져오기
    @Select("""
    		select used_date from annual_leave where employeeId = #{employeeId}
@@ -86,7 +97,7 @@ public interface AttendMapper {
    
    //근태 관리자 페이지-출퇴근 시간 조회페이지 검색기능 있는 버전
    @Select("""
-          SELECT a.*, e.emp_nm 
+          SELECT a.*, e.emp_nm , e.position
           FROM attendance a
           JOIN employee e ON a.employeeId = e.employeeId
           WHERE DATE(a.check_in_time) = CURDATE()
@@ -240,7 +251,8 @@ public interface AttendMapper {
    // 출퇴근 현황(관리자용)
    @Select("""
 	        <script>
-	        SELECT a.*, e.emp_nm, e.deptName, mb.emp_nm as  mb_nm 
+	        SELECT a.*, e.emp_nm, e.position, e.deptName, 
+	        mb.emp_nm as  mb_nm, mb.position as  mb_position    
 	        FROM attendance a
 	        JOIN employee e ON a.employeeId = e.employeeId
 	        left outer JOIN employee mb ON a.modified_by = mb.employeeId
