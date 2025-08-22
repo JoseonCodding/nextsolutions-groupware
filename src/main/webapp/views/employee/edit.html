@@ -175,7 +175,7 @@ input, select {
                 <option value="사원" th:selected="${employee.role == '사원'}">사원</option>
                 <option value="공지사항" th:selected="${employee.role == '공지사항'}">공지사항</option>
                 <option value="일정관리" th:selected="${employee.role == '일정관리'}">일정관리</option>
-                <option value="일정관리" th:selected="${employee.role == '일정관리'}">일반상</option>
+                <option value="" th:selected="${employee.role == null}">일반</option>
             </select>
         </td>
     </tr>
@@ -259,14 +259,6 @@ document.getElementById('employeeUpdateForm').addEventListener('submit', functio
     if (hireD && resD && resD < hireD) {
         alert('퇴사일은 입사일 이후여야 합니다.');
         f.resignDate.focus();
-        e.preventDefault();
-        return;
-    }
-
-    // 6) 권한 선택(값이 비어있지 않은지)
-    if (!role) {
-        alert('권한을 선택하세요.');
-        f.role.focus();
         e.preventDefault();
         return;
     }
