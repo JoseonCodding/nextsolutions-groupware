@@ -107,12 +107,12 @@ table[id=diary_title] {
 /*************일 이동 버튼**************/
 /*일 표시*/
 .day-nav{
-	top: 20px;
-	left: 300px;
+	left: 50px;
 	position:relative;
 	float: left;
 
 }
+
 /*전날 버튼*/
 .day-btn1 {
     background:var(--search-btn);
@@ -124,7 +124,13 @@ table[id=diary_title] {
     cursor: pointer;
 	float: left;
 	position:relative;
-    margin-right:30px;
+    
+}
+#day_title{
+	position:relative;
+	float: left;
+	width: 70px;
+	text-align: center;
 }
 
 /*다음날 버튼*/
@@ -142,6 +148,7 @@ table[id=diary_title] {
 }
 
 /********달력 보기 방식 버튼*********/
+
 /* 검색 버튼 변형*/
 .view-select {
     background: 1px solid black;
@@ -154,7 +161,7 @@ table[id=diary_title] {
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    margin: 20px 10px 20px 0px;
+    margin-left:10px;
     float: right;
 }
 .view-select button:hover {

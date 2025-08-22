@@ -18,22 +18,19 @@
 	
 	
 	<div class="attend-nav">
-		<form method="get" th:action="@{/attend}">
+		<form method="get" th:action="@{/attend}" class="month-btn1">
 		    <input type="hidden" name="startDay" th:value="${prevMonthStartDay}"/>
 		    <input type="hidden" name="endDay" th:value="${prevMonthEndDay}"/>
-		    <button type="submit" class="month-btn1">◀ 이전달</button>
-	
-			<div id="monthTitle"></div>
-	
+		    <button type="submit" class="month-custom">이전달</button>
 		</form>
 	
-		<div class="attend-calender">
+		<h2 id="monthTitle" class="month-title"></h2>
 		
 	
-		<form method="get" th:action="@{/attend}">
+		<form method="get" th:action="@{/attend}" class="month-btn2">
 		    <input type="hidden" name="startDay" th:value="${nextMonthStartDay}"/>
 		    <input type="hidden" name="endDay" th:value="${nextMonthEndDay}"/>
-		    <button type="submit" class="month-btn2">다음달 ▶</button>
+		    <button type="submit" class="month-custom">다음달</button>
 		</form>
 	</div>
 <!-- 
@@ -58,7 +55,7 @@
 	<!-- FullCalender 라이브러리 -->
 	<div id="calendar"></div>
 
-	<a class="regist-btn" th:href="@{/attend/attendTimeInsert}" >출퇴근 기록 수정 신청</a>
+	<a class="insert-btn" th:href="@{/attend/attendTimeInsert}" >출퇴근 기록 수정 신청</a>
 	
 	
 </div>

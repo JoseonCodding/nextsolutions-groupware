@@ -244,6 +244,8 @@
         function dayDiaryView(){
             console.log("dayDiaryView() 실행:");
             $("#month_title").html(dayOne.getYear()+1900+'년 '+(dayOne.getMonth()+1) + '월');
+            
+            $("#day_title").html(dayOne.getDate()+ '일');
 
             $("#diary_body").empty();
             var title = $("<tr><th class='dHH'>시간</th><th   class='dTH'>"+dayOne.getDate()+"일("+weekTitle[dayOne.getDay()]+")</th></tr>");
@@ -413,7 +415,8 @@
 	
 	<!-- 일 이동 버튼 -->
 	<div id="dayNav" class="day-nav">
-	    <button id="prevDay" class="day-btn1">전날</button>
+	    <button id="prevDay" class="day-btn1">이전날</button>
+	    <h2 id="day_title" ></h2>
 	    <button id="nextDay" class="day-btn2">다음날</button>
 	</div>
 	
