@@ -143,7 +143,7 @@ tr:hover {
 	display: flex;
 	align-items: center;
 	transition: box-shadow .18s ease, transform .18s ease;
-	height: 30px;  
+	height: 20px;  
 	padding: 12px 14px;
 	 
 }
@@ -167,15 +167,15 @@ tr:hover {
 
 /* 내부 텍스트 */
 .stat-card .label {
-	font-size: 13px;
+	font-size: 14px;
 	font-weight: 700;
 	color: #666;
 	letter-spacing: .3px;
 }
 
 .stat-card .value {
-	margin-top: 4px;
-	font-size: 24px;
+	margin-top: 0;
+	font-size: 28px;
 	font-weight: 800;
 	color: #222;
 }
@@ -274,9 +274,12 @@ tr:hover {
 				th:value="${keyword}"
 				style="height: 40px; padding: 0 12px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
 
-			<button type="submit"
-				style="height: 40px; padding: 0 20px; border-radius: 6px; border: none; background-color: #2962ff; color: #fff; cursor: pointer;">
-				검색</button>
+			    <button type="submit" class="filter-btn">
+			      <i class="fa fa-search"></i> 검색
+			    </button>
+			    <a href="/pjtMng/getPjtList" class="filter-btn">
+			      <i class="fa fa-rotate-left"></i> 초기화
+			    </a>
 		</form>
 
 		
@@ -331,7 +334,7 @@ tr:hover {
 			<!-- 페이지 순번 처리  -->
 				<td	th:text="${pageInfo != null ? (pageInfo.pageSize * (pageInfo.pageNum - 1) + stat.index + 1) : (stat.index + 1)}" style="text-align: center;"></td>
 				<td class="board-title">
-					<a th:text="${pjt['PJT_NM']}" th:href="@{/pjtMng/pjtDetail(pjtSn=${pjt['PJT_SN']})}"></a>
+					<a th:text="${pjt['PJT_NM']}" th:href="@{/pjtMng/pjtDetail(pjtSn=${pjt['PJT_SN']})}" style="width:340px;"></a>
 				</td>
 				<!-- <td th:utext="${pjt['employeeId']+'<br/>'+pjt['position']}">담당자</td>	 이름,직책 두줄처리된거 -->
 				<td th:utext="${pjt['employeeId']+' '+pjt['position']}">담당자</td>  <!-- 이름,직책 한줄처리된거 -->
