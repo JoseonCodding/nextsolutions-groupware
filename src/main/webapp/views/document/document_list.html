@@ -4,7 +4,9 @@
 <div class="document-list">
   <h1 style="margin-top:45px;">문서 관리</h1>
   <div class="board-controls">
-<form th:action="@{/document/main}" method="get" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+<form id="searchForm" th:action="@{/document/main}" method="get" 
+	  onsubmit="return validateSearch(event)"
+      style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
     <input type="hidden" name="size" th:value="${size}">
     <input type="hidden" name="sort" th:value="${sort}">
     <input type="hidden" name="page" value="1">
@@ -77,8 +79,9 @@
     </tr>
 
     <tr th:if="${#lists.isEmpty(approvalData)}">
-      <!-- 컬럼 수 = 7 -->
-      <td colspan="7" class="text-center">등록된 문서가 없습니다.</td>
+      <!-- 컬럼 수 = 6 -->
+      <td colspan="6" style="padding:90px; text-align:center; color:#999;"
+      	  th:text="${(#strings.isEmpty(keywordType) and #strings.isEmpty(keyword)) ? '등록된 문서가 없습니다.' : '검색 조건에 맞는 문서가 없습니다.'}"></td>
     </tr>
     </tbody>
   </table>
@@ -118,5 +121,32 @@
 			    td.parentElement.classList.remove('hover-row');
 			  });
 			});
+		  function validateSearch(e) {
+			    const form = document.getElementById('searchForm');
+			    const type = (form.keywordType?.value || '').trim();
+			    const kw   = (form.keyword?.value || '').trim();
+
+			    // 1) 유형 미선택
+			    if (!type) {
+			      alert('검색 유형을 선택하세요.');
+			      return false;
+			    }
+			    // 2) 유형은 선택했지만 키워드 없음
+			    if (!kw) {
+			      alert('검색어를 입력하세요.');
+			      return false;
+			    }
+			    return true;
+			  }
+
+			  // 게시판 리스트 호버링
+			  document.querySelectorAll('td.board-title').forEach(td => {
+			    td.parentElement.addEventListener('mouseenter', () => {
+			      td.parentElement.classList.add('hover-row');
+			    });
+			    td.parentElement.addEventListener('mouseleave', () => {
+			      td.parentElement.classList.remove('hover-row');
+			    });
+			  });
 	</script>
 </body>
