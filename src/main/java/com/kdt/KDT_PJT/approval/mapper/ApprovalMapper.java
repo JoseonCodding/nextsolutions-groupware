@@ -275,6 +275,7 @@ public interface ApprovalMapper {
 	    "     e.emp_nm AS writer,",
 	    "     e.employeeId AS writerId,",
 	    "     b.created_at AS createdAt,",
+	    "     NULL AS createReason,",
 	    "     NULL AS attachFileUuid1, NULL AS attachFileOrgName1,",
 	    "     NULL AS attachFileUuid2, NULL AS attachFileOrgName2,",
 	    "     NULL AS attachFileUuid3, NULL AS attachFileOrgName3,",
@@ -310,6 +311,7 @@ public interface ApprovalMapper {
 	    "     e.emp_nm AS writer,",
 	    "     e.employeeId AS writerId,",
 	    "     l.approval_date AS createdAt,",
+	    "     l.create_reason AS createReason,",
 	    "     NULL AS attachFileUuid1, NULL AS attachFileOrgName1,",
 	    "     NULL AS attachFileUuid2, NULL AS attachFileOrgName2,",
 	    "     NULL AS attachFileUuid3, NULL AS attachFileOrgName3,",
@@ -345,6 +347,7 @@ public interface ApprovalMapper {
 	    "     e.emp_nm AS writer,",
 	    "     e.employeeId AS writerId,",
 	    "     p.FRST_REG_DT AS createdAt,",
+	    "     NULL AS createReason,",
 	    "     p.ATCH_FILE_SN1 AS attachFileUuid1,   p.ORG_FILE_NM1 AS attachFileOrgName1,",
 	    "     p.ATCH_FILE_SN2 AS attachFileUuid2,   p.ORG_FILE_NM2 AS attachFileOrgName2,",
 	    "     p.ATCH_FILE_SN3 AS attachFileUuid3,   p.ORG_FILE_NM3 AS attachFileOrgName3,",
@@ -379,6 +382,7 @@ public interface ApprovalMapper {
 	    "     e.emp_nm AS writer,",
 	    "     e.employeeId AS writerId,",
 	    "     a.approval_date AS createdAt,",
+	    "     NULL AS createReason,",
 	    "     NULL AS attachFileUuid1, NULL AS attachFileOrgName1,",
 	    "     NULL AS attachFileUuid2, NULL AS attachFileOrgName2,",
 	    "     NULL AS attachFileUuid3, NULL AS attachFileOrgName3,",
@@ -675,7 +679,6 @@ public interface ApprovalMapper {
 		    UPDATE annual_leave
 		    SET state_type = #{status},
 		        approvedBy  = #{approverId},
-		        used_date = NULL;
 		        firstSign   = CASE WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW() ELSE firstSign END,
 		        secondSign  = CASE WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW() ELSE secondSign END
 		    WHERE leave_id = #{id}

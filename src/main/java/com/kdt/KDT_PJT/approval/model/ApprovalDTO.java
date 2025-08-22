@@ -25,6 +25,7 @@ public class ApprovalDTO {
     Date leaveCreateDate; // 연차 발생일(l.create_date)
     String leaveUsedReason; // 사용 이유(l.used_reason)
     Date leaveUsedDate; // 휴가 사용일(l.used_date)
+    String createReason; // 연차 발생 사유(l.create_reason)
 	
     // 근태 전용 추가 필드
     Date checkInTime;          // 출근 시간
