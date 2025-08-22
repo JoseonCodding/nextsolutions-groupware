@@ -40,6 +40,8 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/attend")
 public class AttendController {
+	
+	
 
 	@ModelAttribute("navUrl")
 	String navUrl() {

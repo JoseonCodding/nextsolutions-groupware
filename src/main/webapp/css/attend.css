@@ -27,7 +27,31 @@ tr:hover:not(.no-hover tr) td {
   background: initial;     
 }
 
+/* 연도와 달 표시*/
+.attend-nav{
+	left: 0px;
+	position:relative;
+	float: left;
 
+}
+/*이전달 버튼*/
+.month-btn1 {
+    background-color:black;
+    position:relative;
+    
+}
+#month_title{
+	position:relative;
+	float: left;
+	width: 150px;
+	text-align: center;
+	background-color:green;
+}
+/*다음달 버튼*/
+.month-btn2 {
+    background-color:black;
+   	position:relative;
+}
 
 /**************************************/
 /*fullcalender 스타일 적용 - 출퇴근 기록 달력*/
@@ -47,7 +71,7 @@ fc-thead {
 }
 .fc-daygrid-day {
     height: 120px; /*달력 셀 높이 지정*/
-    padding: 5px;
+    padding: 10px;
     margin: 0px;   
 }
 

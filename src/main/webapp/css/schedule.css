@@ -3,7 +3,7 @@
 .sche-container {
 	
 	width:1200px;
-	
+	border:1px solid black;
 	position: relative;
 	margin-top: 45px;
 	margin-bottom: 50px;
@@ -27,7 +27,7 @@ table[id=diary_title] {
 
 /* 연도와 달 표시*/
 .month-nav{
-	left: 20px;
+	left: 0px;
 	position:relative;
 	float: left;
 
@@ -141,7 +141,7 @@ table[id=diary_title] {
    
 }
 
-/*달력 보기 방식 버튼*/
+/********달력 보기 방식 버튼*********/
 /* 검색 버튼 변형*/
 .view-select {
     background: 1px solid black;
@@ -228,4 +228,19 @@ table[id=diary_title] {
     
 }
 
+.rrgg{
+    background: var(--regist-btn);
+    color: #fff;
+    display: block;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+	position: absolute;
+	width: 66px;
+	right: 0px;
+	bottom:0px;
+}
 
