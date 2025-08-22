@@ -5,27 +5,41 @@
         alert("[[${msg}]]");
 </script>
 
+
 <div class="check-container">
+
+<th:block th:unless="${attendDTO2.nowIsHoliday}">
+
 	<form method="post" th:action="@{/attend/in}">
-	    <button class="regist-btn" type="submit">출근</button>
+	    <button id="checkInBtn" class="regist-btn" type="submit">출근</button>
 	</form>
 	<form method="post" th:action="@{/attend/out}">
-	    <button class="regist-btn" type="submit">퇴근</button>
+	    <button id="checkOutBtn" class="regist-btn" style="display:none;">퇴근</button>
 	</form>
 	
-	<div class="attend-calender">
+</th:block>
 
+
+
+	
+	<div class="attend-calender">
+	 
 	<form method="get" th:action="@{/attend}">
 	    <input type="hidden" name="startDay" th:value="${prevMonthStartDay}"/>
 	    <input type="hidden" name="endDay" th:value="${prevMonthEndDay}"/>
 	    <button type="submit">◀ 이전달</button>
-	
+
+		<div id="monthTitle"></div>
+
 	</form>
+
+	
+	
+
 	<form method="get" th:action="@{/attend}">
 	    <input type="hidden" name="startDay" th:value="${nextMonthStartDay}"/>
 	    <input type="hidden" name="endDay" th:value="${nextMonthEndDay}"/>
 	    <button type="submit">다음달 ▶</button>
-
 	</form>
 
 <!-- 
@@ -46,7 +60,7 @@
 </table>
 </form>
  -->
-		 
+
 	<!-- FullCalender 라이브러리 -->
 	<div id="calendar"></div>
 
@@ -57,8 +71,88 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
 <script th:inline="javascript">
+/* 서버에서 전달한 Map을 JS 객체로 변환 */
+var attendMap = /*[[${attendMap}]]*/ {};
+var attendMapLeave = /*[[${attendMapLeave}]]*/ {};
+var holidayArr = /*[[${holidayArr}]]*/ {};
+var attendDTO2 = /*[[${attendDTO2}]]*/ {};
+var currDay = new Date(attendDTO2.startDay);
+//console.log(holidayArr)
+
+//console.log(attendDTO2)
+
+// 출근 버튼 1번 누르면 퇴근 버튼 보이도록
+const checkInBtn = document.getElementById('checkInBtn');
+const checkOutBtn = document.getElementById('checkOutBtn');
+
+checkInBtn.addEventListener('click', function() {
+    // 서버에 출근 기록 저장 AJAX 요청 가능
+    //fetch('/attend/in', { method: 'POST' });
+
+    // 버튼 비활성화 및 안보이게
+    checkInBtn.disabled = true;
+   
+    // 퇴근 버튼 표시
+    checkOutBtn.style.display = 'inline-block';
+});
 
 
+
+
+document.querySelector("#monthTitle").innerHTML = currDay.getFullYear()+"년 "+(currDay.getMonth()+1)+"월"
+var events = [];
+
+Object.keys(attendMap).forEach(function(date) {
+    var dto = attendMap[date];
+    
+    // 출근 이벤트
+    if(dto.checkInHourMinute) {
+        events.push({
+            title: '출근 ' + dto.checkInHourMinute,
+            start: date ,
+            color: '#3788d8' // 출근 색상
+        });
+    }
+
+    // 퇴근 이벤트
+    if(dto.checkOutHourMinute) {
+        events.push({
+            title: '퇴근 ' + dto.checkOutHourMinute ,
+            start: date ,
+            color: '#d8573c' // 퇴근 색상
+        });
+    }
+});
+
+Object.keys(attendMapLeave).forEach(function(leaveDate) {
+    var leave = attendMapLeave[leaveDate];
+
+    if (leave && leave.usedDateStr) {
+        events.push({
+			 title:'연차',
+        	 start: leave.usedDateStr,   // 시작일
+             end: leave.usedDateStr,     // 종료일도 지정 (같은 날이면 그대로)
+             display: 'background',      // 배경으로 표시
+             backgroundColor: '#ccffcc'  // 연두색 (미색 연두로 변경 가능)
+        });
+    }
+});
+
+
+holidayArr.forEach(function(holiday, idx) {
+    
+	
+    
+     events.push({
+		title:holiday.title,
+     	 start: holiday.startDateStr,   // 시작일
+          end: holiday.endDateStr,     // 종료일도 지정 (같은 날이면 그대로)
+          display: 'background',      // 배경으로 표시
+          backgroundColor: '#ffd6d6'  
+     });
+    
+});
+/*
 // 달 이동 버튼
 function fetchAttendanceData(startDate, endDate) {
 	  const startDay = startDate.toISOString().split('T')[0]; // YYYY-MM-DD
@@ -84,7 +178,7 @@ function fetchAttendanceData(startDate, endDate) {
 	      });
 	    });
 	}
-
+*/
 
 
 
@@ -98,11 +192,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	        height: 'auto',       // 높이 자동 맞춤
 	        contentHeight: 'auto',
 	        aspectRatio: 1,      // 가로세로 비율 (조정 가능)
-
+			events:events,
+			initialDate:attendDTO2.startDay,
 	        headerToolbar: {
-				            left: 'prev,title,next',
+				            left: '',
 				            center: '',
-				            right: ''
+				            right: '',
+				            
 				            
 				            /*
 				            left: 'prevMonthButton',
@@ -110,51 +206,9 @@ document.addEventListener('DOMContentLoaded', function() {
 				            right: 'nextMonthButton'
 				            */
 	        },
-	        datesSet: function(info) {
-	            // DTO 형태 JSON 생성
-	            var dto = {
-	                startDay: info.startStr,
-	                endDay: info.endStr
-	            };
-
-	            fetch('/attend/json', {
-	                method: 'POST',
-	                headers: {
-	                    'Content-Type': 'application/json'
-	                },
-	                body: JSON.stringify(dto)
-	            })
-	            .then(res => res.json())
-	            .then(data => {
-	                calendar.removeAllEvents();
-
-	                // 출근 이벤트
-	                data.attendArray.forEach(function(item) {
-	                    calendar.addEvent({
-	                        title: '출근 ' + item.checkIn,
-	                        start: item.date,
-	                        color: '#1976d2'
-	                    });
-	                });
-	             	// 출근 이벤트
-	                data.attendArray.forEach(function(item) {
-	                    calendar.addEvent({
-	                        title: '퇴근 ' + item.checkOut,
-	                        start: item.date,
-	                        color: '#2196f3'
-	                    });
-	                });
-
-	                // 연차 이벤트
-	                data.leaveArray.forEach(function(item) {
-	                    calendar.addEvent({
-	                        title: '연차',
-	                        start: item.date,
-	                        color: '#f44336'
-	                    });
-	                });
-	            });
-	        }
+	        
+	        
+	            
 	    });
 	    calendar.render();
 });

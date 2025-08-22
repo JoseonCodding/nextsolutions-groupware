@@ -41,6 +41,7 @@
   }
 
   // 2) 날짜 바인딩 (오늘부터 선택 가능)
+  
   function bindDateEvents() {
     const startDateInput = document.querySelector('input[name="startDateStr"]');
     const endDateInput   = document.querySelector('input[name="endDateStr"]');
@@ -56,10 +57,10 @@
       String(d.getMonth() + 1).padStart(2, "0"),
       String(d.getDate()).padStart(2, "0")
     ].join("-");
-
+    /*
     startDateInput.min = today;
     endDateInput.min   = today;
-/*
+    
     startDateInput.addEventListener("change", function () {
       endDateInput.disabled = startDateInput.value === "";
 
@@ -74,7 +75,8 @@
       }
     });
     */
- // 시작일 변경 시
+    
+ 	// 시작일 변경 시
     startDateInput.addEventListener("change", function () {
       if (startDateInput.value !== "") {
         endDateInput.disabled = false;
@@ -141,8 +143,20 @@
     if (!holidayCheckbox || !allDayCheckbox || !repeatSelect) return;
 
     holidayCheckbox.addEventListener("change", applyState);
-    allDayCheckbox.addEventListener("change", applyState);
+    //allDayCheckbox.addEventListener("change", applyState);
     repeatSelect.addEventListener("change", applyState);
+  
+    allDayCheckbox.addEventListener("change", function () {
+        // 휴무일이 켜져 있는데 사용자가 종일을 해제하려고 할 때
+        if (!this.checked && holidayCheckbox.checked) {
+          alert("먼저 휴무일 체크를 해제하세요.");
+          this.checked = true; // 다시 종일 체크 유지
+          return;
+        }
+  
+    });
+  
+  
   }
 
   // 4) 초기화
@@ -152,9 +166,9 @@
     applyState(); // 초기 상태 반영
   });
 </script>
-
+<!-- 
 <form action="" method="post" >
-	<h2>일정 등록</h2>
+	<h1>일정 등록</h1>
 	<table border="">
 		<tr >
 			<td>
@@ -164,34 +178,42 @@
 				<textarea name="title" cols="30" rows="1" required></textarea>
 			</td>
 		</tr>
-		<tr >
-			<td>기간</td>
-			<td colspan="4">
-				시작:
-				<input type="date" name="startDateStr" required/>
-				<input type="time" name="startTimeStr" required />
-				~ 
-				종료:
-				<input type="date" name="endDateStr"  disabled />
-				<input type="time" name="endTimeStr" disabled>
-			</td>
+		
+		<tr>
+		    <th>기간</th>
+		    <td colspan="3">
+		        시작:
+		        <input type="date" name="startDateStr" required/>
+		        <input type="time" name="startTimeStr" required />
+		        ~ 종료:
+		        <input type="date" name="endDateStr" disabled />
+		        <input type="time" name="endTimeStr" disabled />
+		        
+		        <label>
+		            <input type="checkbox" name="cate" value="종일"/> 종일
+		        </label>
+		    </td>
 		</tr>
 		<tr>
-			<td>일정 종류</td>
-			<td colspan="4">
-				<input type="checkbox" name="cate" value="종일"/>종일일정
-
-				<span>반복일정 : </span>
-				<select  name="repeatCheck" id="repeatCheck">
-					<option value="0">반복 없음</option>
-					<option value="1">매일</option>
-					<option value="2">매주</option>
-					<option value="3">매달</option>
-				</select>
-
-				<input type="checkbox" name="holiday" value="휴무일"/>휴무일
-			</td>
+			<th>일정 옵션</th>
+		    <td colspan="3">
+		        <label>반복일정 :
+		            <select name="repeatCheck" id="repeatCheck">
+		                <option value="0">반복 없음</option>
+		                <option value="1">매일</option>
+		                <option value="2">매주</option>
+		                <option value="3">매달</option>
+		            </select>
+		        </label>
+		
+		        <label>
+		            <input type="checkbox" name="holiday" value="휴무일"/> 휴무일
+		        </label>
+		    </td>
 		</tr>
+		<tr>
+    
+		
 		<tr>
 			<td>알림</td>
 			<td colspan="4">
@@ -204,11 +226,66 @@
 				<textarea name="content" id="" cols="50" rows="30" required></textarea>
 			</td>
 		</tr>
-		<tr >
-			<td colspan="5">
-				<a class="back-btn"th:href="@{/schedule}">취소</a>
-				<input  class="attend-regist-btn" type="submit" value="등록"/>
-			</td>
-		</tr>
 	</table>
+
+	<a class="back-btn"th:href="@{/schedule}">취소</a>
+	<input  class="regist-btn" type="submit" value="등록"/>
+
 </form> 
+-->
+<form action="" method="post">
+    <h1 class="detail-title">일정 등록</h1>
+    <table>
+        <tr>
+            <th>일정명</th>
+            <td colspan="3">
+                <input type="text" name="title" required />
+            </td>
+        </tr>
+        <tr>
+            <th>기간</th>
+            <td colspan="3">
+                시작:
+                <input type="date" name="startDateStr" required />
+                <input type="time" name="startTimeStr" required />
+                ~ 종료:
+                <input type="date" name="endDateStr" disabled />
+                <input type="time" name="endTimeStr" disabled />
+
+                <label>
+                    <input type="checkbox" name="cate" value="종일"/> 종일
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <th>일정 옵션</th>
+            <td colspan="3">
+                <label>반복일정 : 
+                    <select name="repeatCheck" id="repeatCheck">
+                        <option value="0">반복 없음</option>
+                        <option value="1">매일</option>
+                        <option value="2">매주</option>
+                        <option value="3">매달 </option>
+                    </select> |
+                </label>
+                <label>
+                    <input type="checkbox" name="holiday" value="휴무일"/>  휴무일   |
+                </label>
+                <label>
+                    <input type="checkbox" name="alarm" value="알림" /> 알림 
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <th>내용</th>
+            <td colspan="3">
+                <textarea name="content" cols="50" rows="10" required></textarea>
+            </td>
+        </tr>
+    </table>
+
+    <div class="btn-area">
+        <a class="back-btn" th:href="@{/schedule}">취소</a>
+        <button type="submit" class="regist-btn">등록</button>
+    </div>
+</form>
