@@ -7,15 +7,15 @@
 
 <div class="check-container">
 	<h1>근태관리</h1>
-		<div class="attend-nav">
-	<th:block th:unless="${attendDTO2.nowIsHoliday}" >
-		<form method="post" th:action="@{/attend/in}" th:unless="${attendDTO2.todayCheckIn}" class="btn-nav">
-		    <button class="attend-btn" type="submit">출근</button>
-		</form>
-		<form method="post" th:action="@{/attend/out}" th:if="${attendDTO2.todayCheckOut}" class="btn-nav">
-		    <button class="attend-btn" type="submit">퇴근</button>
-		</form>
-	</th:block>
+	<div class="attend-nav">
+		<th:block th:unless="${attendDTO2.nowIsHoliday}" >
+			<form method="post" th:action="@{/attend/in}" th:unless="${attendDTO2.todayCheckIn}" class="btn-nav">
+			    <button class="attend-btn1" type="submit">출근</button>
+			</form>
+			<form method="post" th:action="@{/attend/out}" th:if="${attendDTO2.todayCheckOut}" class="btn-nav">
+			    <button class="attend-btn2" type="submit">퇴근</button>
+			</form>
+		</th:block>
 	
 	
 
@@ -83,18 +83,20 @@ Object.keys(attendMap).forEach(function(date) {
     // 출근 이벤트
     if(dto.checkInHourMinute) {
         events.push({
-            title: '출근 ' + dto.checkInHourMinute,
+            title:  '출근' + dto.checkInHourMinute,
             start: date ,
-            color: '#3788d8' // 출근 색상
+            //display: 'list-item',   // 점 모드로 표시
+            color:  '#3788d8' // 출근 색상
         });
     }
 
     // 퇴근 이벤트
     if(dto.checkOutHourMinute) {
         events.push({
-            title: '퇴근 ' + dto.checkOutHourMinute ,
+            title: '퇴근' + dto.checkOutHourMinute ,
             start: date ,
-            color: '#d8573c' // 퇴근 색상
+            //display: 'list-item',   // 점 모드로 표시
+            color:  '#d8573c' // 퇴근 색상
         });
     }
 });
@@ -108,7 +110,7 @@ Object.keys(attendMapLeave).forEach(function(leaveDate) {
         	 start: leave.usedDateStr,   // 시작일
              end: leave.usedDateStr,     // 종료일도 지정 (같은 날이면 그대로)
              display: 'background',      // 배경으로 표시
-             backgroundColor: '#ccffcc'  // 연두색 (미색 연두로 변경 가능)
+             backgroundColor: '#ccffcc'  // 연두색 
         });
     }
 });
@@ -161,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	 
 	    var calendar = new FullCalendar.Calendar(calendarEl, {
 	        initialView: 'dayGridMonth',
-	        
+
 	        height: 'auto',       // 높이 자동 맞춤
 	        contentHeight: 'auto',
 	        aspectRatio: 1,      // 가로세로 비율 (조정 가능)

@@ -1,52 +1,60 @@
-<link rel="stylesheet" href="/css/leaveList.css">
+
 <!-- 연차 관리 사용자용 -->
-<form action="" method="">
-<!-- 잔여 연차 요약 -->
-	<table>
-		<thead >
-			<tr>
-				<td >이름</td>
-				<td>총 연차</td>
-				<td>사용 연차</td>
-				<td>잔여 연차</td>
-			</tr>
-		</thead>
-    	<tbody>
-			<tr>
-			    <td th:text="${listData.empNm+ ' ' + listData.position}">}"></td>
-			    <td th:text="${listData.total}"/>
-			    <td th:text="${listData.used}"/>
-			    <td th:text="${listData.getRest}"></td>
+<div class="leave-container">
+	<form action="" method="">
+	<!-- 잔여 연차 요약 -->
+		<h1>근태관리</h1>
+		<table class="leave-cnt" >
+			<thead >
+				<tr class="leave-priv" >
+					<th>이름</th>
+					<th>총 연차</th>
+					<th>사용 연차</th>
+					<th>잔여 연차</th>
+				</tr>
+			</thead>
+	    	<tbody>
+				<tr>
+				    <td th:text="${listData.empNm+ ' ' + listData.position}"></td>
+				    <td th:text="${listData.total}"/>
+				    <td th:text="${listData.used}"/>
+				    <td th:text="${listData.getRest}"></td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<table class="leave-d">
+		    <thead>
+		        <tr>
+		            <th class="leave-date">발생 날짜</th>
+		            <th class="leave-reason">연차 발생 이유</th>
+		            <th class="leave-th">사용 여부</th>
+		            <th class="leave-th">사용일</th>
+		            <th class="leave-th">결재상태</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		    	<tr th:if="${#lists.isEmpty(detailData)}">
+			        <td colspan="5" >조회된 연차 내역이 없습니다.</td>
+			    </tr>
+			    <tr th:each="dd : ${detailData}">
+			        <td th:text="${dd.createDateStr}"></td>
+			        <td th:text="${dd.createReason}"></td>
+			        <td th:text="${dd.leaveType}"></td>
+			        <td th:text="${dd.usedDateStr}"></td>
+			        <td th:text="${dd.stateType}"></td>
+			    </tr>
+		    </tbody>
+		</table>
 	
-			</tr>
-		</tbody>
-	</table>
+		</form>
+		<th:block th:if="${listData.getRest>0}" >
+			<div class="leave-btn-nav">	
+				<a class="leave-rrgg" th:href="@{/attend/insert}" >연차신청</a>
+			</div>
+		</th:block>
+		<th:block th:if="${listData.getRest==0}">
+			<div onClick="alert('잔여연차가 없습니다')" class="leave-rrgg">연차신청</div>
+		</th:block>
 	
-	<table>
-    <thead >
-        <tr>
-            <th class="th-top">발생 날짜</th>
-            <th class="th-reason">연차 발생 이유</th>
-            <th>사용 여부</th>
-            <th>사용일</th>
-            <th>결재상태</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:each=" dd : ${detailData}">
-            <td th:text="${dd.createDateStr}"></td>
-            <td th:text="${dd.createReason}"></td>
-            <td th:text="${dd.leaveType}"></td>
-            <td th:text="${dd.usedDateStr}"></td>
-            <td th:text="${dd.stateType}"></td>
-        </tr>
-    </tbody>
-</table>
-	
-</form>
-<th:block th:if="${listData.getRest>0}">
-<a class="regist-btn" th:href="@{/attend/insert}" >연차신청</a>
-</th:block>
-<th:block th:if="${listData.getRest==0}">
-<div onClick="alert('잔여연차가 없습니다')" >연차신청</div>
-</th:block>
+</div>
