@@ -31,10 +31,15 @@ public interface AttendMapper {
    
    
    //사용자 본인의 출퇴근 기록 한달 기준 보기  //DTO2 - limit 없는 버전
+//   @Select("""
+//		    SELECT * FROM attendance
+//		    WHERE employeeId = #{employeeId}
+//		      AND DATE(check_in_time) BETWEEN #{startDay} AND #{endDay}
+//		    ORDER BY check_in_time
+//		""")
    @Select("""
 		    SELECT * FROM attendance
 		    WHERE employeeId = #{employeeId}
-		      AND DATE(check_in_time) BETWEEN #{startDay} AND #{endDay}
 		    ORDER BY check_in_time
 		""")
    List<AttendDTO> userAttendMonthList( AttendDTO2 attendance);
@@ -52,18 +57,27 @@ public interface AttendMapper {
    
    
    //출퇴근 기록에 연차 날짜 가져오기
+//   @Select("""
+//   		select used_date from annual_leave where employeeId = #{employeeId}
+//   			and state_type ='완료' AND DATE(used_date) BETWEEN #{startDay} AND #{endDay}
+//		    ORDER BY used_date
+//   		""")
    @Select("""
-   		select used_date from annual_leave where employeeId = #{employeeId}
-   			and state_type ='완료' AND DATE(used_date) BETWEEN #{startDay} AND #{endDay}
-		    ORDER BY used_date
-   		""")
+	   		select used_date from annual_leave where employeeId = #{employeeId}
+	   			and state_type ='완료'
+			    ORDER BY used_date
+	   		""")
    List<LeaveDTO> searchLeaveDate(AttendDTO2 attendance);
    
    //출퇴근 기록에 휴무일 가져오기      //date_add(end_date, INTERVAL 1 DAY) : fullcalender가 마지막 날 인지를 못해서 +1일 처리
+//   @Select("""
+//   		SELECT title, start_date,  date_add(end_date, INTERVAL 1 DAY) as end_date  FROM schedule 
+//   		WHERE holiday= '휴무일' and start_date <= #{endDay}  AND  end_date >= #{startDay}
+//   		""")
    @Select("""
-   		SELECT title, start_date,  date_add(end_date, INTERVAL 1 DAY) as end_date  FROM schedule 
-   		WHERE holiday= '휴무일' and start_date <= #{endDay}  AND  end_date >= #{startDay}
-   		""")
+	   		SELECT title, start_date,  date_add(end_date, INTERVAL 1 DAY) as end_date  FROM schedule 
+	   		WHERE holiday= '휴무일'
+	   		""")
    List<ScheduleDTO> searchHoliday(AttendDTO2 attendance);
    
    //오늘 출근 조회용

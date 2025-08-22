@@ -37,6 +37,7 @@ public class LeaveController {
 		return "attend/nav";
 	}
 
+
 	
 	@Resource
 	LeaveMapper mapper;

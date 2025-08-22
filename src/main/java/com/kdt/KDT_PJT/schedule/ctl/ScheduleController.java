@@ -131,8 +131,8 @@ public class ScheduleController {
 	    dto.setEmployeeId(loginUser.getEmployeeId());
 	    
 	    // 입력값 XSS 방어
-	    dto.setTitle(XssUtils.escapeHtml(dto.getTitle()));
-	    dto.setContent(XssUtils.escapeHtml(dto.getContent()));
+	    //dto.setTitle(XssUtils.escapeHtml(dto.getTitle()));
+	    //dto.setContent(XssUtils.escapeHtml(dto.getContent()));
 	    
 		int modify = mapper.modify(dto);
 

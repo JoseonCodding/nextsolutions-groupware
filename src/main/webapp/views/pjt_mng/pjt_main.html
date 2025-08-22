@@ -93,9 +93,9 @@ tr:hover {
 	color: #fff;
 }
 
-/* 페이지네이션 선택된(현재) 페이지 버튼 */
+/*  페이지네이션 선택된(현재) 페이지 버튼 */
 .pagination .page-item.active .page-link {
-	background-color: #d32f2f; /* 진한 빨강 */
+	background-color: #d32f2f; /* 진한 빨강*/
 	border-color: #b71c1c;
 	color: #fff;
 	font-weight: bold;
@@ -108,12 +108,15 @@ tr:hover {
 	border-color: #7f0000;
 	color: #fff;
 }
-/* 페이징 번호 점 없애기 */
+
+ /* 페이징 번호 점 없애기*/
 .pagination {
-	list-style: none; /* 점(불릿) 제거 */
+	list-style: none; /* 점(불릿) 제거*/ 
 	padding-left: 0; /* 왼쪽 여백 제거 */
-	margin: 0; /* 위아래 여백도 조정 */
+	margin: 0;    /* 위아래 여백도 조정 */
 }
+
+
 /*완료시 버튼비활성화 */
 .btn-disabled {
 	background-color: #ccc !important; /* 회색 */
@@ -128,9 +131,10 @@ tr:hover {
 	gap: 16px;
 	margin-top: 20px;
 }
+ 
 
 
-/* 카드 공통 */
+/* 프로젝트 카드 공통 */
 .stat-card {
 	/* 포인트 색상: 인라인 style="--accent:#xxxxxx"로 들어온 값 사용 */
 	--accent: #1976d2; /* 보더 색 */
@@ -341,7 +345,7 @@ tr:hover {
 				<td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>				
 				<td th:text="${pjt['PJT_BGNG_DT']} + ' ~ ' + ${pjt['PJT_END_DT']}">기간</td>
 			
-				<td th:utext="${pjt['TB_PJT_APR']+'<br/>'+pjt['position_APR']}">결재자</td>
+				<td th:utext="${pjt['TB_PJT_APR']+' '+pjt['position_APR']}">결재자</td>
 				<td th:text="'v' +${pjt['ver']}"></td>
 				<!--  <td th:text="${pjt['gid']}"></td> -->
 				<td>
@@ -355,8 +359,7 @@ tr:hover {
 						th:if="${session.loginUser.role == '대표' or session.loginUser.role == '프로젝트'}"
 						th:classappend="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'} ? ' btn-disabled' : ''"
 						th:disabled="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'}"
-						th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''">
-						수정</button>
+						th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''" >수정</button>
 				</td>
 			</tr>
 		</tbody>
