@@ -29,7 +29,7 @@
       <th>사번</th>
       <td th:text="${doc.employeeId}">2025xxxx</td>
       <th>담당자</th>
-      <td th:text="${doc.empNm}">홍길동</td>
+      <td th:text="|${doc.empNm} ${doc.position}|">홍길동</td>
     </tr>
     </tbody>
   </table>

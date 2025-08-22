@@ -14,6 +14,7 @@ public class BoardDTO {
     private Integer postId;       // 게시글 ID
     private Integer boardId;      // 게시판 ID
     private String  employeeId;   // 작성자 ID
+    private String position;	  // 직급
     private String  title;        // 제목
     private String  content;      // 내용
     private Date    createdAt;    // 작성일
