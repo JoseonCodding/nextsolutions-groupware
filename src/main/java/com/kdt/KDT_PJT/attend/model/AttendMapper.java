@@ -37,6 +37,7 @@ public interface AttendMapper {
 //		      AND DATE(check_in_time) BETWEEN #{startDay} AND #{endDay}
 //		    ORDER BY check_in_time
 //		""")
+   //출퇴근 버튼 추가로 달 인식 불필요
    @Select("""
 		    SELECT * FROM attendance
 		    WHERE employeeId = #{employeeId}
