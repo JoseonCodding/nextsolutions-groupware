@@ -147,7 +147,7 @@ public class AttendController {
     	
     	//model.addAttribute("leaveDate", leaveDate);
         model.addAttribute("mainData", attendMonthList);
-        model.addAttribute("mainUrl", "attend/check_test"); /////////////////////////////////////////////////////////////////////////////
+        model.addAttribute("mainUrl", "attend/check"); /////////////////////////////////////////////////////////////////////////////
         //model.addAttribute("attendDTO", attendance);   // 조회 조건 유지용
        
         
