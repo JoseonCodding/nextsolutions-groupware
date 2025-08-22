@@ -7,6 +7,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.io.FileSystemResource;
@@ -361,6 +363,12 @@ public class ApprovalController {
 
         // --- 실제 UPDATE 실행 (연차/근태만) ---
         String pkId = editData.getDocId().split("-")[1].trim();
+        
+        // XSS 방어용 content 정화
+        if (editData.getContent() != null) {
+            String cleanContent = Jsoup.clean(editData.getContent(), Safelist.none());
+            editData.setContent(cleanContent);
+        }
 
         if ("연차".equals(docType)) {
             // 연차: create_reason(=title), used_reason(=content), used_date(=leaveUsedDate)

@@ -461,15 +461,16 @@ public interface ApprovalMapper {
 	@Update("UPDATE board_post SET docType=#{dto.docType}, title=#{dto.title}, content=#{dto.content} WHERE post_id=#{id}")
 	int editNotice(@Param("id") String id, @Param("dto") ApprovalDTO dto);
 	
-	// 연차 '삭제' = state_type NULL 처리
+	// 연차 삭제
 	@Update("""
 	    UPDATE annual_leave
-	    SET state_type = NULL
+	    SET state_type = NULL,
+			used_date = NULL
 	    WHERE leave_id = #{id}
 	""")
 	int softDeleteLeave(@Param("id") String id);
 
-	// 근태 '삭제' = status NULL 처리
+	// 근태 삭제 = status NULL 처리
 	@Update("""
 	    UPDATE attendance
 	    SET status = NULL
