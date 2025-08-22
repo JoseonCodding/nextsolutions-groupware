@@ -81,7 +81,6 @@
 }
 .regist-btn {
 	font-size: var(--font-size-base);
-	font-size: var(--font-size-base);
     background:var(--regist-btn);
     color: #fff;
     padding: 10px 20px;
