@@ -77,6 +77,7 @@ public class AttendController {
     	
     	
     	
+
     	
     	
     	
@@ -92,7 +93,18 @@ public class AttendController {
         Map<String, LeaveDTO> attendMapLeave = new HashMap<>();
         
         
-        
+        // 오늘 날짜 문자열
+    	String today = LocalDate.now().toString();
+
+    	// 오늘 출퇴근 기록 가져오기
+    	AttendDTO todayAttend = attendMap.get(today);
+
+    	boolean hasCheckIn = todayAttend != null && todayAttend.getCheckInTime() != null;
+    	boolean hasCheckOut = todayAttend != null  && todayAttend.getCheckInTime() != null && todayAttend.getCheckOutTime() == null;
+
+    	// DTO에 상태 저장
+    	attendance.setTodayCheckIn(hasCheckIn);
+    	attendance.setTodayCheckOut(hasCheckOut);
         
         
         //// 출퇴근 버튼 보이기
@@ -147,7 +159,7 @@ public class AttendController {
     	
     	//model.addAttribute("leaveDate", leaveDate);
         model.addAttribute("mainData", attendMonthList);
-        model.addAttribute("mainUrl", "attend/check"); /////////////////////////////////////////////////////////////////////////////
+        model.addAttribute("mainUrl", "attend/check"); 
         //model.addAttribute("attendDTO", attendance);   // 조회 조건 유지용
        
         

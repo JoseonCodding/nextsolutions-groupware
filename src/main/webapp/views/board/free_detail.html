@@ -37,6 +37,7 @@
   <!-- 상단 메타 -->
   <div class="board-meta">
     <span>작성자: <strong th:text="${#strings.isEmpty(board.empNm) ? board.employeeId : board.empNm}"></strong></span>
+    <span th:text="${board.position}"></span>
     <p>
       <strong>작성일:</strong>
       <span th:text="${board.createdAt != null ? #dates.format(board.createdAt, 'yyyy-MM-dd HH:mm') : '작성일 정보 없음'}"></span>
