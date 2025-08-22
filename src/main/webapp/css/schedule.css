@@ -10,13 +10,14 @@
 table[id=diary_title] {
 	margin: 0px;
 	width: 100%;
+	background: red;   
 }
 .no-hover:hover > td{
   background: initial;     
 }
 /* 연도와 달 표시*/
 h2[id=diary_title] {
-
+	
 	float: left;
 	margin-left: 100px;
 }
@@ -28,6 +29,7 @@ h2[id=diary_title] {
 	position:relative;
 
 }
+/*이전달 버튼*/
 .month-btn1 {
     background:var(--search-btn);
     color: #fff;
@@ -38,8 +40,9 @@ h2[id=diary_title] {
     cursor: pointer;
 	margin-right: 10px;
     position:absolute;
-    left: 200px;
+    left: 45px;
 }
+/*다음달 버튼*/
 .month-btn2 {
     background:var(--search-btn);
     color: #fff;
@@ -50,7 +53,7 @@ h2[id=diary_title] {
     cursor: pointer;
 	margin-left: 150px;
 	position:absolute;
-    left: 280px;
+    left: 117px;
 }
 .sche-table {
 	
