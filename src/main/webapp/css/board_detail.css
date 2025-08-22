@@ -173,7 +173,22 @@ hr{
 /* ==============================
    6) Comments
    ============================== */
-.comments-section h3{ margin:0 0 var(--space-3); }
+.comment-form-overlay .textarea-wrap{
+  position: relative;
+}
+
+.comment-form-overlay textarea{
+  width: 100%;
+  min-height: 96px;
+  padding: var(--space-3) var(--space-6) var(--space-6) var(--space-3); /* 오른쪽 아래 여백 확보 */
+}
+
+.comment-form-overlay button{
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 4px 12px;
+}
 
 .comment-list{ list-style:none; padding:0; margin:0; }
 .comment-item{ padding: 14px 0; position:relative; }
