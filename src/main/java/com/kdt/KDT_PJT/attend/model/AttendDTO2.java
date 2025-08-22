@@ -25,7 +25,9 @@ public class AttendDTO2 {
 	private LocalDateTime modifiedAt;        // 수정일시
 	private String modificationReason;      // 수정 사유
 	String startDay, endDay,StartDayStr,YearMonth;
-	boolean nowIsHoliday = false;
+	boolean nowIsHoliday = false , todayCheckIn = false , todayCheckOut = false;    // 출퇴근 버튼 관련
+
+
 	
 
 //    // ✅ 페이징 파라미터 추가
