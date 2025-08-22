@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
+import com.kdt.KDT_PJT.schedule.model.ScheduleDTO;
 
 @Mapper
 public interface AttendMapper {
@@ -38,14 +39,21 @@ public interface AttendMapper {
 		""")
    List<AttendDTO> userAttendMonthList( AttendDTO2 attendance);
    
+   
    //출퇴근 기록에 연차 날짜 가져오기
    @Select("""
    		select used_date from annual_leave where employeeId = #{employeeId}
-   			AND DATE(used_date) BETWEEN #{startDay} AND #{endDay}
+   			and state_type ='완료' AND DATE(used_date) BETWEEN #{startDay} AND #{endDay}
 		    ORDER BY used_date
    		""")
    List<LeaveDTO> searchLeaveDate(AttendDTO2 attendance);
    
+   //출퇴근 기록에 휴무일 가져오기      //date_add(end_date, INTERVAL 1 DAY) : fullcalender가 마지막 날 인지를 못해서 +1일 처리
+   @Select("""
+   		SELECT title, start_date,  date_add(end_date, INTERVAL 1 DAY) as end_date  FROM schedule 
+   		WHERE holiday= '휴무일' and start_date <= #{endDay}  AND  end_date >= #{startDay}
+   		""")
+   List<ScheduleDTO> searchHoliday(AttendDTO2 attendance);
    
    //오늘 출근 조회용
    @Select("""

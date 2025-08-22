@@ -1,8 +1,10 @@
 package com.kdt.KDT_PJT.attend.ctl;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,7 @@ import com.kdt.KDT_PJT.attend.model.AttendMapper;
 import com.kdt.KDT_PJT.attend.model.LeaveDTO;
 import com.kdt.KDT_PJT.attend.model.LeaveMapper;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
+import com.kdt.KDT_PJT.schedule.model.ScheduleDTO;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -72,6 +75,14 @@ public class AttendController {
     	// 연차 날짜 가져오기용
     	List<LeaveDTO> leaveDate = attendMapper.searchLeaveDate(attendance); 
     	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
     	// 달력 라이브러리 - Map 형태로 변환 --->
         Map<String, AttendDTO> attendMap = new HashMap<>();
         for (AttendDTO dto : attendMonthList) {
@@ -79,12 +90,52 @@ public class AttendController {
         }
         
         Map<String, LeaveDTO> attendMapLeave = new HashMap<>();
+        
+        
+        
+        
+        
+        //// 출퇴근 버튼 보이기
+        Date now = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String nowStr = sdf.format(now);
+        
+        if(now.getDay()==0 ||now.getDay()==6 ) {
+        	attendance.setNowIsHoliday(true);
+        	
+        }
+        
+        // 연차
         for (LeaveDTO leave : leaveDate) {
             attendMapLeave.put(leave.getUsedDateStr(), leave);
+            //System.out.println(leave.getUsedDateStr()+" : "+nowStr);
+            
+            // 연차가 오늘이면 출퇴근 버튼 안보이게
+            if(leave.getUsedDateStr().equals(nowStr)) {
+            	attendance.setNowIsHoliday(true);
+            }
         }
+        
+        
+     
+    	//System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ holiday  :"+holiday);
+        
         
         model.addAttribute("attendMap", attendMap); // 날짜 기준 Map 전달
         model.addAttribute("attendMapLeave", attendMapLeave);
+        
+        List<ScheduleDTO> holidayArr = attendMapper.searchHoliday(attendance);
+        
+        for (ScheduleDTO holiday : holidayArr) {
+			if(holiday.getStartDateStr().compareTo(nowStr)<= 0 && 
+					holiday.getEndDateStr().compareTo(nowStr)> 0) {  //fullcalender가 인지하는 마지막 날 때문에 =은 제외
+				attendance.setNowIsHoliday(true);
+			}
+		}
+        
+        model.addAttribute("holidayArr", holidayArr);
+        
+        
 
         model.addAttribute("StartDay", attendance.getStartDay());
         model.addAttribute("EndDay", attendance.getEndDay());
@@ -95,8 +146,8 @@ public class AttendController {
     	
     	//model.addAttribute("leaveDate", leaveDate);
         model.addAttribute("mainData", attendMonthList);
-        model.addAttribute("mainUrl", "attend/check");
-        model.addAttribute("attendDTO", attendance);   // 조회 조건 유지용
+        model.addAttribute("mainUrl", "attend/check_test"); /////////////////////////////////////////////////////////////////////////////
+        //model.addAttribute("attendDTO", attendance);   // 조회 조건 유지용
        
         
         // DTO에 구현한 메서드 호출
@@ -167,6 +218,7 @@ public class AttendController {
         return "redirect:/attend";
     }
     
+
     //출퇴근 기록 수정 신청 
     @GetMapping("/attendTimeInsert")
     String attendTimeInsert(HttpSession session, Model model) {
