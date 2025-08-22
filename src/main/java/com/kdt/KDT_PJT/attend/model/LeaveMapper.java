@@ -111,7 +111,7 @@ public interface LeaveMapper {
 			   created_at, updated_at, employeeId, repeat_check, holiday
 			 )
 			 SELECT
-			   CONCAT(e.emp_nm, ' 연차')     AS title,          -- 사원명 + " 연차"
+			   CONCAT(e.emp_nm,' ', e.position,' 연차')     AS title,          -- 사원명 +' '+직급+ " 연차"
 			   al.used_date                 AS start_date,
 			   al.used_date                 AS end_date,
 			   '종일'                        AS cate,

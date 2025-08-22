@@ -18,11 +18,11 @@
 	    <span th:case="'공지사항'">공지사항 결재 문서</span>
 	</h1>
 
-	<div style="border: solid black">
-		<div style="display: flex; justify-content: space-between;">
+	<div style="">
+		<div style="display: flex; justify-content: space-between; ">
 		
 	 		<!-- 작성자, 부서, 작성일, 문서번호 영역 -->
-			<table border="" style="width:400px;">
+			<table style="width:400px;">
 				<tr>
 					<th style="width:200px;">작성자</th>
 			    <td style="width:200px;">
@@ -39,7 +39,7 @@
 				</tr>
 				<tr>
 					<th>작성일</th>
-					<td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></td>
+					<td th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd')}"></td>
 				</tr>
 				<tr>
 					<th>문서번호</th>
@@ -49,7 +49,7 @@
 	
 			<!-- 공지사항 전용 결재선 -->
 			<th:block th:if="${approvalData.docType == '공지사항'}">
-			  <table border="" style="width: 400px; table-layout: fixed;">
+			  <table style="width: 400px; table-layout: fixed;">
 			    <tr>
 			      <th style="height:24px; width:200px;">상신자</th>
 			      <th style="height:24px; width:200px;" th:text="${approvalData.status == '대기' ? '결재권한자' : '결재자'}">결재자</th>
@@ -92,7 +92,7 @@
 			      <!-- 결재일: 문서 단 firstSign 있으면 표시, 반려 시 붉은색 -->
 			      <td style="text-align: center;">
 			        <span th:if="${approvalData != null and approvalData.firstSign != null}"
-			              th:style="${approvalData.status == '반려' ? 'color:red;' : 'color:black;'}"
+			              th:style="${approvalData.status == '반려' ? 'color:red;' : ''}"
 			              th:text="${#dates.format(approvalData.firstSign, 'yyyy/MM/dd') + (approvalData.status == '반려' ? ' (반려)' : '')}">
 			        </span>
 			        <span th:if="${approvalData == null or approvalData.firstSign == null}">-</span>
@@ -104,7 +104,7 @@
 				
 			<!-- 프로젝트 전용 결재선 -->
 			<th:block th:if="${approvalData.docType == '프로젝트'}">
-			  <table border="" style="width:400px; table-layout: fixed;">
+			  <table style="width:400px; table-layout: fixed;">
 			    <tr>
 			      <th style="height:24px; width:200px;">상신자</th>
 			      <th style="height:24px; width:200px;" th:text="${approvalData.status == '대기' ? '결재권한자' : '결재자'}">결재자</th>
@@ -171,7 +171,7 @@
 				
 			<!-- 근태 전용 결재선 -->
 			<th:block th:if="${approvalData.docType == '근태'}">
-			  <table border="" style="width:400px; table-layout: fixed;">
+			  <table style="width:400px; table-layout: fixed;">
 			    <tr>
 			      <th style="height:24px; width:200px;">상신자</th>
 			      <th style="height:24px; width:200px;" th:text="${approvalData.status == '대기' ? '결재권한자' : '결재자'}">결재자</th>
@@ -205,8 +205,6 @@
 					    <span th:unless="${approvalData.approvedByName != null}">-</span>
 					  </div>
 					</td>
-	
-	
 			    </tr>
 			
 			    <tr>
@@ -226,12 +224,9 @@
 			  </table>
 			</th:block>
 	
-	
-	
-			
 			<!-- 연차 전용 결재선 -->
 			<th:block th:if="${approvalData.docType == '연차'}">
-			  <table border="" style="width:400px; table-layout: fixed;">
+			  <table style="width:400px; table-layout: fixed;">
 			    <tr>
 			      <th style="height:24px; width:200px;">상신자</th>
 			      <th style="height:24px; width:200px;" th:text="${approvalData.status == '대기' ? '결재권한자' : '결재자'}">결재자</th>
@@ -265,10 +260,8 @@
 					    <span th:unless="${approvalData.approvedByName != null}">-</span>
 					  </div>
 					</td>
-	
-	
 			    </tr>
-			
+			    
 			    <tr>
 			      <!-- 상신일 -->
 			      <td style="text-align: center;" th:text="${approvalData == null ? '-' : #dates.format(approvalData.createdAt, 'yyyy/MM/dd')}">-</td>
@@ -285,16 +278,11 @@
 			    </tr>
 			  </table>
 			</th:block>
-	
-	
-					
-	
-	
 		</div>
 		
-		<!-- 제목 영역 -->
-		<div style="margin-top: 20px; ">
-			<table border="">
+		<!-- 결재 종류, 결재 상태, 제목 영역 -->
+		<div style="margin-top: 30px; ">
+			<table>
 				<tr>
 					<th style="width: 150px;">결재 종류</th>
 					<td style="width: 350px;" th:text="${approvalData == null ? '-' : approvalData.docType}"></td>
@@ -306,18 +294,22 @@
 					<th>제목</th>
 					<td colspan="3" th:text="${approvalData == null ? '존재하지 않는 문서입니다.' : approvalData.title}"></td>
 				</tr>
-				<tr th:if="${approvalData != null and approvalData.docType == '공지사항'}">
-				  <th>내용</th>
-				  <td th:unless="${approvalData != null and (approvalData.docType == '연차' or approvalData.docType == '근태')}"
-				      colspan="3" style="border:1px solid; margin-top: 20px;"
-				      th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
-				  </td>
-				</tr>
 			</table>
 		</div>
 		
-		<!-- (프로젝트) 제목 -->
-		<table th:if="${approvalData != null and approvalData.docType == '프로젝트'}" style="margin-top: 20px;" border="">
+		<!-- 공지사항 내용 -->
+		<table style="margin-top: 30px;">
+			<tr th:if="${approvalData != null and approvalData.docType == '공지사항'}">
+			  <th>내용</th>
+			  <td th:unless="${approvalData != null and (approvalData.docType == '연차' or approvalData.docType == '근태')}"
+			      colspan="3" style="margin-top: 30px;"
+			      th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
+			  </td>
+			</tr>
+		</table>
+		
+		<!-- 프로젝트 내용 -->
+		<table th:if="${approvalData != null and approvalData.docType == '프로젝트'}">
 		    <tr>
 		        <th>프로젝트 시작일</th>
 		        <td>
@@ -331,7 +323,7 @@
 		    <tr>
 				<th>내용</th>
 				<td colspan="4" th:unless="${approvalData != null and (approvalData.docType == '연차' or approvalData.docType == '근태')}"
-				    style="margin-top: 20px;"
+				    style="margin-top: 30px;"
 				    th:utext="${approvalData == null ? '-' : (approvalData.content == null or approvalData.content.isEmpty() ? '내용이 없습니다' : approvalData.content)}">
 				</td>
 		    </tr>
@@ -364,9 +356,8 @@
 			</tr>
 		</table>
 	
-		<!-- 내용 영역 -->
-		<!-- if 연차 -->
-		<table th:if="${approvalData != null and approvalData.docType == '연차'}" style="margin-top: 20px;" border="">
+		<!-- 연차 내용 -->
+		<table th:if="${approvalData != null and approvalData.docType == '연차'}">
 		    <tr>
 		        <th>연차 발생일</th>
 		        <td><span th:text="${approvalData.leaveCreateDate != null ? #dates.format(approvalData.leaveCreateDate, 'yyyy-MM-dd') : '-'}"></span></td>
@@ -379,8 +370,8 @@
 		    </tr>
 		</table>
 		
-		<!-- if 근태 -->
-		<table th:if="${approvalData != null and approvalData.docType == '근태'}" style="margin-top: 20px;" border="">
+		<!-- 근태 내용 -->
+		<table th:if="${approvalData != null and approvalData.docType == '근태'}">
 		    <tr>
 		        <th>출근 시간</th>
 		        <td th:text="${approvalData.checkInTime != null ? #dates.format(approvalData.checkInTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
@@ -398,18 +389,10 @@
 		</table>
 	</div>
 
-	<!-- 목록으로(approvalData가 있을때) or 처음으로(approvalData가 없을때) -->
-	<a th:if="${approvalData != null}" class="back-btn"
-	   th:href="@{'/approval/main'(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status})}">
-	   목록으로
-	</a>
+	<!-- 목록으로 버튼 -->
+	<a class="back-btn" th:href="@{/approval/main}">목록으로</a>
 	
-	<a th:unless="${approvalData != null}"
-	   th:href="@{/approval/main}">
-	   처음으로
-	</a>
-	
-	<!-- 수정, 삭제 버튼 영역: 연차/근태 + 대기 + 작성자 본인 -->
+	<!-- 수정, 삭제 버튼 영역 -->
 	<div th:if="${approvalData != null 
 	    and approvalData.status == '대기' 
 	    and (approvalData.docType == '연차' or approvalData.docType == '근태')
