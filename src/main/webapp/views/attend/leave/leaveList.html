@@ -2,23 +2,27 @@
 <!-- 연차 관리 사용자용 -->
 <form action="" method="">
 <!-- 잔여 연차 요약 -->
-	<table class="leave-count">
-		<tr>
-			<td class="name-th">이름</td>
-			<td>총 연차</td>
-			<td>사용 연차</td>
-			<td>잔여 연차</td>
-		</tr>
-		<tr>
-		    <td th:text="${listData.empNm+ ' ' + listData.position}">}"></td>
-		    <td th:text="${listData.total}"/>
-		    <td th:text="${listData.used}"/>
-		    <td th:text="${listData.getRest}"></td>
-
-		</tr>
+	<table>
+		<thead >
+			<tr>
+				<td >이름</td>
+				<td>총 연차</td>
+				<td>사용 연차</td>
+				<td>잔여 연차</td>
+			</tr>
+		</thead>
+    	<tbody>
+			<tr>
+			    <td th:text="${listData.empNm+ ' ' + listData.position}">}"></td>
+			    <td th:text="${listData.total}"/>
+			    <td th:text="${listData.used}"/>
+			    <td th:text="${listData.getRest}"></td>
+	
+			</tr>
+		</tbody>
 	</table>
 	
-	<table class="leave-detail">
+	<table>
     <thead >
         <tr>
             <th class="th-top">발생 날짜</th>

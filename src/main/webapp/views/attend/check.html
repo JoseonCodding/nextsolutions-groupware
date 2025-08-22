@@ -7,24 +7,25 @@
 
 <div class="check-container">
 	<h1>근태관리</h1>
-	<th:block th:unless="${attendDTO2.nowIsHoliday}">
-		<form method="post" th:action="@{/attend/in}" th:unless="${attendDTO2.todayCheckIn}">
-		    <button class="regist-btn" type="submit">출근</button>
+		<div class="attend-nav">
+	<th:block th:unless="${attendDTO2.nowIsHoliday}" >
+		<form method="post" th:action="@{/attend/in}" th:unless="${attendDTO2.todayCheckIn}" class="btn-nav">
+		    <button class="attend-btn" type="submit">출근</button>
 		</form>
-		<form method="post" th:action="@{/attend/out}" th:if="${attendDTO2.todayCheckOut}">
-		    <button class="regist-btn" type="submit">퇴근</button>
+		<form method="post" th:action="@{/attend/out}" th:if="${attendDTO2.todayCheckOut}" class="btn-nav">
+		    <button class="attend-btn" type="submit">퇴근</button>
 		</form>
 	</th:block>
 	
 	
-	<div class="attend-nav">
+
 		<form method="get" th:action="@{/attend}" class="month-btn1">
 		    <input type="hidden" name="startDay" th:value="${prevMonthStartDay}"/>
 		    <input type="hidden" name="endDay" th:value="${prevMonthEndDay}"/>
 		    <button type="submit" class="month-custom">이전달</button>
 		</form>
 	
-		<h2 id="monthTitle" class="month-title"></h2>
+		   <h2 id="monthTitle" class="month-title"></h2>
 		
 	
 		<form method="get" th:action="@{/attend}" class="month-btn2">
