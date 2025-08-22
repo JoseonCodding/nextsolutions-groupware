@@ -44,6 +44,19 @@ document.addEventListener("DOMContentLoaded", function() {
 	
   });
   
+  
+  $(".bbb").on("change", function(){
+  	
+  	let count = $(".bbb:checked").length;
+  	
+  	//    alert("체크된 개수: " + count);
+  	if(count ==0){
+  		alert("최소 1개 이상 선택 필요");
+  		$(this).prop("checked", true); 
+  	}
+  	
+    });
+  
 });
 
 (function () {

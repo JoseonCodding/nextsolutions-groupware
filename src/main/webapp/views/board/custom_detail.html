@@ -117,8 +117,9 @@
     <a th:href="@{/board/custom/{boardId}(boardId=${board.boardId},page=${page},size=${size},sort=${sort},keyword=${keyword})}" class="btn">목록으로</a>
 
     <a class="btn"
-       th:if="${session.loginUser != null and #strings.equals(board.employeeId, session.loginUser.employeeId)}"
-       th:href="@{/board/custom/{boardId}/modify(boardId=${board.boardId}, postId=${board.postId})}">수정</a>
+   	   th:if="${session.loginUser != null and #strings.equals(board.employeeId, session.loginUser.employeeId)}"
+   	   th:href="@{|/board/custom/${board.boardId}/modify?postId=${board.postId}&page=${page}&size=${size}${sort != null ? '&sort=' + sort : ''}${keyword != null ? '&keyword=' + keyword : ''}|}">
+   	수정</a>
 
     <a class="btn btn-danger"
        th:if="${session.loginUser != null and (

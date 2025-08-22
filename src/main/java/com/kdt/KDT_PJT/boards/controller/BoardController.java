@@ -67,7 +67,7 @@ public class BoardController {
     }
 
     // 목록 파라미터를 그대로 보존하는 QS 빌더
-    private String listQS(BoardDTO q){
+    private String listQS(BoardDTO q, boolean hasQuery) {
         int page = (q.getPage() == null || q.getPage() < 1) ? 1 : q.getPage();
         int size = (q.getSize() == null || q.getSize() < 1) ? 10 : q.getSize();
         UriComponentsBuilder b = UriComponentsBuilder.newInstance()
@@ -75,8 +75,14 @@ public class BoardController {
             .queryParam("size", size);
         if (q.getSort() != null && !q.getSort().isBlank()) b.queryParam("sort", q.getSort());
         if (q.getKeyword() != null && !q.getKeyword().isBlank()) b.queryParam("keyword", q.getKeyword());
-        return b.build().encode(StandardCharsets.UTF_8).toUriString(); // like "?page=2&size=10&sort=views&keyword=abc"
+
+        String qs = b.build().encode(StandardCharsets.UTF_8).toUriString(); // "?page=2&..."
+        if (hasQuery) {
+            return qs.replaceFirst("^\\?", "&"); // detail처럼 이미 ?가 있으면 &로 변환
+        }
+        return qs; // 목록처럼 base URL 뒤에 그냥 붙일 때
     }
+
 
     /* ===================================================================== */
 
@@ -252,6 +258,9 @@ public class BoardController {
         	return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId();
         }
 
+        // ✅ 목록 파라미터를 모델에 주입 (hidden에 쓰일 값)
+        int page = (dto.getPage()==null || dto.getPage()<1) ? 1 : dto.getPage();
+        int size = (dto.getSize()==null || dto.getSize()<1) ? 10 : dto.getSize();
         model.addAttribute("board", post);
         model.addAttribute("activeBoard", "custom");// 수정 폼에 바인딩
         model.addAttribute("activeBoardId", boardId); // 탭 활성화용
@@ -274,7 +283,7 @@ public class BoardController {
         submit.setEmployeeId(loginUser.getEmployeeId()); // 소유자 체크용
         boardMapper.modify(submit);
 
-        return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId();
+        return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId() + listQS(dto, true);
     }
 
     // 커스텀 게시판 삭제 (POST) → 리스트로 복귀
@@ -294,7 +303,7 @@ public class BoardController {
             dto.setEmployeeId(me);
             boardMapper.delete(dto);
         }
-        return "redirect:/board/custom/" + boardId + listQS(q);
+        return "redirect:/board/custom/" + boardId + listQS(q, false);
     }
 
     // 커스텀 게시판 삭제 (GET) → 리스트로 복귀
@@ -540,7 +549,7 @@ public class BoardController {
         } else {
             // 필요 시 일반 사용자 삭제 로직 추가
         }
-        return "redirect:/board/notice" + listQS(q);
+        return "redirect:/board/notice" + listQS(q, false);
     }
 
     // 게시글 삭제 (GET) → 리스트로 복귀
@@ -752,7 +761,7 @@ public class BoardController {
             dto.setEmployeeId(me);
             boardMapper.delete(dto);
         }
-        return "redirect:/board/free" + listQS(q);
+        return "redirect:/board/free" + listQS(q, false);
     }
 
     // 게시글 삭제 (GET) → 리스트로 복귀
@@ -774,7 +783,7 @@ public class BoardController {
     }
 
     // 답글 달기
-    @PostMapping("/commentReply")
+    @PostMapping("/free/commentReply")
     public String reply(@ModelAttribute CommentDTO dto,
                         HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
