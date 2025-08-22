@@ -123,9 +123,10 @@ public class EmployeeController {
             @RequestParam("deptName") String deptName,
             @RequestParam("position") String position,
             @RequestParam(value="role", required=false) String role,
-            @RequestParam("birth") 
+            // ✅ 비어오면 허용
+            @RequestParam(value="birth", required=false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") Date birth,
-            @RequestParam("hireDate") 
+            @RequestParam(value="hireDate", required=false) 
             @DateTimeFormat(pattern = "yyyy-MM-dd") Date hireDate,
             @RequestParam(value="resignDate", required=false) 
             @DateTimeFormat(pattern = "yyyy-MM-dd") Date resignDate) {
@@ -214,7 +215,30 @@ public class EmployeeController {
     	 
         return "redirect:/employee/list";
     }
-   
+    
+    
+    
+    
+    /** 사번 중복체크 폼 */
+    @ResponseBody
+    @GetMapping("/employee/idChk")
+    public Object idChk(EmployeeDto dto) {
+    	
+    	EmployeeDto res = employeeMapper.getIdChk(dto);
+        
+        System.out.println("/employee/idChk : "+res);
+
+        return res;
+
+    }
+    
+ // 사번(X) → 휴대폰 중복체크
+    @GetMapping("/employee/phoneChk")
+    @ResponseBody
+    public boolean phoneChk(@RequestParam("phone") String phone) {
+        // 클라에서 숫자만 보내게 했으면 그대로 사용 (010XXXXXXXX)
+        return employeeService.existsByPhone(phone); // true = 중복있음
+    }
     
     
 }
