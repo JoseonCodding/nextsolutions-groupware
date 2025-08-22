@@ -81,6 +81,7 @@ var currDay = new Date(attendDTO2.startDay);
 
 //console.log(attendDTO2)
 
+
 // 출근 버튼 1번 누르면 퇴근 버튼 보이도록
 const checkInBtn = document.getElementById('checkInBtn');
 const checkOutBtn = document.getElementById('checkOutBtn');
@@ -140,9 +141,7 @@ Object.keys(attendMapLeave).forEach(function(leaveDate) {
 
 
 holidayArr.forEach(function(holiday, idx) {
-    
-	
-    
+
      events.push({
 		title:holiday.title,
      	 start: holiday.startDateStr,   // 시작일
