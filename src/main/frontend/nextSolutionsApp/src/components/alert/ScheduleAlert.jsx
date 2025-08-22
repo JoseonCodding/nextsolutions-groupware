@@ -22,7 +22,7 @@ const ScheduleAlert = () => {
   if (error)
     return <p className="px-3 py-4 text-red-600">에러: {error.message}</p>;
   if (!rows.length)
-    return <p className="px-3 py-4 text-gray-500">공지사항이 없습니다.</p>;
+    return <p className="px-3 py-4 text-gray-500">일정알림이 없습니다.</p>;
 
   return (
     <div role="region" aria-label="일정 알림">
