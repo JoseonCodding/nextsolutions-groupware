@@ -1,11 +1,14 @@
 @charset "UTF-8";
 
  .check-container {
- 	background:yellow;
+
     height: 100%;
     position:relative;
     margin-bottom: 30px;
     padding-bottom: 70px;
+}
+h1[class=detail-title]{
+	text-align: center;
 }
 
 /*출퇴근 버튼 - 위치변경을 위해 등록버튼 변형*/
@@ -88,8 +91,9 @@ tr:hover:not(.no-hover tr) td {
 	position:relative;
 }
 
-/**************************************/
+/*******************************************/
 /*fullcalender 스타일 적용 - 출퇴근 기록 달력*/
+/*******************************************/
 #calendar {
   width: 100% !important;  /* 캘린더를 부모 기준 100%로 */
   max-width: 100%;         /* 혹시 모를 제한 해제 */
@@ -142,7 +146,7 @@ tr:hover:not(.no-hover tr) td {
     z-index: 6;
 }
 
-/* 출퇴근 기록 수정 신청*/
+/* 출퇴근 기록 수정 신청 버튼 */
 .insert-btn{
     background: var(--regist-btn);
     color: #fff;
@@ -157,3 +161,62 @@ tr:hover:not(.no-hover tr) td {
 	right: 0px;
 	bottom:0px;
 }
+
+/***********************/
+/* 출퇴근 기록 수정 신청 */
+/***********************/
+input, select {
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+.attend-option {
+	position:relative;
+
+}
+
+.attend-option > th {
+	width: 200px;
+}
+.attend-option > td {
+	padding: 10px 20px 10px 20px;
+	width:250px;
+}
+.attend-option > td > select {
+	padding: 10px ;
+	width: 100%;
+	text-align: center;
+}
+/* 체크 박스 */
+.attchk label {
+	position:relative;
+	float:left;
+	margin: 0px 20px 0px 20px;
+	padding: 10px;
+
+}
+/*
+.attdate .attdd {
+	position:relative;
+	float:left;
+	margin: 0px 0px 0px 10px;
+	padding:10px;
+
+}
+.attdate .attdd[id=dateSelect] {
+	padding:10px;
+	width: 150px;
+	text-align: center;
+	background: blue;
+}
+*/
+/***********************/
+/* 출퇴근 현황 */
+/***********************/
+.check-list-container {
+	background:yellow;
+    position:relative;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+}
+.page
