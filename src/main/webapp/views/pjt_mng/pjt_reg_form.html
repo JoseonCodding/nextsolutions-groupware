@@ -121,7 +121,7 @@ input, select {
 <body>
 	<!-- 생략된 <head>와 스타일은 그대로 유지 -->
 
-	<h1 class="detail-title">프로젝트 등록</h1>
+	<h1 class="detail-title" style="margin-top:45px;">프로젝트 등록</h1>
 
 	<form onsubmit="return validateForm()" action="/pjtMng/savePjtProc"
 		method="post" enctype="multipart/form-data">
@@ -234,7 +234,9 @@ input, select {
 							});
 						});
 	</script>
- <script>
+ <script> 
+ // 담당자 (employeeId: 영문/숫자 4~50)- 고정되어있음 (유효성 없음) 
+ // 달력 : 기간 (시작일, 종료일)
 // 달력에서 시작일을 오늘 날짜 이전으로 설정 못하게  (yyyy-mm-dd 형식)
 const today = new Date().toISOString().split('T')[0];
 
@@ -288,43 +290,12 @@ function extractTextFromHtml(html) {
 }
 
 
-  // 2) 담당자 (employeeId: 영문/숫자 4~50)- 고정되어있음 
+ 
  
 
-  // 3) 기간 (시작일, 종료일)
-document.addEventListener("DOMContentLoaded", () => {
-  const startInput = document.getElementById("pjtBgngDt");
-  const endInput   = document.getElementById("pjtEndDt");
-
-  // 오늘 날짜 yyyy-MM-dd 포맷으로 구하기
-  const now = new Date();
-  now.setHours(0,0,0,0);
-  const year  = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day   = String(now.getDate()).padStart(2, "0");
-  const today = `${year}-${month}-${day}`;
-
-  // 🔹 오늘 이전은 선택 불가
-  startInput.min = today;
-  endInput.min   = today;
-
-  // 🔹 시작일 바뀌면 종료일 min = 시작일
-  startInput.addEventListener("change", () => {
-    if (startInput.value) {
-      endInput.min = startInput.value;
-
-      // 이미 선택된 종료일이 시작일보다 작으면 초기화
-      if (endInput.value && endInput.value < startInput.value) {
-        endInput.value = "";
-      }
-    }
-  });
-});
 
 // ✅ 폼 제출 시 최종 유효성 검사
-function validateForm() {
-
-	
+function validateForm() {	
 
   const form = document.forms[0];
   if (!form) return false; // 🚫 폼 없으면 막기

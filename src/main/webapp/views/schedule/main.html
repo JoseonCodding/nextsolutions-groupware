@@ -140,14 +140,14 @@
         // 월별 렌더
         function monthDiaryView(){
             console.log("monthDiaryView() 실행");
-            $("#diary_title").html(monthFirst.getYear()+1900+'년 '+(monthFirst.getMonth()+1) + '월');
+            $("#month_title").html(monthFirst.getYear()+1900+'년 '+(monthFirst.getMonth()+1) + '월');
             monthFirst.setDate(1);
             var first = monthFirst.getDay();
             monthFirst = new Date(monthFirst.getFullYear(),monthFirst.getMonth()+1,0);
             var last = monthFirst.getDate();
 
             $("#diary_body").empty();
-            $("#diary_body").append("<tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr>");
+            $("#diary_body").append("<tr><th class='mTH'>일</th><th class='mTH'>월</th><th class='mTH'>화</th><th class='mTH'>수</th><th class='mTH'>목</th><th class='mTH'>금</th><th class='mTH'>토</th></tr>");
             var trLine = $("<tr valign='top' class='no-hover'></tr>");
             $("#diary_body").append(trLine);
 
@@ -188,8 +188,12 @@
             // 앵커 날짜를 기준으로 현재 주차 산정 + 타이틀용 유지
             currentWeekNo = weekOfMonth(weekRef);
 
-            $("#diary_title").html(
-                weekRef.getFullYear() + '년 ' + (weekRef.getMonth()+1) + '월 ' + currentWeekNo + '주'
+            $("#month_title").html(
+                weekRef.getFullYear() + '년 ' + (weekRef.getMonth()+1) + '월 '
+            );
+            
+            $("#week_title").html(
+                    currentWeekNo + '주'
             );
 
             const weekStart = getSundayOfWeek(weekRef);
@@ -203,7 +207,7 @@
             // 헤더
             var title = $("<tr><th>시간</th></tr>");
             for(var dd of weekArr){
-                title.append($("<th>"+dd.getDate()+"일("+weekTitle[dd.getDay()]+")</th>"));
+                title.append($("<th  class='wTH'>"+dd.getDate()+"일("+weekTitle[dd.getDay()]+")</th>"));
             }
             $("#diary_body").append(title);
 
@@ -239,10 +243,12 @@
         // 일별 렌더
         function dayDiaryView(){
             console.log("dayDiaryView() 실행:");
-            $("#diary_title").html(dayOne.getYear()+1900+'년 '+(dayOne.getMonth()+1) + '월 '+dayOne.getDate()+'일');
+            $("#month_title").html(dayOne.getYear()+1900+'년 '+(dayOne.getMonth()+1) + '월');
+            
+            $("#day_title").html(dayOne.getDate()+ '일');
 
             $("#diary_body").empty();
-            var title = $("<tr><th>시간</th><th>"+dayOne.getDate()+"일("+weekTitle[dayOne.getDay()]+")</th></tr>");
+            var title = $("<tr><th class='dHH'>시간</th><th   class='dTH'>"+dayOne.getDate()+"일("+weekTitle[dayOne.getDay()]+")</th></tr>");
             $("#diary_body").append(title);
 
             title = $("<tr><th>종일</th></tr>");
@@ -377,9 +383,14 @@
         setView('month');
     });
 </script>
+
+<style>
+
+
+</style>
 <div class="sche-container">
 <h1>일정 관리</h1>
-	<h2 id="diary_title" ></h2>
+	
 	
 	<div class="view-select">
 	    <!-- 보기 전환 버튼 -->
@@ -389,21 +400,24 @@
 	</div>
 	
 	<!-- 월 이동 버튼 -->
-	<div id="monthNav" class=".month-nav" >
-	    <button id="prevMonth" class=" month-btn1">이전달</button>
-	    <button id="nextMonth" class=" month-btn2">다음달</button>
+	<div id="monthNav" class="month-nav" >
+	    <button id="prevMonth" class="month-btn1">이전달</button>
+	    <h2 id="month_title" ></h2>
+	    <button id="nextMonth" class="month-btn2">다음달</button>
 	</div>
 	
 	<!-- 주 이동 버튼 -->
-	<div id="weekNav" align="center" style="display:none;">
-	    <button id="prevWeek">이전주</button>
-	    <button id="nextWeek">다음주</button>
+	<div id="weekNav" class="week-nav">
+	    <button id="prevWeek" class="week-btn1">이전주</button>
+	    <h2 id="week_title" ></h2>
+	    <button id="nextWeek" class="week-btn2">다음주</button>
 	</div>
 	
 	<!-- 일 이동 버튼 -->
-	<div id="dayNav" align="center" style="display:none;">
-	    <button id="prevDay">전날</button>
-	    <button id="nextDay">다음날</button>
+	<div id="dayNav" class="day-nav">
+	    <button id="prevDay" class="day-btn1">이전날</button>
+	    <h2 id="day_title" ></h2>
+	    <button id="nextDay" class="day-btn2">다음날</button>
 	</div>
 	
 	<!-- 월별 보기 -->
@@ -415,6 +429,6 @@
 	
 	<!-- 권한자만 등록 버튼 보이도록 -->
 	<a th:if="${session.loginUser.role == '일정' or session.loginUser.role == '대표'}"
-	   th:href="@{/schedule/insert}" class="regist-btn">일정 등록</a>
+	   th:href="@{/schedule/insert}" class="rrgg">일정 등록</a>
 </div>
 

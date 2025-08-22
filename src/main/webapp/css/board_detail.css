@@ -1,0 +1,308 @@
+
+/*!
+ * Board UI — unified stylesheet
+ * Pretty & clean styles for notice / free / custom detail pages
+ * Last updated: 2025-08-22 (Asia/Seoul)
+ */
+
+/* ==============================
+   0) Design tokens
+   ============================== */
+:root{
+  --bg: #f8fafc;             /* page background */
+  --card: #ffffff;           /* surface */
+  --fg: #0f172a;             /* main text */
+  --muted: #64748b;          /* secondary text */
+  --border: #e5e7eb;         /* borders / dividers */
+  --border-strong: #d1d5db;
+  --accent: #2563eb;         /* primary accent (blue) */
+  --danger: #ef4444;         /* danger (red) */
+  --like: #e11d48;           /* heart (rose) */
+
+  --radius: 12px;
+  --shadow: 0 2px 10px rgba(2,6,23,.06);
+  --shadow-sm: 0 1px 4px rgba(2,6,23,.05);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --max-w: 880px;
+}
+
+/* Dark mode (auto) */
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0b1220;
+    --card:#0f172a;
+    --fg:#e5e7eb;
+    --muted:#94a3b8;
+    --border:#1f2937;
+    --border-strong:#374151;
+    --accent:#60a5fa;
+    --danger:#f87171;
+    --like:#fb7185;
+    --shadow: 0 4px 16px rgba(0,0,0,.35);
+    --shadow-sm: 0 1px 6px rgba(0,0,0,.25);
+  }
+}
+
+/* ==============================
+   1) Reset / base
+   ============================== */
+*,
+*::before,
+*::after{ box-sizing: border-box; }
+
+html{ -webkit-text-size-adjust:100%; }
+
+body{
+  margin:0;
+  color:var(--fg);
+  background:var(--bg);
+}
+
+img,svg,video,canvas,iframe{ max-width:100%; height:auto; }
+a{ color:inherit; text-decoration:none; }
+button,input,select,textarea{ font:inherit; color:inherit; background:none; }
+button{ cursor:pointer; }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:8px; }
+
+/* ==============================
+   2) Layout
+   ============================== */
+.container{
+  max-width:var(--max-w);
+  margin-inline:auto;
+  padding: var(--space-6) var(--space-4);
+}
+
+h1,h2,h3,h4{
+  margin:0 0 var(--space-3);
+  line-height:1.3;
+  letter-spacing:-.01em;
+}
+h2{ font-size: clamp(1.25rem, 1.05rem + 1.2vw, 1.8rem); }
+
+hr{
+  height:1px; border:0; background:var(--border);
+  margin: var(--space-4) 0;
+}
+
+/* ==============================
+   3) Board meta (author, date, counts)
+   ============================== */
+.board-meta{
+  display:flex; flex-wrap:wrap;
+  gap: var(--space-3) var(--space-4);
+  color: var(--muted);
+  font-size: .95rem;
+  margin-bottom: var(--space-2);
+}
+.board-meta span,
+.board-meta p{
+  margin:0;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.board-meta strong{ color:var(--fg); }
+
+/* ==============================
+   4) Main content (board body)
+   ============================== */
+.board-content,
+.text{ /* .text is used in notice_detail */
+  background:var(--card);
+  border-radius:var(--radius);
+  padding: var(--space-6);
+  line-height:1.75;
+}
+.board-content :where(h1,h2,h3){ margin-top:1.2em; }
+.board-content :where(p,ul,ol,pre,blockquote,table){ margin: .7em 0; }
+.board-content :where(ul){ padding-left:1.1em; list-style: disc; }
+.board-content :where(ol){ padding-left:1.2em; list-style: decimal; }
+.board-content :where(code,kbd,pre){
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: color-mix(in oklab, var(--card), var(--fg) 6%);
+  border:1px solid var(--border);
+  border-radius:8px;
+}
+.board-content code{ padding: 0 .35em; }
+.board-content pre{ padding: var(--space-4); overflow:auto; }
+.board-content blockquote{
+  border-left:4px solid var(--accent);
+  padding-left: var(--space-4);
+  color: var(--muted);
+  margin: 1em 0;
+}
+
+/* ==============================
+   5) Buttons
+   ============================== */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding: 8px 14px;
+  background: #3949ab;
+  border:1px solid var(--border);
+  border-radius: 9999px;
+  font-weight:600;
+  box-shadow: var(--shadow-sm);
+  transition: border-color .2s, background-color .2s, transform .05s;
+}
+.btn:hover{ border-color: var(--border-strong); background: color-mix(in oklab, var(--card), var(--fg) 4%); }
+.btn:active{ transform: translateY(1px); }
+.btn-danger{
+  background: var(--danger);
+  border-color: transparent;
+  color:#fff;
+}
+.btn-danger:hover{ filter: brightness(.96); }
+
+/* Reply / cancel small ghost buttons (if used) */
+.btn-reply,
+.btn-cancel{
+  border: none;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  color: var(--muted);
+  transition: all .2s;
+}
+
+/* ==============================
+   6) Comments
+   ============================== */
+.comment-form-overlay .textarea-wrap{
+  position: relative;
+}
+
+.comment-form-overlay textarea{
+  width: 100%;
+  min-height: 96px;
+  padding: var(--space-3) var(--space-6) var(--space-6) var(--space-3); /* 오른쪽 아래 여백 확보 */
+}
+
+.comment-form-overlay button{
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 4px 12px;
+}
+
+.comment-list{ list-style:none; padding:0; margin:0; }
+.comment-item{ padding: 14px 0; position:relative; }
+.comment-item + .comment-item{ border-top:1px dashed var(--border); }
+
+.comment-item .meta{
+  display:flex; align-items:center; gap:10px;
+  color: var(--muted); font-size: .92rem;
+}
+.comment-item .meta strong{ color: var(--fg); }
+.comment-item .time{ font-variant-numeric: tabular-nums; }
+.comments-section .text{ margin-top: 6px; line-height:1.6; }
+
+/* Nested reply indicator */
+.comment-item.is-reply{ margin-left: 28px; }
+.comment-item.is-reply::before{
+  content:""; position:absolute; left:-16px; top:18px;
+  width:12px; height:12px;
+  border-left:2px solid var(--border);
+  border-bottom:2px solid var(--border);
+  border-bottom-left-radius:8px;
+}
+
+/* Comment form */
+.comment-form{
+  margin-top: var(--space-5);
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+}
+.comment-form textarea{
+  width:100%;
+  min-height: 96px;
+  padding: var(--space-3);
+  border:1px solid var(--border);
+  border-radius:10px;
+  resize: none;
+  background: color-mix(in oklab, var(--card), var(--fg) 2%);
+}
+.comment-form textarea:focus{ border-color: var(--border-strong); outline:2px solid var(--accent); outline-offset:2px; }
+.comment-form button[type="submit"]{ margin-top: var(--space-3); }
+
+/* ==============================
+   7) Footer actions (list, edit, delete)
+   ============================== */
+.board-actions{
+  margin-top: var(--space-5);
+  display:flex; flex-wrap:wrap; gap:10px;
+  align-items:center;
+}
+
+/* ==============================
+   8) Utilities
+   ============================== */
+
+/* Reduce spacing on very small screens */
+@media (max-width: 420px){
+  .container{ padding: var(--space-5) var(--space-3); }
+  .board-content, .text, .comments-section, .comment-form{ padding: var(--space-5); }
+  .btn{ padding: 7px 12px; }
+}
+
+/* 좋아요 + 댓글 아이콘 영역 */
+.like-comment-display {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: 15px;
+  margin: 12px 0 20px;
+  color: var(--fg);
+}
+
+/* 좋아요 버튼을 텍스트처럼 */
+.like-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--fg);
+}
+
+.like-icon.liked {
+  color: var(--like);
+}
+
+.comment-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fg);
+}
+
+.comment-icon i {
+  font-size: 16px;
+  color: var(--muted);
+}
+
+.like-icon i,
+.comment-icon i {
+  font-size: 16px;
+}
+
+.like-icon .label,
+.comment-icon .label {
+  font-weight: normal;
+  color: var(--muted);
+}
+
+.count {
+  font-weight: 700;
+  margin-left: 2px;
+}

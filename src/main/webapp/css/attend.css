@@ -27,7 +27,40 @@ tr:hover:not(.no-hover tr) td {
   background: initial;     
 }
 
+/* 연도와 달 표시*/
+.attend-nav{
+	left: 0px;
+	position:relative;
+	float: left;
 
+}
+/*이전달 버튼*/
+.month-btn1 {
+	float: left;
+	position:relative;
+}
+.month-title{
+	position:relative;
+	float: left;
+	width: 150px;
+	text-align: center;
+}
+/*다음달 버튼*/
+.month-btn2 {
+	float: left;
+	position:relative;
+}
+.month-custom {
+    background:var(--search-btn);
+    color: #fff;
+	padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+	float: left;
+	position:relative;
+}
 
 /**************************************/
 /*fullcalender 스타일 적용 - 출퇴근 기록 달력*/
@@ -47,7 +80,7 @@ fc-thead {
 }
 .fc-daygrid-day {
     height: 120px; /*달력 셀 높이 지정*/
-    padding: 5px;
+    padding: 10px;
     margin: 0px;   
 }
 
@@ -72,4 +105,19 @@ fc-thead {
 }
 .fc-toolbar-ltr {
 	
+}
+.insert-btn{
+    background: var(--regist-btn);
+    color: #fff;
+    display: block;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+	position: absolute;
+	width: 12px;
+	right: 0px;
+	bottom:0px;
 }

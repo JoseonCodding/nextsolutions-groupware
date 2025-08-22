@@ -3,7 +3,7 @@
     .board-nav ul { list-style:none; padding:0; margin:0; display:flex; }
     .board-nav ul li { margin-right:30px; }
     .board-nav ul li a { text-decoration:none; font-weight:bold; color:#666; padding:8px 12px; border-bottom:2px solid transparent; transition:all .2s; }
-    .board-nav ul.active li a { color:#000; border-bottom:2px solid #2c3e50; }
+    .board-nav ul li.active a { color:#000; border-bottom:2px solid #2c3e50; }
     .board-nav ul { display:flex; }
     .board-nav ul li.admin { margin-left:auto; }
     .board-nav ul li.admin a { color:#6b7280; font-weight:700; }
@@ -13,7 +13,7 @@
   
  
 <div class="board-nav">
-	<ul class="active">
+	<ul>
 		<li >
 			<a th:href="@{/attend}">출퇴근 기록</a>
 		</li>
@@ -24,7 +24,7 @@
 			<a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
 		   th:href="@{/attend/attendList}">출퇴근 현황</a>
 		</li>
-		<li>
+		<li >
 			<a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
 		   th:href="@{/attend/leaveListMng}">연차 관리</a>
 		</li>

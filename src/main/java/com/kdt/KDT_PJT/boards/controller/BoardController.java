@@ -176,6 +176,7 @@ public class BoardController {
 
         likeDto.setPostId(postId.longValue());
         likeDto.setEmployeeId(me);
+        int likeCount = likeMapper.countByPostId(likeDto);
         boolean likedByMe = (me != null) && likeMapper.exists(likeDto);
 
         // 게시판 메타에서 댓글/좋아요 사용 여부
@@ -195,7 +196,7 @@ public class BoardController {
         model.addAttribute("comments", commentMapper.selectCommentsByPostId(postId.longValue()));
         int commentCount = commentMapper.countAliveByPostId(postId.longValue());
         model.addAttribute("commentCount", commentCount);
-
+        model.addAttribute("likeCount", likeCount);
         model.addAttribute("me", me);
         model.addAttribute("likedByMe", likedByMe);
         model.addAttribute("activeBoardId", boardId);
@@ -666,6 +667,7 @@ public class BoardController {
         likeDto.setPostId(dto.getPostId().longValue());
         likeDto.setEmployeeId(me);
         boolean likedByMe = (me != null) && likeMapper.exists(likeDto);
+        int likeCount = likeMapper.countByPostId(likeDto);
 
         // 6) 게시판 메타
         Integer freeBoardId = boardMapper.findBoardIdByType("free");
@@ -686,6 +688,7 @@ public class BoardController {
         model.addAttribute("board", board); // ← viewCount 증가 반영됨
         model.addAttribute("comments", comments);
         model.addAttribute("likedByMe", likedByMe);
+        model.addAttribute("likeCount", likeCount);
         model.addAttribute("activeBoard", "free");
         model.addAttribute("mainUrl", "board/free_detail");
         return "navTap";
