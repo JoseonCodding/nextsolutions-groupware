@@ -675,6 +675,7 @@ public interface ApprovalMapper {
 		    UPDATE annual_leave
 		    SET state_type = #{status},
 		        approvedBy  = #{approverId},
+		        used_date = NULL;
 		        firstSign   = CASE WHEN #{role} = '근태' AND firstSign IS NULL THEN NOW() ELSE firstSign END,
 		        secondSign  = CASE WHEN #{role} = '대표' AND secondSign IS NULL THEN NOW() ELSE secondSign END
 		    WHERE leave_id = #{id}
