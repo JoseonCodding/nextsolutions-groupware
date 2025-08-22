@@ -10,6 +10,7 @@ public interface DocumentMapper {
   // A. 최신버전 목록
   @Select("""
     SELECT t.*, e.emp_nm AS empNm
+    , e.position AS position
     FROM TB_PJT_BASC t
     JOIN (
       SELECT gid, MAX(ver) AS max_ver
@@ -50,6 +51,7 @@ public interface DocumentMapper {
   // B. 최신 상세
   @Select("""
     SELECT t.*, e.emp_nm AS empNm
+    , e.position AS position
     FROM TB_PJT_BASC t
     JOIN ( SELECT gid, MAX(ver) AS max_ver
            FROM TB_PJT_BASC
@@ -64,6 +66,7 @@ public interface DocumentMapper {
   // C. 버전 목록
   @Select("""
     SELECT t.*, e.emp_nm AS empNm
+    , e.position AS position
     FROM TB_PJT_BASC t
     LEFT JOIN employee e ON e.employeeId = t.employeeId
     WHERE t.gid = #{gid}
@@ -74,6 +77,7 @@ public interface DocumentMapper {
   // D. 특정 버전 상세
   @Select("""
     SELECT t.*, e.emp_nm AS empNm
+    , e.position AS position
     FROM TB_PJT_BASC t
     LEFT JOIN employee e ON e.employeeId = t.employeeId
     WHERE t.gid = #{gid} AND t.ver = #{ver}
@@ -128,6 +132,7 @@ public interface DocumentMapper {
  @Select("""
    <script>
    SELECT t.*, e.emp_nm AS empNm
+   , e.position AS position
    FROM TB_PJT_BASC t
    JOIN (
      SELECT gid, MAX(ver) AS max_ver

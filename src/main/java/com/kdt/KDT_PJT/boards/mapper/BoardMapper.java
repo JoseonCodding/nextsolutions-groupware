@@ -40,7 +40,7 @@ public interface BoardMapper {
     		<script>
     		SELECT p.post_id, p.board_id, p.employee_id, p.title, p.content,
     		       p.created_at, p.updated_at, p.view_count, p.like_count, p.is_deleted,
-    		       e.emp_nm AS empNm
+    		       e.emp_nm AS empNm, e.position AS position
     		FROM board_post p
     		LEFT JOIN employee e ON e.employeeId = p.employee_id
     		WHERE p.board_id = #{boardId}
@@ -70,7 +70,7 @@ public interface BoardMapper {
     @Select("""
     		  SELECT p.post_id, p.board_id, p.employee_id, p.title, p.content,
     		         p.created_at, p.updated_at, p.view_count, p.like_count, p.is_deleted,
-    		         e.emp_nm AS empNm
+    		         e.emp_nm AS empNm, e.position AS position
     		  FROM board_post p
     		  LEFT JOIN employee e ON e.employeeId = p.employee_id
     		  WHERE p.post_id = #{postId} AND p.is_deleted = false
@@ -109,7 +109,7 @@ public interface BoardMapper {
     // 공지 목록 (완료만) - 페이징
     @Select("""
     		<script>
-    		SELECT p.*, e.emp_nm AS emp_nm
+    		SELECT p.*, e.emp_nm AS emp_nm, e.position AS position
     		FROM board_post p
     		LEFT JOIN employee e ON e.employeeId = p.employee_id
     		WHERE p.board_id = 1
@@ -163,6 +163,7 @@ public interface BoardMapper {
     		       p.board_id    AS boardId,
     		       p.employee_id AS employeeId,
     		       e.emp_nm      AS empNm,
+    		       e.position 	 AS position,
     		       p.title,
     		       p.content,
     		       p.created_at  AS createdAt,
@@ -230,7 +231,7 @@ public interface BoardMapper {
     // 자유 목록
     @Select("""
     		<script>
-    		SELECT p.*, e.emp_nm AS emp_nm
+    		SELECT p.*, e.emp_nm AS emp_nm, e.position AS position
     		FROM board_post p
     		LEFT JOIN employee e ON e.employeeId = p.employee_id
     		WHERE p.board_id = 2
@@ -278,7 +279,7 @@ public interface BoardMapper {
     // 게시글 상세 조회
     @Select("""
            SELECT p.post_id AS postId, p.board_id AS boardId, p.employee_id AS employeeId, e.emp_nm AS empNm,
-                  p.title, p.content, p.created_at AS createdAt, p.updated_at AS updatedAt,
+                  p.title, p.content, p.created_at AS createdAt, p.updated_at AS updatedAt, e.position AS position,
                   p.view_count AS viewCount, p.like_count AS likeCount, p.is_deleted AS isDeleted,
                   (SELECT COUNT(*) 
            FROM board_comment c 

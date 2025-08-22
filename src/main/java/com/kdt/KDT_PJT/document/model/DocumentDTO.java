@@ -11,6 +11,7 @@ public class DocumentDTO {
 	  private String pjtSttsCd;           // '진행중' | '완료'
 	  private String employeeId;          // 사번
 	  private String empNm;               // 사원명 (테이블에 없으면 조인으로 매핑)
+	  private String position;			  // 직급
 	  private Date frstRegDt;    		  // 등록일
 	  private String content;             // 내용
 	  // 첨부

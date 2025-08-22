@@ -1,8 +1,8 @@
 <title>공지사항게시판</title>
 <link rel="stylesheet" href="/css/board.css">
-<h1>게시판</h1>
+<h1 style="margin-top:12px;">게시판</h1>
   <!-- 본문 -->
-  <div class="container">
+  <div class="board-container">
     <div class="board-controls">
       <!-- 정렬: 변경 즉시 자동 적용 -->
       <form th:action="@{/board/notice}" method="get" class="search-form" id="sortForm">
@@ -43,7 +43,7 @@
           <th style="padding:10px; border-bottom:1px solid #ddd;">번호</th>
           <th style="padding:10px; border-bottom:1px solid #ddd;">제목</th>
           <th style="padding:10px; border-bottom:1px solid #ddd;">작성자</th>
-          <th style="padding:10px; border-bottom:1px solid #ddd;">작성일</th>
+          <th style="padding:10px; border-bottom:1px solid #ddd;">등록일</th>
           <th style="padding:10px; border-bottom:1px solid #ddd;">조회수</th>
           <th style="padding:10px; border-bottom:1px solid #ddd;">추천수</th>
         </tr>
@@ -52,13 +52,14 @@
         <tr th:each="b, stat : ${boards}">
           <td style="padding:10px; text-align:center;" th:text="${offset + stat.count}">1</td>
           <td class="board-title" style="padding:10px;">
-            <a th:href="@{/board/notice/detail(
+            <a style="width: 300px;"
+               th:href="@{/board/notice/detail(
                            postId=${b.postId},
                            page=${page}, size=${size}, sort=${sort}, keyword=${keyword}
                          )}"
                th:text="${b.title}">제목</a>
           </td>
-          <td style="padding:10px; text-align:center;" th:text="${b.empNm}">작성자</td>
+          <td style="padding:10px; text-align:center;" th:text="|${b.empNm} ${b.position}|">작성자</td>
           <td style="padding:10px; text-align:center;"
               th:text="${b.createdAt != null ? #dates.format(b.createdAt, 'yyyy-MM-dd') : ''}"></td>
           <td style="padding:10px; text-align:center;" th:text="${b.viewCount} ?: 0"></td>

@@ -65,7 +65,8 @@
     <div class="form-actions">
 	    
       <button type="submit">등록</button>
-      <a th:href="@{/board/free}">취소</a>
+      <a th:href="@{/board/free}"
+      	 th:onclick="|return confirm('내용이 저장되지 않습니다. 취소하시겠습니까?');|">취소</a>
     </div>
   </form>
 </div>
