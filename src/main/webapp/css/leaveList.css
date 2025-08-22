@@ -1,13 +1,9 @@
 @charset "UTF-8";
-
+/**/
 /* 사용자 본인 연차 갯수 테이블*/
-.leave-count tr  {
-     padding: 12px 200px;  /* 위아래 12px, 좌우 20px */
-}
+
 /* 관리자 연차 갯수 테이블*/
-.leave-count-mng tr  {
-     padding: 12px 200px;  /* 위아래 12px, 좌우 20px */
-}
+
 /* 연차 상세 발생 내역 테이블*/
 .leave-detail {
 
