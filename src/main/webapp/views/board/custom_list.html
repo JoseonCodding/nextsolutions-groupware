@@ -70,7 +70,7 @@
 
       <tr th:if="${#lists.isEmpty(boards)}">
   	  <td colspan="6" style="padding:90px; text-align:center; color:#999;"
-      	  th:text="${#strings.isEmpty(keyword) ? '등록된 게시글이 없습니다.' : '검색된 게시글이 없습니다.'}">
+      	  th:text="${#strings.isEmpty(keyword) ? '등록된 게시글이 없습니다.' : '검색 조건에 맞는 게시글이 없습니다.'}">
   	  </td>
 	  </tr>
     </tbody>

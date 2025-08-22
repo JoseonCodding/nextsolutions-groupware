@@ -1,29 +1,5 @@
-
-    <title>공지사항 상세보기</title>
-    <style>
-      .like-btn{border:1px solid #ddd;border-radius:9999px;padding:.3rem .7rem;background:#fff}
-      .like-btn.liked{color:#e11d48;border-color:#e11d48}
-      .like-count{margin-left:.25rem;font-weight:600}
-      /* 본문과 구분선/버튼들 사이 간격 */
-      .text{ margin:20px 0 28px; }
-      /* hr 기본 간격도 살짝 넓게 */
-      hr{ margin:16px 0; }
-      /* 목록/삭제 버튼 간격 */
-      .board-actions{
-        margin-top: 20px;       /* 내용과 버튼 간격 */
-        display: flex;          /* 가로 정렬 */
-        gap: 10px;              /* 버튼 사이 간격 */
-        align-items: center;    /* 세로축 정렬 */
-      }
-      /* .board-actions 바로 뒤에 오는 삭제 버튼을 띄워줌 */
-      .board-actions + .btn-danger{
-        margin-left: 12px;     /* 목록으로/수정과 삭제 사이 가로 간격 */
-      }
-      /* 혹시 버튼들이 너무 붙어 보이면 개별 버튼에 여백 살짝 */
-      .btn{ display:inline-block; padding:6px 10px; }
-    </style>
-  </head>
-  <body>
+<title>공지사항 상세보기</title>
+<link rel="stylesheet" href="/css/board_detail.css">
     <h2 th:text="${board.title}">게시글 제목</h2>
 
     <div class="board-meta">
@@ -36,8 +12,13 @@
       <span>조회: <strong th:text="${board.viewCount}">0</strong></span>
       <span>좋아요: <strong th:text="${board.likeCount} ?: 0">0</strong></span>
     </div>
+    <hr />
 
-    <!-- 좋아요 토글 -->
+    <!-- 본문 -->
+    <div class="text" th:utext="${board.content}">내용</div>
+
+    <hr />
+        <!-- 좋아요 토글 -->
     <div class="like-toggle" th:if="${useLike}">
       <form th:action="@{/board/notice/like/toggle}" method="post">
         <input type="hidden" name="postId" th:value="${board.postId}" />
@@ -49,13 +30,7 @@
         <span class="like-count" th:text="${likeCount}">0</span>
       </form>
     </div>
-
-    <hr />
-
-    <!-- 본문 -->
-    <div class="text" th:utext="${board.content}">내용</div>
-
-    <hr />
+    
 
     <div class="board-actions">
       <!-- 목록으로: 현재 페이지 상태 유지 -->

@@ -1,21 +1,5 @@
-
-  <title>커스텀 게시판 상세보기</title>
-  <link rel="stylesheet" href="/css/board.css">
-  <style>
-    .like-btn{border:1px solid #ddd;border-radius:9999px;padding:.3rem .7rem;background:#fff}
-    .like-btn.liked{color:#e11d48;border-color:#e11d48}
-    .like-count{margin-left:.25rem;font-weight:600}
-    .comment-list{list-style:none;padding:0;margin:0}
-    .comment-item{padding:12px 0;position:relative}
-    .comment-item .meta{display:flex;gap:10px;align-items:center;color:#6b7280}
-    .comment-item .meta strong{color:#111827}
-    .comment-item .text{margin-top:4px}
-    .comment-item.is-reply{margin-left:28px}
-    .comment-item.is-reply::before{
-      content:"";position:absolute;left:-16px;top:18px;width:12px;height:12px;
-      border-left:2px solid #e5e7eb;border-bottom:2px solid #e5e7eb;border-bottom-left-radius:8px
-    }
-  </style>
+<title>커스텀 게시판 상세보기</title>
+<link rel="stylesheet" href="/css/board_detail.css">
   <script>
     document.addEventListener('click', function(e){
       if (e.target.matches('.btn-reply')){
@@ -30,8 +14,6 @@
       }
     });
   </script>
-</head>
-<body>
 <div class="container">
   <h2 th:text="${board.title}">게시글 제목</h2>
 
@@ -50,6 +32,14 @@
     <span>조회: <strong th:text="${board.viewCount} ?: 0"></strong></span>
     <span>좋아요: <strong th:text="${board.likeCount} ?: 0"></strong></span>
   </div>
+  <hr/>
+
+  <!-- 본문 -->
+  <div class="board-content" th:utext="${board.content}">
+    게시글 내용이 여기에 표시됩니다.
+  </div>
+
+  <hr/>
 
   <!-- 좋아요 토글 -->
   <div class="like-toggle" th:if="${useLike}">
@@ -62,16 +52,6 @@
   		<span class="like-count" th:text="${board.likeCount}">0</span>
 	  </form>
   </div>
-
-  <hr/>
-
-  <!-- 본문 -->
-  <div class="board-content" th:utext="${board.content}">
-    게시글 내용이 여기에 표시됩니다.
-  </div>
-
-  <hr/>
-
   <!-- 댓글 목록 -->
   <div class="comments-section" th:if="${useComment}">
     <h3>댓글 (<span th:text="${commentCount}">0</span>)</h3>
@@ -149,5 +129,3 @@
        th:onclick="|return confirm('게시글을 삭제하시겠습니까?');|">삭제</a>
   </div>
 </div>
-</body>
-</html>
