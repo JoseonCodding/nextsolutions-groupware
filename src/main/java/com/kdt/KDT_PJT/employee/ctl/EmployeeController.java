@@ -122,7 +122,7 @@ public class EmployeeController {
             @RequestParam("phone") String phone,
             @RequestParam("deptName") String deptName,
             @RequestParam("position") String position,
-            @RequestParam("role") String role,
+            @RequestParam(value="role", required=false) String role,
             @RequestParam("birth") 
             @DateTimeFormat(pattern = "yyyy-MM-dd") Date birth,
             @RequestParam("hireDate") 
@@ -140,6 +140,13 @@ public class EmployeeController {
         params.put("role", role);
         params.put("hireDate", hireDate);
         params.put("resignDate", resignDate);
+        
+        // ✅ role이 ""(빈 값)이면 null로 변환
+        if (role == null || role.isBlank()) {
+            params.put("role", null);
+        } else {
+            params.put("role", role);
+        }
         
         
         log.info("birth " + birth);
@@ -191,7 +198,13 @@ public class EmployeeController {
     	 System.out.println("권한"+dto.getRole());
     	 System.out.println("활성화 : "+dto.getActive());
     	 System.out.println(dto);
-  
+    	 
+    	    // ✅ role이 ""(빈문자), "일반", "-" 등일 때 null로 치환
+    	    if (dto.getRole() == null || dto.getRole().isBlank()
+    	        || "일반".equals(dto.getRole()) || "-".equals(dto.getRole())) {
+    	        dto.setRole(null);
+    	    }
+ 
     	 
     	 employeeMapper.update(dto);
 
