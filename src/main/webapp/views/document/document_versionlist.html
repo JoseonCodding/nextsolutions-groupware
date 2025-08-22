@@ -31,7 +31,7 @@
           </span>
         </td>
         <td th:text="${v.pjtNm}">프로젝트명</td>
-        <td th:text="${v.empNm}">홍길동</td>
+        <td th:text="|${v.empNm} ${v.position}|">홍길동</td>
         <td th:text="${#dates.format(v.frstRegDt, 'yyyy-MM-dd')}">-</td>
         
         

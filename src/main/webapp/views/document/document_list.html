@@ -1,9 +1,10 @@
 <title>문서관리</title>
+<link rel="stylesheet" href="/css/board.css">
 <body>
 <div class="document-list">
-  <h1>문서 관리</h1>
+  <h1 style="margin-top:45px;">문서 관리</h1>
   <div class="board-controls">
-<form th:action="@{/document/main}" method="get" style="display: flex; align-items: center; gap: 12px; margin-top: 45px; margin-bottom: 20px;">
+<form th:action="@{/document/main}" method="get" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
     <input type="hidden" name="size" th:value="${size}">
     <input type="hidden" name="sort" th:value="${sort}">
     <input type="hidden" name="page" value="1">
@@ -48,7 +49,7 @@
            th:text="${doc.pjtNm}"></a>
       </td>
 
-      <td th:text="${doc.empNm}"></td>
+      <td th:text="|${doc.empNm} ${doc.position}|"></td>
       <td th:text="${#dates.format(doc.frstRegDt, 'yyyy-MM-dd')}">-</td>
       <td th:text="${doc.pjtSttsCd}"></td>
 

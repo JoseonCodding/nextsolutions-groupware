@@ -58,7 +58,8 @@
     <!-- 버튼 -->
     <div class="form-actions">
       <button type="submit">등록</button>
-      <a th:href="@{/board/custom/{boardId}(boardId=${board.boardId})}">취소</a>
+      <a th:href="@{/board/custom/{boardId}(boardId=${board.boardId})}"
+      	 th:onclick="|return confirm('내용이 저장되지 않습니다. 취소하시겠습니까?');|">취소</a>
     </div>
   </form>
 </div>
