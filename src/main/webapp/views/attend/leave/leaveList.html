@@ -10,7 +10,7 @@
 			<td>잔여 연차</td>
 		</tr>
 		<tr>
-		    <td th:text="${listData.empNm}"></td>
+		    <td th:text="${listData.empNm +' ' + listData.position} "></td>
 		    <td th:text="${listData.total}"/>
 		    <td th:text="${listData.used}"/>
 		    <td th:text="${listData.getRest}"></td>
