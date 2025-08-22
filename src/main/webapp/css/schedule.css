@@ -1,10 +1,13 @@
 @charset "UTF-8";
 
 .sche-container {
-	border: 1px solid black;
-	background: blue;
+	
+	width:1200px;
+	
+	position: relative;
 	margin-top: 45px;
-	margin-bottom: 45px;
+	margin-bottom: 50px;
+	padding-bottom: 50px;
 }
 
 table[id=diary_title] {
@@ -15,18 +18,18 @@ table[id=diary_title] {
 .no-hover:hover > td{
   background: initial;     
 }
-/* 연도와 달 표시*/
-h2[id=diary_title] {
-	
-	float: left;
-	margin-left: 100px;
-}
+
+/*************달 이동 버튼**************/
 /*달 이동 버튼*/
 .search-btn:hover {
     background: #ff0000;
 }
+
+/* 연도와 달 표시*/
 .month-nav{
+	left: 20px;
 	position:relative;
+	float: left;
 
 }
 /*이전달 버튼*/
@@ -38,9 +41,15 @@ h2[id=diary_title] {
     border: none;
     border-radius: 6px;
     cursor: pointer;
-	margin-right: 10px;
-    position:absolute;
-    left: 45px;
+	float: left;
+    position:relative;
+    
+}
+#month_title{
+	position:relative;
+	float: left;
+	width: 150px;
+	text-align: center;
 }
 /*다음달 버튼*/
 .month-btn2 {
@@ -51,9 +60,122 @@ h2[id=diary_title] {
     border: none;
     border-radius: 6px;
     cursor: pointer;
-	margin-left: 150px;
-	position:absolute;
-    left: 117px;
+	float: left;
+	position:relative;
+   
+}
+/*************주 이동 버튼**************/
+/* 주 표시*/
+.week-nav{
+	left: 50px;
+	position:relative;
+	float: left;
+
+}
+/*이전주 버튼*/
+.week-btn1 {
+    background:var(--search-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+	float: left;
+	position:relative;
+    
+}
+#week_title{
+	position:relative;
+	float: left;
+	width: 70px;
+	text-align: center;
+}
+/*다음주 버튼*/
+.week-btn2 {
+    background:var(--search-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+	float: left;
+	position:relative;
+   
+}
+/*************일 이동 버튼**************/
+/*일 표시*/
+.day-nav{
+	top: 20px;
+	left: 300px;
+	position:relative;
+	float: left;
+
+}
+/*전날 버튼*/
+.day-btn1 {
+    background:var(--search-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+	float: left;
+	position:relative;
+    margin-right:30px;
+}
+
+/*다음날 버튼*/
+.day-btn2 {
+    background:var(--search-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+	float: left;
+	position:relative;
+   
+}
+
+/*달력 보기 방식 버튼*/
+/* 검색 버튼 변형*/
+.view-select {
+    background: 1px solid black;
+}
+.view-select button {
+    background: var(--search-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 20px 10px 20px 0px;
+    float: right;
+}
+.view-select button:hover {
+    background: var(--search-btn);
+}
+/******** 달력(테이블) *************/
+/*월 보기 간격*/
+.mTH{
+	width:170px;
+}
+/*주별보기*/
+.wTH{
+	width:160px;
+}
+/*일별보기*/
+.dTH{
+	width:800px;
+}
+/*일별보기 시간 간격*/
+.dHH{
+	width:100px;
 }
 .sche-table {
 	
@@ -70,7 +192,6 @@ h2[id=diary_title] {
 .monthgrid-day {
 	
     height: 100px; /*달력 셀 높이 지정*/
-
 
 }
 
@@ -107,24 +228,4 @@ h2[id=diary_title] {
     
 }
 
-/*달력 보기 방식 버튼*/
-/* 검색 버튼 변형*/
-.view-select {
-    background: 1px solid black;
-}
-.view-select button {
-    background: var(--search-btn);
-    
-    color: #fff;
-    padding: 10px 20px;
-    
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin: 20px 10px 20px 0px;
-    float: right;
-}
-.view-select button:hover {
-    background: var(--search-btn);
-}
+
