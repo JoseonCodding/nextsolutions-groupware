@@ -206,32 +206,47 @@ document.getElementById('employeeForm').addEventListener('keydown', function(e) 
     
     
 
-   if(!idChk){
+       if(!idChk){
 		alert('아이디 쫌!!!!')
 		
 		return
 	}
    
-   //  비밀번호(선택): 입력했다면 강력 규칙 적용
-   //    최소 8자, 대문자/소문자/숫자/특수문자 각각 1개 이상
-   if (pw && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/]).{8,}$/.test(pw)) {
+    //  비밀번호(필수): 아이디 체크 완료 후 무조건 검증
+    //    최소 8자, 대문자/소문자/숫자/특수문자 각각 1개 이상
+    if (!pw) {
+        alert('비밀번호를 입력해주세요.');
+        f.password.focus();
+        return;
+    }
+    
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/]).{8,}$/.test(pw)) {
        alert('비밀번호는 8자 이상이며 대문자/소문자/숫자/특수문자를 모두 포함해야 합니다.');
        f.password.focus();
        return;
-   }
-   
-	// 이름: 2글자 이상, 한글만
-   if (!/^[가-힣]{2,}$/.test(name)) {
+    }
+    
+    
+
+ 	// 이름: 2글자 이상, 한글만
+     if (!/^[가-힣]{2,}$/.test(name)) {
        alert("이름은 한글 2글자 이상 입력하세요.");
        this.empNm.focus();
        return;
-   }
-   
-   if(!phoneChk){
+    } 
+
+    if(!phoneChk){
 		alert('폰번 쫌!!!!')
 		
 		return
 	} 
+
+ 	// 이름: 2글자 이상, 한글만
+    if (!/^[가-힣]{2,}$/.test(name)) {
+       alert("이름은 한글 2글자 이상 입력하세요.");
+       this.empNm.focus();
+       return;
+    } 
    
    // 생년월일과 입사일 비교 검증
    if (birth && hireDate) {
