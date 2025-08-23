@@ -184,7 +184,7 @@ var phoneChk  = false
     </tr>
 </table>
 		<button type="button" class="back-btn" onclick="history.back()">뒤로가기</button>
-        <button type="submit" class="save-btn">등록 완료</button>
+        <button type="button" class="save-btn" onclick="validateAndSubmit()">등록 완료</button>
     </form>
 </div>
 
@@ -192,25 +192,18 @@ var phoneChk  = false
 
 <script>
 
-
-document.getElementById('employeeForm').addEventListener('keydown', function(e) {
-	if (e.key === 'Enter') {
-	const f = this;
-	e.preventDefault();
-    const pw = this.password.value.trim();
-    const name = this.empNm.value.trim();
-    const birth = this.birth.value;
-    const today = new Date();
-    const hireDate = this.hireDate.value;
-    const role = this.role.value;
+// 검증 및 제출 함수
+function validateAndSubmit() {
+    const f = document.getElementById('employeeForm');
+    const pw = f.password.value.trim();
+    const name = f.empNm.value.trim();
+    const birth = f.birth.value;
+    const hireDate = f.hireDate.value;
     
-    
-
-       if(!idChk){
-		alert('아이디 쫌!!!!')
-		
-		return
-	}
+    if(!idChk){
+        alert('아이디 쫌!!!!')
+        return
+    }
    
     //  비밀번호(필수): 아이디 체크 완료 후 무조건 검증
     //    최소 8자, 대문자/소문자/숫자/특수문자 각각 1개 이상
@@ -226,64 +219,68 @@ document.getElementById('employeeForm').addEventListener('keydown', function(e) 
        return;
     }
     
-    
-
  	// 이름: 2글자 이상, 한글만
-     if (!/^[가-힣]{2,}$/.test(name)) {
-       alert("이름은 한글 2글자 이상 입력하세요.");
-       this.empNm.focus();
-       return;
+    if (!/^[가-힣]{2,}$/.test(name)) {
+        alert("이름은 한글 2글자 이상 입력하세요.");
+        f.empNm.focus();
+        return;
     } 
 
     if(!phoneChk){
-		alert('폰번 쫌!!!!')
-		
-		return
-	} 
-
- 	// 이름: 2글자 이상, 한글만
-    if (!/^[가-힣]{2,}$/.test(name)) {
-       alert("이름은 한글 2글자 이상 입력하세요.");
-       this.empNm.focus();
-       return;
+        alert('폰번 쫌!!!!')
+        return
     } 
-   
-   // 생년월일과 입사일 비교 검증
-   if (birth && hireDate) {
-       const birthDate = new Date(birth);
-       const hireDateObj = new Date(hireDate);
-       
-       if (birthDate >= hireDateObj) {
-           alert("입사일은 생년월일보다 이후여야 합니다.");
-           this.birth.focus();
-           return;
-       }
-       
-       // 나이 계산 (입사일 기준)
-       const ageAtHire = hireDateObj.getFullYear() - birthDate.getFullYear();
-       const monthDiff = hireDateObj.getMonth() - birthDate.getMonth();
-       
-       if (monthDiff < 0 || (monthDiff === 0 && hireDateObj.getDate() < birthDate.getDate())) {
-           ageAtHire--;
-       }
-       
-       if (ageAtHire < 16) {
-           alert("입사일 기준으로 만 16세 이상이어야 합니다.");
-           this.birth.focus();
-           return;
-       }
-   }
-
-
-
-
-
-
-
-    document.frm.submit();
     
+    // 날짜 필수 입력 검증
+    if (!birth) {
+        alert("생년월일을 입력해주세요.");
+        f.birth.focus();
+        return;
+    }
+    
+    if (!hireDate) {
+        alert("입사일을 입력해주세요.");
+        f.hireDate.focus();
+        return;
+    }
+    
+    // 생년월일과 입사일 비교 검증
+    if (birth && hireDate) {
+        const birthDate = new Date(birth);
+        const hireDateObj = new Date(hireDate);
+        
+        if (birthDate >= hireDateObj) {
+            alert("입사일은 생년월일보다 이후여야 합니다.");
+            f.birth.focus();
+            return;
+        }
+        
+        // 나이 계산 (입사일 기준)
+        const ageAtHire = hireDateObj.getFullYear() - birthDate.getFullYear();
+        const monthDiff = hireDateObj.getMonth() - birthDate.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && hireDateObj.getDate() < birthDate.getDate())) {
+            ageAtHire--;
+        }
+        
+        if (ageAtHire < 16) {
+            alert("입사일 기준으로 만 16세 이상이어야 합니다.");
+            f.birth.focus();
+            return;
+        }
+    }
 
-}});
+    // 모든 검증 통과 시 폼 제출
+    f.submit();
+}
+
+// Enter 키 이벤트
+document.getElementById('employeeForm').addEventListener('keydown', function(e) {
+	if (e.key === 'Enter') {
+		e.preventDefault();
+		validateAndSubmit();
+	}
+});
 </script>
 
 
