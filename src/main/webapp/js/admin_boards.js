@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	
 	//    alert("체크된 개수: " + count);
 	if(count ==0){
-		alert("최소 1개 이상 선택 필요");
+		alert("최소 1개 이상 선택하세요.");
 		$(this).prop("checked", true); 
 	}
 	
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
   	
   	//    alert("체크된 개수: " + count);
   	if(count ==0){
-  		alert("최소 1개 이상 선택 필요");
+  		alert("최소 1개 이상 선택하세요.");
   		$(this).prop("checked", true); 
   	}
   	
@@ -131,4 +131,3 @@ async function loadToday(liEl) {
   const first = document.querySelector('#stat-board-list .row');
   if (first) loadToday(first);
 })();
-

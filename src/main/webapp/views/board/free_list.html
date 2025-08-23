@@ -4,6 +4,7 @@
 <!-- 본문 -->
   <div class="board-container">
     <div class="board-controls">
+    <div class="left-controls">
       <!-- 정렬: 변경 즉시 자동 적용 -->
       <form th:action="@{/board/free}" method="get" class="search-form" id="sortForm" >
       <div class="form-group">
@@ -17,20 +18,22 @@
           <option value="likes"  th:selected="${sort}=='likes'">추천순</option>
         </select>
         <noscript><button type="submit">정렬 적용</button></noscript>
+        </div>
       </form>
 
       <!-- 검색: 버튼 눌러야 적용 -->
-      <form th:action="@{/board/free}" method="get" >
+      <form th:action="@{/board/free}" method="get" class="search-form">
+      	<div class="form-group">
         <input type="text" name="keyword" th:value="${keyword}" placeholder="제목/작성자 검색">
         <!-- 현재 정렬/사이즈 유지 + 페이지 1로 초기화 -->
         <input type="hidden" name="sort" th:value="${sort}">
         <input type="hidden" name="size" th:value="${size}">
         <input type="hidden" name="page" value="1">
         <button type="submit"><i class="fa fa-search"></i>검색</button>
+        </div>
        </form>
-       </div>
-      
-
+      </div>
+       
       <!-- 글쓰기 -->
       <a th:href="@{/board/free/write(page=${page}, size=${size}, sort=${sort}, keyword=${keyword})}"
          class="btn" th:if="${canWrite}">글쓰기</a>
@@ -40,12 +43,12 @@
     <table class="board-table" style="width:100%; border-collapse:collapse;">
       <thead style="background:#f5f5f5;">
         <tr>
-          <th style="padding:10px; border-bottom:1px solid #ddd;">번호</th>
-          <th style="padding:10px; border-bottom:1px solid #ddd;">제목</th>
-          <th style="padding:10px; border-bottom:1px solid #ddd;">작성자</th>
-          <th style="padding:10px; border-bottom:1px solid #ddd;">등록일</th>
-          <th style="padding:10px; border-bottom:1px solid #ddd;">조회수</th>
-          <th style="padding:10px; border-bottom:1px solid #ddd;">추천수</th>
+          <th>번호</th>
+          <th>제목</th>
+          <th>작성자</th>
+          <th>등록일</th>
+          <th>조회수</th>
+          <th>추천수</th>
         </tr>
       </thead>
       <tbody>
@@ -62,8 +65,8 @@
           <td style="padding:10px; text-align:center;" th:text="|${b.empNm} ${b.position}|">작성자</td>
           <td style="padding:10px; text-align:center;"
               th:text="${b.createdAt != null ? #dates.format(b.createdAt, 'yyyy-MM-dd') : ''}"></td>
-          <td style="padding:10px; text-align:center;" th:text="${b.viewCount} ?: 0"></td>
-          <td style="padding:10px; text-align:center;" th:text="${b.likeCount} ?: 0"></td>
+          <td style="padding:10px; text-align:center;" th:text="${b.viewCount ?: 0}"></td>
+          <td style="padding:10px; text-align:center;" th:text="${b.likeCount ?: 0}"></td>
         </tr>
 
         <tr th:if="${#lists.isEmpty(boards)}">
@@ -109,5 +112,3 @@
 			  });
 			});
 	</script>
-</body>
-</html>
