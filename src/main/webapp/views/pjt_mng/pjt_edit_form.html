@@ -141,11 +141,30 @@ input[type="checkbox"] {
 			<tr>
 				<th>담당자</th>
 				<td>
-					<!-- 모델 키가 employeeid 인 듯하여 그대로 사용 --> <input type="text"
+					<!-- 모델 키가 employeeid 인 듯하여 그대로 사용 -->
+					 <input type="text"
 					name="employeeId" th:value="${pjt['employeeId'] ?: ''}"
 					placeholder="담당자 이름 입력" readonly />
 				</td>
 			</tr>
+			
+			<tr>
+				<!-- 담당자 사번에서 이름을 보이게 변경해놓음 -->
+				<th>담당자</th>
+				<td>
+				<select name="employeeId" id="employeeId"
+					class="form-select" >
+						<option value="">-- 담당자 선택 --</option>
+						<th:block th:each="a : ${approverList}">
+							<option th:value="${a['employeeId']}"
+								th:text="${a['emp_nm'] != null ? a['emp_nm'] : a['EMP_NM']}"
+								th:selected="${pjt != null and a['employeeId'] == pjt['TB_PJT_APR']}">
+							</option>
+						</th:block>
+				</select>
+				</td>
+			</tr>
+			
 			<tr>
 				<th>기간</th>
 				<td>

@@ -279,6 +279,8 @@ public class ProjectMngController {
       return "pjt_mng/pjt_reg_form";
    }
 
+   //reg 에서 담당자 사번을 이름으로 가져옴 
+   
    
    
    @GetMapping("/list")
@@ -315,12 +317,12 @@ public class ProjectMngController {
 	@GetMapping("/pjtEditForm")
 	public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn,
 														Model model, 
-														HttpSession session
-														) {
+														HttpSession session) {
 		log.info("getPjtEditForm Called >>> {}", pjtSn);
+		
 	    List<CmmnMap> approverList = projectMngService.selectApproverCandidates();
 	    EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
-	    boolean isAdmin = true; // 임시로 항상 true로 설정 !!
+	    boolean isAdmin = true;   // 임시로 항상 true로 설정 !!
 		
 	    
 	    
@@ -330,11 +332,14 @@ public class ProjectMngController {
 	        return "error/403"; // 접근 불가 페이지
 	    }
 	    
-	    
+	    // 1) 프로젝트 상세
 		CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
 		log.debug("DETAIL TB_PJT_APR={}", pjtDetail.get("TB_PJT_APR")); // 값 확인
 		
 		
+		
+		
+	    // 3) 모델 바인딩
 		model.addAttribute("isAdmin", isAdmin);
 	    model.addAttribute("approverList", approverList);
 		model.addAttribute("pjt", pjtDetail);

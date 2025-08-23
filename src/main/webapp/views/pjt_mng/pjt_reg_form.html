@@ -134,11 +134,25 @@ input, select {
 					placeholder="프로젝트명을 입력하세요" />
 					</td>
 			</tr>
+			
 			<tr>
+				<!-- 담당자 사번에서 이름을 보이게 변경해놓음 -->
 				<th>담당자</th>
-				<td><input type="text" name="employeeId" th:value="${id}"
-					readonly /></td>
+				<td>
+				<select name="employeeId" id="employeeId"
+					class="form-select" >
+						<option value="">-- 담당자 선택 --</option>
+						<th:block th:each="a : ${approverList}">
+							<option th:value="${a['employeeId']}"
+								th:text="${a['emp_nm'] != null ? a['emp_nm'] : a['EMP_NM']}"
+								th:selected="${pjt != null and a['employeeId'] == pjt['TB_PJT_APR']}">
+							</option>
+						</th:block>
+				</select>
+				</td>
 			</tr>
+			
+			
 			<tr>
 				<th>기간</th>
 				<td>
@@ -163,7 +177,8 @@ input, select {
 			<tr>
 				<!-- 결재자 사번에서 이름을 보이게 변경해놓음 -->
 				<th>결재자</th>
-				<td><select name="TB_PJT_APR" id="TB_PJT_APR"
+				<td>
+				<select name="TB_PJT_APR" id="TB_PJT_APR"
 					class="form-select" th:disabled="${!isAdmin}">
 						<option value="">-- 결재자 선택 --</option>
 						<th:block th:each="a : ${approverList}">
@@ -172,7 +187,8 @@ input, select {
 								th:selected="${pjt != null and a['employeeId'] == pjt['TB_PJT_APR']}">
 							</option>
 						</th:block>
-				</select></td>
+				</select>
+				</td>
 			</tr>
 			
 			<!-- 파일 업로드 창 -->

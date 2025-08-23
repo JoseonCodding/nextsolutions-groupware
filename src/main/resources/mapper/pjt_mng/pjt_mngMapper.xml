@@ -114,10 +114,14 @@
   <select id="getPjtDetail" parameterType="String" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     SELECT PJT_SN, PJT_NM, PJT_STTS_CD, employeeId, USE_YN,
            FRST_RGTR_ID, FRST_REG_DT, LAST_MDFR_ID, LAST_MDFCN_DT,
-           ATCH_FILE_SN1, ORG_FILE_NM1, ATCH_FILE_SN2, ORG_FILE_NM2, ATCH_FILE_SN3, ORG_FILE_NM3, PJT_BGNG_DT, PJT_END_DT, content
+           ATCH_FILE_SN1, ORG_FILE_NM1, ATCH_FILE_SN2, ORG_FILE_NM2,
+           ATCH_FILE_SN3, ORG_FILE_NM3, PJT_BGNG_DT, PJT_END_DT, 
+           content, E.emp_nm AS emp_nm 
     FROM TB_PJT_BASC
+    LEFT JOIN TB_EMPLOYEE E ON E.employee_id = P.employeeId
     WHERE PJT_SN = #{pjtSn}
   </select>
+  
 
   <!-- 프로젝트 목록조회 (검색/페이징/필터/담당자 이름/직책 포함) -->
   <select id="selectProjectList" parameterType="map"
