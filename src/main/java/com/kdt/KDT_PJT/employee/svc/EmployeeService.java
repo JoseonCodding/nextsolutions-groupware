@@ -5,8 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.employee.mapper.EmployeeMapper;
@@ -66,8 +64,13 @@ public class EmployeeService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 
-
+	    public boolean existsByPhone(String phone) {
+	        return employeeMapper.countByPhone(phone) > 0;
+	        // 또는 return employeeMapper.existsByPhone(phone);
+	    }
+	
    
 
 }

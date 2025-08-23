@@ -1,0 +1,63 @@
+@charset "UTF-8";
+
+.leave-container {
+	position: relative;
+	margin-bottom: 30px;
+	padding-bottom: 60px;
+}
+h1[class=detail-title]{
+	text-align: center;
+}
+
+/* 연차 갯수 테이블*/
+.leave-cnt {
+	margin-bottom:20px;
+	position: relative;
+	
+}
+/* 본인 cnt-table */
+.leave-cnt tr.leave-priv th{
+	width: 300px;
+}
+/* 관리자 cnt-table */
+.leave-cnt tr.leave-mng th{
+	width: 200px;
+}
+/* 연차 상세 발생 내역 테이블*/
+.leave-d {
+	border:1px solid black;
+	position: relative;
+}
+.leave-date {
+	width: 230px;
+}
+.leave-reason {
+	width: 310px;
+}
+.leave-th {
+	width: 220px;
+}
+
+
+
+.leave-btn-nav {
+	position: relative;
+}
+.leave-rrgg {
+	position: relative;
+	float: right;
+	font-size: var(--font-size-base);
+    background:var(--regist-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+	
+   
+    
+    

@@ -18,7 +18,7 @@
   --search-btn:#0080c0; 	/* 검색 버튼*/
   --back-btn: #0080c0;	/* 목록, 뒤로가기 버튼*/
   --detail-btn: #b062ff;	/* 상세 버튼*/
-  --delete-btn: #ffff00;	/* 상세 버튼*/
+  --delete-btn: #ffff00;	/* 삭제 버튼*/
   /* --primary:#3949ab; */ /* 헤더 로고 스타일 */
   /* --accent:#64b5f6; */ /* 헤더 로고 스타일 */
 }
@@ -28,6 +28,7 @@
     background:var(--edit-btn);
 }
 .edit-btn {
+	font-size: var(--font-size-base);
     background:var(--edit-btn);
     color: #fff;
     padding: 10px 20px;
@@ -44,6 +45,7 @@
     background:var(--delete-btn);
 }
 .delete-btn {
+	font-size: var(--font-size-base);
     background:var(--delete-btn);
     color: #fff;
     padding: 10px 20px;
@@ -62,6 +64,7 @@
     background: var(--save-btn);
 }
 .save-btn {
+	font-size: var(--font-size-base);
     background: var(--save-btn);
     color: #fff;
     padding: 10px 20px;
@@ -77,6 +80,7 @@
     background: #ff0000;
 }
 .regist-btn {
+	font-size: var(--font-size-base);
     background:var(--regist-btn);
     color: #fff;
     padding: 10px 20px;
@@ -92,6 +96,7 @@
     background: #ff0000;
 }
 .search-btn {
+	font-size: var(--font-size-base);
     background:var(--search-btn);
     color: #fff;
     padding: 10px 20px;
@@ -109,6 +114,7 @@
     background: #ff0000;
 }
 .approval-btn {
+	font-size: var(--font-size-base);
     background: var(--approval-btn);
     color: #fff;
     padding: 10px 20px;
@@ -126,6 +132,7 @@
     background:var(--reject-btn);
 }
 .reject-btn {
+	font-size: var(--font-size-base);
     background: var(--reject-btn);
     color: #fff;
     padding: 10px 20px;
@@ -143,6 +150,7 @@
     background:var(--search-btn);
 }
 .search-btn {
+	font-size: var(--font-size-base);
     background: var(--search-btn);
     color: #fff;
     padding: 10px 20px;
@@ -159,6 +167,7 @@
     background:var(--back-btn);
 }
 .back-btn {
+	font-size: var(--font-size-base);
     background: var(--back-btn);
     color: #fff;
     padding: 10px 20px;
@@ -175,6 +184,7 @@
     background:var(--detail-btn);
 }
 .detail-btn {
+	font-size: var(--font-size-base);
     background:var(--detail-btn);
     color: #fff;
     padding: 10px 20px;

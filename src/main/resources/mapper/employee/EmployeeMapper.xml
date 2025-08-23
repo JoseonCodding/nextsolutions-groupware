@@ -113,6 +113,15 @@
     </select>
     
     
+    <select id="getIdChk" parameterType="employeeDto" resultType="employeeDto">
+        SELECT * FROM employee where employeeId= #{employeeId}
+    </select>
+    
+     <select id="getPhoneChk" parameterType="employeeDto" resultType="employeeDto">
+        SELECT * FROM employee where phone= #{phone}
+    </select>
+    
+    
     <update id="update" parameterType="employeeDto">
     UPDATE employee
     SET 

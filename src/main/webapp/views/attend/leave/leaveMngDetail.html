@@ -1,47 +1,51 @@
 <!-- 연차 관리자용 상세보기 화면 -->
 
-
-<input type="hidden" name="employeeId" th:value="${MngDetail.employeeId}"/>
-<h2>연차 상세 조회</h2>
-	<table border="">
-		<tr>
-			<td>이름</td>
-			<td>부서</td>
-			<td>직위</td>
-			<td>총 연차</td>
-			<td>사용 연차</td>
-			<td>잔여 연차</td>
-		</tr>
-		<tr >
-		    <td th:text="${MngDetail.empNm}"></td>
-		    <td th:text="${MngDetail.deptName}"></td>
-		    <td th:text="${MngDetail.position}"></td>
-		    <td th:text="${MngDetail.total}"></td>
-		    <td th:text="${MngDetail.used}"></td>
-		    <td th:text="${MngDetail.getRest}"></td>
-
-		</tr>
+<div class="leave-container">
+	<input type="hidden" name="employeeId" th:value="${MngDetail.employeeId}"/>
+	<h1 class="detail-title">연차 상세 조회</h1>
+	<table class="leave-cnt">
+		<thead>
+			<tr class="leave-mng">
+				<th>이름</th>
+				<th>부서</th>
+				<th>직위</th>
+				<th>총 연차</th>
+				<th>사용 연차</th>
+				<th>잔여 연차</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr >
+			    <td th:text="${MngDetail.empNm}"></td>
+			    <td th:text="${MngDetail.deptName}"></td>
+			    <td th:text="${MngDetail.position}"></td>
+			    <td th:text="${MngDetail.total}"></td>
+			    <td th:text="${MngDetail.used}"></td>
+			    <td th:text="${MngDetail.getRest}"></td>
+	
+			</tr>
+		</tbody>
 	</table>
-
-<table border="">
-    <thead>
-        <tr>
-            <th>발생 날짜</th>
-            <th>연차 발생 이유</th>
-            <th>사용 여부</th>
-            <th>사용일</th>
-            <th>결재상태</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:each="ttt : ${MngDetail2}">
-            <td th:text="${ttt.createDateStr}"></td>
-            <td th:text="${ttt.createReason}"></td>
-            <td th:text="${ttt.leaveType}"></td>
-            <td th:text="${ttt.usedDateStr}"></td>
-            <td th:text="${ttt.stateType}"></td>
-        </tr>
-    </tbody>
-</table>
-<a href="/attend/leaveListMng">목록</a>
-
+	
+	<table class="leave-d">
+	    <thead>
+	        <tr>
+	            <th class="leave-date">발생 날짜</th>
+	            <th class="leave-reason">연차 발생 이유</th>
+	            <th class="leave-th">사용 여부</th>
+	            <th class="leave-th">사용일</th>
+	            <th class="leave-th">결재상태</th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	        <tr th:each="ttt : ${MngDetail2}">
+	            <td th:text="${ttt.createDateStr}"></td>
+	            <td th:text="${ttt.createReason}"></td>
+	            <td th:text="${ttt.leaveType}"></td>
+	            <td th:text="${ttt.usedDateStr}"></td>
+	            <td th:text="${ttt.stateType}"></td>
+	        </tr>
+	    </tbody>
+	</table>
+	<a href="/attend/leaveListMng" class="back-btn">목록으로</a>
+</div>

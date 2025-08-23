@@ -26,8 +26,6 @@
 
 .board-controls button,
 .board-controls .btn {
-  background: var(--primary);
-  color: #fff;
   border: none;
   padding: 9px 14px;
   font-size: 14px;
@@ -71,3 +69,4 @@
 .search-form button:hover {
   background: #1d4ed8;
 }
+

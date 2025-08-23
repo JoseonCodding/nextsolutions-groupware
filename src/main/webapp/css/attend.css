@@ -1,25 +1,47 @@
 @charset "UTF-8";
 
  .check-container {
-    border: 1px solid black;
-    height: 950px;
-    background-color: yellow;
+ 	background:yellow;
+    height: 100%;
+    position:relative;
+    margin-bottom: 30px;
+    padding-bottom: 70px;
 }
 
 /*출퇴근 버튼 - 위치변경을 위해 등록버튼 변형*/
 /* 등록 버튼 */
-.attend-regist-btn:hover {
+
+.attend-btn:hover {
     background: #ff0000;
 }
-.attend-regist-btn {
-    background: #ff9800;
+/*출근 버튼*/
+.attend-btn1 {
+	width:150px;
+    /*background:var(--regist-btn);*/
+    background: #3788d8;
+    font-size: var(  --font-size-base );
     color: #fff;
+    float:left;
     padding: 10px 20px;
     font-weight: bold;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-
+	position: relative;
+}
+.attend-btn2 {
+	width:150px;
+    /*background:var(--regist-btn);*/
+    background:#d8573c;
+    font-size: var(  --font-size-base );
+    color: #fff;
+    float:left;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+	position: relative;
 }
 /* 출퇴근 달력 영역 호버 제외 */
 
@@ -27,49 +49,111 @@ tr:hover:not(.no-hover tr) td {
   background: initial;     
 }
 
-
+/* 연도와 달 표시*/
+.attend-nav{
+	left: 0px;
+	position:relative;
+	float: left;
+	
+	width:100%;
+}
+.btn-nav{
+	float: right;
+}
+/*이전달 버튼*/
+.month-btn1 {
+	float: left;
+	position:relative;
+}
+.month-title{
+	position:relative;
+	float: left;
+	width: 150px;
+	text-align: center;
+}
+/*다음달 버튼*/
+.month-btn2 {
+	float: left;
+	position:relative;
+}
+.month-custom {
+    background:var(--search-btn);
+    color: #fff;
+	padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+	float: left;
+	position:relative;
+}
 
 /**************************************/
 /*fullcalender 스타일 적용 - 출퇴근 기록 달력*/
 #calendar {
   width: 100% !important;  /* 캘린더를 부모 기준 100%로 */
   max-width: 100%;         /* 혹시 모를 제한 해제 */
-  background: blue;
   height: 800px;
 }
 
-fc-thead {
+.fc-thead {
     display: table-header-group;
     vertical-align: middle;
     unicode-bidi: isolate;
     border-color: inherit;
-    background: green;
+
 }
 .fc-daygrid-day {
     height: 120px; /*달력 셀 높이 지정*/
-    padding: 5px;
-    margin: 0px;   
+    padding: 0px;
+    margin-top: 0px;   
 }
-
+.fc .fc-daygrid-day-frame {
+    min-height: 100%;
+    position: relative;
+    padding: 0px 5px 0 5px;
+}
+/* 날짜 위치 */
+.fc .fc-daygrid-day-top {
+    display: flex;
+    flex-direction: row-reverse;
+    padding-bottom: 10px;
+}
+.fc .fc-daygrid-event-harness {
+    position: relative;
+    top: 10px;
+}
 .fc-event-title {
     text-align: right;
     display: flex;
-    justify-content: center; /* 가로 중앙 */
-    align-items: bottom;     /* 세로 중앙 */
-    height: 100%;            /* 셀 높이 채우기 */
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.fc-direction-ltr .fc-daygrid-event.fc-event-end, .fc-direction-rtl .fc-daygrid-event.fc-event-start {
+    margin-right: 6px;
+}
+/*출퇴근 기록 너비 설정*/
+.fc-direction-ltr .fc-daygrid-event.fc-event-start, .fc-direction-rtl .fc-daygrid-event.fc-event-end {
+    margin-left: 2px;
+}
+.fc .fc-daygrid-event {
+    margin-top: 2px;
+    z-index: 6;
 }
 
-
-.fc-header-toolbar {
-	
-}
-.fc-toolbar {
-	background: orange;
-}
-.fc-toolbar .fc-toolbar-chunk{
-	background: green;
-	float: left;
-}
-.fc-toolbar-ltr {
-	
+/* 출퇴근 기록 수정 신청*/
+.insert-btn{
+    background: var(--regist-btn);
+    color: #fff;
+	font-size: var(  --font-size-base );
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+	position: absolute;
+	right: 0px;
+	bottom:0px;
 }

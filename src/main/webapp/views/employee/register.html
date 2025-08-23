@@ -30,60 +30,92 @@ input, select {
 <!-- CSS 불러오기 -->
 	<link rel="stylesheet" href="/css/commonStyle.css"> 
     <link rel="stylesheet" href="../css/common.css">
+    <script src="/js/jquery-3.7.1.min.js"></script>
+<script>
+	
+var idChk = false
+$(function(){
+
+$("#idChkBtn").click(function(){
+	let employeeId = $("#employeeId").val()
+	
+	
+	// 1) 사번: 정확히 숫자 8자리
+    if (!/^\d{8}$/.test(employeeId)) {
+        alert('사번은 숫자 8자리로 입력하세요.');
+        $("#employeeId").employeeId.focus();
+        idChk = false
+        return;
+    }
+	
+	
+	$.ajax({
+        url: "/employee/idChk",
+        data: { employeeId: employeeId },
+        success: function(data, status) {
+            if(data){
+				alert("중복된 아이디 이지롱")
+				idChk  = false
+            }else{
+            	alert("사용가능 ID")
+            	$("#employeeId").prop("readonly",true)
+            	$("#idChkBtn").prop("disabled",true)
+            	idChk  = true
+				}
+        	}
+    	});
+	})
+})
+
+var phoneChk  = false  
+    $(function(){
+
+    	$("#phoneChkBtn").click(function(){
+			let phone = $("#phone").val()
+			
+			
+			// 3) 휴대폰: 허용 형식 -> 01012345678
+		    if (!/^010\d{8}$/.test(phone)) {
+		        alert('휴대폰 번호는 01012345678 형식으로 입력하세요.');
+		        $("#phone").phone.focus();
+		        phoneChk = false
+		        return;
+		    }
+			
+			
+			$.ajax({
+                url: "/employee/phoneChk",
+                data: { phone: phone },
+                success: function(data, status) {
+                    if(data){
+						alert("중복된 폰번호 이지롱")
+						phoneChk  = false
+                    }else{
+                    	alert("사용가능 폰번")
+                    	$("#phone").prop("readonly",true)
+                    	$("#phoneChkBtn").prop("disabled",true)
+                    	phoneChk = true
+					}
+                }
+            });
+		})
+	})
+</script>
 </head>
 <body>
 <div class="container">
     <h1 class="detail-title">사원 등록</h1>
     
-    <form id="employeeForm" action="/employee/register" method="post" enctype="multipart/form-data">
-
-<!--         <table>
-            <tr>
-                <td>사번</td>
-                <td><input type="text" name="employeeId" required></td>
-                <td>비밀번호</td>
-                <td><input type="password" name="password" required></td>
-            </tr>
-            <tr>
-                <td>이름</td>
-                <td><input type="text" name="empNm" required></td>
-                <td>휴대폰 번호</td>
-                <td><input type="text" name="phone"></td>
-            </tr>
-            <tr>
-                <td>생년월일</td>
-                <td><input type="date" name="birth"></td>
-                <td>입사일</td>
-                <td><input type="date" name="hireDate"></td>
-            </tr>
-            <tr>
-                <td>부서명</td>
-                <td><input type="text" name="deptName"></td>
-                <td>직위</td>
-                <td><input type="text" name="position"></td>
-            </tr>
-            <tr>
-                <td>권한</td>
-                <td colspan="3">
-                    <select name="role">
-                        <option value="대표">대표</option>
-                        <option value="프로젝트">프로젝트</option>
-                        <option value="근태">근태/연차</option>
-                        <option value="게시판">게시판</option>
-                        <option value="문서">문서관리</option>
-                        <option value="사원">사원관리</option>
-                        <option value="공지사항">공지사항</option>
-                        <option value="일정">일정관리</option>
-                        
-                    </select>
-                </td>
-            </tr>
-        </table> -->
+    <form id="employeeForm" name="frm" action="/employee/register" method="post" enctype="multipart/form-data">
         
 <table>
     <tr>
         <th>사번</th>
-        <td><input type="text" name="employeeId" required></td>
+        <td><input type="text" name="employeeId" id="employeeId" required>
+        
+        
+        <input type="button" value="중복확인" id="idChkBtn"/>
+        </td>
         <th>비밀번호</th>
         <td><input type="password" name="password" required></td>
     </tr>
@@ -91,19 +123,23 @@ input, select {
         <th>이름</th>
         <td><input type="text" name="empNm" required></td>
         <th>휴대폰 번호</th>
-        <td><input type="text" name="phone"></td>
+        <td><input type="text" name="phone" id="phone">
+        
+        
+        <input type="button" value="중복확인" id="phoneChkBtn"/>
+        </td>
     </tr>
     <tr>
         <th>생년월일</th>
-        <td><input type="date" name="birth"></td>
+        <td><input type="date" name="birth" required></td>
         <th>입사일</th>
-        <td><input type="date" name="hireDate"></td>
+        <td><input type="date" name="hireDate" required></td>
     </tr>
     <tr>
         <th>부서명</th>
-        <td><input type="text" name="deptName"></td>
+        <td><input type="text" name="deptName" required></td>
         <th>직위</th>
-        <td><input type="text" name="position"></td>
+        <td><input type="text" name="position" required></td>
     </tr>
     <tr>
         <th>권한</th>
@@ -117,74 +153,68 @@ input, select {
                 <option value="사원">사원관리</option>
                 <option value="공지사항">공지사항</option>
                 <option value="일정">일정관리</option>
+                <option value="">일반</option> 
             </select>
         </td>
     </tr>
 </table>
-		<button class="back-btn" onclick="history.back()">뒤로가기</button>
+		<button type="button" class="back-btn" onclick="history.back()">뒤로가기</button>
         <button type="submit" class="save-btn">등록 완료</button>
     </form>
 </div>
 
+
+
 <script>
-document.getElementById('employeeForm').addEventListener('submit', function(e) {
-    const empId = this.employeeId.value.trim();
+
+
+document.getElementById('employeeForm').addEventListener('keydown', function(e) {
+	if (e.key === 'Enter') {
+	const f = this;
+	e.preventDefault();
     const pw = this.password.value.trim();
     const name = this.empNm.value.trim();
-    const phone = this.phone.value.trim();
     const birth = this.birth.value;
+    const today = new Date();
     const hireDate = this.hireDate.value;
     const role = this.role.value;
 
-    // 1) 사번: 정확히 숫자 8자리
-    if (!/^\d{8}$/.test(empId)) {
-        alert('사번은 숫자 8자리로 입력하세요.');
-        f.employeeId.focus();
-        e.preventDefault();
-        return;
-    }
+   if(!idChk){
+		alert('아이디 쫌!!!!')
+		
+		return
+	} 
+   
+   if(!phoneChk){
+		alert('폰번 쫌!!!!')
+		
+		return
+	} 
 
  	//  비밀번호(선택): 입력했다면 강력 규칙 적용
     //    최소 8자, 대문자/소문자/숫자/특수문자 각각 1개 이상
     if (pw && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/]).{8,}$/.test(pw)) {
         alert('비밀번호는 8자 이상이며 대문자/소문자/숫자/특수문자를 모두 포함해야 합니다.');
         f.password.focus();
-        e.preventDefault();
         return;
     }
 
-    // 이름: 2글자 이상
-    if (name.length < 2) {
-        alert("이름은 2글자 이상 입력하세요.");
+ 	// 이름: 2글자 이상, 한글만
+    if (!/^[가-힣]{2,}$/.test(name)) {
+        alert("이름은 한글 2글자 이상 입력하세요.");
         this.empNm.focus();
-        e.preventDefault();
         return;
     }
 
-    // 3) 휴대폰: 허용 형식 -> 010-1234-5678 또는 01012345678
-    if (phone && !/^010-\d{4}-\d{4}$/.test(phone) && !/^010\d{8}$/.test(phone)) {
-        alert('휴대폰 번호는 010-1234-5678 또는 01012345678 형식으로 입력하세요.');
-        f.phone.focus();
-        e.preventDefault();
-        return;
-    }
 
-    // 날짜 유효성: 입사일이 생일보다 빠르면 안됨
-    if (birth && hireDate && new Date(hireDate) < new Date(birth)) {
-        alert("입사일은 생년월일 이후여야 합니다.");
-        this.hireDate.focus();
-        e.preventDefault();
-        return;
-    }
 
-    // 권한 선택 확인
-    if (!role) {
-        alert("권한을 선택하세요.");
-        this.role.focus();
-        e.preventDefault();
-    }
-});
+    document.frm.submit();
+    
+
+}});
 </script>
+
+
 
 </body>
 </html>

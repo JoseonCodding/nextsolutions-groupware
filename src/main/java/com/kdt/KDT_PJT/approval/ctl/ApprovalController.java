@@ -3,9 +3,12 @@ package com.kdt.KDT_PJT.approval.ctl;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.io.FileSystemResource;
@@ -55,6 +58,17 @@ public class ApprovalController {
        dateFormat.setLenient(false);
        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
    }
+   
+   // 연차 승인 시, 유효성 검사를 위한 날짜 비교 메서드
+   private Date truncateTime(Date date) {
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(date);
+	    cal.set(Calendar.HOUR_OF_DAY, 0);
+	    cal.set(Calendar.MINUTE, 0);
+	    cal.set(Calendar.SECOND, 0);
+	    cal.set(Calendar.MILLISECOND, 0);
+	    return cal.getTime();
+	}
    
    @RequestMapping("/main")
    public String approvalMain(
@@ -349,6 +363,12 @@ public class ApprovalController {
 
         // --- 실제 UPDATE 실행 (연차/근태만) ---
         String pkId = editData.getDocId().split("-")[1].trim();
+        
+        // XSS 방어용 content 정화
+        if (editData.getContent() != null) {
+            String cleanContent = Jsoup.clean(editData.getContent(), Safelist.none());
+            editData.setContent(cleanContent);
+        }
 
         if ("연차".equals(docType)) {
             // 연차: create_reason(=title), used_reason(=content), used_date(=leaveUsedDate)
@@ -409,7 +429,20 @@ public class ApprovalController {
         String currentStatus = doc.getStatus();
         String role = loginUser.getRole();
         String approverId = loginUser.getEmployeeId();
-
+        
+        // 연차 유효성검사 - 오늘 이전 날짜는 승인 방어
+        if ("연차".equals(docType)) {
+            if (doc.getLeaveUsedDate() != null) {
+                Date today = new Date();
+                if (doc.getLeaveUsedDate().before(truncateTime(today))) {
+                    // 오늘 이전 날짜면 승인 불가로 리다이렉트 (원하는 에러 처리 경로로 수정 가능)
+                    redirectAttributes.addAttribute("docId", docId);
+                    redirectAttributes.addAttribute("error", "pastDate");
+                    return "redirect:/approval/viewer";
+                }
+            }
+        }
+        
         // 근태: 1차 승인 즉시 완료 + approvedBy 저장
         if ("근태".equals(docType) && "대기".equals(currentStatus)
                 && ("대표".equals(role) || "근태".equals(role))) {
