@@ -1,11 +1,11 @@
 <!-- 일정 상세보기 -->
-<div>
+<div class="sche-detail-container">
     <h1 class="detail-title">일정 상세보기</h1>
-    <table>
+    <table class="sche-table-detail">
         <tr>
             <th>일정명</th>
-            <td>
-                <span th:text="${scd.title}"></span>
+            <td >
+                <span th:text="${scd.title}" ></span>
             </td>
         </tr>
         <tr>
@@ -39,14 +39,14 @@
         </tr>
     </table>
 
-    <div class="btn-area">
-        <a href="/schedule" class="back-btn">목록으로</a>
+
+        <a href="/schedule" class="sche-back-btn">목록으로</a>
         <!-- employId가 일치하거나 권한자만 수정/삭제 가능 -->
         <a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '일정' or session.loginUser.role == '대표'}"
-           th:href="@{|/schedule/modify?scheduleId=${scd.scheduleId}|}" class="edit-btn">수정</a>
+           th:href="@{|/schedule/modify?scheduleId=${scd.scheduleId}|}" class="sche-save-btn">수정</a>
         <a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '일정' or session.loginUser.role == '대표'}"
-           th:href="@{|/schedule/delete?scheduleId=${scd.scheduleId}|}" class="reject-btn">삭제</a>
-    </div>
+           th:href="@{|/schedule/delete?scheduleId=${scd.scheduleId}|}" class="sche-delete-btn">삭제</a>
+
 </div>
 
 

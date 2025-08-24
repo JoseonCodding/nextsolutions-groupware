@@ -33,18 +33,15 @@
 
 <!-- 페이징 UI 영역 -->
 <div class="container mt-4 text-center" th:if="${page.pages > 0}">
-  <nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center">
+  <nav aria-label="Page navigation" >
+    <ul class="pagination justify-content-center" style="list-style:none;">
 
       <!-- 이전 페이지 -->
       <li class="page-item" th:classappend="${!page.hasPreviousPage} ? ' disabled'">
         <a class="page-link"
-           th:href="@{/attend/leaveListMng(
-              pageNum=${page.hasPreviousPage} ? ${page.prePage} : ${page.pageNum},
-              pageSize=${page.pageSize}
-           )}"
+           th:href="@{/attend/leaveListMng( pageNum=${page.hasPreviousPage} ? ${page.prePage} : ${page.pageNum},  pageSize=${page.pageSize} )}"
            aria-label="Previous">
-          <span aria-hidden="true">&laquo;</span>
+          <span aria-hidden="true">&#x2039; Previous</span>
         </a>
       </li>
 
@@ -53,22 +50,16 @@
           th:each="i : ${#numbers.sequence(page.navigateFirstPage, page.navigateLastPage)}"
           th:classappend="${i == page.pageNum} ? ' active'">
         <a class="page-link"
-           th:href="@{/attend/leaveListMng(
-             pageNum=${i},
-             pageSize=${page.pageSize}
-           )}"
+           th:href="@{/attend/leaveListMng(pageNum=${i}, pageSize=${page.pageSize})}"
            th:text="${i}">1</a>
       </li>
 
       <!-- 다음 페이지 -->
       <li class="page-item" th:classappend="${!page.hasNextPage} ? ' disabled'">
         <a class="page-link"
-           th:href="@{/attend/leaveListMng(
-              pageNum=${page.hasNextPage} ? ${page.nextPage} : ${page.pageNum},
-              pageSize=${page.pageSize}
-           )}"
+           th:href="@{/attend/leaveListMng( pageNum=${page.hasNextPage} ? ${page.nextPage} : ${page.pageNum}, pageSize=${page.pageSize} )}"
            aria-label="Next">
-          <span aria-hidden="true">&raquo;</span>
+          <span aria-hidden="true">Next &#x203A;</span>
         </a>
       </li>
 

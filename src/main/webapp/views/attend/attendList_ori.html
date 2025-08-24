@@ -6,13 +6,13 @@
 	    <label>이름: <input type="text" name="empNm" th:value="${param.empNm}"/></label>
 	    <label>수정자: <input type="text" name="modifiedBy" th:value="${param.modifiedBy}"/></label>
 	
-	    <button class="search-btn" type="submit">검색</button>
+	    <button class="filter-btn" type="submit">검색</button>
 	
 	</form>
 	
 	<form>
 	    <!-- 동일 파라미터로 PDF -->
-	    <button type="submit" formmethod="get" th:formaction="@{/attend/pdf}">PDF 다운로드</button>
+	    <button type="submit" formmethod="get" th:formaction="@{/attend/pdf}" class="filter-btn">PDF 다운로드</button>
 	
 	    <!-- 초기 진입 안전값 -->
 	    <input type="hidden" name="size" th:value="${size} ?: 10"/>
@@ -48,7 +48,6 @@
 	</tbody>
 </table>
 
-<!--  페이징 수정 전 버전 -->
 
 	<!-- 페이징 요약 -->
 	<div style="margin:16px 0; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">

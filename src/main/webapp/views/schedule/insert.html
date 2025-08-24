@@ -233,13 +233,14 @@
 
 </form> 
 -->
+<div class="sche-detail-container">
 <form action="" method="post">
     <h1 class="detail-title">일정 등록</h1>
-    <table class="sche-table">
+    <table class="sche-table-detail">
         <tr>
-            <th>일정명</th>
+            <th style="width:200px;">일정명</th>
             <td colspan="3">
-                <input type="text" name="title" required />
+                <input type="text" name="title" style="width:100%;" required />
             </td>
         </tr>
         <tr>
@@ -258,20 +259,20 @@
             </td>
         </tr>
         <tr>
-            <th>일정 옵션</th>
-            <td colspan="3">
-                <label>반복일정 : 
+            <th >일정 옵션</th>
+            <td colspan="3" >
+                <label class="sche-options" >반복일정 : 
                     <select name="repeatCheck" id="repeatCheck">
                         <option value="0">반복 없음</option>
                         <option value="1">매일</option>
                         <option value="2">매주</option>
                         <option value="3">매달 </option>
-                    </select> |
+                    </select>
                 </label>
-                <label>
-                    <input type="checkbox" name="holiday" value="휴무일"/>  휴무일   |
+                <label class="sche-options">
+                    <input type="checkbox" name="holiday" value="휴무일"/> 휴무일
                 </label>
-                <label>
+                <label class="sche-options">
                     <input type="checkbox" name="alarm" value="알림" /> 알림 
                 </label>
             </td>
@@ -279,7 +280,7 @@
         <tr>
             <th>내용</th>
             <td colspan="3">
-                <textarea name="content" cols="50" rows="10" required></textarea>
+                <textarea class="sche-content" name="content" cols="50" rows="10" required></textarea>
             </td>
         </tr>
     </table>
@@ -288,3 +289,4 @@
         <button type="submit" class="regist-btn">등록</button>
 
 </form>
+</div>
