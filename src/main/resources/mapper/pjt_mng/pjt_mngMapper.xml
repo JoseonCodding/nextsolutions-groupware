@@ -285,10 +285,9 @@
  , t2.secondSign
  , t2.approvedBy
   FROM VIEW_PJT_BASC t2
-  WHERE (USE_YN IS NULL OR USE_YN = 'Y')
+  WHERE TB_PJT_APR = #{employeeId} 
     <if test="keyword != null and keyword != ''">
-      AND (PJT_NM LIKE CONCAT('%', #{keyword}, '%')
-           OR TB_PJT_APR = #{employeeId} )
+      AND (PJT_NM LIKE CONCAT('%', #{keyword}, '%') )
     </if>
     ORDER BY FRST_REG_DT DESC
 </select>
@@ -299,26 +298,86 @@
 <select id="getProjectListOrderByWriter" 
         parameterType="String" 
         resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
-SELECT *
-FROM VIEW_PJT_BASC b
-WHERE (b.USE_YN IS NULL OR b.USE_YN = 'Y')
+SELECT 
+     t2.PJT_SN
+ , t2.PJT_NM
+ , t2.PJT_STTS_CD
+ , ( SELECT emp_nm from employee where 1=1 and employeeId = t2.employeeId ) AS employeeId
+ , ( SELECT position from employee where 1=1 and employeeId = t2.employeeId ) AS position
+ , t2.USE_YN
+ , t2.FRST_REG_DT
+ , t2.LAST_MDFR_ID
+ , t2.PJT_BGNG_DT
+ , t2.PJT_END_DT
+ , ( SELECT emp_nm from employee where 1=1 and employeeId = t2.TB_PJT_APR ) AS TB_PJT_APR
+ , ( SELECT position from employee where 1=1 and employeeId = t2.TB_PJT_APR ) AS position_APR  
+ , t2.TB_PJT_BASCcol
+ , t2.docType
+ , t2.content
+ , t2.ATCH_FILE_SN1
+ , t2.ORG_FILE_NM1
+ , t2.ATCH_FILE_SN2
+ , t2.ATCH_FILE_SN3
+ , t2.ORG_FILE_NM2
+ , t2.ORG_FILE_NM3
+ , t2.TB_PJT_BASCcol1
+ , t2.gid
+ , t2.ver
+ , t2.firstSign
+ , t2.secondSign
+ , t2.approvedBy
+FROM VIEW_PJT_BASC t2
+
 <if test="keyword != null and keyword != ''">
-  AND b.employeeId IN (
+ WHERE t2.employeeId IN (
       SELECT e.employeeId
       FROM employee e
       WHERE e.emp_nm LIKE CONCAT('%', #{keyword}, '%')
   )
 </if>
-ORDER BY b.LAST_MDFCN_DT DESC
+ORDER BY t2.LAST_MDFCN_DT DESC
   
 </select>
+
+
+
+
+
+
 
 <select id="getProjectListOrderByProject" 
         parameterType="map" 
         resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
         
-  SELECT *
-  FROM VIEW_PJT_BASC
+SELECT 
+     t2.PJT_SN
+ , t2.PJT_NM
+ , t2.PJT_STTS_CD
+ , ( SELECT emp_nm from employee where 1=1 and employeeId = t2.employeeId ) AS employeeId
+ , ( SELECT position from employee where 1=1 and employeeId = t2.employeeId ) AS position
+ , t2.USE_YN
+ , t2.FRST_REG_DT
+ , t2.LAST_MDFR_ID
+ , t2.PJT_BGNG_DT
+ , t2.PJT_END_DT
+ , ( SELECT emp_nm from employee where 1=1 and employeeId = t2.TB_PJT_APR ) AS TB_PJT_APR
+ , ( SELECT position from employee where 1=1 and employeeId = t2.TB_PJT_APR ) AS position_APR  
+ , t2.TB_PJT_BASCcol
+ , t2.docType
+ , t2.content
+ , t2.ATCH_FILE_SN1
+ , t2.ORG_FILE_NM1
+ , t2.ATCH_FILE_SN2
+ , t2.ATCH_FILE_SN3
+ , t2.ORG_FILE_NM2
+ , t2.ORG_FILE_NM3
+ , t2.TB_PJT_BASCcol1
+ , t2.gid
+ , t2.ver
+ , t2.firstSign
+ , t2.secondSign
+ , t2.approvedBy 
+  FROM VIEW_PJT_BASC t2
   WHERE (USE_YN IS NULL OR USE_YN = 'Y')
     <if test="keyword != null and keyword != ''">
       AND (PJT_NM LIKE CONCAT('%', #{keyword}, '%'))          
@@ -418,7 +477,7 @@ ORDER BY b.LAST_MDFCN_DT DESC
         resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
         
   SELECT *
-  FROM TB_PJT_BASC
+  FROM VIEW_PJT_BASC
   WHERE (USE_YN IS NULL OR USE_YN = 'Y')
     <if test="keyword != null and keyword != ''">
       AND (TB_PJT_APR LIKE CONCAT('%', #{keyword}, '%') )

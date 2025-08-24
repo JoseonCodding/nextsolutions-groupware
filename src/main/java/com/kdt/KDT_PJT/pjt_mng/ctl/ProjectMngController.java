@@ -71,7 +71,7 @@ public class ProjectMngController {
 	   log.info("keyword(raw) = {}", keyword);
 	    
 	   // ✅ null /대소문자 정리
-	    String type = (keywordType == null) ? "" : keywordType.toLowerCase();
+	    String type = (keywordType == null) ? "" : keywordType;
 	    if (keywordType == null) keywordType = "";  	 // 선택값 유지 용
 
 	    
@@ -131,8 +131,9 @@ public class ProjectMngController {
           break;
       case "myApproval":
     	  log.info(" sortType = myApproval ");    	  
-    	  keyword = loginUser.getEmployeeId();    	  
+    	  //keyword = loginUser.getEmployeeId();    	  
     	  list = projectMngService.getProjectMyApprovalList(pageNum, pageSize, keyword, loginUser.getEmployeeId());
+    	  System.out.println("myApproval :"+list.getSize());
           break;         
           
           
@@ -168,10 +169,63 @@ public class ProjectMngController {
       // DB에서 PJT_STTS_CD가 '대기'인 개수 조회
       int pendingCount = projectMngService.getPendingCount();
       
-      /* 페이지네이션 필규버전 (시작) */
-      totalCount = projectMngService.getTotalCount();					// 위쪽 DB 전체 개수 조회와 동일 (에러나면 totalCount 앞에 int 넣어요)
+
+       int myProjectCount = projectMngService.countMyProjects(loginUser.getEmployeeId());
+       int myApprovalTodoCount = projectMngService.countMyPendingApprovals(loginUser.getEmployeeId());
+            
+       model.addAttribute("myProjectCount", myProjectCount);
+       model.addAttribute("myApprovalTodoCount", myApprovalTodoCount);   
+
       
-      int totalPages = (int) Math.ceil((double) totalCount / pageSize);	// 총 페이지 수를 계산
+      model.addAttribute("pendingCount", pendingCount);
+
+      model.addAttribute("pjtList", list.getList()); // 현재 페이지 데이터
+      model.addAttribute("pageInfo", list); // 페이징 정보
+      
+      System.out.println("list:"+list.getList());
+      
+      // 권한 받아오기
+      model.addAttribute("loginUser", loginUser);
+
+      model.addAttribute("mainUrl", "pjt_mng/pjt_main");
+      
+      
+      
+      /* 페이지네이션 필규버전 (시작) */
+      //totalCount = projectMngService.getTotalCount();					// 위쪽 DB 전체 개수 조회와 동일 (에러나면 totalCount 앞에 int 넣어요)
+      
+      
+      int ppCount = totalCount;
+      
+      switch (keywordType) {
+      case "writer":
+    	  ppCount =  projectMngService.countWriter(keyword);
+          break;
+      case "project":
+    	  ppCount =projectMngService.countProject(keyword);
+          break;
+      case "status":
+    	  if(keyword.equals("진행중"))
+    		  ppCount = progressCount;
+    	  if(keyword.equals("완료"))
+    		  ppCount = completeCount;
+    	  if(keyword.equals("대기"))
+    		  ppCount = pendingCount;
+          break;
+      case "my":
+    	  ppCount = myProjectCount;
+          break;     
+      case "app":
+    	  
+          break;
+      case "myApproval":
+    	  ppCount =myApprovalTodoCount;
+          break;         
+  
+    
+      }
+      
+      int totalPages = (int) Math.ceil((double) ppCount / pageSize);	// 총 페이지 수를 계산
       																	// pageSize : 페이지당 나타낼 페이지 수 (위에서 int pageSize = 10;으로 1페이지당 10라고 선언하고 있어요. 에러나면 int pageSize = 10;을 윗줄에 추가하세요)
       																	// 전체 DB 개수를 페이지 당 나타낼 개수로 나눈 값을 double타입(소수)으로 정확하게 계산하고, 소수점 이하를 올림(Math.ceil)하고, int타입(정수)로 만들었어요. 이렇게 하면 DB가 25개일때, 10으로 나눠서 2.5로 계산한 다음, 총 3페이지를 보여줄 수 있어요. 
 
@@ -197,24 +251,8 @@ public class ProjectMngController {
       model.addAttribute("pageSize", pageSize);
       /* 페이지네이션 필규버전 (끝) */
       
-       int myProjectCount = projectMngService.countMyProjects(loginUser.getEmployeeId());
-       int myApprovalTodoCount = projectMngService.countMyPendingApprovals(loginUser.getEmployeeId());
-            
-       model.addAttribute("myProjectCount", myProjectCount);
-       model.addAttribute("myApprovalTodoCount", myApprovalTodoCount);   
-
       
-      model.addAttribute("pendingCount", pendingCount);
-
-      model.addAttribute("pjtList", list.getList()); // 현재 페이지 데이터
-      model.addAttribute("pageInfo", list); // 페이징 정보
       
-      System.out.println("list:"+list.getList());
-      
-      // 권한 받아오기
-      model.addAttribute("loginUserRole", loginUser.getRole());
-
-      model.addAttribute("mainUrl", "pjt_mng/pjt_main");
       return "navTap";
 
    }  

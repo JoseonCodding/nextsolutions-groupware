@@ -190,6 +190,7 @@ public class ProjectMngService {
 
 	      List<CmmnMap> list = cmmnDao.selectList("com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.searchProjectMngMyApprovalList",
 	    		  param ); // ② 페이징 걸린 상태로 select 실행
+	      System.out.println("myApproval >>>>>> :"+param);
 	      return new PageInfo<>(list); // ③ PageInfo로 래핑
 	   }
 
@@ -240,6 +241,21 @@ public class ProjectMngService {
          return 0;
       return pjtMngMapper.countMyPendingApprovals(employeeId);
    }
+   
+   public int countWriter(String keyword) {
+
+	      if (keyword == null || keyword.isBlank())
+	         return 0;
+	      return pjtMngMapper.countWriter(keyword);
+   }
+   
+   public int countProject(String keyword) {
+
+	      if (keyword == null || keyword.isBlank())
+	         return 0;
+	      return pjtMngMapper.countProject(keyword);
+   }
+   
 
 // ProjectMngService.java
    public List<CmmnMap> getProjectList(Map<String, Object> param) {

@@ -213,7 +213,7 @@ tr:hover {
 
 		<!-- 내 참여 프로젝트 -->
 		<div class="stat-card" style="--accent: #ce93d8;"
-			onclick="location.href='/pjtMng/getPjtList?keywordType=my&keyword=참여'">
+			th:onclick="|location.href='@{/pjtMng/getPjtList(keywordType='my', keyword=${loginUser.empNm})}'|">
 			<div class="meta">
 				<div class="label">내 참여 </div>
 				<div class="value" th:text="${myProjectCount}">0</div>
@@ -222,7 +222,7 @@ tr:hover {
 
 		<!-- 내 결재 프로젝트 -->
 		<div class="stat-card" style="--accent: #ffb3b3;"
-			onclick="location.href='/pjtMng/getPjtList?keywordType=myApproval&keyword=결재'">
+			onclick="location.href='/pjtMng/getPjtList?keywordType=myApproval'">
 			<div class="meta">
 				<div class="label">내 결재</div>
 				<div class="value" th:text="${myApprovalTodoCount}">0</div>
@@ -373,27 +373,27 @@ tr:hover {
         등록
    </button>
 </div>
-	<!-- 페이지네이션 -->
+	<!-- 페이지네이션
 	<nav class="mt-4 text-center" th:if="${pageInfo != null}">
 		<ul class="pagination justify-content-center">
 			<li class="page-item"
 				th:classappend="${pageInfo.prePage == 0} ? 'disabled'"><a
 				class="page-link"
-				th:href="@{/pjtMng/getPjtList(pageNum=${pageInfo.prePage}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, sortType=${sortType})}">
+				th:href="@{/pjtMng/getPjtList(pageNum=${pageInfo.prePage}, keywordType=${keywordType}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, sortType=${sortType})}">
 					Previous </a></li>
 			<li class="page-item"
 				th:each="page : ${#numbers.sequence(pageInfo.navigateFirstPage, pageInfo.navigateLastPage)}"
 				th:classappend="${page == pageInfo.pageNum} ? 'active'"><a
 				class="page-link" th:text="${page}"
-				th:href="@{/pjtMng/getPjtList(pageNum=${page}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, sortType=${sortType})}"></a>
+				th:href="@{/pjtMng/getPjtList(pageNum=${page}, keywordType=${keywordType}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, sortType=${sortType})}"></a>
 			</li>
 			<li class="page-item"
 				th:classappend="${pageInfo.nextPage == 0} ? 'disabled'"><a
 				class="page-link"
-				th:href="@{/pjtMng/getPjtList(pageNum=${pageInfo.nextPage}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, sortType=${sortType})}">
+				th:href="@{/pjtMng/getPjtList(pageNum=${pageInfo.nextPage}, keywordType=${keywordType}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, sortType=${sortType})}">
 					Next </a></li>
 		</ul>
-	</nav>
+	</nav> -->
 	
         <!-- 페이지네이션 필규버전 (시작) -->
 		<nav class="pagination">
