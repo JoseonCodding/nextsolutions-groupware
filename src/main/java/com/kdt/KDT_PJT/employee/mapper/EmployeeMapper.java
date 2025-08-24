@@ -48,6 +48,8 @@ public interface EmployeeMapper {
 	}
 
 	int getUserListTotalCount(String keyword);
+
+	List<EmployeeDto> selectAllEmployees();
 	
 }
  

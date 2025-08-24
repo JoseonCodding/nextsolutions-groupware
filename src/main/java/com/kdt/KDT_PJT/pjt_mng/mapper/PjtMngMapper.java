@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Service;
 
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
+import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.employee.mapper.EmployeeMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,9 @@ public interface PjtMngMapper {
 	
 	@Select(" SELECT * FROM team2_db.employee where role ='대표'")
     List<CmmnMap> selectApproverCandidates();
+	
+	
+	
 	
     List<CmmnMap> selectProjectList(@Param("param") Map<String, Object> param);
     List<Map<String, Object>> searchProjectMngList(Map<String, Object> param);
@@ -78,6 +82,12 @@ public interface PjtMngMapper {
 	         + "    and TB_PJT_BASC.employeeid = e1.employeeid "
 	         + "    and TB_PJT_BASC.TB_PJT_APR = e2.employeeid ")
 	CmmnMap getPjtDetailForVersion(@Param("pjtSn") String pjtSn);
+   
+   
+   @Select("SELECT * FROM employee where active = 1")
+   List<CmmnMap>  getEmployeeList();
+   
+   
 
    // 파일 버전관리 
    @Mapper
@@ -97,10 +107,17 @@ public interface PjtMngMapper {
     	}
 
    }
+   
+   
+   
+   
 
    @Mapper
    public interface EmployeeMapper {
        String selectEmpNameById(String employeeId);
+       
+       List<EmployeeDto> selectAllEmployees();
+
    }
    
    

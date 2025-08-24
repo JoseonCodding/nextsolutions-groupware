@@ -70,6 +70,12 @@ public class EmployeeService {
 	        return employeeMapper.countByPhone(phone) > 0;
 	        // 또는 return employeeMapper.existsByPhone(phone);
 	    }
+
+
+		public List<EmployeeDto> getAllEmployees() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	
    
 
