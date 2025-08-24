@@ -405,6 +405,8 @@ ORDER BY b.LAST_MDFCN_DT DESC
   ORDER BY LAST_MDFCN_DT DESC
   
 </select>
+
+
 <!-- 결재자 -->
 <select id="getProjectListMyApprovalTodoCount" 
         parameterType="map" 
@@ -418,6 +420,7 @@ ORDER BY b.LAST_MDFCN_DT DESC
     </if>
   ORDER BY LAST_MDFCN_DT DESC  
 </select>
+
 
  <!-- 파일의 버전관리 -->
  <select id="findLatestVerByPjtSn" parameterType="long" resultType="int">

@@ -300,11 +300,14 @@ public class ProjectMngController {
       boolean isAdmin = true; // 임시로 항상 true로 설정 !!
 
        List<CmmnMap> approverList = projectMngService.selectApproverCandidates();
+       
+       
+
 
       //isAdmin 값을 모델에 넣음
       model.addAttribute("isAdmin", isAdmin);
-      model.addAttribute("id", loginUser.getEmployeeId());
-       model.addAttribute("approverList", approverList);
+      model.addAttribute("loginUser", loginUser);
+      model.addAttribute("approverList", approverList);
 
       // 화면 이동
       model.addAttribute("mainUrl", "pjt_mng/pjt_reg_form");
@@ -335,9 +338,15 @@ public class ProjectMngController {
 	    // 1) 프로젝트 상세
 		CmmnMap pjtDetail = projectMngService.getPjtDetail(pjtSn);
 		log.debug("DETAIL TB_PJT_APR={}", pjtDetail.get("TB_PJT_APR")); // 값 확인
+				
+		
+		// ✅ 전체 직원 리스트 조회
+		List<CmmnMap> employeeList = projectMngService.getEmployeeList( );
+		model.addAttribute("employeeList", employeeList);
 		
 		
 		
+
 		
 	    // 3) 모델 바인딩
 		model.addAttribute("isAdmin", isAdmin);

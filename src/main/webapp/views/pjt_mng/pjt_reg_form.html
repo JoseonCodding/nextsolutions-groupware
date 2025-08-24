@@ -39,7 +39,8 @@ th {
 	width: 20%;
 	background-color: #f0f0f0;
 	font-weight: bold;
-	color: #333;
+	/* color: #333; */
+	text-align: center;
 }
 
 tr:last-child td {
@@ -135,8 +136,7 @@ input, select {
 					</td>
 			</tr>
 			
-			<tr>
-				<!-- 담당자 사번에서 이름을 보이게 변경해놓음 -->
+			<!--		 <!-- 담당자 사번에서 이름을 보이게 변경해놓음 
 				<th>담당자</th>
 				<td>
 				<select name="employeeId" id="employeeId"
@@ -150,6 +150,16 @@ input, select {
 						</th:block>
 				</select>
 				</td>
+			</tr> -->		
+			
+			<tr>
+				<th>담당자</th>
+				
+				
+				<td>
+				<input type="hidden" name="employeeId" th:value="${loginUser.employeeId}" />
+				
+				<input type="text" th:value="${loginUser.empNm}" readonly /></td>
 			</tr>
 			
 			
@@ -175,7 +185,7 @@ input, select {
 				<td><textarea id="content" name="content"></textarea></td>
 			</tr>
 			<tr>
-				<!-- 결재자 사번에서 이름을 보이게 변경해놓음 -->
+				<!-- 결재자 사번에서 이름을 보이게 변경해놓음 : 현재 결재가 권한은 대표만 가능 -->
 				<th>결재자</th>
 				<td>
 				<select name="TB_PJT_APR" id="TB_PJT_APR"
