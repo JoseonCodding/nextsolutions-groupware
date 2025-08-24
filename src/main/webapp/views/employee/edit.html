@@ -141,7 +141,7 @@ input, select {
     </form>
 </div>
 
-<script>
+<!-- <script>
 
 // 검증 및 제출 함수
 function validateAndSubmit() {
@@ -235,7 +235,109 @@ document.getElementById('employeeUpdateForm').addEventListener('keydown', functi
 		validateAndSubmit();
 	}
 });
+</script> -->
+
+<script>
+// 검증 및 제출 함수
+function validateAndSubmit() {
+  const f = document.getElementById('employeeUpdateForm');
+  const pw = f.password.value.trim();
+  const name = f.empNm.value.trim();
+  const birth = f.birth.value;
+  const hireDate = f.hireDate.value;
+  const resignDate = f.resignDate.value;
+
+  // 오늘 00:00 (미래/과거 비교 안정화)
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // ===== 비밀번호 검증 =====
+  if (!pw) {
+    alert('비밀번호를 입력해주세요.');
+    f.password.focus();
+    return;
+  }
+  if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/]).{8,}$/.test(pw)) {
+    alert('비밀번호는 8자 이상이며 대문자/소문자/숫자/특수문자를 모두 포함해야 합니다.');
+    f.password.focus();
+    return;
+  }
+
+  // ===== 이름 검증 (한글 2자 이상) =====
+  if (!/^[가-힣]{2,}$/.test(name)) {
+    alert("이름은 한글 2글자 이상 입력하세요.");
+    f.empNm.focus();
+    return;
+  }
+
+  // ===== 날짜 필수 입력 =====
+  if (!birth) { alert("생년월일을 입력해주세요."); f.birth.focus(); return; }
+  if (!hireDate) { alert("입사일을 입력해주세요."); f.hireDate.focus(); return; }
+
+  // ===== 생년월일/입사일 검증 =====
+  if (birth && hireDate) {
+    // valueAsDate 우선 사용(타임존 이슈 최소화), 없으면 new Date
+    const birthDate = (f.birth.valueAsDate) ? new Date(f.birth.valueAsDate) : new Date(birth);
+    const hireDateObj = (f.hireDate.valueAsDate) ? new Date(f.hireDate.valueAsDate) : new Date(hireDate);
+
+    // 생년월일 미래 불가
+    if (birthDate > today) {
+      alert("생년월일은 오늘 이전 날짜여야 합니다.");
+      f.birth.focus();
+      return;
+    }
+
+    // 입사일은 생년월일보다 이후
+    if (birthDate >= hireDateObj) {
+      alert("입사일은 생년월일보다 이후여야 합니다.");
+      f.hireDate.focus();
+      return;
+    }
+
+    // 🚫 입사일 미래 불가 (요청사항)
+    if (hireDateObj > today) {
+      alert("입사일은 오늘 이전 날짜여야 합니다.");
+      f.hireDate.focus();
+      return;
+    }
+
+    // 만 16세(입사일 기준)
+    let ageAtHire = hireDateObj.getFullYear() - birthDate.getFullYear();
+    const monthDiff = hireDateObj.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && hireDateObj.getDate() < birthDate.getDate())) {
+      ageAtHire--;
+    }
+    if (ageAtHire < 16) {
+      alert("입사일 기준으로 만 16세 이상이어야 합니다.");
+      f.birth.focus();
+      return;
+    }
+  }
+
+  // ===== 입사일/퇴사일 비교 =====
+  if (hireDate && resignDate) {
+    const hireDateObj = (f.hireDate.valueAsDate) ? new Date(f.hireDate.valueAsDate) : new Date(hireDate);
+    const resignDateObj = (f.resignDate.valueAsDate) ? new Date(f.resignDate.valueAsDate) : new Date(resignDate);
+
+    if (hireDateObj >= resignDateObj) {
+      alert("퇴사일은 입사일보다 이후여야 합니다.");
+      f.hireDate.focus();
+      return;
+    }
+  }
+
+  // 모든 검증 통과 시 폼 제출
+  f.submit();
+}
+
+// Enter 키 제출 방지 + 검증 실행
+document.getElementById('employeeUpdateForm').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    validateAndSubmit();
+  }
+});
 </script>
+
 
 </body>
 </html>
