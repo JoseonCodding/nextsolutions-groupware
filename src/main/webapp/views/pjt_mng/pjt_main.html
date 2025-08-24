@@ -394,6 +394,34 @@ tr:hover {
 					Next </a></li>
 		</ul>
 	</nav>
+	
+        <!-- 페이지네이션 필규버전 (시작) -->
+		<nav class="pagination">
+		  <!-- Previous 버튼 -->
+		  <a th:if="${pageNum > 1}" th:href="@{/pjtMng/getPjtList(pageNum=${pageNum-5 > 1 ? pageNum-5 : 1}, keywordType=${keywordType}, keyword=${keyword})}" class="prev">&#x2039; Previous</a>
+		
+		  <!-- 첫 페이지 -->
+		  <span th:if="${startPage > 1 and pageNum == 1}" class="page-number now-page disabled" th:text="1"></span>
+		  <a th:if="${startPage > 1 and pageNum != 1}" th:href="@{/pjtMng/getPjtList(pageNum=1, keywordType=${keywordType}, keyword=${keyword})}" th:text="1" class="page-number"></a>
+		
+		  <span th:if="${startPage > 2}" class="ellipsis">...</span>
+		
+		  <!-- 페이지 숫자들 -->
+		  <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
+		    <span th:if="${i == pageNum}" class="page-number now-page disabled" th:text="${i}"></span>
+		    <a th:if="${i != pageNum}" th:href="@{/pjtMng/getPjtList(pageNum=${i}, keywordType=${keywordType}, keyword=${keyword})}" th:text="${i}" class="page-number"></a>
+		  </span>
+		
+		  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
+		
+		  <!-- 마지막 페이지 -->
+		  <span th:if="${endPage < totalPages and pageNum == totalPages}" class="page-number now-page disabled" th:text="${totalPages}"></span>
+		  <a th:if="${endPage < totalPages and pageNum != totalPages}" th:href="@{/pjtMng/getPjtList(pageNum=${totalPages}, keywordType=${keywordType}, keyword=${keyword})}" th:text="${totalPages}" class="page-number"></a>
+		
+		  <!-- Next 버튼 -->
+		  <a th:if="${pageNum < totalPages}" th:href="@{/pjtMng/getPjtList(pageNum=${pageNum+5 < totalPages ? pageNum+5 : totalPages}, keywordType=${keywordType}, keyword=${keyword})}"> Next &#x203A; </a>
+		</nav>
+		<!-- 페이지네이션 필규버전 (끝) -->
 
 	<!-- 게시판 리스트 호버링 적용 JS -->
 	<script>

@@ -26,11 +26,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -170,7 +168,34 @@ public class ProjectMngController {
       // DB에서 PJT_STTS_CD가 '대기'인 개수 조회
       int pendingCount = projectMngService.getPendingCount();
       
+      /* 페이지네이션 필규버전 (시작) */
+      totalCount = projectMngService.getTotalCount();					// 위쪽 DB 전체 개수 조회와 동일 (에러나면 totalCount 앞에 int 넣어요)
+      
+      int totalPages = (int) Math.ceil((double) totalCount / pageSize);	// 총 페이지 수를 계산
+      																	// pageSize : 페이지당 나타낼 페이지 수 (위에서 int pageSize = 10;으로 1페이지당 10라고 선언하고 있어요. 에러나면 int pageSize = 10;을 윗줄에 추가하세요)
+      																	// 전체 DB 개수를 페이지 당 나타낼 개수로 나눈 값을 double타입(소수)으로 정확하게 계산하고, 소수점 이하를 올림(Math.ceil)하고, int타입(정수)로 만들었어요. 이렇게 하면 DB가 25개일때, 10으로 나눠서 2.5로 계산한 다음, 총 3페이지를 보여줄 수 있어요. 
 
+      int startPage = Math.max(1, pageNum - 2);							// 페이지네이션 - 시작 페이지를 계산
+      																	// 1미만의 숫자가 나타나는 것을 방지합니다. '1'과 '현재페이지 -2' 중에 더 큰 값을 나타내도록 했어요.
+
+      int endPage = Math.min(totalPages, startPage + 4);				// 페이지네이션 - 마지막 페이지를 계산
+      																	// 총 페이지 수보다 큰 숫자가 나타나는 것을 방지합니다. '총 페이지 수'와 '시작 페이지 +4' 중에 더 작은 값을 나타내도록 했어요.
+      
+      if ((endPage - startPage + 1) < 5) {
+          startPage = Math.max(1, endPage - 4);
+      }
+      
+      
+      // 위에서 선언하고 계산한 값들을 뷰(html)로 보내기 위해서 Model에 담을거에요.
+      // 매개변수로 Model이 들어있어야해요. (현재 @GetMapping("/getPjtList") 어노테이션 걸려있는, public String getPjtList 메서드에, Model model이 들어있음)
+      // 만약 에러나면 Model model을 매개변수에 추가하세요. (주의: 동일한 변수명이 페이지네이션 필규버전 코드 아래에 추가되면 페이지네이션이 박살남)
+      model.addAttribute("totalCount", totalCount);
+      model.addAttribute("startPage", startPage);
+      model.addAttribute("endPage", endPage);
+      model.addAttribute("totalPages", totalPages);
+      model.addAttribute("pageNum", pageNum);
+      model.addAttribute("pageSize", pageSize);
+      /* 페이지네이션 필규버전 (끝) */
       
        int myProjectCount = projectMngService.countMyProjects(loginUser.getEmployeeId());
        int myApprovalTodoCount = projectMngService.countMyPendingApprovals(loginUser.getEmployeeId());

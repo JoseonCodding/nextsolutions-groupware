@@ -32,7 +32,7 @@ public interface PjtMngMapper {
   //메인 : 내가 참여한 프로젝트 관련
     
          
-    @Select(" SELECT COUNT(*) FROM TB_PJT_BASC WHERE (USE_YN IS NULL OR USE_YN = 'Y') AND employeeId = #{employeeId}")
+    @Select(" SELECT COUNT(*) FROM VIEW_PJT_BASC WHERE (USE_YN IS NULL OR USE_YN = 'Y') AND employeeId = #{employeeId}")
     int countMyProjects(@Param("employeeId") String employeeId);
     
     
@@ -41,7 +41,7 @@ public interface PjtMngMapper {
     
     
     @Select("    SELECT COUNT(*)\r\n"
-    		+ "    FROM TB_PJT_BASC\r\n"
+    		+ "    FROM VIEW_PJT_BASC\r\n"
     		+ "    WHERE (USE_YN IS NULL OR USE_YN = 'Y') "
     		+ "      AND TB_PJT_APR = #{employeeId}")
     int countMyPendingApprovals(@Param("employeeId") String employeeId);
@@ -50,20 +50,20 @@ public interface PjtMngMapper {
 
    
    
-   // DB 전체 개수 조회
-   @Select("select count(*) from TB_PJT_BASC")
+   // DB 전체 개수 조회 + 버전 제일 높은 놈
+   @Select("select count(*) from VIEW_PJT_BASC")
    int countAll();
    
    // DB에서 PJT_STTS_CD가 '진행중'인 개수 조회
-   @Select("select count(*) from TB_PJT_BASC WHERE PJT_STTS_CD = '진행중'")
+   @Select("select count(*) from VIEW_PJT_BASC WHERE PJT_STTS_CD = '진행중'")
    int countProgress();
    
    // DB에서 PJT_STTS_CD가 '완료'인 개수 조회
-   @Select("select count(*) from TB_PJT_BASC WHERE PJT_STTS_CD = '완료'")
+   @Select("select count(*) from VIEW_PJT_BASC WHERE PJT_STTS_CD = '완료'")
    int countComplete();
    
    // DB에서 PJT_STTS_CD가 '대기'인 개수 조회
-   @Select("select count(*) from TB_PJT_BASC WHERE PJT_STTS_CD = '대기'")
+   @Select("select count(*) from VIEW_PJT_BASC WHERE PJT_STTS_CD = '대기'")
    int countPending();
    
    @Select(" select "
