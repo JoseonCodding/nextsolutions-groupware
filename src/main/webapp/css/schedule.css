@@ -191,9 +191,7 @@ table[id=diary_title] {
 .dHH{
 	width:100px;
 }
-.sche-table {
-	
-}
+
 .sche-table-month {
 	
 }
@@ -257,32 +255,97 @@ table[id=diary_title] {
 	right: 0px;
 	bottom:0px;
 }
-/***************일정 등록*******************/
-/*
-input, select {
-	
-	padding: 8px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-}
-input, select {
-	padding: 8px;
-	width: 100%;
-	border: 1px solid #ccc;
-	border-radius: 6px;
-	box-sizing: border-box;
-}
-*/
+/***********************************/
+/********** 일정 등록, 수정 ***********/
+
 .sche-table input, select {
-	
 	padding: 8px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
+	
 }
 input, select {
 	padding: 8px;
-	
 	border: 1px solid #ccc;
 	border-radius: 6px;
 	box-sizing: border-box;
+}
+
+.sche-detail-container {
+	padding-bottom: 70px;
+	margin-bottom: 30px;
+	position: relative;
+}
+.sche-detail-btn {
+	font-size: var(--font-size-base);
+    background: var(--save-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+	position: absolute;
+	right: 0px;
+	bottom:0px;
+}
+.sche-back-btn {
+	font-size: var(--font-size-base);
+    background: var(--back-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+	position: absolute;
+	right: 132px;
+	bottom:0px;
+}
+.sche-save-btn {
+	font-size: var(--font-size-base);
+    background: var(--save-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+	position: absolute;
+	right: 66px;
+	bottom:0px;
+}
+.sche-delete-btn {
+	font-size: var(--font-size-base);
+    background: var(--back-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+	position: absolute;
+	right: 0px;
+	bottom:0px;
+}
+.sche-table-detail tr td:hover {
+	background:initial;
+}
+/*일정 옵션*/
+.sche-options {
+	position:relative;
+	right: 20px;
+	padding:10px;
+	margin-left:20px;
+}
+.sche-content {
+	width:98%; 
+	border-color:rgb(200, 200, 200); 
+	border-radius: 4px;
+	padding: 6px;
+	margin:10px 0px 10px 0px;
 }
