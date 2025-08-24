@@ -151,7 +151,7 @@ public class ScheduleController {
 	
 	//일정 삭제
 	@RequestMapping("/delete")
-	public String scheduledelete(HttpSession session, RedirectAttributes ra, ScheduleDTO dto) {
+	public String scheduleDelete(HttpSession session, RedirectAttributes ra, ScheduleDTO dto) {
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
 	    
 	    dto.setEmployeeId(loginUser.getEmployeeId());
