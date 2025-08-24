@@ -169,4 +169,45 @@ public class ScheduleController {
 		return "redirect:/schedule";
 	}
 
+//	// 일정 목록 진입 시 뷰 모드 세션에 저장
+//	@GetMapping("/schedule/month")
+//	public String monthView(HttpSession session, Model model) {
+//	    session.setAttribute("viewMode", "month");
+//	    // 월별 데이터 조회 로직
+//	    return "schedule/month";
+//	}
+//
+//	@GetMapping("/schedule/week")
+//	public String weekView(HttpSession session, Model model) {
+//	    session.setAttribute("viewMode", "week");
+//	    // 주별 데이터 조회 로직
+//	    return "schedule/week";
+//	}
+//
+//	@GetMapping("/schedule/day")
+//	public String dayView(HttpSession session, Model model) {
+//	    session.setAttribute("viewMode", "day");
+//	    // 일별 데이터 조회 로직
+//	    return "schedule/day";
+//	}
+//	
+//	@GetMapping("/schedule/detail/{id}")
+//	public String detail(int scheduleId, HttpSession session, Model model) {
+//	    // 상세 조회 로직
+//	    ScheduleDTO dto = ;
+//	    model.addAttribute("schedule", dto);
+//
+//	    return "schedule/detail";
+//	}
+//
+//	@PostMapping("/schedule/backToList")
+//	public String backToList(HttpSession session) {
+//	    String viewMode = (String) session.getAttribute("viewMode");
+//	    if (viewMode == null) {
+//	        viewMode = "month"; // 기본값
+//	    }
+//	    return "redirect:/schedule/" + viewMode;
+//	}
+
+
 }

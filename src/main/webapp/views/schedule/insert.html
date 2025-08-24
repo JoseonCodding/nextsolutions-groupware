@@ -33,8 +33,9 @@
 
     // 3) 종일 체크 시
     const isAllDay = allDayCheckbox.checked;
-    if (startTimeInput) startTimeInput.disabled = isAllDay
-    					endTimeInput.disabled = true;
+    if (startTimeInput) startTimeInput.disabled = isAllDay;
+    if (endTimeInput)   endTimeInput.disabled   = isAllDay;
+
     if (isAllDay) {
       if (startTimeInput) startTimeInput.value = "";
       if (endTimeInput)   endTimeInput.value   = "";
@@ -132,7 +133,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    bindDateTimeEvents();
+    bindDateEvents();
   });
   
 

@@ -27,7 +27,7 @@ import jakarta.servlet.http.HttpServletRequest;
 //		
 //		
 //		//schedule main
-//		if(pInfo.getService().equals("list")) {
+//		if(pInfo.getService().equals("schedule")) {
 //			return mapper.getScheduleListByMonth(dto);
 //		}
 //		
@@ -44,7 +44,7 @@ import jakarta.servlet.http.HttpServletRequest;
 //			
 //			//pInfo.setMainUrl("alert");
 //			//pInfo.setMsg("작성되었습니다."+cnt);
-//			pInfo.setGoUrl("/"+pInfo.getCate()+"/list/"+pInfo.getNowPage());
+//			pInfo.setGoUrl("/schedule"+pInfo.getNowPage());
 //		}
 //		
 //		//deleteReg
@@ -67,13 +67,13 @@ import jakarta.servlet.http.HttpServletRequest;
 //					
 //			//pInfo.setMainUrl("alert");
 //			//pInfo.setMsg("암호불일치");
-//			pInfo.setGoUrl("/"+pInfo.getCate()+"/modify/"+pInfo.getNowPage()+"/"+dto.getScheduleId());
+//			pInfo.setGoUrl("/schedule/modify?scheduleId="+dto.getScheduleId());
 //					
 //			int cnt = mapper.modify(dto);
 //					
 //			if(cnt>0) {  //수정되었다면
 //				//pInfo.setMsg("수정되었습니다.");
-//				pInfo.setGoUrl("/"+pInfo.getCate()+"/detail/"+pInfo.getNowPage()+"/"+dto.getScheduleId());
+//				pInfo.setGoUrl("/schedule/detail?scheduleId="+dto.getScheduleId());
 //			}
 //		}
 //			

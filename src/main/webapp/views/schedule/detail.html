@@ -39,8 +39,10 @@
         </tr>
     </table>
 
-
+ 
         <a href="/schedule" class="sche-back-btn">목록으로</a>
+    
+  <!--      <a href="@{/schedule/backToList}"></a>  --> 
         <!-- employId가 일치하거나 권한자만 수정/삭제 가능 -->
         <a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '일정' or session.loginUser.role == '대표'}"
            th:href="@{|/schedule/modify?scheduleId=${scd.scheduleId}|}" class="sche-save-btn">수정</a>
