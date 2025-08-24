@@ -77,30 +77,50 @@
 		</tr>
       </tbody>
     </table>
-
-    <!-- 페이지네이션 -->
-    <div class="pagination" style="display:flex;gap:6px;align-items:center">
-      <a th:classappend="${page==1}?' disabled'"
-         th:href="@{/board/free(page=1, size=${size}, sort=${sort}, keyword=${keyword})}">&lt;&lt;</a>
-
-      <a th:classappend="${page==1}?' disabled'"
-         th:href="@{/board/free(page=${page>1?page-1:1}, size=${size}, sort=${sort}, keyword=${keyword})}">&lt;</a>
-
-      <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
-        <a th:if="${p!=page}"
-           th:href="@{/board/free(page=${p}, size=${size}, sort=${sort}, keyword=${keyword})}"
-           th:text="${p}"></a>
-        <span th:if="${p==page}" th:text="${p}"
-              style="font-weight:700;padding:2px 6px;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff"></span>
-      </span>
-
-      <a th:classappend="${page==totalPages}?' disabled'"
-         th:href="@{/board/free(page=${page<totalPages?page+1:totalPages}, size=${size}, sort=${sort}, keyword=${keyword})}">&gt;</a>
-
-      <a th:classappend="${page==totalPages}?' disabled'"
-         th:href="@{/board/free(page=${totalPages}, size=${size}, sort=${sort}, keyword=${keyword})}">&gt;&gt;</a>
-    </div>
-  </div>
+    
+  <div>
+       <!-- 페이지네이션(동현) -->
+	<nav class="pagination">
+	  <!-- Previous 버튼 -->
+	  <a th:if="${page > 1}" 
+	  th:href="@{/board/free(page=${page-5 > 1 ? page-5 : 1}, keyword=${keyword})}"
+	  class="prev">&#x2039; Previous</a>
+	
+	  <!-- 첫 페이지 -->
+	  <span 
+	  th:if="${startPage > 1 and page == 1}" 
+	  class="page-number now-page disabled" 
+	  th:text="1">
+	  </span>
+	  
+	  <a 
+	  th:if="${startPage > 1 and page != 1}" 
+	  th:href="@{/board/free(page=1, keyword=${keyword})}" 
+	  th:text="1" 
+	  class="page-number"></a>
+	
+	  <span 
+	  th:if="${startPage > 2}" 
+	  class="ellipsis">...</span>
+	
+	  <!-- 페이지 숫자들 -->
+	  <span 
+	  th:each="i : ${#numbers.sequence(startPage, endPage)}">
+	    <span th:if="${i == page}" class="page-number now-page disabled" th:text="${i}"></span>
+	    <a th:if="${i != page}" th:href="@{/board/free(page=${i}, keyword=${keyword})}" th:text="${i}" class="page-number"></a>
+	  </span>
+	
+	  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
+	
+	  <!-- 마지막 페이지 -->
+	  <span th:if="${endPage < totalPages and page == totalPages}" class="page-number now-page disabled" th:text="${totalPages}"></span>
+	  <a th:if="${endPage < totalPages and page != totalPages}" 
+	  th:href="@{/board/free(page=${totalPages}, keyword=${keyword})}" th:text="${totalPages}" class="page-number"></a>
+	
+	  <!-- Next 버튼 -->
+	  <a th:if="${page < totalPages}" th:href="@{/board/free(page=${page+5 < totalPages ? page+5 : totalPages}, keyword=${keyword})}">Next &#x203A;</a>
+	</nav>
+</div>
   
   	<!-- 게시판 리스트 호버링 적용 JS (다른 페이지 테이블과 CSS 충돌방지용) -->
 	<script>
