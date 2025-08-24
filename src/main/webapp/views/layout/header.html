@@ -31,3 +31,37 @@
 
         </nav>
     </header>
+    
+<!-- CJ 채용 사이트 마우스 따라오는 JS 건드리지 말기------ (동현) -->
+<script>
+// 메뉴와 underline div 생성
+const menu = document.querySelector(".topbar .menu");
+const line = document.createElement("div");
+line.style.position = "absolute";
+line.style.bottom = "0";
+line.style.height = "3px";
+line.style.background = "linear-gradient(90deg, #330d69, #30c9cd)";
+line.style.transition = "all 0.3s ease";
+menu.appendChild(line);
+
+// hover 시 underline 이동
+menu.querySelectorAll("a").forEach(a => {
+  a.addEventListener("mouseenter", e => {
+    const rect = a.getBoundingClientRect();
+    const parentRect = menu.getBoundingClientRect();
+    line.style.left = (rect.left - parentRect.left) + "px";
+    line.style.width = rect.width + "px";
+  });
+});
+
+// 초기 active 메뉴 세팅
+const active = menu.querySelector("a.active") || menu.querySelector("a");
+if (active) {
+  const rect = active.getBoundingClientRect();
+  const parentRect = menu.getBoundingClientRect();
+  line.style.left = (rect.left - parentRect.left) + "px";
+  line.style.width = rect.width + "px";
+}
+</script>
+
+<!-- ============================================================================= -->

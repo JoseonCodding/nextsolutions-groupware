@@ -30,6 +30,7 @@
   display: flex;
   flex: 1;
   gap: 20px;
+  position: relative; /* underline 기준 */
 }
 
 .topbar .menu a {
@@ -42,34 +43,8 @@
   transition: color 0.2s;
 }
 
-/* 밑줄 애니메이션 (좌 → 우) */
-.topbar .menu a::after {
-  content: "";
-  position: absolute;
-  left: 50%;           
-  bottom: 10px;
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, #330d69, #30c9cd);
-  transform: scaleX(0);
-  transform-origin: center; /* 핵심: 센터 기준 */
-  translate: -50% 0;          /* 중앙 정렬 */
-  opacity: 0;                 /* 기본 투명 */
-  /* transition: transform 0.5s ease; */ 
-  transition: transform 0.5s ease, opacity 0.5s ease; /* 애니매이션 속도 */
-}
-
-/* hover → 중앙에서 퍼지고 색상+불투명 */
-.topbar .menu a:hover::after {
-  transform: scaleX(1);
-   opacity: 1;  /* 투명 → 불투명 */
-}
-
-/* active 상태 → 항상 보이게 */
-.topbar .menu a.active::after {
-/*   transform: scaleX(1); */
-   transform: scaleX(1);
-  opacity: 1;
+.topbar .menu a:hover {
+  color: #3949ab;
 }
 
 /* 오른쪽 영역 (로그아웃 버튼 등) */
