@@ -261,6 +261,11 @@ public class BoardController {
         // ✅ 목록 파라미터를 모델에 주입 (hidden에 쓰일 값)
         int page = (dto.getPage()==null || dto.getPage()<1) ? 1 : dto.getPage();
         int size = (dto.getSize()==null || dto.getSize()<1) ? 10 : dto.getSize();
+        model.addAttribute("page", page);
+        model.addAttribute("size", size);
+        model.addAttribute("sort", dto.getSort());
+        model.addAttribute("keyword", dto.getKeyword());
+        
         model.addAttribute("board", post);
         model.addAttribute("activeBoard", "custom");// 수정 폼에 바인딩
         model.addAttribute("activeBoardId", boardId); // 탭 활성화용
@@ -319,22 +324,24 @@ public class BoardController {
     @PostMapping("/custom/{boardId}/comment/save")
     public String saveCustomComment(@PathVariable("boardId") Integer boardId,
                                     @ModelAttribute CommentDTO dto,
+                                    @ModelAttribute BoardDTO q,
                                     HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         dto.setEmployeeId(loginUser.getEmployeeId()); // VARCHAR
         commentMapper.insertComment(dto);
-        return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId();
+        return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
     // 커스텀 대댓글(답글) 등록
     @PostMapping("/custom/{boardId}/comment/reply")
     public String replyCustomComment(@PathVariable("boardId") Integer boardId,
                                      @ModelAttribute CommentDTO dto,
+                                     @ModelAttribute BoardDTO q,
                                      HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         dto.setEmployeeId(loginUser.getEmployeeId()); // VARCHAR
         commentMapper.insertComment(dto);
-        return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId();
+        return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
     // 커스텀 댓글 삭제 (POST)
@@ -342,18 +349,20 @@ public class BoardController {
     public String deleteCustomComment(@PathVariable("boardId") Integer boardId,
                                       @RequestParam("commentId") Long commentId,
                                       @RequestParam("postId") Integer postId,
+                                      @ModelAttribute BoardDTO q,
                                       HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) return "redirect:/login";
         String me = loginUser.getEmployeeId(); // ✅ 본인만 삭제 (소유자 불일치면 0건 업데이트)
         int affected = commentMapper.deleteByOwner(commentId, me);
-        return "redirect:/board/custom/" + boardId + "/detail?postId=" + postId;
+        return "redirect:/board/custom/" + boardId + "/detail?postId=" + postId + listQS(q, true);
     }
 
     // 커스텀 좋아요 토글
     @PostMapping("/custom/{boardId}/like/toggle")
     public String toggleCustomLike(@PathVariable("boardId") Integer boardId,
                                    @ModelAttribute BoardLikeDTO dto,
+                                   @ModelAttribute BoardDTO q,
                                    HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) { return "redirect:/login"; }
@@ -365,7 +374,7 @@ public class BoardController {
             likeMapper.insert(dto);
         }
         boardMapper.syncLikeCount(dto);
-        return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId();
+        return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
     /******************* 공지게시판 **********************/
@@ -479,6 +488,7 @@ public class BoardController {
     // 공지사항 좋아요
     @PostMapping("/notice/like/toggle")
     public String toggleNoticeLike(@ModelAttribute BoardLikeDTO dto,
+    							   @ModelAttribute BoardDTO q,
                                    HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) return "redirect:/login";
@@ -499,7 +509,7 @@ public class BoardController {
         }
         boardMapper.syncLikeCount(dto);
 
-        return "redirect:/board/notice/detail?postId=" + dto.getPostId();
+        return "redirect:/board/notice/detail?postId=" + dto.getPostId()+ listQS(q, true);
     }
 
     // 공지사항 글쓰기 폼
@@ -718,6 +728,14 @@ public class BoardController {
         if (loginUser == null || !board.getEmployeeId().equals(loginUser.getEmployeeId())) {
         	return "redirect:/board/free/detail?postId=" + dto.getPostId();
         }
+        
+        // ✅ 목록 파라미터 모델 주입 (hidden에 쓰임)
+        int page = (dto.getPage()==null || dto.getPage()<1) ? 1 : dto.getPage();
+        int size = (dto.getSize()==null || dto.getSize()<1) ? 10 : dto.getSize();
+        model.addAttribute("page", page);
+        model.addAttribute("size", size);
+        model.addAttribute("sort", dto.getSort());
+        model.addAttribute("keyword", dto.getKeyword());
 
         model.addAttribute("board", board);
         model.addAttribute("activeBoard", "free");
@@ -728,6 +746,7 @@ public class BoardController {
     // 수정 저장
     @PostMapping("/free/modify")
     public String modifyFreeSubmit(@ModelAttribute BoardDTO form,
+    							   @ModelAttribute BoardDTO q,
                                    HttpSession session,
                                    Model model) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
@@ -740,7 +759,7 @@ public class BoardController {
         dto.setEmployeeId(loginUser.getEmployeeId()); // 소유자 체크용
         boardMapper.modify(dto);
 
-        return "redirect:/board/free/detail?postId=" + form.getPostId();
+        return "redirect:/board/free/detail?postId=" + form.getPostId() + listQS(form, true);
     }
 
     // 게시글 삭제 (POST) → 리스트로 복귀
@@ -775,38 +794,42 @@ public class BoardController {
     // 댓글 저장 처리
     @PostMapping("/free/comment/save")
     public String saveComment(@ModelAttribute CommentDTO dto,
+    						  @ModelAttribute BoardDTO q,
                               HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         dto.setEmployeeId(loginUser.getEmployeeId());
         commentMapper.insertComment(dto);
-        return "redirect:/board/free/detail?postId=" + dto.getPostId();
+        return "redirect:/board/free/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
     // 답글 달기
     @PostMapping("/free/commentReply")
     public String reply(@ModelAttribute CommentDTO dto,
+    				    @ModelAttribute BoardDTO q,
                         HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         dto.setEmployeeId(loginUser.getEmployeeId());
         commentMapper.insertComment(dto);
-        return "redirect:/board/free/detail?postId=" + dto.getPostId();
+        return "redirect:/board/free/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
     // 댓글삭제
     @PostMapping("/commentDelete")
     public String commentDelete(@ModelAttribute CommentDTO dto,
+    						    @ModelAttribute BoardDTO q,
                                 Model model,
                                 HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) return "redirect:/login";
         String me = loginUser.getEmployeeId();
         int affected = commentMapper.deleteByOwner(dto.getCommentId(), me);
-        return "redirect:/board/free/detail?postId=" + dto.getPostId();
+        return "redirect:/board/free/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
     // 좋아요 토글(자유)
     @PostMapping("/free/like/toggle")
     public String toggleLike(@ModelAttribute BoardLikeDTO dto,
+    					     @ModelAttribute BoardDTO q,
                              HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) return "redirect:/login";
@@ -820,7 +843,7 @@ public class BoardController {
         // ★ 항상 동기화(가장 안전)
         boardMapper.syncLikeCount(dto);
 
-        return "redirect:/board/free/detail?postId=" + dto.getPostId();
+        return "redirect:/board/free/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
 }

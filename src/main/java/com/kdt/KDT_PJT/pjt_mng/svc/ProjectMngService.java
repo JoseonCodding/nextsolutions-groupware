@@ -13,6 +13,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kdt.KDT_PJT.cmmn.dao.CmmnDao;
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
+import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.pjt_mng.mapper.PjtMngMapper;
 import com.kdt.KDT_PJT.pjt_mng.mapper.PjtMngMapper.ProjectMngMapper;
 
@@ -55,8 +56,7 @@ public class ProjectMngService {
    // 🔹 프로젝트 등록 (기존)
    public void savePjtProc(CmmnMap params) {
 	   
-	   
-	   
+	      
 
       String queryId = "com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.savePjtProc";
       cmmnDao.insert(queryId, params);
@@ -283,6 +283,13 @@ public class ProjectMngService {
 			// TODO Auto-generated method stub
 			return null;
 		}
+		
+		// 활성사원 목록
+	    public List<CmmnMap>  getEmployeeList( ) {
+	       return pjtMngMapper.getEmployeeList();
+	    }
 	}
+
+
 
 

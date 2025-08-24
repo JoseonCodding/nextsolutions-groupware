@@ -1,51 +1,23 @@
-/* 정렬 & 검색 & 글쓰기 컨트롤 영역 */
+/* ==============================
+   2) Board Section
+   (source: board.css)
+   ============================== */
+/* 상단 컨트롤 전체 레이아웃 */
 .board-controls {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* 왼쪽/오른쪽으로 분리 */
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.left-controls {
+  display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
 }
 
-.board-controls form,
-.board-controls a {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.board-controls select,
-.board-controls input[type="text"] {
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: #fff;
-  font-size: 14px;
-}
-
-.board-controls button,
-.board-controls .btn {
-  border: none;
-  padding: 9px 14px;
-  font-size: 14px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: background .2s ease;
-}
-
-.board-controls button:hover,
-.board-controls .btn:hover {
-  background: var(--primary-hover);
-}
-
-.search-form .form-group {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-/* select, input, button 스타일 (기존 스타일 유지) */
+/* select & input 기본 스타일 */
 .search-form select,
 .search-form input[type="text"] {
   padding: 10px;
@@ -55,18 +27,386 @@
   background: #fff;
 }
 
-.search-form button {
+/* 버튼 공통 스타일 (검색 버튼 + 글쓰기 버튼) */
+.search-form button,
+.board-controls .btn {
   background: #2563eb;
-  color: white;
+  color: #fff;
   border: none;
   padding: 10px 18px;
   border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.05s ease;
+  text-decoration: none; /* a 태그도 버튼처럼 */
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
 }
 
-.search-form button:hover {
+.search-form button:hover,
+.board-controls .btn:hover {
   background: #1d4ed8;
 }
 
+.search-form button:active,
+.board-controls .btn:active {
+  transform: translateY(1px);
+}
+
+/* ===============================
+   글쓰기/수정 폼 공통
+   =============================== */
+#freeWriteForm.container,
+#modifyForm.container,
+#noticeWriteForm.container,
+#customWriteForm.container {
+  max-width: 880px;
+  margin: 32px auto 48px;
+  padding: 0 16px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+#freeWriteForm.container > h2,
+#modifyForm.container > h2,
+#noticeWriteForm.container > h2,
+#customWriteForm.container > h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 6px 0 18px;
+  color: #111827;
+}
+
+/* 폼 그룹 */
+#freeWriteForm .form-group,
+#modifyForm .form-group,
+#noticeWriteForm .form-group,
+#customWriteForm .form-group {
+  margin-bottom: 18px;
+}
+
+#freeWriteForm .form-group label,
+#modifyForm .form-group label,
+#noticeWriteForm .form-group label,
+#customWriteForm .form-group label {
+  display: block;
+  font-size: 25px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 8px 2px;
+}
+
+#freeWriteForm .form-group input[type="text"],
+#modifyForm .form-group input[type="text"],
+#noticeWriteForm .form-group input[type="text"],
+#customWriteForm .form-group input[type="text"],
+#freeWriteForm .form-group textarea,
+#modifyForm .form-group textarea,
+#noticeWriteForm .form-group textarea,
+#customWriteForm .form-group textarea {
+  max-width: 1170px;
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+#freeWriteForm .form-group input[type="text"]:focus,
+#modifyForm .form-group input[type="text"]:focus,
+#noticeWriteForm .form-group input[type="text"]:focus,
+#customWriteForm .form-group input[type="text"]:focus,
+#freeWriteForm .form-group textarea:focus,
+#modifyForm .form-group textarea:focus,
+#noticeWriteForm .form-group textarea:focus,
+#customWriteForm .form-group textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+}
+
+/* 액션 버튼 영역 */
+#freeWriteForm .form-actions,
+#modifyForm > div:last-of-type,
+#noticeWriteForm .form-actions,
+#customWriteForm .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+#freeWriteForm .form-actions button,
+#modifyForm button[type="submit"],
+#noticeWriteForm .form-actions button,
+#customWriteForm .form-actions button,
+#freeWriteForm .form-actions a,
+#modifyForm a,
+#noticeWriteForm .form-actions a,
+#customWriteForm .form-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background-color .15s, border-color .15s, transform .05s;
+}
+
+/* 기본(primary) 버튼 */
+#freeWriteForm .form-actions button,
+#modifyForm button[type="submit"],
+#noticeWriteForm .form-actions button,
+#customWriteForm .form-actions button {
+  background: #2563eb;
+  color: #fff;
+}
+
+#freeWriteForm .form-actions button:hover,
+#modifyForm button[type="submit"]:hover,
+#noticeWriteForm .form-actions button:hover,
+#customWriteForm .form-actions button:hover {
+  background: #1d4ed8;
+}
+
+/* 취소 버튼 */
+#freeWriteForm .form-actions a,
+#modifyForm a,
+#noticeWriteForm .form-actions a,
+#customWriteForm .form-actions a {
+  background: #fff;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+#freeWriteForm .form-actions a:hover,
+#modifyForm a:hover,
+#noticeWriteForm .form-actions a:hover,
+#customWriteForm .form-actions a:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Summernote 에디터 */
+#freeWriteForm .note-editor.note-frame,
+#modifyForm .note-editor.note-frame,
+#noticeWriteForm .note-editor.note-frame,
+#customWriteForm .note-editor.note-frame {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#freeWriteForm .note-editor .note-toolbar,
+#modifyForm .note-editor .note-toolbar,
+#noticeWriteForm .note-editor .note-toolbar,
+#customWriteForm .note-editor .note-toolbar {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+#freeWriteForm .note-editor .note-editable,
+#modifyForm .note-editor .note-editable,
+#noticeWriteForm .note-editor .note-editable,
+#customWriteForm .note-editor .note-editable {
+  min-height: 300px;
+  padding: 14px 16px;
+  line-height: 1.7;
+  font-size: 15px;
+  color: #111827;
+}
+
+
+/* ==============================
+   2) Admin Section
+   ============================== */
+:root {
+      --gap: 12px; --radius: 12px;
+      --primary: #3949ab; --primary-600: #303f9f;
+      --surface: #ffffff; --ink: #1f2937; --muted: #6b7280; --border: #e5e7eb; --table-head: #eef2ff;
+    }
+    #boardAdmin * { box-sizing: border-box; }
+    #boardAdmin header { padding: 20px 0; position: sticky; top: 0; z-index: 10; color: #fff; background: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    #boardAdmin header h1 { margin: 0; font-size: 20px; color: #fff }
+    #boardAdmin header .muted { color: rgba(255,255,255,0.9); }
+    #boardAdmin .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
+
+    #boardAdmin .grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); align-items: start; }
+    #boardAdmin .card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.04); overflow: hidden; margin-top: 10px;}
+    #boardAdmin .card h2 { margin: 0; padding: 14px 16px; border-bottom: 1px solid #f0f0f0; font-size: 16px; background: #fff; }
+    #boardAdmin .card .content { padding: 16px; }
+
+    #boardAdmin .muted { color: var(--muted); font-size: 12px; }
+    #boardAdmin .row { display: grid; gap: 20px; align-items: center; margin-bottom: 16px; }
+    #boardAdmin input[type=text], #boardAdmin select, #boardAdmin textarea { width: 100%; padding: 10px; border:1px solid #cbd5e1; border-radius: 10px; background:#fff; }
+    #boardAdmin input[type=checkbox] { transform: scale(1.15); }
+    #boardAdmin .actions { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; justify-content: flex-start; margin-bottom: 16px;}
+    #boardAdmin .actions form { display: contents; }
+
+    #boardAdmin .btn { appearance: none; border: 1px solid #cbd5e1; background: #f8fafc; color: #3949ab; padding: 9px 14px; border-radius: 999px; cursor: pointer; transition: .15s; display: inline-flex; align-items: center; white-space: nowrap; }
+    #boardAdmin .btn:hover { filter: brightness(0.98); }
+    #boardAdmin .btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    #boardAdmin .btn.primary:hover { background: var(--primary-600); border-color: var(--primary-600); }
+    #boardAdmin .btn.ghost { background: #3949ab; color: #f8fafc; }
+    #boardAdmin .btn.danger { background:#ef4444; color:#fff; border-color:#ef4444; }
+    #boardAdmin .btn.danger:hover { filter:brightness(.95); }
+
+    #boardAdmin .table-wrap { overflow: auto; border: 1px solid --border; border-radius: var(--radius); }
+    #boardAdmin table { width: 100%; border-collapse: collapse; }
+    #boardAdmin th, #boardAdmin td { padding: 10px 10px; border-bottom: 1px solid #edf2f7; text-align: center; }
+    #boardAdmin thead th { white-space: nowrap; font-weight: 700; color: #111827; background: var(--table-head); position: sticky; top: 0; z-index: 5; }
+    #boardAdmin tr:hover td { background: #fafaff; }
+
+    #boardAdmin .td-actions {  position: relative; vertical-align: bottom; }
+    #boardAdmin .btn-row { display: flex; gap: 6px; justify-content: flex-end; margin-top: 16px; }
+
+    #boardAdmin .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; border:1px solid #e5e7eb; }
+    #boardAdmin .badge.green { background:#ecfdf5; border-color:#a7f3d0; color:#065f46 }
+    #boardAdmin .badge.red   { background:#fef2f2; border-color:#fecaca; color:#991b1b }
+
+    #boardAdmin dialog {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  width: 640px;
+  max-width: calc(100% - 32px);
+
+  /* 중앙 정렬 추가 */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-height: 90vh;   /* 화면 90% 안 넘도록 */
+  overflow: hidden;   /* 스크롤 완전 제거 */
+}
+
+    #boardAdmin dialog::backdrop { background: rgba(0,0,0,.35); }
+    #boardAdmin dialog header { position: static; background: var(--table-head); border-bottom:1px solid #e5e7eb; border-radius: 16px 16px 0 0; padding: 10px 0; }
+    #boardAdmin dialog .content { padding: 16px; }
+
+    #boardAdmin .stats2 { display:grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+    #boardAdmin .today .kpi {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+}
+#boardAdmin .today .kpi + .kpi {
+  margin-top: 8px;
+}
+#boardAdmin .today .label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+#boardAdmin .today .value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* KPI 카드 공통 (today 에서도 사용) */
+#boardAdmin .stat-card {
+  --accent: #1976d2;
+  --bg: #fff;
+
+  background: var(--bg);
+  border-left: 6px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+  cursor: default;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: box-shadow .18s ease, transform .18s ease;
+}
+
+/* Hover 효과는 KPI용이므로 살짝만 강조 */
+#boardAdmin .stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+}
+
+/* 내부 텍스트 */
+#boardAdmin .stat-card .label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+#boardAdmin .stat-card .value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+/* 키보드 포커스 접근성 */
+#boardAdmin .stat-card:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* 오늘 통계 내 stat-card 간격 */
+#boardAdmin .today .stat-card + .stat-card {
+  margin-top: 12px;
+}
+
+/* 상단 두 개 카드 그리드 */
+#boardAdmin .grid-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
+  margin-bottom: 16px;
+}
+
+/* 카드 높이 맞춤 */
+#boardAdmin .full-height {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* 아래쪽 카드: 전체 폭 */
+#boardAdmin .card.wide {
+  grid-column: 1 / -1; /* 전체 열 차지 */
+}
+
+/* 카드 기본 스타일 (보강) */
+#boardAdmin .card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#boardAdmin .card .content {
+  padding: 16px;
+  flex: 1;
+}
+
+
+
+    #boardAdmin .boardlist { border:1px solid var(--border); border-radius:12px; overflow:hidden; background:#fff; }
+    #boardAdmin .boardlist .list-head { background: var(--table-head); font-weight:700; padding:10px; display:flex; justify-content:space-between; }
+    #boardAdmin #stat-board-list { list-style:none; margin:0; padding:0; max-height: 360px; overflow:auto; }
+    #boardAdmin #stat-board-list .row { padding:10px 12px; cursor:pointer; display:grid; grid-template-columns: 1fr auto; gap: 8px; align-items:center; border-top:1px solid #f1f5f9; }
+    #boardAdmin #stat-board-list .row:hover { background:#f8fafc; }
+    #boardAdmin #stat-board-list .row.active { background:#eef2ff; color:#1d4ed8; }
+    #boardAdmin .muted { color: var(--muted); }
+
+    @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } .row { grid-template-columns: 1fr; } }

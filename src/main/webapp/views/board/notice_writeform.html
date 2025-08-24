@@ -1,51 +1,10 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>공지사항 글쓰기</title>
-  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
-  <style>
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      font-family: 'Noto Sans KR', sans-serif;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      box-sizing: border-box;
-    }
-    .form-actions {
-      display: flex;
-      gap: 10px;
-    }
-    .form-actions button {
-      padding: 8px 16px;
-      border: none;
-      background: #007bff;
-      color: white;
-      cursor: pointer;
-    }
-    .form-actions a {
-      padding: 8px 16px;
-      border: 1px solid #ccc;
-      text-decoration: none;
-      color: #333;
-    }
-  </style>
-</head>
-<body>
+<title>공지사항 글쓰기</title>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/css/board.css">
 
+<h1 style="margin-top:12px;">공지사항 작성</h1>
 <!-- 작성 폼 -->
 <div class="container">
-  <h2>공지사항 작성</h2>
-
   <form id="noticeWriteForm" th:action="@{/board/notice/save}" th:object="${boardDTO}" method="post">
     <!-- 제목 -->
     <div class="form-group">
@@ -157,6 +116,3 @@ $(document).ready(function () {
   });
 });
 </script>
-
-</body>
-</html>
