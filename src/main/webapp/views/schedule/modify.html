@@ -134,13 +134,14 @@
   });
 </script>
 
+<div class="sche-detail-container">
 <form method="post" th:object="${scd}">
     <h1 class="detail-title">일정 수정</h1>
-    <table>
+    <table class="sche-table-detail">
         <tr>
-            <th>일정명</th>
+            <th style="width:200px;">일정명</th>
             <td colspan="3">
-                <input type="text" th:field="*{title}" required />
+                <input type="text" th:field="*{title}"  style="width:100%;" required />
             </td>
         </tr>
         <tr>
@@ -161,7 +162,7 @@
         <tr>
             <th>일정 옵션</th>
             <td colspan="3">
-                <label>반복일정 :
+                <label class="sche-options">반복일정 :
                     <select th:field="*{repeatCheck}" id="repeatCheck">
                         <option value="0">반복 없음</option>
                         <option value="1">매일</option>
@@ -169,10 +170,10 @@
                         <option value="3">매달</option>
                     </select>
                 </label>
-                <label>
+                <label class="sche-options">
                     <input type="checkbox" th:field="*{holiday}" value="휴무일"/> 휴무일
                 </label>
-                <label>
+                <label class="sche-options">
                     <input type="checkbox" th:field="*{alarm}" value="알림"/> 알림
                 </label>
             </td>
@@ -180,14 +181,14 @@
         <tr>
             <th>내용</th>
             <td colspan="3">
-                <textarea th:field="*{content}" cols="50" rows="10"></textarea>
+                <textarea class="sche-content" th:field="*{content}" cols="50" rows="10"></textarea>
             </td>
         </tr>
     </table>
 
-    <div class="btn-area">
-        <a class="back-btn" th:href="@{/schedule}">취소</a>
-        <button type="submit" class="save-btn">수정</button>
-    </div>
+        <a class="sche-delete-btn" th:href="@{/schedule}">취소</a>
+        <button type="submit" class="sche-save-btn" >수정</button>
+
 </form>
+</div>
 

@@ -219,4 +219,18 @@ input, select {
     margin-bottom: 20px;
     padding-bottom: 20px;
 }
-.page
+.modify-per {
+	width:80px;
+}
+.modify-day {
+	width:80px;
+}
+.modify-reason {
+	width:300px;
+}
+.down-btn {
+	position: relative;
+	top: -38px;
+	left: -300px;
+	float:right;
+}
