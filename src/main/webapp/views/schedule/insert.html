@@ -34,6 +34,8 @@
     // 3) 종일 체크 시
     const isAllDay = allDayCheckbox.checked;
     if (startTimeInput) startTimeInput.disabled = isAllDay;
+    if (endTimeInput)   endTimeInput.disabled   = isAllDay;
+
     if (isAllDay) {
       if (startTimeInput) startTimeInput.value = "";
       if (endTimeInput)   endTimeInput.value   = "";
@@ -131,7 +133,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    bindDateTimeEvents();
+    bindDateEvents();
   });
   
 
@@ -143,10 +145,10 @@
     if (!holidayCheckbox || !allDayCheckbox || !repeatSelect) return;
 
     holidayCheckbox.addEventListener("change", applyState);
-    //allDayCheckbox.addEventListener("change", applyState);
+    allDayCheckbox.addEventListener("change", applyState);
     repeatSelect.addEventListener("change", applyState);
   
-    allDayCheckbox.addEventListener("change", function () {
+/*     allDayCheckbox.addEventListener("change", function () {
         // 휴무일이 켜져 있는데 사용자가 종일을 해제하려고 할 때
         if (!this.checked && holidayCheckbox.checked) {
           alert("먼저 휴무일 체크를 해제하세요.");
@@ -154,7 +156,7 @@
           return;
         }
   
-    });
+    }); */
   
   
   }
@@ -284,7 +286,7 @@
             </td>
         </tr>
     </table>
-
+    
         <a class="back-btn" th:href="@{/schedule}">취소</a>
         <button type="submit" class="regist-btn">등록</button>
 

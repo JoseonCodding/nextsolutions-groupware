@@ -74,19 +74,6 @@ public interface ScheduleMapper {
 		        alarm         = #{alarm},
 		        updated_at    = NOW()
 		    WHERE schedule_id = #{scheduleId}
-		      AND employeeId = #{employeeId}
-		      AND (
-		            title        != #{title} OR
-		            content      != #{content} OR
-		            cate         != #{cate} OR
-		            start_date   != #{startDate} OR
-		            start_time   != #{startTime} OR
-		            end_date     != #{endDate} OR
-		            end_time     != #{endTime} OR
-		            repeat_check != #{repeatCheck} OR
-		            holiday      != #{holiday} OR
-		            alarm        != #{alarm}
-		      )
 		""")
 
 	int modify(ScheduleDTO dto);

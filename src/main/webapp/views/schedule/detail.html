@@ -27,7 +27,7 @@
                 <span th:if="${scd.repeatCheck == 2}">매주 반복</span>
                 <span th:if="${scd.repeatCheck == 3}">매달 반복</span>
 
-                <span th:if="${scd.holiday != null}"> | 휴무일</span>
+                <span th:if="${scd.holiday == '휴무일'}"> | 휴무일</span>
                 <span th:if="${scd.alarm != null}"> | 알림</span>
             </td>
         </tr>
@@ -39,14 +39,30 @@
         </tr>
     </table>
 
-
-        <a href="/schedule" class="sche-back-btn">목록으로</a>
-        <!-- employId가 일치하거나 권한자만 수정/삭제 가능 -->
+ 
+        <a th:href="@{|/schedule?viewMode=${viewMode}|}" class="sche-back-btn">목록으로</a>
+    
+  <!--      <a href="@{/schedule/backToList}"></a>  --> 
+        <!-- employId가 일치하거나 권한자만 수정/삭제 가능 
         <a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '일정' or session.loginUser.role == '대표'}"
            th:href="@{|/schedule/modify?scheduleId=${scd.scheduleId}|}" class="sche-save-btn">수정</a>
+           -->
+           <a th:if="${session.loginUser != null 
+          and (session.loginUser.employeeId == scd.employeeId 
+               or session.loginUser.role == '일정' 
+               or session.loginUser.role == '대표')}"
+		   th:href="@{|/schedule/modify?scheduleId=${scd.scheduleId}|}" 
+		   class="sche-save-btn">수정</a>
+           <a th:if="${session.loginUser != null 
+          and (session.loginUser.employeeId == scd.employeeId 
+               or session.loginUser.role == '일정' 
+               or session.loginUser.role == '대표')}"
+		   th:href="@{|/schedule/delete?scheduleId=${scd.scheduleId}|}" 
+		   class="sche-delete-btn">삭제</a>
+   <!-- 
         <a th:if="${session.loginUser.employeeId==scd.employeeId  || session.loginUser.role == '일정' or session.loginUser.role == '대표'}"
            th:href="@{|/schedule/delete?scheduleId=${scd.scheduleId}|}" class="sche-delete-btn">삭제</a>
-
+ -->
 </div>
 
 
