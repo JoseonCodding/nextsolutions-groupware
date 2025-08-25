@@ -21,7 +21,7 @@
 			<tr>
 				<th>연차사유</th>
 				<td>
-					<textarea class="write" name="reason" id="" cols="30" rows="1" placeholder='개인사유'></textarea></td>
+					<textarea class="write" name="reason" id="" cols="30" rows="1" placeholder='개인사유' required></textarea></td>
 				</tr>
 		</table>
 	
@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function() {
      */
     
     // 폼 제출 시 유효성 검사
-    document.getElementById("leaveForm").addEventListener("submit", function(e) {
+   /*  document.getElementById("leaveForm").addEventListener("submit", function(e) {
         const checkboxes = document.querySelectorAll(".leaveChk");
         let hasChecked = false;
         let msg = "";
@@ -97,7 +97,9 @@ document.addEventListener("DOMContentLoaded", function() {
         checkboxes.forEach(chk => {
             if (chk.checked) {
                 hasChecked = true;
-                const dateInput = chk.closest("td").querySelector(".leaveDate");
+                //const dateInput = chk.closest("td").querySelector(".leaveDate");
+                const dateInput = chk.closest("div").querySelector(".leaveDate");
+
                 if (!dateInput.value) {
                     msg = "체크된 연차의 날짜를 반드시 입력해야 합니다.";
                 }
@@ -115,7 +117,64 @@ document.addEventListener("DOMContentLoaded", function() {
             alert(msg);
             return;
         }
-    });
+    }); */
+
+
+	$(function(){
+
+	    // 체크박스 change 이벤트
+	    $(".leaveChk").change(function(){
+	        const targetId = $(this).attr('target_data');
+	        const $dateInput = $('#' + targetId);
+	        $dateInput.prop('disabled', !$(this).prop('checked'));
+	        if ($(this).prop('checked')) {
+	            const today = new Date();
+	            const yyyy = today.getFullYear();
+	            const mm = String(today.getMonth() + 1).padStart(2, '0');
+	            const dd = String(today.getDate() + 1).padStart(2, '0');
+	            const todayStr = `${yyyy}-${mm}-${dd}`;
+	            $dateInput.attr('min', todayStr);
+	        } else {
+	            $dateInput.val('');
+	            $dateInput.removeAttr('min');
+	        }
+	    });
+
+	    // AJAX로 연차 신청
+	    $("#leaveForm").submit(function(e) {
+	        e.preventDefault();
+
+	        const checkboxes = $(".leaveChk");
+	        let hasChecked = false;
+	        let msg = "";
+
+	        checkboxes.each(function() {
+	            if ($(this).prop("checked")) {
+	                hasChecked = true;
+	                const dateInput = $("#" + $(this).attr("target_data"));
+	                if (!dateInput.val()) {
+	                    msg = "체크된 연차의 날짜를 반드시 입력해야 합니다.";
+	                }
+	            }
+	        });
+
+	        if (!hasChecked) { alert("연차를 최소 1개 이상 선택해야 합니다."); return; }
+	        if (msg) { alert(msg); return; }
+
+	        // 서버 POST
+	        $.post($(this).attr("action"), $(this).serialize())
+	         .done(function() {
+	             alert("신청 완료되었습니다.");
+	             location.href = "/attend/leaveList";
+	         })
+	         .fail(function() {
+	             alert("신청 중 오류가 발생했습니다.");
+	         });
+	    });
+	});
+
+
      
+   
 });
 </script>

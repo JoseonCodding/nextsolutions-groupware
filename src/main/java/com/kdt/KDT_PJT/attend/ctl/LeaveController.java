@@ -71,6 +71,9 @@ public class LeaveController {
         dto.setPosition(loginUser.getPosition());
         
         System.out.println("/attend/leave : "+dto);
+        
+
+        
         // 홈에서 뜨는 화면 연결
         model.addAttribute("mainUrl", "attend/leave/leaveList");
         
@@ -82,14 +85,14 @@ public class LeaveController {
     
     //연차 사용 신청(사용자용)
     @GetMapping("/insert")
-    public String insert(HttpSession session,Model model,RedirectAttributes ra) {
+    public String insert(HttpSession session,Model model) {
     	System.out.println("연차 신청 페이지");
     	
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
     	
     									//잔여연차 가져오기
     	List<LeaveDTO> restData = mapper.annualLeaveRest(loginUser); 
-
+    	
     	
     	model.addAttribute("restData", restData);
     	
@@ -109,7 +112,7 @@ public class LeaveController {
     	reqDto.dataCalc();
     	System.out.println("연차 신청 페이지 : "+reqDto.getArr().size());
     	
-
+    	
     	for (LeaveDTO dto : reqDto.getArr()) {
     		mapper.approvalList(dto);
 		}
@@ -117,6 +120,7 @@ public class LeaveController {
     	
     	return "redirect:/attend/leaveList";
     }
+    
     
     //연차 관리(관리자용)
     @GetMapping("/leaveListMng")
