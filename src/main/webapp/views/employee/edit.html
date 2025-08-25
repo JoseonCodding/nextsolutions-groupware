@@ -97,7 +97,7 @@ input, select {
         <th>직위</th>
         <td>
         	<select name="position" th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
-                <option value="대표이사">대표이사</option>
+                <option value="대표">대표</option>
                 <option value="부장">부장</option>
                 <option value="차장">차장</option>
                 <option value="과장">과장</option>
