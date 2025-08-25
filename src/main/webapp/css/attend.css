@@ -234,3 +234,31 @@ input, select {
 	left: -300px;
 	float:right;
 }
+.attbb{
+	font-size: var(--font-size-base);
+    background: var(--back-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+	position: relative;
+	float:right;
+
+}
+.insert-attbb{
+	position: relative;
+	float:right;
+	font-size: var(--font-size-base);
+    background: var(--save-btn);
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+
+}
