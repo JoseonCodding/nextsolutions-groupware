@@ -13,7 +13,7 @@
         </div>
         <nav class="menu">
 			<a th:href="@{/schedule}" th:classappend="${httpServletRequest.requestURI.startsWith('/schedule/')} ? 'active' : ''">일정관리</a>
-			<a th:href="@{/attend}" th:classappend="${httpServletRequest.requestURI.startsWith('/attend/')} ? 'active' : ''">근태관리</a>
+			<a th:href="@{/attend}" th:classappend="${httpServletRequest.requestURI.startsWith('/attend')} ? 'active' : ''">근태관리</a>
 			<a th:href="@{/pjtMng/getPjtList}" th:classappend="${httpServletRequest.requestURI.startsWith('/pjtMng/')} ? 'active' : ''">프로젝트관리</a>
 			<a th:href="@{/approval/main}" th:classappend="${httpServletRequest.requestURI.startsWith('/approval/')} ? 'active' : ''">전자결재</a>
 			<a th:href="@{/board/notice}" th:classappend="${httpServletRequest.requestURI.startsWith('/board/')} ? 'active' : ''">게시판</a>

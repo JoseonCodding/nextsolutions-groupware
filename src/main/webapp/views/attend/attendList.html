@@ -35,7 +35,7 @@
     </thead>
 	<tbody>
 		<tr th:if="${#lists.isEmpty(mainData)}" >
-			        <td colspan="8" >조회된 연차 내역이 없습니다.</td></tr>
+			        <td colspan="8" >조회된 근태 내역이 없습니다.</td></tr>
 		<tr th:each="dto : ${mainData}">
 			<td th:text="${dto.workDate}"></td>
 			<td th:text="${dto.deptName}"></td>
