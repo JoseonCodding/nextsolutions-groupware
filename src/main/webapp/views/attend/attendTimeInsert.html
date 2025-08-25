@@ -3,7 +3,6 @@
 	<form action="/attend/save" method="post" enctype="multipart/form-data">
 	
 	  <h1 class="detail-title">출퇴근 기록 수정 신청</h1>
-	  
 	  <table >
 	    <!-- 체크박스(정상출근/정상퇴근) -->
 	    <tr class="attend-option">
@@ -42,37 +41,20 @@
 	      <th >내용</th>
 	      <td  colspan="3">
 	        <textarea class="write" name="content" id="content" rows="10"
-	                  placeholder="사유를 자세히 입력해주세요."></textarea>
+	                  placeholder="사유를 자세히 입력해주세요." ></textarea>
 	      </td>
 	    </tr>
 	    
 	  </table>
-	</form>
-    <!-- 제출 -->
-	
-      <div>
-       	<a th:href="@{/attend}"  class="insert-btn" >취소</a>
-        <button type="submit" class="insert-btn">신청</button>
-      </div>
+
+       	<a th:href="@{/attend}"  class="attbb" >취소</a>
+       	
+        <button type="submit" class="insert-attbb">신청</button>
+    </form> 
+
 </div>
 
 <script th:if="${msg != null}">
         alert("[[${msg}]]");
-</script>
-<script>
-// '정상출퇴근' 체크 시 나머지 자동 해제, 개별 체크 시 BOTH 해제
-const both = document.querySelector('.action-both');
-const ones = document.querySelectorAll('.action-one');
-
-if (both) {
-  both.addEventListener('change', function(){
-    if (this.checked) ones.forEach(cb => cb.checked = false);
-  });
-}
-ones.forEach(cb => {
-  cb.addEventListener('change', function(){
-    if (this.checked && both) both.checked = false;
-  });
-});
 </script>
 
