@@ -40,8 +40,8 @@ public interface PjtMngMapper {
     int countMyProjects1(@Param("employeeId") String employeeId);
     
     
-    @Select("    SELECT COUNT(*)\r\n"
-    		+ "    FROM VIEW_PJT_BASC\r\n"
+    @Select("    SELECT COUNT(*) \r\n"
+    		+ "    FROM VIEW_PJT_BASC \r\n"
     		+ "    WHERE (USE_YN IS NULL OR USE_YN = 'Y') "
     		+ "      AND TB_PJT_APR = #{employeeId}")
     int countMyPendingApprovals(@Param("employeeId") String employeeId);
@@ -65,6 +65,39 @@ public interface PjtMngMapper {
    // DB에서 PJT_STTS_CD가 '대기'인 개수 조회
    @Select("select count(*) from VIEW_PJT_BASC WHERE PJT_STTS_CD = '대기'")
    int countPending();
+   
+   
+   
+// DB에서 작성자 조회 개수 조회
+   @Select("""
+   		<script>
+   		SELECT count(*)
+   		FROM  VIEW_PJT_BASC t2
+   		 <if test="keyword != null and keyword != ''">
+   		WHERE t2.employeeId IN (
+	      SELECT e.employeeId
+	      FROM employee e
+	      WHERE e.emp_nm LIKE CONCAT('%', #{keyword}, '%')  )
+	      </if>	
+	      </script>	
+   		""")
+   int countWriter(String keyword);
+   
+   
+// DB에서 작성자 조회 개수 조회
+   @Select("""
+   		<script>
+   		SELECT count(*)
+   		FROM  VIEW_PJT_BASC t2
+   		<if test="keyword != null and keyword != ''">
+   		  WHERE  (PJT_NM LIKE CONCAT('%', #{keyword}, '%'))          
+   		</if>
+	    </script>	
+   		""")
+   int countProject(String keyword);
+   
+   
+   
    
    @Select(" select "
    			+ " t2.* "
