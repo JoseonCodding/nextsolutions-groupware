@@ -239,6 +239,8 @@ public class ProjectMngController {
           startPage = Math.max(1, endPage - 4);
       }
       
+      if (totalPages == 0) endPage = 1;									// 보여줄 DB가 없을 때, 페이지가 1과 0으로 표기되는 현상 방지
+      
       
       // 위에서 선언하고 계산한 값들을 뷰(html)로 보내기 위해서 Model에 담을거에요.
       // 매개변수로 Model이 들어있어야해요. (현재 @GetMapping("/getPjtList") 어노테이션 걸려있는, public String getPjtList 메서드에, Model model이 들어있음)
@@ -421,12 +423,22 @@ public class ProjectMngController {
 
 
    @GetMapping("/pjtDetail")
-   public String pjtDetail(@RequestParam("pjtSn") int pjtSn, Model model, HttpSession session) {
+   public String pjtDetail(Model model,
+						   HttpSession session,
+						   @RequestParam("pjtSn") int pjtSn,
+						   @RequestParam(value = "pageNum", required = false) Integer pageNum,			// 뒤로가기용 파라미터
+				           @RequestParam(value = "keywordType", required = false) String keywordType, 	// 뒤로가기용 파라미터
+				           @RequestParam(value = "keyword", required = false) String keyword 			// 뒤로가기용 파라미터
+				           ) {
 
       CmmnMap pjt = projectMngService.getPjtDetail(pjtSn);
 
       log.debug("DETAIL pjtSn={}, TB_PJT_APR={}", pjtSn, pjt.get("TB_PJT_APR"));
       log.debug("DETAIL keys={}", pjt.keySet());
+      
+      model.addAttribute("pageNum", pageNum);			// 뒤로가기용 파라미터
+      model.addAttribute("keywordType", keywordType);	// 뒤로가기용 파라미터
+      model.addAttribute("keyword", keyword);			// 뒤로가기용 파라미터
       model.addAttribute("pjt", pjt);
       model.addAttribute("mainUrl", "pjt_mng/pjt_detail");
       return "navTap";

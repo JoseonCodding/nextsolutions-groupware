@@ -112,7 +112,7 @@
   <!-- 하단 버튼:  뒤로가기하면 수정한 게시글이 있는 해당 페이지로 가게끔 -->
   
   <div class="actions">
-    <a th:href="@{/pjtMng/getPjtList}" class="btn btn-primary">뒤로가기</a>
+    <a th:href="@{/pjtMng/getPjtList(pageNum=${pageNum}, keywordType=${keywordType}, keyword=${keyword})}" class="btn btn-primary">뒤로가기</a>
     
     
     

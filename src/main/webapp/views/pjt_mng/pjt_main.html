@@ -94,7 +94,7 @@ tr:hover {
 }
 
 /*  페이지네이션 선택된(현재) 페이지 버튼 */
-.pagination .page-item.active .page-link {
+.page-item.active .page-link {
 	background-color: #d32f2f; /* 진한 빨강*/
 	border-color: #b71c1c;
 	color: #fff;
@@ -103,11 +103,12 @@ tr:hover {
 }
 
 /* 마우스 올렸을 때 */
-.pagination .page-item.active .page-link:hover {
+.page-item.active .page-link:hover {
 	background-color: #b71c1c;
 	border-color: #7f0000;
 	color: #fff;
 }
+
 
  /* 페이징 번호 점 없애기*/
 .pagination {
@@ -337,7 +338,7 @@ tr:hover {
 			<!-- 페이지 순번 처리  -->
 				<td	th:text="${pageInfo != null ? (pageInfo.pageSize * (pageInfo.pageNum - 1) + stat.index + 1) : (stat.index + 1)}" style="text-align: center;"></td>
 				<td class="board-title">
-					<a th:text="${pjt['PJT_NM']}" th:href="@{/pjtMng/pjtDetail(pjtSn=${pjt['PJT_SN']})}" style="width:340px;"></a>
+					<a th:text="${pjt['PJT_NM']}" th:href="@{/pjtMng/pjtDetail(pjtSn=${pjt['PJT_SN']}, pageNum=${pageNum}, keywordType=${keywordType}, keyword=${keyword})}" style="width:340px;"></a>
 				</td>
 				<!-- <td th:utext="${pjt['employeeId']+'<br/>'+pjt['position']}">담당자</td>	 이름,직책 두줄처리된거 -->
 				<td th:utext="${pjt['employeeId']+' '+pjt['position']}">담당자</td>  <!-- 이름,직책 한줄처리된거 -->
