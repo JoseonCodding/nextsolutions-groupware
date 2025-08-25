@@ -83,11 +83,7 @@ public class ProjectMngController {
 
 	    // ✅ 로그인 사용자 세션에서 가져오기 (세션 키: "loginUser")
        EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
-       System.out.println("getPjtList Called >>> employeeId = " + loginUser.getEmployeeId());
       
-      // 🔍 검색어 로그 확인 (디버깅용)
-      System.out.println("getPjtList Called >>> keyword = " + keyword);
-
       // ① 페이지 번호/사이즈 받아오기 (없으면 기본값)
       int pageNum = 1;
       int pageSize = 10;
@@ -133,7 +129,6 @@ public class ProjectMngController {
     	  log.info(" sortType = myApproval ");    	  
     	  //keyword = loginUser.getEmployeeId();    	  
     	  list = projectMngService.getProjectMyApprovalList(pageNum, pageSize, keyword, loginUser.getEmployeeId());
-    	  System.out.println("myApproval :"+list.getSize());
           break;         
           
           
@@ -182,7 +177,6 @@ public class ProjectMngController {
       model.addAttribute("pjtList", list.getList()); // 현재 페이지 데이터
       model.addAttribute("pageInfo", list); // 페이징 정보
       
-      System.out.println("list:"+list.getList());
       
       // 권한 받아오기
       model.addAttribute("loginUser", loginUser);
@@ -205,13 +199,8 @@ public class ProjectMngController {
     	  ppCount =projectMngService.countProject(keyword);
           break;
       case "status":
-    	  if(keyword.equals("진행중"))
-    		  ppCount = progressCount;
-    	  if(keyword.equals("완료"))
-    		  ppCount = completeCount;
-    	  if(keyword.equals("대기"))
-    		  ppCount = pendingCount;
-          break;
+    	    ppCount = projectMngService.countStatus(keyword);
+    	    break;
       case "my":
     	  ppCount = myProjectCount;
           break;     
@@ -337,7 +326,6 @@ public class ProjectMngController {
 	        // ✅ 뷰에 넘기기
 	        model.addAttribute("empNm", empNm);  // ✅ 이름을 모델에 담아줌
 
-	        System.out.println("empNm = " + empNm);
 	    }
 	   
       // 등록 페이지로 이동

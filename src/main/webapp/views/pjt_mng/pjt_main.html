@@ -203,29 +203,29 @@ tr:hover {
 	<!-- 카드 요약 -->
 	<div class="cards-grid">
 
-		<!-- 총 프로젝트 -->
+		<!-- 전체 프로젝트 -->
 		<div class="stat-card" style="--accent: #90caf9;"
 			onclick="location.href='/pjtMng/getPjtList'">
 			<div class="meta">
-				<div class="label">총 프로젝트</div>
+				<div class="label">전체 프로젝트</div>
 				<div class="value" th:text="${totalCount != null ? totalCount : 0}">0</div>
 			</div>
 		</div>
 
-		<!-- 내 참여 프로젝트 -->
+		<!-- 내담당 프로젝트 -->
 		<div class="stat-card" style="--accent: #ce93d8;"
 			th:onclick="|location.href='@{/pjtMng/getPjtList(keywordType='my', keyword=${loginUser.empNm})}'|">
 			<div class="meta">
-				<div class="label">내 참여 </div>
+				<div class="label">내담당 프로젝트</div>
 				<div class="value" th:text="${myProjectCount}">0</div>
 			</div>
 		</div>
 
-		<!-- 내 결재 프로젝트 -->
+		<!-- 내결재 프로젝트 -->
 		<div class="stat-card" style="--accent: #ffb3b3;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=myApproval'">
 			<div class="meta">
-				<div class="label">내 결재</div>
+				<div class="label">내결재 프로젝트</div>
 				<div class="value" th:text="${myApprovalTodoCount}">0</div>
 			</div>
 		</div>
@@ -234,24 +234,24 @@ tr:hover {
 		<div class="stat-card" style="--accent: #ffe082;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=진행중'">
 			<div class="meta">
-				<div class="label">진행중</div>
+				<div class="label">진행중인 프로젝트</div>
 				<div class="value" th:text="${progressCount}">0</div>
 			</div>
 		</div>
 
-		<!-- 대기 -->
+		<!-- 대기중인 프로젝트 -->
 		<div class="stat-card" style="--accent: #ef9a9a;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=대기'">
 			<div class="meta">
-				<div class="label">대기중</div>
+				<div class="label">대기중인 프로젝트</div>
 				<div class="value" th:text="${pendingCount}">0</div>
 			</div>
 		</div>
-		<!-- 완료 -->
+		<!-- 완료된 프로젝트 -->
 		<div class="stat-card" style="--accent: #81c784;"
 			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=완료'">
 			<div class="meta">
-				<div class="label">완료</div>
+				<div class="label">완료된 프로젝트</div>
 				<div class="value" th:text="${completeCount}">0</div>
 			</div>
 		</div>
