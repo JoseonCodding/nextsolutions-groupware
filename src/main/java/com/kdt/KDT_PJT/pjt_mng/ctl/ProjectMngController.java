@@ -682,6 +682,7 @@ public class ProjectMngController {
        	  
     	  pjtSn = projectMngService.savePjtProcForVersion(params)+"";      
       }else {
+    	  System.out.println("완료로 수정 "+params);
     	  projectMngService.updatePjtProc(params); 
       }
       
