@@ -150,11 +150,11 @@ public class ScheduleController {
 		
 
 		// 수정 성공 여부 메시지 전달
-        if (modify>0) {
-            ra.addFlashAttribute("msg", "수정되었습니다.");
-        } else {
-        	ra.addFlashAttribute("msg", "수정사항이 없습니다.");
-        }
+//        if (modify>0) {
+//            ra.addFlashAttribute("msg", "수정되었습니다.");
+//        } else {
+//        	ra.addFlashAttribute("msg", "수정사항이 없습니다.");
+//        }
 		
 		return "redirect:/schedule/detail?scheduleId=" + dto.getScheduleId();
 	}
