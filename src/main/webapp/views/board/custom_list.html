@@ -4,6 +4,7 @@
 <h1 style="margin-top:12px;">게시판</h1>
 <div class="board-container">
   <div class="board-controls">
+  <div class="left-controls">
      <!-- 정렬 -->
      <form th:action="@{/board/custom/{boardId}(boardId=${activeBoardId})}" method="get" class="search-form" id="sortForm">
      <div class="form-group">
@@ -16,18 +17,21 @@
          <option value="likes"  th:selected="${sort}=='likes'">추천순</option>
        </select>
        <noscript><button type="submit">정렬 적용</button></noscript>
+       </div>
      </form>
 
      <!-- 검색 -->
-     <form th:action="@{/board/custom/{boardId}(boardId=${activeBoardId})}" method="get" style="display:flex; gap:8px;">
+     <form th:action="@{/board/custom/{boardId}(boardId=${activeBoardId})}" method="get" class="search-form">
+     <div class="form-group">
        <input type="text" name="keyword" th:value="${keyword}" placeholder="제목/작성자 검색">
        <input type="hidden" name="sort" th:value="${sort}">
        <input type="hidden" name="size" th:value="${size}">
        <input type="hidden" name="page" value="1">
        <button type="submit"><i class="fa fa-search"></i>검색</button>
+       <a th:href="@{/board/custom/{boardId}(boardId=${activeBoardId})}" class="filter-btn"><i class="fa fa-rotate-left"></i> 초기화 </a>
+     </div>
      </form>
      </div>
-     
 
      <!-- 글쓰기 -->
      <a th:href="@{/board/custom/{boardId}/write(
@@ -41,12 +45,12 @@
   <table class="board-table" style="width:100%; border-collapse:collapse;">
     <thead style="background:#f5f5f5;">
       <tr>
-        <th style="padding:10px; border-bottom:1px solid #ddd;">번호</th>
-        <th style="padding:10px; border-bottom:1px solid #ddd;">제목</th>
-        <th style="padding:10px; border-bottom:1px solid #ddd;">작성자</th>
-        <th style="padding:10px; border-bottom:1px solid #ddd;">등록일</th>
-        <th style="padding:10px; border-bottom:1px solid #ddd;">조회수</th>
-        <th style="padding:10px; border-bottom:1px solid #ddd;">추천수</th>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>등록일</th>
+        <th>조회수</th>
+        <th>추천수</th>
       </tr>
     </thead>
     <tbody>
@@ -64,8 +68,8 @@
         <td style="padding:10px; text-align:center;" th:text="|${b.empNm} ${b.position}|">작성자</td>
         <td style="padding:10px; text-align:center;"
             th:text="${b.createdAt != null ? #dates.format(b.createdAt, 'yyyy-MM-dd') : ''}"></td>
-        <td style="padding:10px; text-align:center;" th:text="${b.viewCount} ?: 0"></td>
-        <td style="padding:10px; text-align:center;" th:text="${b.likeCount} ?: 0"></td>
+        <td style="padding:10px; text-align:center;" th:text="${b.viewCount ?: 0}"></td>
+        <td style="padding:10px; text-align:center;" th:text="${b.likeCount ?: 0}"></td>
       </tr>
 
       <tr th:if="${#lists.isEmpty(boards)}">
@@ -76,36 +80,56 @@
     </tbody>
   </table>
 
-  <!-- 페이지네이션 -->
-  <div class="pagination" style="display:flex;gap:6px;align-items:center" th:if="${page != null}">
-    <a th:classappend="${page==1}?' disabled'"
-       th:href="@{/board/custom/{boardId}(boardId=${board.boardId},page=1,size=${size},sort=${sort},keyword=${keyword})}">&lt;&lt;</a>
+<!-- 페이지네이션(동현) -->
+<nav class="pagination" th:if="${page != null}">
+  <!-- Previous 버튼 (5페이지 앞으로) -->
+  <a class="prev"
+     th:if="${page > 1}"
+     th:href="@{/board/custom/{boardId}(boardId=${board.boardId}, page=${page-5 > 1 ? page-5 : 1}, size=${size}, sort=${sort}, keyword=${keyword})}">
+    &#x2039; Previous
+  </a>
 
-    <a th:classappend="${page==1}?' disabled'"
-       th:href="@{/board/custom/{boardId}(boardId=${board.boardId},page=${page>1?page-1:1},size=${size},sort=${sort},keyword=${keyword})}">&lt;</a>
+  <!-- 첫 페이지 -->
+  <span th:if="${startPage > 1 and page == 1}"
+        class="page-number now-page disabled"
+        th:text="1"></span>
 
-    <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
-      <a th:if="${p!=page}"
-         th:href="@{/board/custom/{boardId}(boardId=${board.boardId},page=${p},size=${size},sort=${sort},keyword=${keyword})}"
-         th:text="${p}"></a>
-      <span th:if="${p==page}" th:text="${p}"
-            style="font-weight:700;padding:2px 6px;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff"></span>
-    </span>
+  <a th:if="${startPage > 1 and page != 1}"
+     class="page-number"
+     th:text="1"
+     th:href="@{/board/custom/{boardId}(boardId=${board.boardId}, page=1, size=${size}, sort=${sort}, keyword=${keyword})}"></a>
 
-    <a th:classappend="${page==totalPages}?' disabled'"
-       th:href="@{/board/custom/{boardId}(boardId=${board.boardId},page=${page<totalPages?page+1:totalPages},size=${size},sort=${sort},keyword=${keyword})}">&gt;</a>
+  <!-- 앞쪽 생략 표시 -->
+  <span th:if="${startPage > 2}" class="ellipsis">...</span>
 
-    <a th:classappend="${page==totalPages}?' disabled'"
-       th:href="@{/board/custom/{boardId}(boardId=${board.boardId},page=${totalPages},size=${size},sort=${sort},keyword=${keyword})}">&gt;&gt;</a>
-  </div>
+  <!-- 페이지 숫자들 -->
+  <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
+    <span th:if="${i == page}" class="page-number now-page disabled" th:text="${i}"></span>
+    <a th:if="${i != page}" class="page-number"
+       th:text="${i}"
+       th:href="@{/board/custom/{boardId}(boardId=${board.boardId}, page=${i}, size=${size}, sort=${sort}, keyword=${keyword})}"></a>
+  </span>
 
-  <!-- offset/limit fallback -->
-  <div class="pagination" style="display:flex;gap:6px;align-items:center"
-       th:if="${page == null and offset != null}">
-    <a th:href="@{/board/custom/{boardId}(boardId=${board.boardId},offset=${offset - limit >= 0 ? offset - limit : 0},limit=${limit})}">&lt; 이전</a>
-    <a th:href="@{/board/custom/{boardId}(boardId=${board.boardId},offset=${offset + limit},limit=${limit})}">다음 &gt;</a>
-  </div>
-</div>
+  <!-- 뒤쪽 생략 표시 -->
+  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
+
+  <!-- 마지막 페이지 -->
+  <span th:if="${endPage < totalPages and page == totalPages}"
+        class="page-number now-page disabled"
+        th:text="${totalPages}"></span>
+
+  <a th:if="${endPage < totalPages and page != totalPages}"
+     class="page-number"
+     th:text="${totalPages}"
+     th:href="@{/board/custom/{boardId}(boardId=${board.boardId}, page=${totalPages}, size=${size}, sort=${sort}, keyword=${keyword})}"></a>
+
+  <!-- Next 버튼 (5페이지 뒤로) -->
+  <a class="next"
+     th:if="${page < totalPages}"
+     th:href="@{/board/custom/{boardId}(boardId=${board.boardId}, page=${page+5 < totalPages ? page+5 : totalPages}, size=${size}, sort=${sort}, keyword=${keyword})}">
+    Next &#x203A;
+  </a>
+</nav>
 
 	<!-- 게시판 리스트 호버링 적용 JS (다른 페이지 테이블과 CSS 충돌방지용) -->
 	<script>

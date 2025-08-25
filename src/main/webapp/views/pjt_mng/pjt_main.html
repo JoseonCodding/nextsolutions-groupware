@@ -213,7 +213,7 @@ tr:hover {
 
 		<!-- 내 참여 프로젝트 -->
 		<div class="stat-card" style="--accent: #ce93d8;"
-			onclick="location.href='/pjtMng/getPjtList?keywordType=my&keyword=참여'">
+			th:onclick="|location.href='@{/pjtMng/getPjtList(keywordType='my', keyword=${loginUser.empNm})}'|">
 			<div class="meta">
 				<div class="label">내 참여 </div>
 				<div class="value" th:text="${myProjectCount}">0</div>
@@ -222,7 +222,7 @@ tr:hover {
 
 		<!-- 내 결재 프로젝트 -->
 		<div class="stat-card" style="--accent: #ffb3b3;"
-			onclick="location.href='/pjtMng/getPjtList?keywordType=myApproval&keyword=결재'">
+			onclick="location.href='/pjtMng/getPjtList?keywordType=myApproval'">
 			<div class="meta">
 				<div class="label">내 결재</div>
 				<div class="value" th:text="${myApprovalTodoCount}">0</div>
@@ -373,27 +373,55 @@ tr:hover {
         등록
    </button>
 </div>
-	<!-- 페이지네이션 -->
+	<!-- 페이지네이션
 	<nav class="mt-4 text-center" th:if="${pageInfo != null}">
 		<ul class="pagination justify-content-center">
 			<li class="page-item"
 				th:classappend="${pageInfo.prePage == 0} ? 'disabled'"><a
 				class="page-link"
-				th:href="@{/pjtMng/getPjtList(pageNum=${pageInfo.prePage}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, sortType=${sortType})}">
+				th:href="@{/pjtMng/getPjtList(pageNum=${pageInfo.prePage}, keywordType=${keywordType}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, sortType=${sortType})}">
 					Previous </a></li>
 			<li class="page-item"
 				th:each="page : ${#numbers.sequence(pageInfo.navigateFirstPage, pageInfo.navigateLastPage)}"
 				th:classappend="${page == pageInfo.pageNum} ? 'active'"><a
 				class="page-link" th:text="${page}"
-				th:href="@{/pjtMng/getPjtList(pageNum=${page}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, sortType=${sortType})}"></a>
+				th:href="@{/pjtMng/getPjtList(pageNum=${page}, keywordType=${keywordType}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, sortType=${sortType})}"></a>
 			</li>
 			<li class="page-item"
 				th:classappend="${pageInfo.nextPage == 0} ? 'disabled'"><a
 				class="page-link"
-				th:href="@{/pjtMng/getPjtList(pageNum=${pageInfo.nextPage}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, sortType=${sortType})}">
+				th:href="@{/pjtMng/getPjtList(pageNum=${pageInfo.nextPage}, keywordType=${keywordType}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, sortType=${sortType})}">
 					Next </a></li>
 		</ul>
-	</nav>
+	</nav> -->
+	
+        <!-- 페이지네이션 필규버전 (시작)   -->
+		<nav class="pagination">
+		  <!-- Previous 버튼 -->
+		  <a th:if="${pageNum > 1}" th:href="@{/pjtMng/getPjtList(pageNum=${pageNum-5 > 1 ? pageNum-5 : 1}, keywordType=${keywordType}, keyword=${keyword})}" class="prev">&#x2039; Previous</a>
+		
+		  <!-- 첫 페이지 -->
+		  <span th:if="${startPage > 1 and pageNum == 1}" class="page-number now-page disabled" th:text="1"></span>
+		  <a th:if="${startPage > 1 and pageNum != 1}" th:href="@{/pjtMng/getPjtList(pageNum=1, keywordType=${keywordType}, keyword=${keyword})}" th:text="1" class="page-number"></a>
+		
+		  <span th:if="${startPage > 2}" class="ellipsis">...</span>
+		
+		  <!-- 페이지 숫자들 -->
+		  <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
+		    <span th:if="${i == pageNum}" class="page-number now-page disabled" th:text="${i}"></span>
+		    <a th:if="${i != pageNum}" th:href="@{/pjtMng/getPjtList(pageNum=${i}, keywordType=${keywordType}, keyword=${keyword})}" th:text="${i}" class="page-number"></a>
+		  </span>
+		
+		  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
+		
+		  <!-- 마지막 페이지 -->
+		  <span th:if="${endPage < totalPages and pageNum == totalPages}" class="page-number now-page disabled" th:text="${totalPages}"></span>
+		  <a th:if="${endPage < totalPages and pageNum != totalPages}" th:href="@{/pjtMng/getPjtList(pageNum=${totalPages}, keywordType=${keywordType}, keyword=${keyword})}" th:text="${totalPages}" class="page-number"></a>
+		
+		  <!-- Next 버튼 -->
+		  <a th:if="${pageNum < totalPages}" th:href="@{/pjtMng/getPjtList(pageNum=${pageNum+5 < totalPages ? pageNum+5 : totalPages}, keywordType=${keywordType}, keyword=${keyword})}"> Next &#x203A; </a>
+		</nav>
+		<!-- 페이지네이션 필규버전 (끝) -->
 
 	<!-- 게시판 리스트 호버링 적용 JS -->
 	<script>

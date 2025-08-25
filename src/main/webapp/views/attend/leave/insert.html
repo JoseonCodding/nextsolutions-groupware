@@ -1,41 +1,35 @@
 
 <!--  
 [[${restData}--><!-- ]] -->
-<form  id="leaveForm" action="" method="post" >
-<h2>연차 사용 신청</h2>
-	<table border="">
-
-		<tr>
-			<td>사용할 연차</td>
-			<td>
-			<div th:each="dto, vv:${restData}">
-				<input type="checkbox" class="leaveChk" th:name="|arr[${vv.index}].useChk|" th:target_data="|ud${vv.index}|" value="true" />
-				<span th:text="${dto.createReason}"/> 
-				
-				<input type="hidden" th:name="|arr[${vv.index}].leaveId|" th:value="${dto.leaveId}"/>
-				
-				<input type="date" class="leaveDate" th:id="|ud${vv.index}|" th:name="|arr[${vv.index}].usedDateStr|" value="" disabled />
-			</div>
-			</td>
-		</tr>
-			
-		
-		<tr>
-			<td>연차사유</td>
-			<td>
-			<textarea name="reason" id="" cols="30" rows="1">개인 사유</textarea></td>
-		</tr>
-		
-
-		<tr>
-			<td colspan="2">
+<div class="leave-container">
+	<form  id="leaveForm" action="" method="post" >
+		<h1 class="detail-title">연차 사용 신청</h1>
+		<table border="">
+			<tr>
+				<th class="leave-chk-list">사용할 연차</th>
+				<td>
+					<div th:each="dto, vv:${restData}">
+						<input type="checkbox" class="leaveChk" th:name="|arr[${vv.index}].useChk|" th:target_data="|ud${vv.index}|" value="true" />
+						<span th:text="${dto.createReason}"/> 
+						
+						<input type="hidden" th:name="|arr[${vv.index}].leaveId|" th:value="${dto.leaveId}"/>
+						
+						<input type="date" class="leaveDate" th:id="|ud${vv.index}|" th:name="|arr[${vv.index}].usedDateStr|" value="" disabled />
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>연차사유</th>
+				<td>
+					<textarea class="write" name="reason" id="" cols="30" rows="1" placeholder='개인사유'></textarea></td>
+				</tr>
+		</table>
+	
 			<a class="back-btn" th:href="@{/attend/leaveList}">취소</a>
 			<input class="regist-btn" type="submit" value="신청"/>
-			</td>
-		</tr>
-
-	</table>
-</form>
+	
+	</form>
+</div>
 <script src="/js/jquery-3.7.1.min.js"></script>
 <script>
 

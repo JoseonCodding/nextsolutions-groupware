@@ -1,40 +1,9 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<title th:text="${board != null ? board.boardName + ' 글쓰기' : '커스텀 글쓰기'}">커스텀 글쓰기</title>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/css/board.css">
 
-<head>
-  <meta charset="UTF-8">
-  <title th:text="${board != null ? board.boardName + ' 글쓰기' : '커스텀 글쓰기'}">커스텀 글쓰기</title>
-  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
-  <style>
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      font-family: 'Noto Sans KR', sans-serif;
-    }
-    label { display:block; margin-bottom:5px; font-weight:700; }
-    input, textarea {
-      width:100%; padding:10px; margin-bottom:20px; box-sizing:border-box;
-      border:1px solid #ddd; border-radius:4px;
-    }
-    .form-actions { display:flex; gap:10px; }
-    .form-actions button {
-      padding:8px 16px; border:none; background:#007bff; color:#fff; cursor:pointer;
-    }
-    .form-actions a {
-      padding:8px 16px; border:1px solid #ccc; text-decoration:none; color:#333;
-    }
-    .board-nav { background:#f7f9fc; padding:10px 20px; border-bottom:1px solid #dcdcdc; }
-    .board-nav ul { list-style:none; display:flex; padding:0; margin:0; }
-    .board-nav li { margin-right:30px; }
-    .board-nav a { text-decoration:none; font-weight:700; color:#666; padding:8px 12px; border-bottom:2px solid transparent; }
-    .board-nav li.active a { color:#000; border-bottom:2px solid #2c3e50; }
-  </style>
-</head>
-<body>
-
+<h1 style="margin-top:12px;" th:text="${board != null ? board.boardName + ' 글쓰기' : '커스텀 글쓰기'}">커스텀 글쓰기</h1>
 <div class="container">
-  <h2 th:text="${board != null ? board.boardName + ' 글쓰기' : '커스텀 글쓰기'}">커스텀 글쓰기</h2>
-
   <form id="customWriteForm"
   		th:action="@{/board/custom/{boardId}/save(boardId=${board.boardId})}"
         th:object="${boardDTO}" method="post">
@@ -151,6 +120,3 @@ $(document).ready(function () {
   });
 });
 </script>
-
-</body>
-</html>

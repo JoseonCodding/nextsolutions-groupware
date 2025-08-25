@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org" lang="ko">
-<head>
-<meta charset="UTF-8">
 <title>글수정 폼</title>
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
-</head>
-<body>
-	<h1>글 수정 폼</h1>
-<div class="container">
-  <h2>게시글 수정</h2>
+<link rel="stylesheet" href="/css/board.css">
 
+<h1 style="margin-top:12px;">글 수정 폼</h1>
+<div class="container">
   <form id="modifyForm"
   		th:action="${activeBoard} == 'free' 
                    ? @{/board/free/modify} 
@@ -36,11 +30,9 @@
   <div style="margin-top:12px; display:flex; gap:8px">
     <button type="submit">저장</button>
     <a th:href="${activeBoard} == 'free' 
-                 ? @{/board/free/detail(postId=${board.postId})}
-                 : @{/board/custom/{boardId}/detail(boardId=${board.boardId}, postId=${board.postId})}"
-       th:onclick="|return confirm('내용이 저장되지 않습니다. 취소하시겠습니까?');|">
-      취소
-    </a>
+    			? @{'/board/free/detail'(postId=${board.postId}, page=${page}, size=${size}, sort=${sort}, keyword=${#strings.isEmpty(keyword) ? null : keyword})}
+    			: @{'/board/custom/' + ${board.boardId} + '/detail'(postId=${board.postId}, page=${page}, size=${size}, sort=${sort}, keyword=${#strings.isEmpty(keyword) ? null : keyword})}"
+   	   th:onclick="|return confirm('내용이 저장되지 않습니다. 취소하시겠습니까?');|">취소</a>
   </div>
 </form>
   
