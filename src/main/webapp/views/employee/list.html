@@ -93,7 +93,7 @@
     <button id="editSelected" class="edit-btn">수정</button>
 
 
-
+<div>
        <!-- 페이지네이션 -->
 	<nav class="pagination">
 	  <!-- Previous 버튼 -->
@@ -135,7 +135,7 @@
 	  <!-- Next 버튼 -->
 	  <a th:if="${page < totalPages}" th:href="@{/employee/list(page=${page+5 < totalPages ? page+5 : totalPages}, keyword=${keyword})}">Next &#x203A;</a>
 	</nav>
-
+</div>
 
 
 

@@ -1,10 +1,12 @@
 @charset "UTF-8";
 
 .leave-container {
+	
 	position: relative;
 	margin-bottom: 30px;
 	padding-bottom: 60px;
 }
+
 h1[class=detail-title]{
 	text-align: center;
 }
@@ -57,7 +59,25 @@ h1[class=detail-title]{
     margin-top: 20px;
 }
 
+input, select {
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+.leaveDate {
+	margin: 5px 20px 5px 20px
 	
-   
+}
+/* 출퇴근 기록 수정 신청, 연차 사용 신청 내용란 */
+.write {
+	width:95%;
+	padding: 10px;
+	margin: 10px 50px 0px 0px ;
+	/*text-align: center;*/
+}
+
+
+
     
     

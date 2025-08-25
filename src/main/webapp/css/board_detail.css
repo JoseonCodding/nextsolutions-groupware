@@ -1,10 +1,3 @@
-
-/*!
- * Board UI — unified stylesheet
- * Pretty & clean styles for notice / free / custom detail pages
- * Last updated: 2025-08-22 (Asia/Seoul)
- */
-
 /* ==============================
    0) Design tokens
    ============================== */
@@ -158,7 +151,7 @@ hr{
   border-color: transparent;
   color:#fff;
 }
-.btn-danger:hover{ filter: brightness(.96); }
+.btn-danger:hover{ filter: brightness(.96); color: var(--danger); background: #fff;}
 
 /* Reply / cancel small ghost buttons (if used) */
 .btn-reply,
@@ -300,8 +293,9 @@ hr{
    ============================== */
 .board-actions{
   margin-top: var(--space-5);
-  display:flex; flex-wrap:wrap; gap:10px;
-  align-items:center;
+  display: flex;
+  justify-content: flex-end; /* 전체 버튼 오른쪽 정렬 */
+  gap: 10px;
 }
 
 /* ==============================

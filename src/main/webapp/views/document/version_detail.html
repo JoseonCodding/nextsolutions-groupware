@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
 <title>Insert title here</title>
-</head>
-<body>
 <div class="document-version-detail">
-
   <!-- 헤더 -->
   <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:12px;">
     <h2 th:text="${doc.pjtNm}">프로젝트명</h2>
@@ -65,8 +58,8 @@
   </div>
 
   <!-- 액션 -->
-  <div style="display:flex; gap:8px;">
-    <a class="btn btn-secondary" th:href="@{/document/versions(gid=${doc.gid})}">돌아가기</a>
+  <div style="display:flex; justify-content: flex-end; margin-bottom:12px; gap:8px;">
+    <a class="btn btn-secondary" th:href="@{/document/versions(gid=${doc.gid})}">뒤로가기</a>
   </div>
 </div>
 

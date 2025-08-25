@@ -5,8 +5,9 @@
 <script src="/js/jquery-3.7.1.min.js"></script>
 <script th:inline="javascript">
 
-	const arr = /*[[ ${scheduleList}]]*/;
-	const dto = /*[[ ${scheduleDTO}]]*/
+	const arr = /*[[ ${scheduleList}]]*/{};
+	const dto = /*[[ ${scheduleDTO}]]*/{};
+	const viewMode = /*[[ ${viewMode}]]*/{};
 	//console.log(arr)
 	
 	$(function(){
@@ -33,10 +34,25 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // 일정 1개 HTML 변환
+        // 일정 1개 HTML 변환 시
         function scheduleOneView(schOne){
             var clickBox = "";
             let color = "black"; // 기본: 일반 일정(검은색)
+            
+            
+         	// schOne.scheduleId가 문자열일 수도 있으므로 숫자로 변환
+            const scheduleId = parseInt(schOne.scheduleId, 10);
+
+            // 숫자가 아닌 경우 처리
+            if (isNaN(scheduleId)) {
+                console.error('잘못된 scheduleId:', schOne.scheduleId);
+                return ''; // 클릭박스 생성 중단 혹은 기본값 처리
+            }
+            
+            const viewMode = currentView; // 현재 월/주/일
+            //clickBox = "<a href='/schedule/detail?scheduleId=" + schOne.scheduleId + "&viewMode=" + viewMode + "' class='sche-comm'>" + schOne.title + "</a>";
+            //return clickBox + "<br/>";
+            
             
             /*
             if(schOne.holiday=='일정' || schOne.holiday=='휴무일'){
@@ -50,14 +66,14 @@
             */
             
             if(schOne.holiday == '휴무일'){
-                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' class='sche-comm holiday-sche'>"+escapeHtml(schOne.title)+"</a>";
+                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId +"&viewMode=" + viewMode + "' class='sche-comm holiday-sche'>"+escapeHtml(schOne.title)+"</a>";
 
             }else if(schOne.holiday == '프로젝트'){
-                clickBox = "<a href='/pjtMng/pjtDetail?pjtSn="+ schOne.pjtSn +"' class='sche-comm project-sche'>"+schOne.title+"</a>";
+                clickBox = "<a href='/pjtMng/pjtDetail?pjtSn="+ schOne.pjtSn +"&viewMode=" + viewMode + "' class='sche-comm project-sche'>"+escapeHtml(schOne.title)+"</a>";
             }else if(schOne.holiday == '연차'){
-                clickBox = "<span class='sche-comm leave'>"+schOne.title+"</span>";
+                clickBox = "<span class='sche-comm leave'>"+escapeHtml(schOne.title)+"</span>";
             }else{
-                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId+"' class='sche-comm normal-sche'>"+escapeHtml(schOne.title)+"</a>";
+                clickBox = "<a href='/schedule/detail?scheduleId="+schOne.scheduleId +"&viewMode=" + viewMode + "' class='sche-comm normal-sche'>"+escapeHtml(schOne.title)+"</a>";
             }
 
             return clickBox + "<br/>";
@@ -362,25 +378,60 @@
         $("#viewMonth").on("click", function() {
             setView('month');
             monthFirst = new Date();
-            monthDiaryView();
+            //monthDiaryView();
+            location.href = "/schedule?viewMode=month";	// 보기 전환 버튼
         });
         $("#viewWeek").on("click", function() {
             setView('week');
             // 현재 날짜를 앵커로 설정(월 안의 날짜)
             weekRef = new Date();
-            weekDiaryView();
+            //weekDiaryView();
+            location.href = "/schedule?viewMode=week";	// 보기 전환 버튼
         });
         $("#viewDay").on("click", function() {
             setView('day');
             dayOne = new Date();
-            dayDiaryView();
+            //dayDiaryView();
+            location.href = "/schedule?viewMode=day";	// 보기 전환 버튼
+        });
+        
+
+        // 상세보기 페이지에서 '목록으로' 버튼 처리
+        $(function(){
+            $("#backToList").on("click", function(){
+                const urlParams = new URLSearchParams(window.location.search);
+                const viewMode = urlParams.get('viewMode') || 'month';
+                location.href = "/schedule?viewMode=" + viewMode;
+            });
         });
 
+
+        
         // 초기 상태
+        //var monthFirst = new Date();
+        //var dayOne = null;
+        //monthDiaryView();
+        //setView('month');
+        
+     	// 초기 상태: URL 파라미터(viewMode) 기반
         var monthFirst = new Date();
-        var dayOne = null;
-        monthDiaryView();
-        setView('month');
+        var dayOne = new Date();
+        weekRef = new Date();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewMode = urlParams.get('viewMode') || 'month'; // 기본값 month
+
+        if (viewMode === 'month') {
+            setView('month');
+            monthDiaryView();
+        } else if (viewMode === 'week') {
+            setView('week');
+            weekDiaryView();
+        } else if (viewMode === 'day') {
+            setView('day');
+            dayDiaryView();
+        }
+
     });
 </script>
 

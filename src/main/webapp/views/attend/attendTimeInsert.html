@@ -1,24 +1,15 @@
-<style>
-body {
-	font-family: 'Noto Sans KR', sans-serif;
-	justify-content: center;
-	padding: 0px;
-}
 
-
-
-</style>
 <div class="check-container">
 	<form action="/attend/save" method="post" enctype="multipart/form-data">
 	
-	  <h1>출퇴근 기록 수정 신청</h1>
+	  <h1 class="detail-title">출퇴근 기록 수정 신청</h1>
 	  
 	  <table >
 	    <!-- 체크박스(정상출근/정상퇴근) -->
-	    <tr>
-	      <th>출퇴근내역</th>
-	      <td colspan="2">
-	        <div >
+	    <tr class="attend-option">
+	      <th >출퇴근내역</th>
+	      <td>
+	        <div class="attchk">
 	          <label >
 	            <input class="action-one" type="checkbox" name="actions" value="IN" />
 	            정상출근
@@ -28,27 +19,29 @@ body {
 	            정상퇴근
 	          </label>
 	        </div>
-	
-	        <div>
-	          <label for="dateSelect">출석 날짜 선택</label>
-	          <select id="dateSelect" name="workDate">
-	            <option value="">-- 날짜 선택 --</option>
+		  </td>
+		  
+		  <!--  
+	        <div class="attdate">	      
+	          <label class="attdd" for="dateSelect">출석 날짜 선택 : </label>
+	         -->  
+	       
+          <th class="attdd" for="dateSelect">출석 날짜 선택</th>
+          <td>
+	          <select class="attdd" id="dateSelect" name="workDate">
+	            <option value="" >날짜 선택</option>
 	            <option th:each="opt : ${attendOptions}"
 	        			th:value="${opt.workDate}"
-	        			th:text="${opt.workDate}">
-				</option>
-	
+	        			th:text="${opt.workDate}" class="dates">
+				</option>			  
 	          </select>
-	        </div>
-	
-	      </td>
+          </td>	       
 	    </tr>
-	
-	    <!-- 내용 -->
+
 	    <tr>
 	      <th >내용</th>
-	      <td colspan="2">
-	        <textarea name="content" id="content" rows="10"
+	      <td  colspan="3">
+	        <textarea class="write" name="content" id="content" rows="10"
 	                  placeholder="사유를 자세히 입력해주세요."></textarea>
 	      </td>
 	    </tr>
