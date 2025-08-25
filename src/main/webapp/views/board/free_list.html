@@ -12,7 +12,8 @@
         <input type="hidden" name="keyword" th:value="${keyword}">
         <input type="hidden" name="size" th:value="${size}">
         <input type="hidden" name="page" value="1">
-        <select name="sort" th:value="${sort}" onchange="document.getElementById('sortForm').submit()">
+        <select name="sort" onchange="document.getElementById('sortForm').submit()">
+          <option value="" disabled th:selected="${sort == null or #strings.isEmpty(sort)}">선택</option>
           <option value="newest" th:selected="${sort}=='newest'">최신순</option>
           <option value="views"  th:selected="${sort}=='views'">조회수순</option>
           <option value="likes"  th:selected="${sort}=='likes'">추천순</option>
@@ -54,8 +55,8 @@
       </thead>
       <tbody>
         <tr th:each="b, stat : ${boards}">
-          <td style="padding:10px; text-align:center;" th:text="${offset + stat.count}">1</td>
-          <td class="board-title" style="padding:10px;">
+          <td th:text="${offset + stat.count}">1</td>
+          <td class="board-title">
             <a style="width: 300px;"
                th:href="@{/board/free/detail(
                            postId=${b.postId},
@@ -63,11 +64,10 @@
                          )}"
                th:text="${b.title}">제목</a>
           </td>
-          <td style="padding:10px; text-align:center;" th:text="|${b.empNm} ${b.position}|">작성자</td>
-          <td style="padding:10px; text-align:center;"
-              th:text="${b.createdAt != null ? #dates.format(b.createdAt, 'yyyy-MM-dd') : ''}"></td>
-          <td style="padding:10px; text-align:center;" th:text="${b.viewCount ?: 0}"></td>
-          <td style="padding:10px; text-align:center;" th:text="${b.likeCount ?: 0}"></td>
+          <td th:text="|${b.empNm} ${b.position}|">작성자</td>
+          <td th:text="${b.createdAt != null ? #dates.format(b.createdAt, 'yyyy-MM-dd') : ''}"></td>
+          <td th:text="${b.viewCount ?: 0}"></td>
+          <td th:text="${b.likeCount ?: 0}"></td>
         </tr>
 
         <tr th:if="${#lists.isEmpty(boards)}">
@@ -79,7 +79,7 @@
     </table>
     
   <div>
-       <!-- 페이지네이션(동현) -->
+       <!-- 페이지네이션 -->
 	<nav class="pagination">
 	  <!-- Previous 버튼 -->
 	  <a th:if="${page > 1}" 

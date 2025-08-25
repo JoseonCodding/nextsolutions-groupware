@@ -48,7 +48,6 @@ public class DocumentController {
 
         int pageSafe = Math.max(1, page);
         int sizeSafe = Math.min(Math.max(1, size), 100);
-        int offset = (pageSafe - 1) * sizeSafe;
 
         // 검색/정렬 화이트리스트
         String typeKey = ("writer".equalsIgnoreCase(keywordType) ||
@@ -57,17 +56,22 @@ public class DocumentController {
         String kw = (keyword == null) ? null : keyword.trim();
         boolean hasSearch = (typeKey != null && kw != null && !kw.isEmpty());
         String sortKey = "newest"; // 확장 여지
+        
+        // 1) 전체 건수 먼저
+        int total = hasSearch
+            ? documentMapper.countDocsForManageWithSearch(me, isAdmin, typeKey, kw)
+            : documentMapper.countDocsForManage(me, isAdmin);
 
-        // 데이터 조회
+        int totalPages = Math.max(1, (int)Math.ceil(total / (double)sizeSafe));
+
+        // 2) 페이지 클램프 후 offset 재계산
+        pageSafe = Math.min(pageSafe, totalPages);
+        int offset = (pageSafe - 1) * sizeSafe;
+
+        // 3) 리스트 조회 (정확한 offset/limit 사용)
         List<DocumentDTO> rows = hasSearch
                 ? documentMapper.findDocsForManageWithSearch(me, isAdmin, typeKey, kw, sortKey, sizeSafe, offset)
                 : documentMapper.findDocsForManage(me, isAdmin, sizeSafe, offset);
-        int total = hasSearch
-                ? documentMapper.countDocsForManageWithSearch(me, isAdmin, typeKey, kw)
-                : documentMapper.countDocsForManage(me, isAdmin);
-
-        int totalPages = Math.max(1, (int) Math.ceil(total / (double) sizeSafe));
-        pageSafe = Math.min(pageSafe, totalPages);
 
         // 페이지 버튼(묶음 5개)
         int win = 5;
@@ -82,6 +86,7 @@ public class DocumentController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+        model.addAttribute("offset", offset);
 
         // 폼 상태 유지
         model.addAttribute("keywordType", typeKey);
