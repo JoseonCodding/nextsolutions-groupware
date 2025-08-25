@@ -40,6 +40,8 @@ public class PageDTO {
       if(endPage > totalPages) {
     	  endPage = totalPages;
       }
+      
+      if(totalPages == 0) { endPage = 1;}
    }
 
 }

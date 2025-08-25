@@ -4,7 +4,7 @@
 	<form method="get" action="/attend/attendList">
 	    <label>날짜 <input type="date" name="workDate"  th:value="${param.workDate}" /></label>
 	    <label>이름 <input type="text" name="empNm" th:value="${param.empNm}"/></label>
-	    <label>수정자 <input type="text" name="modifiedBy" th:value="${param.modifiedBy}"/></label>
+	    <label>승인자 <input type="text" name="modifiedBy" th:value="${param.modifiedBy}"/></label>
 	
 	    <button class="filter-btn" type="submit"><i class="fa fa-search"></i>검색</button>
 	
@@ -34,6 +34,8 @@
       </tr>
     </thead>
 	<tbody>
+		<tr th:if="${#lists.isEmpty(mainData)}" >
+			        <td colspan="8" >조회된 연차 내역이 없습니다.</td></tr>
 		<tr th:each="dto : ${mainData}">
 			<td th:text="${dto.workDate}"></td>
 			<td th:text="${dto.deptName}"></td>
@@ -54,7 +56,7 @@
 	  <div>
 	    <strong th:text="${page.total}">0</strong>건 /
 	    <span th:text="${page.pageNum}">1</span> /
-	    <span th:text="${page.pages}">1</span>페이지
+	    <span th:text="${page.pages == 0 ? 1 : page.pages}"></span>페이지
 	  </div>
 	
 	  <!-- 페이지 크기 선택 
@@ -78,7 +80,7 @@
 	
 	
 	<!-- 페이지네이션 -->
-		<nav class="pagination">
+		<nav class="pagination" >
 		  <!-- Previous 버튼 -->
 		  <a th:if="${pDTO.page > 1}" th:href="@{/attend/attendList(page=${pDTO.page-5 > 1 ? pDTO.page-5 : 1},workDate=${criteria.workDate},
 	             empNm=${criteria.empNm},
