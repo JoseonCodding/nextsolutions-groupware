@@ -2,135 +2,90 @@
 <script>
   // 1) 상태 적용
   function applyState() {
-    const allDayCheckbox = document.querySelector('input[name="cate"][value="종일"]');
-    const holidayCheckbox = document.querySelector('input[name="holiday"]');
-    const repeatSelect   = document.getElementById("repeatCheck");
-    const startTimeInput = document.querySelector('input[name="startTimeStr"]');
-    const endTimeInput   = document.querySelector('input[name="endTimeStr"]');
+    const allDayCheckbox = document.getElementById("allDay");
+    const holidayCheckbox = document.getElementById("holiday");
+    const repeatSelect = document.getElementById("repeatCheck");
+    const startTimeInput = document.getElementById("startTime");
+    const endTimeInput = document.getElementById("endTime");
     if (!allDayCheckbox || !holidayCheckbox || !repeatSelect) return;
 
-    const isDaily   = repeatSelect.value === "1";
+    const isDaily = repeatSelect.value === "1";
     const isHoliday = holidayCheckbox.checked;
 
     // 매일 반복 선택 시 → 휴무일 불가
-    if (isDaily) {
-      holidayCheckbox.checked  = false;
-      holidayCheckbox.disabled = true;
-      return;
-    } else {
-      holidayCheckbox.disabled = false;
-    }
+    holidayCheckbox.disabled = isDaily;
+    if (isDaily) holidayCheckbox.checked = false;
 
     // 휴무일 선택 시 → 종일 강제, 반복 불가
     if (isHoliday) {
       allDayCheckbox.checked = true;
-      repeatSelect.disabled  = true;
-      repeatSelect.value     = "0";
+      repeatSelect.disabled = true;
+      repeatSelect.value = "0";
     } else {
-      repeatSelect.disabled  = false;
+      repeatSelect.disabled = false;
     }
 
     // 종일 선택 시 → 시간 입력 불가
     const isAllDay = allDayCheckbox.checked;
-    if (startTimeInput) startTimeInput.disabled = isAllDay;
-    if (endTimeInput)   endTimeInput.disabled   = isAllDay;
+    if (startTimeInput) {
+      startTimeInput.disabled = isAllDay;
+      if (isAllDay) startTimeInput.value = "";
+    }
+    if (endTimeInput) {
+      endTimeInput.disabled = isAllDay;
+      if (isAllDay) endTimeInput.value = "";
+    }
+  }
 
-    if (isAllDay) {
-      if (startTimeInput) startTimeInput.value = "";
-      if (endTimeInput)   endTimeInput.value   = "";
+  // 2) 날짜/시간 유효성
+  function validateEndTime() {
+    const startDateInput = document.getElementById("startDate");
+    const endDateInput = document.getElementById("endDate");
+    const startTimeInput = document.getElementById("startTime");
+    const endTimeInput = document.getElementById("endTime");
+
+    if (!startDateInput || !endDateInput || !startTimeInput || !endTimeInput) return;
+
+    // 날짜 비교
+    const startDate = new Date(startDateInput.value);
+    const endDate = new Date(endDateInput.value);
+    if (startDate > endDate) {
+      alert("시작일은 종료일보다 늦을 수 없습니다.");
+      startDateInput.value = endDateInput.value;
     }
 
-  }
-  
-  
-
-//2) 날짜 및 시간 유효성 검사
-  function bindDateEvents() {
-    const startDateInput = document.querySelector('input[name="startDateStr"]');
-    const endDateInput   = document.querySelector('input[name="endDateStr"]');
-    const startTimeInput = document.querySelector('input[name="startTimeStr"]');
-    const endTimeInput   = document.querySelector('input[name="endTimeStr"]');
-
-    if (!startDateInput || !endDateInput) return;
-
-    // 시작일 변경 시 유효성 체크
-    startDateInput.addEventListener("change", function () {
-      if (startDateInput.value && endDateInput.value) {
-        if (startDateInput.value > endDateInput.value) {
-          alert("시작일은 종료일보다 늦을 수 없습니다.");
-          startDateInput.value = endDateInput.value; // 자동 보정
-        }
-      }
-    });
-
-    // 종료일 변경 시 유효성 체크
-    endDateInput.addEventListener("change", function () {
-      if (endDateInput.value && startDateInput.value) {
-        if (endDateInput.value < startDateInput.value) {
-          alert("종료일은 시작일보다 앞설 수 없습니다.");
-          endDateInput.value = startDateInput.value; // 자동 보정
-        }
-      }
-
-      // 시작일과 같으면 종료시간 제한
-      if (endDateInput.value === startDateInput.value && startTimeInput.value) {
-        endTimeInput.min = startTimeInput.value;
-        if (endTimeInput.value && endTimeInput.value < startTimeInput.value) {
-          alert("종료시간은 시작시간보다 앞설 수 없습니다.");
-          endTimeInput.value = startTimeInput.value;
-        }
-      } else {
-        endTimeInput.removeAttribute("min");
-      }
-    });
-    
-
-    // 종료시간 변경 시 유효성 체크
-    endTimeInput.addEventListener("change", function () {
-      if (
-        startDateInput.value &&
-        endDateInput.value &&
-        startDateInput.value === endDateInput.value &&
-        startTimeInput.value &&
-        endTimeInput.value < startTimeInput.value
-      ) {
+    // 종료시간 제한
+    if (startDateInput.value === endDateInput.value && startTimeInput.value && endTimeInput.value) {
+      const startTimeNum = parseInt(startTimeInput.value.replace(":", ""), 10);
+      const endTimeNum = parseInt(endTimeInput.value.replace(":", ""), 10);
+      if (endTimeNum < startTimeNum) {
         alert("종료시간은 시작시간보다 앞설 수 없습니다.");
         endTimeInput.value = startTimeInput.value;
       }
-    });
-    
+      endTimeInput.min = startTimeInput.value;
+    } else {
+      endTimeInput.removeAttribute("min");
+    }
   }
 
+  function bindDateEvents() {
+    document.getElementById("startDate").addEventListener("change", validateEndTime);
+    document.getElementById("endDate").addEventListener("change", validateEndTime);
+    document.getElementById("endTime").addEventListener("change", validateEndTime);
+  }
 
-  // 3) 상태 변경 이벤트
+  // 3) 상태 이벤트
   function bindStateEvents() {
-    const holidayCheckbox = document.querySelector('input[name="holiday"]');
-    const allDayCheckbox  = document.querySelector('input[name="cate"][value="종일"]');
-    const repeatSelect    = document.getElementById("repeatCheck");
-    if (!holidayCheckbox || !allDayCheckbox || !repeatSelect) return;
-
-    holidayCheckbox.addEventListener("change", applyState);
-    //allDayCheckbox.addEventListener("change", applyState);
-    repeatSelect.addEventListener("change", applyState);
-    
- 	// 종일 체크박스 이벤트
-    allDayCheckbox.addEventListener("change", function () {
-      if (!this.checked && holidayCheckbox.checked) {
-        alert("먼저 휴무일 체크를 해제하세요.");
-        this.checked = true; // 다시 체크 상태로 복원
-        return;
-      }
-      applyState();
-    });
- 	
+    document.getElementById("holiday").addEventListener("change", applyState);
+    document.getElementById("allDay").addEventListener("change", applyState);
+    document.getElementById("repeatCheck").addEventListener("change", applyState);
   }
 
   // 4) 초기화
   document.addEventListener("DOMContentLoaded", function () {
-
     bindDateEvents();
     bindStateEvents();
-    applyState(); // 기존 값 반영
+    applyState();
   });
 </script>
 
@@ -149,14 +104,14 @@
             <th>기간</th>
             <td colspan="3">
                 시작:
-                <input type="date" th:field="*{startDateStr}" />
-                <input type="time" th:field="*{startTimeStr}" />
+                <input type="date" th:field="*{startDateStr}" id="startDate"/>
+                <input type="time" th:field="*{startTimeStr}" id="startTime"/>
                 ~ 종료:
-                <input type="date" th:field="*{endDateStr}" />
-                <input type="time" th:field="*{endTimeStr}" />
+                <input type="date" th:field="*{endDateStr}" id="endDate"/>
+                <input type="time" th:field="*{endTimeStr}" id="endTime"/>
 
                 <label>
-                    <input type="checkbox" th:field="*{cate}" value="종일"/> 종일
+                    <input type="checkbox" th:field="*{cate}" value="종일" id="allDay"/> 종일
                 </label>
             </td>
         </tr>
@@ -172,7 +127,7 @@
                     </select>
                 </label>
                 <label class="sche-options">
-                    <input type="checkbox" th:field="*{holiday}" value="휴무일"/> 휴무일
+                    <input type="checkbox" th:field="*{holiday}" value="휴무일" id="holiday"/> 휴무일
                 </label>
                 <label class="sche-options">
                     <input type="checkbox" th:field="*{alarm}" value="알림"/> 알림
@@ -182,7 +137,7 @@
         <tr>
             <th>내용</th>
             <td colspan="3">
-                <textarea class="sche-content" th:field="*{content}" cols="50" rows="10"></textarea>
+                <textarea class="sche-content" th:field="*{content}" cols="50" rows="10" th:utext="*{contentBr}"></textarea>
             </td>
         </tr>
     </table>
@@ -192,4 +147,3 @@
 
 </form>
 </div>
-
