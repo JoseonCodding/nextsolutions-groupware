@@ -446,7 +446,9 @@ public class ProjectMngController {
          @RequestParam(value = "delFileSlots3", required = false) Boolean delFileSlots3,
    @RequestParam(value = "firstSign", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime firstSign,
    @RequestParam(value = "secondSign", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime secondSign,
-   @RequestParam(value = "approvedBy", required = false) String approvedBy)
+   @RequestParam(value = "approvedBy", required = false) String approvedBy,
+   @RequestParam(value = "page", required = false) Integer page, RedirectAttributes ra
+		   )
    
    {
 	  
@@ -485,7 +487,8 @@ public class ProjectMngController {
       String uploadDir = "C:/upload/";
       String newFileName = oldFileName1 != null ? oldFileName1 : "";
       String newOrgFileName = oldOrgFileName1 != null ? oldOrgFileName1 : "";
-
+      
+     
 
       //  업로드 할 수 있는  파일 갯수 1~3까지 
       if (uploadFile1 != null && !uploadFile1.isEmpty()) {
@@ -619,7 +622,13 @@ public class ProjectMngController {
     	  projectMngService.updatePjtProc(params); 
       }
       
-     
+      
+   // ✅ 저장/갱신 끝난 시점에서, 리다이렉트 파라미터 세팅
+      ra.addAttribute("pjtSn", pjtSn);     // 정보화면이 필요로 하는 PK
+      if (page != null) {
+          ra.addAttribute("page", page);   // 원래 보던 페이지 유지
+      }
+            
 
       return "redirect:/pjtMng/pjtDetail?pjtSn=" + pjtSn;
    }
