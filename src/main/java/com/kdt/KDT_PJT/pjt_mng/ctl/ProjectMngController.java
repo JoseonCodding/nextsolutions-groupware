@@ -64,7 +64,7 @@ public class ProjectMngController {
    @GetMapping("/getPjtList")
    public String getPjtList(@RequestParam(required = false, name = "keyword") String keyword,
          HttpServletRequest request, Model model, HttpSession session
-         , @RequestParam(required = false, name = "keywordType") String keywordType) {
+         , @RequestParam(required = false, name = "keywordType") String keywordType, Object navKeyword) {
 
 	   // 디버깅 로그
 	   log.info("keywordType(raw) = {}", keywordType);
@@ -76,8 +76,8 @@ public class ProjectMngController {
 
 	    
 	     // ✅ 뷰에 현재 검색/정렬 상태 전달
-	    model.addAttribute("keywordType", "");
-	    model.addAttribute("keyword", "");  // 입력칸 초기화(유지하려면 keyword 넣어도 됨)
+	    model.addAttribute("keywordType", navKeyword);
+	    model.addAttribute("keyword", navKeyword);  // 입력칸 초기화(유지하려면 keyword 넣어도 됨)
 
        
 
@@ -379,11 +379,19 @@ public class ProjectMngController {
       
    }
 
+   
 
+   
+   
 	@GetMapping("/pjtEditForm")
 	public String getPjtEditForm(@RequestParam("pjtSn") int pjtSn,
-														Model model, 
-														HttpSession session) {
+			@RequestParam(value="pageNum", required=false, defaultValue="1") int pageNum,
+            @RequestParam(value="pageSize", required=false, defaultValue="10") int pageSize,
+            @RequestParam(value="keywordType", required=false) String keywordType,
+            @RequestParam(value="keyword", required=false) String keyword,
+            Model model, HttpSession session
+         ) {
+		
 		log.info("getPjtEditForm Called >>> {}", pjtSn);
 		
 	    List<CmmnMap> approverList = projectMngService.selectApproverCandidates();
@@ -406,44 +414,84 @@ public class ProjectMngController {
 		// ✅ 전체 직원 리스트 조회
 		List<CmmnMap> employeeList = projectMngService.getEmployeeList( );
 		model.addAttribute("employeeList", employeeList);
-		
-		
-		
-
-		
+			
 	    // 3) 모델 바인딩
 		model.addAttribute("isAdmin", isAdmin);
 	    model.addAttribute("approverList", approverList);
 		model.addAttribute("pjt", pjtDetail);
 		model.addAttribute("mainUrl", "pjt_mng/pjt_edit_form");
+		
+		 // ✅ 뒤로가기용 상태 유지(아주 중요)
+	    model.addAttribute("pageNum", pageNum);
+	    model.addAttribute("pageSize", pageSize);
+	    model.addAttribute("keywordType", keywordType);
+	    model.addAttribute("keyword", keyword);
+		
 		return "navTap";
 	}
 
 
    @GetMapping("/pjtDetail")
-   public String pjtDetail(@RequestParam("pjtSn") int pjtSn, Model model, HttpSession session) {
-
+   public String pjtDetail(@RequestParam("pjtSn") int pjtSn, 
+	   @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
+       @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
+       @RequestParam(value = "keywordType", required = false) String keywordType,
+       @RequestParam(value = "keyword", required = false) String keyword,
+       Model model, HttpSession session) {
+	     
+	  
       CmmnMap pjt = projectMngService.getPjtDetail(pjtSn);
 
       log.debug("DETAIL pjtSn={}, TB_PJT_APR={}", pjtSn, pjt.get("TB_PJT_APR"));
       log.debug("DETAIL keys={}", pjt.keySet());
+      
       model.addAttribute("pjt", pjt);
+      
+      // ✅ 뒤로가기용 상태 보존
+      model.addAttribute("pageNum", pageNum);
+      model.addAttribute("pageSize", pageSize);
+      model.addAttribute("keywordType", keywordType);
+      model.addAttribute("keyword", keyword);
+      
       model.addAttribute("mainUrl", "pjt_mng/pjt_detail");
       return "navTap";
    }
+   
+   
+   
+   
 
    @PostMapping("/updateApprover")
-   public String updateApprover(@RequestParam("PJT_SN") int pjtSn, @RequestParam("TB_PJT_APR") String approver) {
-      CmmnMap param = new CmmnMap();
+   public String updateApprover(@RequestParam("PJT_SN") int pjtSn,
+		   						@RequestParam("TB_PJT_APR") String approver,		   				
+		   						@RequestParam(value = "pageNum", required = false) Integer pageNum,
+	                             @RequestParam(value = "pageSize", required = false) Integer pageSize,
+	                             @RequestParam(value = "keywordType", required = false) String keywordType,
+	                             @RequestParam(value = "keyword", required = false) String keyword,
+	                             RedirectAttributes ra ) {  
+	   
+      CmmnMap param = new CmmnMap();   
+      
       param.put("PJT_SN", pjtSn);
       param.put("TB_PJT_APR", approver);
 
       String queryId = "com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.updateApprover";
       // cmmnDao.update(queryId, param);
 
+      // ✅ 상세 화면이 필요한 파라미터를 리다이렉트에 싣는다.
+      ra.addAttribute("pjtSn", pjtSn);
+      if (pageNum != null)    ra.addAttribute("pageNum", pageNum);
+      if (pageSize != null)   ra.addAttribute("pageSize", pageSize);
+      
+      
+      if (keywordType != null && !keywordType.isEmpty()) ra.addAttribute("keywordType", keywordType);
+      if (keyword != null && !keyword.isEmpty())         ra.addAttribute("keyword", keyword);
+      
+           
       return "redirect:/pjtMng/pjtDetail?pjtSn=" + pjtSn;
    }
 
+   
    @PostMapping("/pjtEditSave")
    public String saveEditedProject(@ModelAttribute CmmnMap pjtData, RedirectAttributes redirectAttributes) {
       log.info("saveEditedProject Called >>> " + pjtData);
@@ -837,5 +885,8 @@ public class ProjectMngController {
 
       return "redirect:/pjtMng/getPjtList";
 
+      
+      
+      
    }
 }

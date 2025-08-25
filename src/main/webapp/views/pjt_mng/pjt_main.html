@@ -336,10 +336,21 @@ tr:hover {
 			
 			<!-- 페이지 순번 처리  -->
 				<td	th:text="${pageInfo != null ? (pageInfo.pageSize * (pageInfo.pageNum - 1) + stat.index + 1) : (stat.index + 1)}" style="text-align: center;"></td>
+				
 				<td class="board-title">
-					<a th:text="${pjt['PJT_NM']}" th:href="@{/pjtMng/pjtDetail(pjtSn=${pjt['PJT_SN']})}" style="width:340px;"></a>
+					<a th:text="${pjt['PJT_NM']}" th:href="@{/pjtMng/pjtDetail(
+  pjtSn=${pjt['PJT_SN']},
+  pageNum=${pageNum},
+  pageSize=${pageSize},
+  keywordType=${navKeywordType},
+  keyword=${navKeyword}
+)}" style="width:340px;"></a>
+</a>
 				</td>
-				<!-- <td th:utext="${pjt['employeeId']+'<br/>'+pjt['position']}">담당자</td>	 이름,직책 두줄처리된거 -->
+				
+				
+				
+				
 				<td th:utext="${pjt['employeeId']+' '+pjt['position']}">담당자</td>  <!-- 이름,직책 한줄처리된거 -->
 								
 				<td th:text="${pjt['PJT_STTS_CD']}">진행상태</td>				
@@ -359,7 +370,16 @@ tr:hover {
 						th:if="${session.loginUser.role == '대표' or session.loginUser.role == '프로젝트'}"
 						th:classappend="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'} ? ' btn-disabled' : ''"
 						th:disabled="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'}"
-						th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''" >수정</button>
+						th:onclick="|location.href='@{/pjtMng/pjtEditForm(
+  pjtSn=${pjt['PJT_SN']},
+  pageNum=${pageNum},
+  pageSize=${pageSize},
+  keywordType=${navKeywordType},
+  keyword=${navKeyword}
+)}'|"
+						
+						
+						>수정</button>
 				</td>
 			</tr>
 		</tbody>

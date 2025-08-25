@@ -280,8 +280,17 @@ input[type="checkbox"] {
 				th:disabled="${stts == '대기'}"
 				th:title="${stts == '대기'} ? '대기 상태 프로젝트는 저장할 수 없습니다.' : null">
 				저장</button>
-
 		</div>
+		
+		
+<input type="hidden" name="pjtSn" th:value="${pjt['PJT_SN']}">
+<input type="hidden" name="pageNum" th:value="${pageNum}">
+<input type="hidden" name="pageSize" th:value="${pageSize}">
+<input type="hidden" name="keywordType" th:value="${keywordType}">
+<input type="hidden" name="keyword" th:value="${keyword}">
+		
+		
+		
 	</form>
 	
 	<!-- 썸머노트용 JS -->
