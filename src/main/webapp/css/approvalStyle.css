@@ -29,5 +29,10 @@ td {
 }
 
 .btn-container {
-  position: relative; /* center-btn 절대 위치 기준 */
+  min-height: 60px;
+  display: flex;          /* 예시, 버튼 배치에 따라 조절 */
+  align-items: center;
+  justify-content: center; /* 목록만 있을 때 중앙 정렬 */
 }
+
+
