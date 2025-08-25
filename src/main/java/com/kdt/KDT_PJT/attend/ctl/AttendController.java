@@ -29,6 +29,7 @@ import com.kdt.KDT_PJT.attend.model.AttendDTO2;
 import com.kdt.KDT_PJT.attend.model.AttendMapper;
 import com.kdt.KDT_PJT.attend.model.LeaveDTO;
 import com.kdt.KDT_PJT.attend.model.LeaveMapper;
+import com.kdt.KDT_PJT.attend.model.PageDTO;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.schedule.model.ScheduleDTO;
 
@@ -300,36 +301,34 @@ public class AttendController {
     @GetMapping("/attendList")
     public String attendListPage(AttendDTO dto,
                                  Model model,
-                                 HttpServletRequest request) {
+                                 HttpServletRequest request, PageDTO pDTO) {
 
-        int pageNum = 1;
-        int pageSize = 10;
-        try {
-            if (request.getParameter("pageNum") != null) {
-                pageNum = Integer.parseInt(request.getParameter("pageNum"));
-            }
-            if (request.getParameter("pageSize") != null) {
-                pageSize = Integer.parseInt(request.getParameter("pageSize"));
-            }
-        } catch (Exception e) {
-            // log.warn("페이지 번호 파싱 실패, 기본값 사용", e);
-        }
+ 
+        
 
         // ✅ 여기서 페이징 시작
-        PageHelper.startPage(pageNum, pageSize);
+        PageHelper.startPage(pDTO.getPage(), pDTO.getSize());
 
         // ✅ 하나의 경로로 조회 (필요 시 dto.workDate를 오늘 날짜로 채워 기본 동작 만들기)
         List<AttendDTO> rows = attendMapper.searchAttendListPage(dto);
+        
+       
+        
+
 
         // ✅ PageInfo로 래핑
         PageInfo<AttendDTO> page = new PageInfo<>(rows);
+        
+        pDTO.setTotalCount((int)page.getTotal());
+        
+        System.out.println(pDTO);
 
         // 뷰로 전달
         model.addAttribute("page", page);           // 전체 페이징 메타데이터
         model.addAttribute("mainData", page.getList()); // 현재 페이지 데이터
         model.addAttribute("criteria", dto);       // ✅ 검색 조건 바인딩
-        model.addAttribute("pageNum", pageNum);    // ✅ 현재 페이지
-        model.addAttribute("pageSize", pageSize);  // ✅ 페이지 크기
+        model.addAttribute("pDTO", pDTO);    // ✅ 현재 페이지
+        
         model.addAttribute("mainUrl", "attend/attendList");
         
 

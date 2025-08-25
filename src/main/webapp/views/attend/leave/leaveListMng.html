@@ -28,15 +28,41 @@
 	        </tbody>
 	    </table>
 	</form>
-</div>
 
 
-<!-- 페이징 UI 영역 -->
+<!-- 페이지네이션 -->
+	<nav class="pagination">
+	  <!-- Previous 버튼 -->
+	  <a th:if="${pDTO.page > 1}" th:href="@{/attend/leaveListMng(page=${pDTO.page-5 > 1 ? pDTO.page-5 : 1})}" class="prev">&#x2039; Previous</a>
+	
+	  <!-- 첫 페이지 -->
+	  <span th:if="${pDTO.startPage > 1 and pDTO.page == 1}" class="page-number now-page disabled" th:text="1"></span>
+	  <a th:if="${pDTO.startPage > 1 and pDTO.page != 1}" th:href="@{/attend/leaveListMng(page=1)}" th:text="1" class="page-number"></a>
+	
+	  <span th:if="${pDTO.startPage > 2}" class="ellipsis">...</span>
+	
+	  <!-- 페이지 숫자들 -->
+	  <span th:each="i : ${#numbers.sequence(pDTO.startPage, pDTO.endPage)}">
+	    <span th:if="${i == pDTO.page}" class="page-number now-page disabled" th:text="${i}"></span>
+	    <a th:if="${i != pDTO.page}" th:href="@{/attend/leaveListMng(page=${i})}" th:text="${i}" class="page-number"></a>
+	  </span>
+	
+	  <span th:if="${pDTO.endPage < pDTO.totalPages - 1}" class="ellipsis">...</span>
+	
+	  <!-- 마지막 페이지 -->
+	  <span th:if="${pDTO.endPage < pDTO.totalPages and pDTO.page == pDTO.totalPages}" class="page-number now-page disabled" th:text="${pDTO.totalPages}"></span>
+	  <a th:if="${pDTO.endPage < pDTO.totalPages and pDTO.page != pDTO.totalPages}" th:href="@{/attend/leaveListMng(page=${pDTO.totalPages})}" th:text="${pDTO.totalPages}" class="page-number"></a>
+	
+	  <!-- Next 버튼 -->
+	  <a th:if="${pDTO.page < pDTO.totalPages}" th:href="@{/attend/leaveListMng(page=${pDTO.page+5 < pDTO.totalPages ? pDTO.page+5 : pDTO.totalPages})}">Next &#x203A;</a>
+	</nav>
+	
+<!-- 페이징 UI 영역
 <div class="container mt-4 text-center" th:if="${page.pages > 0}">
   <nav aria-label="Page navigation" >
     <ul class="pagination justify-content-center" style="list-style:none;">
 
-      <!-- 이전 페이지 -->
+
       <li class="page-item" th:classappend="${!page.hasPreviousPage} ? ' disabled'">
         <a class="page-link"
            th:href="@{/attend/leaveListMng( pageNum=${page.hasPreviousPage} ? ${page.prePage} : ${page.pageNum},  pageSize=${page.pageSize} )}"
@@ -45,7 +71,6 @@
         </a>
       </li>
 
-      <!-- 숫자 페이지 -->
       <li class="page-item"
           th:each="i : ${#numbers.sequence(page.navigateFirstPage, page.navigateLastPage)}"
           th:classappend="${i == page.pageNum} ? ' active'">
@@ -54,7 +79,6 @@
            th:text="${i}">1</a>
       </li>
 
-      <!-- 다음 페이지 -->
       <li class="page-item" th:classappend="${!page.hasNextPage} ? ' disabled'">
         <a class="page-link"
            th:href="@{/attend/leaveListMng( pageNum=${page.hasNextPage} ? ${page.nextPage} : ${page.pageNum}, pageSize=${page.pageSize} )}"
@@ -65,4 +89,5 @@
 
     </ul>
   </nav>
+   -->
 </div>
