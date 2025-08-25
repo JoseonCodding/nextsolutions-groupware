@@ -391,7 +391,8 @@
 		</div>
 	
 		<!-- 목록으로 버튼 -->
-		<a class="back-btn" th:href="@{/approval/main}">목록으로</a>
+		<a class="back-btn" th:href="@{/approval/main(page=${page}, type=${type}, status=${status})}">목록으로</a>
+
 		
 		<!-- 수정, 삭제 버튼 영역 -->
 		<div th:if="${approvalData != null 
