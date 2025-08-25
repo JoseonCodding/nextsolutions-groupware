@@ -1,6 +1,5 @@
 /* ==============================
-   2) Board Section
-   (source: board.css)
+   1) Board Section
    ============================== */
 /* 상단 컨트롤 전체 레이아웃 */
 .board-controls {
@@ -29,10 +28,12 @@
 
 /* 버튼 공통 스타일 (검색 버튼 + 글쓰기 버튼) */
 .search-form button,
-.board-controls .btn {
+.board-controls .btn,
+.filter-btn {
   background: #2563eb;
   color: #fff;
   border: none;
+  margin-left: 12px;
   padding: 10px 18px;
   border-radius: 8px;
   font-size: 14px;
@@ -45,8 +46,13 @@
   font-weight: 500;
 }
 
+.filter-btn {
+	height: 21px;
+}
+
 .search-form button:hover,
-.board-controls .btn:hover {
+.board-controls .btn:hover,
+.filter-btn:hover {
   background: #1d4ed8;
 }
 
@@ -229,50 +235,50 @@
    2) Admin Section
    ============================== */
 :root {
-      --gap: 12px; --radius: 12px;
-      --primary: #3949ab; --primary-600: #303f9f;
-      --surface: #ffffff; --ink: #1f2937; --muted: #6b7280; --border: #e5e7eb; --table-head: #eef2ff;
-    }
-    #boardAdmin * { box-sizing: border-box; }
-    #boardAdmin header { padding: 20px 0; position: sticky; top: 0; z-index: 10; color: #fff; background: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-    #boardAdmin header h1 { margin: 0; font-size: 20px; color: #fff }
-    #boardAdmin header .muted { color: rgba(255,255,255,0.9); }
-    #boardAdmin .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
+  --gap: 12px; --radius: 12px;
+  --primary: #3949ab; --primary-600: #303f9f;
+  --surface: #ffffff; --ink: #1f2937; --muted: #6b7280; --border: #e5e7eb; --table-head: #eef2ff;
+}
+#boardAdmin * { box-sizing: border-box; }
+#boardAdmin header { padding: 20px 0; position: sticky; top: 0; z-index: 10; color: #fff; background: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+#boardAdmin header h1 { margin: 0; font-size: 20px; color: #fff }
+#boardAdmin header .muted { color: rgba(255,255,255,0.9); }
+#boardAdmin .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
 
-    #boardAdmin .grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); align-items: start; }
-    #boardAdmin .card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.04); overflow: hidden; margin-top: 10px;}
-    #boardAdmin .card h2 { margin: 0; padding: 14px 16px; border-bottom: 1px solid #f0f0f0; font-size: 16px; background: #fff; }
-    #boardAdmin .card .content { padding: 16px; }
+#boardAdmin .grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); align-items: start; }
+#boardAdmin .card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.04); overflow: hidden; margin-top: 10px;}
+#boardAdmin .card h2 { margin: 0; padding: 14px 16px; border-bottom: 1px solid #f0f0f0; font-size: 16px; background: #fff; }
+#boardAdmin .card .content { padding: 16px; }
 
-    #boardAdmin .muted { color: var(--muted); font-size: 12px; }
-    #boardAdmin .row { display: grid; gap: 20px; align-items: center; margin-bottom: 16px; }
-    #boardAdmin input[type=text], #boardAdmin select, #boardAdmin textarea { width: 100%; padding: 10px; border:1px solid #cbd5e1; border-radius: 10px; background:#fff; }
-    #boardAdmin input[type=checkbox] { transform: scale(1.15); }
-    #boardAdmin .actions { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; justify-content: flex-start; margin-bottom: 16px;}
-    #boardAdmin .actions form { display: contents; }
+#boardAdmin .muted { color: var(--muted); font-size: 12px; }
+#boardAdmin .row { display: grid; gap: 20px; align-items: center; margin-bottom: 16px; }
+#boardAdmin input[type=text], #boardAdmin select, #boardAdmin textarea { width: 100%; padding: 10px; border:1px solid #cbd5e1; border-radius: 10px; background:#fff; }
+#boardAdmin input[type=checkbox] { transform: scale(1.15); }
+#boardAdmin .actions { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; justify-content: flex-start; margin-bottom: 16px;}
+#boardAdmin .actions form { display: contents; }
 
-    #boardAdmin .btn { appearance: none; border: 1px solid #cbd5e1; background: #f8fafc; color: #3949ab; padding: 9px 14px; border-radius: 999px; cursor: pointer; transition: .15s; display: inline-flex; align-items: center; white-space: nowrap; }
-    #boardAdmin .btn:hover { filter: brightness(0.98); }
-    #boardAdmin .btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
-    #boardAdmin .btn.primary:hover { background: var(--primary-600); border-color: var(--primary-600); }
-    #boardAdmin .btn.ghost { background: #3949ab; color: #f8fafc; }
-    #boardAdmin .btn.danger { background:#ef4444; color:#fff; border-color:#ef4444; }
-    #boardAdmin .btn.danger:hover { filter:brightness(.95); }
+#boardAdmin .btn { appearance: none; border: 1px solid #cbd5e1; background: #f8fafc; color: #3949ab; padding: 9px 14px; border-radius: 999px; cursor: pointer; transition: .15s; display: inline-flex; align-items: center; white-space: nowrap; }
+#boardAdmin .btn:hover { filter: brightness(0.98); }
+#boardAdmin .btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+#boardAdmin .btn.primary:hover { background: var(--primary-600); border-color: var(--primary-600); }
+#boardAdmin .btn.ghost { background: #3949ab; color: #f8fafc; }
+#boardAdmin .btn.danger { background:#ef4444; color:#fff; border-color:#ef4444; }
+#boardAdmin .btn.danger:hover { filter:brightness(.95); }
 
-    #boardAdmin .table-wrap { overflow: auto; border: 1px solid --border; border-radius: var(--radius); }
-    #boardAdmin table { width: 100%; border-collapse: collapse; }
-    #boardAdmin th, #boardAdmin td { padding: 10px 10px; border-bottom: 1px solid #edf2f7; text-align: center; }
-    #boardAdmin thead th { white-space: nowrap; font-weight: 700; color: #111827; background: var(--table-head); position: sticky; top: 0; z-index: 5; }
-    #boardAdmin tr:hover td { background: #fafaff; }
+#boardAdmin .table-wrap { overflow: auto; border: 1px solid --border; border-radius: var(--radius); }
+#boardAdmin table { width: 100%; border-collapse: collapse; }
+#boardAdmin th, #boardAdmin td { padding: 10px 10px; border-bottom: 1px solid #edf2f7; text-align: center; }
+#boardAdmin thead th { white-space: nowrap; font-weight: 700; color: #111827; background: var(--table-head); position: sticky; top: 0; z-index: 5; }
+#boardAdmin tr:hover td { background: #fafaff; }
 
-    #boardAdmin .td-actions {  position: relative; vertical-align: bottom; }
-    #boardAdmin .btn-row { display: flex; gap: 6px; justify-content: flex-end; margin-top: 16px; }
+#boardAdmin .td-actions {  position: relative; vertical-align: bottom; }
+#boardAdmin .btn-row { display: flex; gap: 6px; justify-content: flex-end; margin-top: 16px; }
 
-    #boardAdmin .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; border:1px solid #e5e7eb; }
-    #boardAdmin .badge.green { background:#ecfdf5; border-color:#a7f3d0; color:#065f46 }
-    #boardAdmin .badge.red   { background:#fef2f2; border-color:#fecaca; color:#991b1b }
+#boardAdmin .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; border:1px solid #e5e7eb; }
+#boardAdmin .badge.green { background:#ecfdf5; border-color:#a7f3d0; color:#065f46 }
+#boardAdmin .badge.red   { background:#fef2f2; border-color:#fecaca; color:#991b1b }
 
-    #boardAdmin dialog {
+#boardAdmin dialog {
   border: none;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0,0,0,.25);
@@ -288,12 +294,12 @@
   overflow: hidden;   /* 스크롤 완전 제거 */
 }
 
-    #boardAdmin dialog::backdrop { background: rgba(0,0,0,.35); }
-    #boardAdmin dialog header { position: static; background: var(--table-head); border-bottom:1px solid #e5e7eb; border-radius: 16px 16px 0 0; padding: 10px 0; }
-    #boardAdmin dialog .content { padding: 16px; }
+#boardAdmin dialog::backdrop { background: rgba(0,0,0,.35); }
+#boardAdmin dialog header { position: static; background: var(--table-head); border-bottom:1px solid #e5e7eb; border-radius: 16px 16px 0 0; padding: 10px 0; }
+#boardAdmin dialog .content { padding: 16px; }
 
-    #boardAdmin .stats2 { display:grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
-    #boardAdmin .today .kpi {
+#boardAdmin .stats2 { display:grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+#boardAdmin .today .kpi {
   padding: 16px;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -399,14 +405,14 @@
   flex: 1;
 }
 
+#boardAdmin .boardlist { border:1px solid var(--border); border-radius:12px; overflow:hidden; background:#fff; }
+#boardAdmin .boardlist .list-head { background: var(--table-head); font-weight:700; padding:10px; display:flex; justify-content:space-between; }
+#boardAdmin #stat-board-list { list-style:none; margin:0; padding:0; max-height: 360px; overflow:auto; }
+#boardAdmin #stat-board-list .row { padding:10px 12px; cursor:pointer; display:grid; grid-template-columns: 1fr auto; gap: 8px; align-items:center; border-top:1px solid #f1f5f9; }
+#boardAdmin #stat-board-list .row:hover { background:#f8fafc; }
+#boardAdmin #stat-board-list .row.active { background:#eef2ff; color:#1d4ed8; }
+#boardAdmin .muted { color: var(--muted); }
+
+@media (max-width: 960px) { .grid { grid-template-columns: 1fr; } .row { grid-template-columns: 1fr; } }
 
 
-    #boardAdmin .boardlist { border:1px solid var(--border); border-radius:12px; overflow:hidden; background:#fff; }
-    #boardAdmin .boardlist .list-head { background: var(--table-head); font-weight:700; padding:10px; display:flex; justify-content:space-between; }
-    #boardAdmin #stat-board-list { list-style:none; margin:0; padding:0; max-height: 360px; overflow:auto; }
-    #boardAdmin #stat-board-list .row { padding:10px 12px; cursor:pointer; display:grid; grid-template-columns: 1fr auto; gap: 8px; align-items:center; border-top:1px solid #f1f5f9; }
-    #boardAdmin #stat-board-list .row:hover { background:#f8fafc; }
-    #boardAdmin #stat-board-list .row.active { background:#eef2ff; color:#1d4ed8; }
-    #boardAdmin .muted { color: var(--muted); }
-
-    @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } .row { grid-template-columns: 1fr; } }
