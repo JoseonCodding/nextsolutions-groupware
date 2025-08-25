@@ -1,7 +1,11 @@
+
 <!-- 일정 수정 -->
+
 <script>
-  // 1) 상태 적용
-  function applyState() {
+
+
+//1) 상태 적용
+function applyState() {
     const allDayCheckbox = document.getElementById("allDay");
     const holidayCheckbox = document.getElementById("holiday");
     const repeatSelect = document.getElementById("repeatCheck");
@@ -28,17 +32,20 @@
     // 종일 선택 시 → 시간 입력 불가
     const isAllDay = allDayCheckbox.checked;
     if (startTimeInput) {
-      startTimeInput.disabled = isAllDay;
-      if (isAllDay) startTimeInput.value = "";
+        startTimeInput.disabled = isAllDay;
+        if (isAllDay) startTimeInput.value = "";
     }
     if (endTimeInput) {
-      endTimeInput.disabled = isAllDay;
-      if (isAllDay) endTimeInput.value = "";
+        endTimeInput.disabled = isAllDay;
+        if (isAllDay) endTimeInput.value = "";
     }
-  }
 
-  // 2) 날짜/시간 유효성
-  function validateEndTime() {
+    // 종일 여부에 따른 required 속성 적용
+    validateTimeRequired();
+}
+
+// 2) 날짜/시간 유효성
+function validateEndTime() {
     const startDateInput = document.getElementById("startDate");
     const endDateInput = document.getElementById("endDate");
     const startTimeInput = document.getElementById("startTime");
@@ -50,47 +57,106 @@
     const startDate = new Date(startDateInput.value);
     const endDate = new Date(endDateInput.value);
     if (startDate > endDate) {
-      alert("시작일은 종료일보다 늦을 수 없습니다.");
-      startDateInput.value = endDateInput.value;
+        alert("시작일은 종료일보다 늦을 수 없습니다.");
+        startDateInput.value = endDateInput.value;
     }
 
     // 종료시간 제한
     if (startDateInput.value === endDateInput.value && startTimeInput.value && endTimeInput.value) {
-      const startTimeNum = parseInt(startTimeInput.value.replace(":", ""), 10);
-      const endTimeNum = parseInt(endTimeInput.value.replace(":", ""), 10);
-      if (endTimeNum < startTimeNum) {
-        alert("종료시간은 시작시간보다 앞설 수 없습니다.");
-        endTimeInput.value = startTimeInput.value;
-      }
-      endTimeInput.min = startTimeInput.value;
+        const startTimeNum = parseInt(startTimeInput.value.replace(":", ""), 10);
+        const endTimeNum = parseInt(endTimeInput.value.replace(":", ""), 10);
+        if (endTimeNum < startTimeNum) {
+            alert("종료시간은 시작시간보다 앞설 수 없습니다.");
+            endTimeInput.value = startTimeInput.value;
+        }
+        endTimeInput.min = startTimeInput.value;
     } else {
-      endTimeInput.removeAttribute("min");
+        endTimeInput.removeAttribute("min");
     }
-  }
+}
 
-  function bindDateEvents() {
-    document.getElementById("startDate").addEventListener("change", validateEndTime);
-    document.getElementById("endDate").addEventListener("change", validateEndTime);
-    document.getElementById("endTime").addEventListener("change", validateEndTime);
-  }
-
-  // 3) 상태 이벤트
-  function bindStateEvents() {
+// 3) 상태 이벤트 바인딩
+function bindStateEvents() {
     document.getElementById("holiday").addEventListener("change", applyState);
     document.getElementById("allDay").addEventListener("change", applyState);
     document.getElementById("repeatCheck").addEventListener("change", applyState);
-  }
+}
 
-  // 4) 초기화
-  document.addEventListener("DOMContentLoaded", function () {
+// 4) 날짜 이벤트 바인딩
+function bindDateEvents() {
+    document.getElementById("startDate").addEventListener("change", validateEndTime);
+    document.getElementById("endDate").addEventListener("change", validateEndTime);
+    document.getElementById("endTime").addEventListener("change", validateEndTime);
+}
+
+// 5) 종일 여부에 따른 시작/종료시간 required 설정
+function validateTimeRequired() {
+    const allDayCheckbox = document.getElementById("allDay");
+    const startTimeInput = document.getElementById("startTime");
+    const endTimeInput = document.getElementById("endTime");
+    if (!allDayCheckbox || !startTimeInput || !endTimeInput) return;
+
+    if (!allDayCheckbox.checked) {
+        startTimeInput.required = true;
+        endTimeInput.required = true;
+    } else {
+        startTimeInput.required = false;
+        endTimeInput.required = false;
+    }
+}
+
+// 6) form submit 시 추가 검증
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener("submit", function(e) {
+            const allDayCheckbox = document.getElementById("allDay");
+            const startTimeInput = document.getElementById("startTime");
+            const endTimeInput = document.getElementById("endTime");
+
+            if (!allDayCheckbox.checked) {
+                if (!startTimeInput.value || !endTimeInput.value) {
+                    e.preventDefault();
+                    alert("종일 체크가 해제된 경우 시작시간과 종료시간을 모두 입력해야 합니다.");
+                    return false;
+                }
+            }
+        });
+    }
+});
+
+// 7) 초기화
+document.addEventListener("DOMContentLoaded", function () {
     bindDateEvents();
     bindStateEvents();
     applyState();
-  });
+});
+
+</script>
+<script src="/js/jquery-3.7.1.min.js"></script>
+<script>
+
+$("#updateForm").submit(function(e){
+    e.preventDefault();
+
+    $.ajax({
+        url: "/schedule/modify",
+        type: "POST",
+        data: $(this).serialize(),
+        success: function(res){
+            alert("수정이 완료되었습니다.");
+            // 필요하면 화면 갱신 or 페이지 이동
+            window.location.href = "/attend/attendList";
+        },
+        error: function(){
+            alert("수정 중 오류가 발생했습니다.");
+        }
+    });
+});
 </script>
 
 <div class="sche-detail-container">
-<form th:action="@{/schedule/modify}" method="post" th:object="${scd}">
+<form id="updateForm" th:action="@{/schedule/modify}" method="post" th:object="${scd}">
 <input type="hidden" th:field="*{scheduleId}" />
     <h1 class="detail-title">일정 수정</h1>
     <table class="sche-table-detail">
@@ -137,7 +203,7 @@
         <tr>
             <th>내용</th>
             <td colspan="3">
-                <textarea class="sche-content" th:field="*{content}" cols="50" rows="10" th:utext="*{contentBr}"></textarea>
+                <textarea class="sche-content" th:field="*{content}" cols="50" rows="10" th:utext="*{contentBr}" required></textarea>
             </td>
         </tr>
     </table>
@@ -147,3 +213,4 @@
 
 </form>
 </div>
+
