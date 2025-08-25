@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
@@ -41,11 +42,17 @@ public class ScheduleController {
 	                    .replaceAll("'", "&#039;");
 	    }
 	}
+	
+	@ModelAttribute("viewMode")
+	String viewMode(@RequestParam(value="viewMode", defaultValue="month") String viewMode) {
+		return viewMode;
+	}
 
 	
 	//일정 메인 페이지
 	@RequestMapping
-	String showSchedulePage(HttpSession session, Model model, ScheduleDTO schDto) {
+	String showSchedulePage(HttpSession session, Model model, ScheduleDTO schDto
+			) {
 		
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
 	    
@@ -69,7 +76,7 @@ public class ScheduleController {
 
 	    model.addAttribute("scheduleList", scheduleList);
 		model.addAttribute("mainUrl", "schedule/main");
-		
+		//model.addAttribute("viewMode", viewMode); // 뷰 모드 전달
 
 		//return "navTap";
 		return "home";
@@ -107,6 +114,7 @@ public class ScheduleController {
 		System.out.println("detail : "+scheduleDetail);
 		model.addAttribute("scd", scheduleDetail);
 		model.addAttribute("mainUrl", "schedule/detail");
+		
 
 		return "home";
 	}
@@ -119,6 +127,7 @@ public class ScheduleController {
 		System.out.println("modify : "+scheduleDetail);
 		model.addAttribute("scd", scheduleDetail);
 		model.addAttribute("mainUrl", "schedule/modify");
+		
 
 		return "home";
 	}
@@ -139,6 +148,7 @@ public class ScheduleController {
 		System.out.println("modify : "+modify);
 		model.addAttribute("modify", modify);
 		
+
 		// 수정 성공 여부 메시지 전달
         if (modify>0) {
             ra.addFlashAttribute("msg", "수정되었습니다.");
@@ -146,7 +156,7 @@ public class ScheduleController {
         	ra.addFlashAttribute("msg", "수정사항이 없습니다.");
         }
 		
-		return "redirect:/schedule";
+		return "redirect:/schedule/detail?scheduleId=" + dto.getScheduleId();
 	}
 	
 	//일정 삭제
@@ -157,7 +167,7 @@ public class ScheduleController {
 	    dto.setEmployeeId(loginUser.getEmployeeId());
 		int cnt = mapper.delete(dto);
 		System.out.println("delete : "+cnt);
-		
+
 		
 		// 삭제 성공 여부 메시지 전달
         if (cnt>0) {
