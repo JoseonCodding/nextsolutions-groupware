@@ -269,9 +269,8 @@ tr:hover {
 
 			<select name="keywordType"
 				style="height: 40px; width: 160px; font-size: 14px; padding: 0 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; outline: none; background: #fff;">
-				<option value="" disabled
-					th:selected="${#strings.isEmpty(keywordType)}">선택</option>
-				<option value="writer" th:selected="${keywordType == 'writer'}">작성자명</option>
+				<option value="" disabled th:selected="${#strings.isEmpty(keywordType) or keywordType == 'myApproval'}">선택</option>
+				<option value="writer" th:selected="${keywordType == 'writer'}">담당자명</option>
 				<option value="project" th:selected="${keywordType == 'project'}">프로젝트명</option>
 				<option value="status" th:selected="${keywordType == 'status'}">진행상태</option>
 			</select> <input type="text" name="keyword" placeholder="검색어 입력"
