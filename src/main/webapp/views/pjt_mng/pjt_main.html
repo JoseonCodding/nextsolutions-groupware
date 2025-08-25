@@ -358,8 +358,8 @@ tr:hover {
             <!-- 수정 버튼 -->
 					<button class="edit-btn"
 						th:if="${session.loginUser.role == '대표' or session.loginUser.role == '프로젝트'}"
-						th:classappend="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'} ? ' btn-disabled' : ''"
-						th:disabled="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료'}"
+						th:classappend="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료' or pjt['PJT_STTS_CD'] == '반려'} ? ' btn-disabled' : ''"
+						th:disabled="${pjt['PJT_STTS_CD'] == '대기' or pjt['PJT_STTS_CD'] == '완료' or pjt['PJT_STTS_CD'] == '반려'}"
 						th:onclick="'location.href=\'/pjtMng/pjtEditForm?pjtSn=' + ${pjt['PJT_SN']} + '\''" >수정</button>
 				</td>
 			</tr>
