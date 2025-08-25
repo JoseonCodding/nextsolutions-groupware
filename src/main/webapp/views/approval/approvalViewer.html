@@ -389,52 +389,59 @@
 			    </tr>
 			</table>
 		</div>
-	
-		<!-- 목록으로 버튼 -->
-		<a class="back-btn" th:href="@{/approval/main(page=${page}, type=${type}, status=${status})}">목록으로</a>
-
 		
-		<!-- 수정, 삭제 버튼 영역 -->
-		<div th:if="${approvalData != null 
-		    and approvalData.status == '대기' 
-		    and (approvalData.docType == '연차' or approvalData.docType == '근태')
-		    and approvalData.writerId == loginUser.employeeId}">
+		<!-- 하단 버튼 5종 (수정/삭제/목록으로/승인/반려) -->
+		<div class="btn-container" style="margin-bottom: 30px; margin-top: 10px;">
+		
+		  <!-- 수정 & 삭제 버튼 영역 -->
+		  <div class="left-btns" 
+		       th:if="${approvalData != null 
+		          and approvalData.status == '대기' 
+		          and (approvalData.docType == '연차' or approvalData.docType == '근태')
+		          and approvalData.writerId == loginUser.employeeId}">
 		    <a th:href="@{/approval/edit(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status})}" class="edit-btn">수정</a>
 		    <a th:href="@{/approval/delete(docId=${approvalData.docId}, page=${page}, type=${type}, status=${status})}" class="delete-btn"
 		       onclick="return confirm('삭제 시 취소할 수 없습니다.\n진행하시겠습니까?');">삭제</a>
-		</div>
-	
-		<!-- 승인 & 반려 버튼 영역 -->
-		<div th:if=" ${
-		    (approvalData.docType == '근태'     and approvalData.status == '대기'   and (loginUser.role == '대표' or loginUser.role == '근태'))
-		    or
-		    (approvalData.docType == '연차'     and approvalData.status == '대기'   and (loginUser.role == '대표' or loginUser.role == '근태'))
-		    or
-		    (approvalData.docType == '공지사항' and approvalData.status == '대기'   and loginUser.role == '게시판')
-		    or
-		    (approvalData.docType == '프로젝트' and approvalData.status == '대기'   and loginUser.role == '대표')
-		}">
-		  <!-- 승인 버튼 -->
-		  <form th:if="${approvalData.leaveUsedDate == null or approvalData.leaveUsedDate >= #dates.createNow()}"
-		  	th:action="@{/approval/approve}" method="post" style="display: inline;">
-		    <input type="hidden" name="docId"   th:value="${approvalData.docId}" />
-		    <input type="hidden" name="docType" th:value="${approvalData.docType}" />
-		    <button type="submit" class="approval-btn"
-		            onclick="return confirm('승인 시 취소할 수 없습니다.\n진행하시겠습니까?');">
-		      승인
-		    </button>
-		  </form>
+		  </div>
 		
-		  <!-- 반려 버튼 -->
-		  <form th:action="@{/approval/reject}" method="post" style="display: inline;">
-		    <input type="hidden" name="docId"   th:value="${approvalData.docId}" />
-		    <input type="hidden" name="docType" th:value="${approvalData.docType}" />
-		    <button type="submit" class="reject-btn"
-		            onclick="return confirm('반려 시 취소할 수 없습니다.\n진행하시겠습니까?');">
-		      반려
-		    </button>
-		  </form>
+		  <!-- 목록으로 버튼 -->
+		  <div class="center-btn">
+		    <a class="back-btn" th:href="@{/approval/main(page=${page}, type=${type}, status=${status})}">목록으로</a>
+		  </div>
+		
+		  <!-- 승인 & 반려 버튼 영역 -->
+		  <div class="right-btns"
+		       th:if=" ${
+		          (approvalData.docType == '근태'     and approvalData.status == '대기'   and (loginUser.role == '대표' or loginUser.role == '근태'))
+		          or
+		          (approvalData.docType == '연차'     and approvalData.status == '대기'   and (loginUser.role == '대표' or loginUser.role == '근태'))
+		          or
+		          (approvalData.docType == '공지사항' and approvalData.status == '대기'   and loginUser.role == '게시판')
+		          or
+		          (approvalData.docType == '프로젝트' and approvalData.status == '대기'   and loginUser.role == '대표')
+		        }">
+		    <form th:if="${approvalData.leaveUsedDate == null or approvalData.leaveUsedDate >= #dates.createNow()}"
+		          th:action="@{/approval/approve}" method="post" style="display: inline;">
+		      <input type="hidden" name="docId"   th:value="${approvalData.docId}" />
+		      <input type="hidden" name="docType" th:value="${approvalData.docType}" />
+		      <button type="submit" class="approval-btn"
+		              onclick="return confirm('승인 시 취소할 수 없습니다.\n진행하시겠습니까?');">
+		        승인
+		      </button>
+		    </form>
+		
+		    <form th:action="@{/approval/reject}" method="post" style="display: inline;">
+		      <input type="hidden" name="docId"   th:value="${approvalData.docId}" />
+		      <input type="hidden" name="docType" th:value="${approvalData.docType}" />
+		      <button type="submit" class="reject-btn"
+		              onclick="return confirm('반려 시 취소할 수 없습니다.\n진행하시겠습니까?');">
+		        반려
+		      </button>
+		    </form>
+		  </div>
 		</div>
+
+		
 	</div>
 </body>
 </html>

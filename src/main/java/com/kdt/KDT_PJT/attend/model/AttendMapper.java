@@ -280,7 +280,7 @@ public interface AttendMapper {
 	            AND e.emp_nm LIKE CONCAT('%', #{empNm}, '%')
 	        </if>
 	        <if test="modifiedBy != null and modifiedBy != ''">
-	            AND a.modified_by LIKE CONCAT('%', #{modifiedBy}, '%')
+	            AND mb.emp_nm LIKE CONCAT('%', #{modifiedBy}, '%')
 	        </if>
 	        ORDER BY a.check_in_time DESC
 	        </script>
