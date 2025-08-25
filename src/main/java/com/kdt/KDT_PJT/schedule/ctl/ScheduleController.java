@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
@@ -41,11 +42,17 @@ public class ScheduleController {
 	                    .replaceAll("'", "&#039;");
 	    }
 	}
+	
+	@ModelAttribute("viewMode")
+	String viewMode(@RequestParam(value="viewMode", defaultValue="month") String viewMode) {
+		return viewMode;
+	}
 
 	
 	//일정 메인 페이지
 	@RequestMapping
-	String showSchedulePage(HttpSession session, Model model, ScheduleDTO schDto) {
+	String showSchedulePage(HttpSession session, Model model, ScheduleDTO schDto
+			) {
 		
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
 	    
@@ -69,7 +76,7 @@ public class ScheduleController {
 
 	    model.addAttribute("scheduleList", scheduleList);
 		model.addAttribute("mainUrl", "schedule/main");
-		
+		//model.addAttribute("viewMode", viewMode); // 뷰 모드 전달
 
 		//return "navTap";
 		return "home";
@@ -107,6 +114,7 @@ public class ScheduleController {
 		System.out.println("detail : "+scheduleDetail);
 		model.addAttribute("scd", scheduleDetail);
 		model.addAttribute("mainUrl", "schedule/detail");
+		
 
 		return "home";
 	}
@@ -119,6 +127,7 @@ public class ScheduleController {
 		System.out.println("modify : "+scheduleDetail);
 		model.addAttribute("scd", scheduleDetail);
 		model.addAttribute("mainUrl", "schedule/modify");
+		
 
 		return "home";
 	}
@@ -139,6 +148,7 @@ public class ScheduleController {
 		System.out.println("modify : "+modify);
 		model.addAttribute("modify", modify);
 		
+
 		// 수정 성공 여부 메시지 전달
         if (modify>0) {
             ra.addFlashAttribute("msg", "수정되었습니다.");
@@ -146,18 +156,18 @@ public class ScheduleController {
         	ra.addFlashAttribute("msg", "수정사항이 없습니다.");
         }
 		
-		return "redirect:/schedule";
+		return "redirect:/schedule/detail?scheduleId=" + dto.getScheduleId();
 	}
 	
 	//일정 삭제
 	@RequestMapping("/delete")
-	public String scheduledelete(HttpSession session, RedirectAttributes ra, ScheduleDTO dto) {
+	public String scheduleDelete(HttpSession session, RedirectAttributes ra, ScheduleDTO dto) {
 		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
 	    
 	    dto.setEmployeeId(loginUser.getEmployeeId());
 		int cnt = mapper.delete(dto);
 		System.out.println("delete : "+cnt);
-		
+
 		
 		// 삭제 성공 여부 메시지 전달
         if (cnt>0) {
@@ -168,5 +178,46 @@ public class ScheduleController {
 
 		return "redirect:/schedule";
 	}
+
+//	// 일정 목록 진입 시 뷰 모드 세션에 저장
+//	@GetMapping("/schedule/month")
+//	public String monthView(HttpSession session, Model model) {
+//	    session.setAttribute("viewMode", "month");
+//	    // 월별 데이터 조회 로직
+//	    return "schedule/month";
+//	}
+//
+//	@GetMapping("/schedule/week")
+//	public String weekView(HttpSession session, Model model) {
+//	    session.setAttribute("viewMode", "week");
+//	    // 주별 데이터 조회 로직
+//	    return "schedule/week";
+//	}
+//
+//	@GetMapping("/schedule/day")
+//	public String dayView(HttpSession session, Model model) {
+//	    session.setAttribute("viewMode", "day");
+//	    // 일별 데이터 조회 로직
+//	    return "schedule/day";
+//	}
+//	
+//	@GetMapping("/schedule/detail/{id}")
+//	public String detail(int scheduleId, HttpSession session, Model model) {
+//	    // 상세 조회 로직
+//	    ScheduleDTO dto = ;
+//	    model.addAttribute("schedule", dto);
+//
+//	    return "schedule/detail";
+//	}
+//
+//	@PostMapping("/schedule/backToList")
+//	public String backToList(HttpSession session) {
+//	    String viewMode = (String) session.getAttribute("viewMode");
+//	    if (viewMode == null) {
+//	        viewMode = "month"; // 기본값
+//	    }
+//	    return "redirect:/schedule/" + viewMode;
+//	}
+
 
 }
