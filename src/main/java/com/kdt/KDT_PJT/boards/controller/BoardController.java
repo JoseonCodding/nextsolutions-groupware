@@ -113,7 +113,15 @@ public class BoardController {
         dto.setBoardId(boardId);
         dto.setLimit(size);
         dto.setOffset((page-1)*size);
-        dto.setSort(dto.sortOrDefault());
+
+        // 1) 요청 원본 sort는 따로 보관 (UI 표시용)
+        String rawSort = (dto.getSort() == null || dto.getSort().isBlank()) ? null : dto.getSort();
+
+        // 2) 쿼리용 정렬값만 기본치 적용 (예: newest)
+        String sortForQuery = (rawSort == null ? "newest" : rawSort);
+
+        // 3) 매퍼 호출 직전에만 쿼리용 값을 세팅
+        dto.setSort(sortForQuery);
 
         List<BoardDTO> boards = boardMapper.selectCustomPosts(dto);
         int total = boardMapper.customTotalCnt(dto);
@@ -129,7 +137,9 @@ public class BoardController {
 
         model.addAttribute("offset", dto.getOffset());
         model.addAttribute("keyword", dto.getKeyword());
-        model.addAttribute("sort", dto.getSort());
+        
+        // 4) 화면에는 원본(raw) sort를 내려보내 “선택”이 선택되도록 함
+        model.addAttribute("sort", rawSort == null ? "" : rawSort);
         
         model.addAttribute("board", boardMeta); // 현재 보드 정보
         model.addAttribute("canWrite", boardMeta != null && boardMeta.canWriteBy(me));
@@ -385,23 +395,43 @@ public class BoardController {
         int size = (dto.getSize()!=null && dto.getSize()>0) ? dto.getSize() : 10;
         int page = (dto.getPage()!=null && dto.getPage()>0) ? dto.getPage() : 1;
 
-        dto.setLimit(size);
-        dto.setOffset((page-1)*size);
-        dto.setSort(dto.sortOrDefault());
+        // 1) 요청 원본 sort는 따로 보관 (UI 표시용)
+        String rawSort = (dto.getSort() == null || dto.getSort().isBlank()) ? null : dto.getSort();
 
-        var boards = boardMapper.selectNoticePosts(dto);
+        // 2) 쿼리용 정렬값만 기본치 적용 (예: newest)
+        String sortForQuery = (rawSort == null ? "newest" : rawSort);
+        
+        // ► 총 건수 먼저 구함 (정렬과 무관)
         int total = boardMapper.noticeTotalCnt(dto);
-        int totalPages = (int)Math.ceil(total /(double) size);
+
+        // ► 총 페이지: 최소 1 보장
+        int totalPages = Math.max(1, (int)Math.ceil(total / (double) size));
+
+        // ► 현재 페이지 보정(1..totalPages)
+        page = Math.min(Math.max(1, page), totalPages);
+
+        // ► offset 재계산 후 DTO 세팅
+        int offset = (page - 1) * size;
+        dto.setLimit(size);
+        dto.setOffset(offset);
+        // 3) 매퍼 호출 직전에만 쿼리용 값을 세팅
+        dto.setSort(sortForQuery);
+
+        // ► 목록 조회
+        var boards = boardMapper.selectNoticePosts(dto);
+        // ► 페이지네이션 계산
         int win = 5;
-        int startPage = ((page-1)/win)*win + 1;
-        int endPage = Math.min(startPage + win - 1, totalPages);
+        int startPage = ((page - 1) / win) * win + 1;
+        int endPage   = Math.min(startPage + win - 1, totalPages);
 
         Integer noticeBoardId = boardMapper.findBoardIdByType("notice");
         BoardDTO boardMeta = boardMapper.selectBoardById(noticeBoardId);
-
         String me = null;
         var loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser != null) me = loginUser.getEmployeeId();
+        
+        // 4) 화면에는 원본(raw) sort를 내려보내 “선택”이 선택되도록 함
+        model.addAttribute("sort", rawSort == null ? "" : rawSort);
 
         model.addAttribute("canWrite", boardMeta != null && boardMeta.canWriteBy(me));
         model.addAttribute("boards", boards);
@@ -412,7 +442,6 @@ public class BoardController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("offset", dto.getOffset());
         model.addAttribute("keyword", dto.getKeyword());
-        model.addAttribute("sort", dto.getSort());
         model.addAttribute("activeBoard", "notice");
         model.addAttribute("mainUrl", "board/notice_list");
         return "navTap";
@@ -580,7 +609,15 @@ public class BoardController {
 
         dto.setLimit(size);
         dto.setOffset((page-1)*size);
-        dto.setSort(dto.sortOrDefault());
+
+        // 1) 요청 원본 sort는 따로 보관 (UI 표시용)
+        String rawSort = (dto.getSort() == null || dto.getSort().isBlank()) ? null : dto.getSort();
+
+        // 2) 쿼리용 정렬값만 기본치 적용 (예: newest)
+        String sortForQuery = (rawSort == null ? "newest" : rawSort);
+
+        // 3) 매퍼 호출 직전에만 쿼리용 값을 세팅
+        dto.setSort(sortForQuery);
 
         List<BoardDTO> boards = boardMapper.selectFreePosts(dto);
         int total = boardMapper.freeTotalCnt(dto);
@@ -595,6 +632,9 @@ public class BoardController {
         String me = null;
         var loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser != null) me = loginUser.getEmployeeId();
+        
+        // 4) 화면에는 원본(raw) sort를 내려보내 “선택”이 선택되도록 함
+        model.addAttribute("sort", rawSort == null ? "" : rawSort);
 
         model.addAttribute("canWrite", boardMeta != null && boardMeta.canWriteBy(me));
         model.addAttribute("boards", boards);
@@ -605,7 +645,6 @@ public class BoardController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("keyword", dto.getKeyword());
-        model.addAttribute("sort", dto.getSort());
         model.addAttribute("activeBoard", "free");
         model.addAttribute("mainUrl", "board/free_list");
         return "navTap";

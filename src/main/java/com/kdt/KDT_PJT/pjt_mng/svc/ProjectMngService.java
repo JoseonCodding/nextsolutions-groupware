@@ -256,6 +256,12 @@ public class ProjectMngService {
 	      return pjtMngMapper.countProject(keyword);
    }
    
+   public int countStatus(String keyword) {	// 진행상태 필터에서 검색 결과의 총 개수 계산
+	    if (keyword == null || keyword.isBlank())
+	        return 0;
+	    return cmmnDao.selectOne("com.kdt.pjt_pjt.mapper.pjt_mng.PjtMngMapper.countStatus", keyword);
+	}
+   
 
 // ProjectMngService.java
    public List<CmmnMap> getProjectList(Map<String, Object> param) {

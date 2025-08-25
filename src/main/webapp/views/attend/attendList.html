@@ -4,7 +4,7 @@
 	<form method="get" action="/attend/attendList">
 	    <label>날짜 <input type="date" name="workDate"  th:value="${param.workDate}" /></label>
 	    <label>이름 <input type="text" name="empNm" th:value="${param.empNm}"/></label>
-	    <label>수정자 <input type="text" name="modifiedBy" th:value="${param.modifiedBy}"/></label>
+	    <label>승인자 <input type="text" name="modifiedBy" th:value="${param.modifiedBy}"/></label>
 	
 	    <button class="filter-btn" type="submit"><i class="fa fa-search"></i>검색</button>
 	
@@ -34,6 +34,8 @@
       </tr>
     </thead>
 	<tbody>
+		<tr th:if="${#lists.isEmpty(mainData)}" >
+			        <td colspan="8" >조회된 근태 내역이 없습니다.</td></tr>
 		<tr th:each="dto : ${mainData}">
 			<td th:text="${dto.workDate}"></td>
 			<td th:text="${dto.deptName}"></td>
@@ -54,10 +56,10 @@
 	  <div>
 	    <strong th:text="${page.total}">0</strong>건 /
 	    <span th:text="${page.pageNum}">1</span> /
-	    <span th:text="${page.pages}">1</span>페이지
+	    <span th:text="${page.pages == 0 ? 1 : page.pages}"></span>페이지
 	  </div>
 	
-	  <!-- 페이지 크기 선택 -->
+	  <!-- 페이지 크기 선택 
 	  <form method="get" action="/attend/attendList" style="display:flex; align-items:center; gap:6px;">
 	    <input type="hidden" name="pageNum" th:value="${page.pageNum}" />
 	    <input type="hidden" name="workDate" th:value="${param.workDate}" />
@@ -73,15 +75,55 @@
 	      </select>
 	    </label>
 	  </form>
+	  -->
 	</div>
 	
 	
-	<!-- 페이징 UI 영역 -->
+	<!-- 페이지네이션 -->
+		<nav class="pagination" >
+		  <!-- Previous 버튼 -->
+		  <a th:if="${pDTO.page > 1}" th:href="@{/attend/attendList(page=${pDTO.page-5 > 1 ? pDTO.page-5 : 1},workDate=${criteria.workDate},
+	             empNm=${criteria.empNm},
+	             modifiedBy=${criteria.modifiedBy})}" class="prev">&#x2039; Previous</a>
+		
+		  <!-- 첫 페이지 -->
+		  <span th:if="${pDTO.startPage > 1 and pDTO.page == 1}" class="page-number now-page disabled" th:text="1"></span>
+		  <a th:if="${pDTO.startPage > 1 and pDTO.page != 1}" th:href="@{/attend/attendList(page=1, workDate=${criteria.workDate},
+	             empNm=${criteria.empNm},
+	             modifiedBy=${criteria.modifiedBy})}" th:text="1" class="page-number"></a>
+		
+		  <span th:if="${pDTO.startPage > 2}" class="ellipsis">...</span>
+		
+		  <!-- 페이지 숫자들 -->
+		  <span th:each="i : ${#numbers.sequence(pDTO.startPage, pDTO.endPage)}">
+		    <span th:if="${i == pDTO.page}" class="page-number now-page disabled" th:text="${i}"></span>
+		    <a th:if="${i != pDTO.page}" th:href="@{/attend/attendList(page=${i},workDate=${criteria.workDate},
+	             empNm=${criteria.empNm},
+	             modifiedBy=${criteria.modifiedBy})}" th:text="${i}" class="page-number"></a>
+		  </span>
+		
+		  <span th:if="${pDTO.endPage < pDTO.totalPages - 1}" class="ellipsis">...</span>
+		
+		  <!-- 마지막 페이지 -->
+		  <span th:if="${pDTO.endPage < pDTO.totalPages and pDTO.page == pDTO.totalPages}" class="page-number now-page disabled" th:text="${pDTO.totalPages}"></span>
+		  <a th:if="${pDTO.endPage < pDTO.totalPages and pDTO.page != pDTO.totalPages}" th:href="@{/attend/attendList(page=${pDTO.totalPages}, workDate=${criteria.workDate},
+	             empNm=${criteria.empNm},
+	             modifiedBy=${criteria.modifiedBy})}" th:text="${pDTO.totalPages}" class="page-number"></a>
+		
+		  <!-- Next 버튼 -->
+		  <a th:if="${pDTO.page < pDTO.totalPages}" th:href="@{/attend/attendList(page=${pDTO.page+5 < pDTO.totalPages ? pDTO.page+5 : pDTO.totalPages}, workDate=${criteria.workDate},
+	             empNm=${criteria.empNm},
+	             modifiedBy=${criteria.modifiedBy})}">Next &#x203A;</a>
+		</nav>
+	
+	
+	
+	<!-- 페이징 UI 영역
 	<div class="container mt-4 text-center">
 	  <nav aria-label="Page navigation">
 	    <ul class="pagination justify-content-center" style="list-style:none;">
 	
-	      <!-- 이전 페이지 -->
+	     
 	      <li class="page-item" th:if="${page.hasPreviousPage}">
 	        <a class="prev"
 	           th:href="@{/attend/attendList(
@@ -96,13 +138,12 @@
 	        </a>
 	      </li>
 	
-	      <!-- 숫자 페이지 -->
+	     
 	      <li th:each="i : ${#numbers.sequence(page.navigateFirstPage, page.navigateLastPage)}"
 	          th:classappend="${i == page.pageNum} ? 'active'">
 	        <a class="page-number"
 	           th:href="@{/attend/attendList(
-	             pageNum=${i},
-	             pageSize=${page.pageSize},
+	             page=${i},
 	             workDate=${criteria.workDate},
 	             empNm=${criteria.empNm},
 	             modifiedBy=${criteria.modifiedBy}
@@ -110,12 +151,10 @@
 	           th:text="${i}">1</a>
 	      </li>
 	
-	      <!-- 다음 페이지 -->
 	      <li class="page-item" th:if="${page.hasNextPage}">
 	        <a class="page-link"
 	           th:href="@{/attend/attendList(
-	             pageNum=${page.nextPage},
-	             pageSize=${page.pageSize},
+	             page=${page.nextPage},
 	             workDate=${criteria.workDate},
 	             empNm=${criteria.empNm},
 	             modifiedBy=${criteria.modifiedBy}
@@ -127,7 +166,10 @@
 	
 	    </ul>
 	  </nav>
+	  
+	  
 	</div>
+	 -->
 </div>
 
 

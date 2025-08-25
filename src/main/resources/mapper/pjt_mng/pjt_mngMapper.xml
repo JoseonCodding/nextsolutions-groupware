@@ -424,10 +424,18 @@ SELECT
       AND (PJT_STTS_CD LIKE CONCAT('%', #{keyword}, '%') )
     </if>
   ORDER BY LAST_MDFCN_DT DESC
-  
-  
-  
 </select>
+
+<!-- 진행상태 필터에서 검색 결과의 총 개수 계산 -->
+<select id="countStatus" parameterType="String" resultType="int">
+  SELECT COUNT(*)
+  FROM VIEW_PJT_BASC
+  WHERE (USE_YN IS NULL OR USE_YN = 'Y')
+    <if test="keyword != null and keyword != ''">
+      AND PJT_STTS_CD LIKE CONCAT('%', #{keyword}, '%')
+    </if>
+</select>
+
 
 
 <select id="getProjectListMyProject" 

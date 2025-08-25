@@ -16,7 +16,8 @@ public class ScheduleDTO {
 
 
 	int scheduleId, repeatCheck, pjtSn;
-    String title, cate, alarm, content, holiday, msg;
+    String title, cate, alarm, holiday, msg;
+    private String content = "";
     
     @JsonInclude(JsonInclude.Include.NON_NULL)
     Date startDate=new Date(), endDate=new Date(), createdAt=new Date(), updatedAt=new Date(), deleteDate=new Date(), curr=new Date();
@@ -140,7 +141,15 @@ public class ScheduleDTO {
         }
         return "";
     }
-    
+
+	//엔터 인식
+	public String getContentBr() {
+		if (this.content == null) {
+	        return ""; // 또는 null 반환
+	    }
+	    return content.replaceAll("\n", "<br>");
+	}
+	
 	//start_date    -- 일정 시작일
 	//end_date      -- 일정 종료일
 	//cate          -- 종일 일정
