@@ -53,7 +53,7 @@ input, select {
         <th>이름</th>
         <td>
             <input type="text" name="empNm" th:value="${employee.empNm}"
-                   th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+                   th:readonly="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
         </td>
     </tr>
     <tr>
@@ -72,13 +72,13 @@ input, select {
         <td>
             <input type="date" name="hireDate"
                    th:value="${employee.hireDate != null ? #dates.format(employee.hireDate, 'yyyy-MM-dd') : null}"
-                   th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+                   th:readonly="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
         </td>
         <th>퇴사일</th>
         <td>
             <input type="date" name="resignDate"
                    th:value="${employee.resignDate != null ? #dates.format(employee.resignDate, 'yyyy-MM-dd') : null}"
-                   th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+                   th:readonly="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
         </td>
     </tr>
     <tr>

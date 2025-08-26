@@ -237,7 +237,7 @@ public class BoardController {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) return "redirect:/login";
 
-        dto.setContent(sanitize(dto.getContent()));
+        //dto.setContent(sanitize(dto.getContent()));
         dto.setBoardId(boardId);
         dto.setEmployeeId(loginUser.getEmployeeId());
         dto.setCreatedAt(new Date());
@@ -294,7 +294,8 @@ public class BoardController {
         BoardDTO submit = new BoardDTO();
         submit.setPostId(dto.getPostId());
         submit.setTitle(dto.getTitle());
-        submit.setContent(sanitize(dto.getContent()));
+        submit.setContent(dto.getContent());
+        //submit.setContent(sanitize(dto.getContent()));
         submit.setEmployeeId(loginUser.getEmployeeId()); // 소유자 체크용
         boardMapper.modify(submit);
 
@@ -556,7 +557,7 @@ public class BoardController {
                              HttpSession session) {
         EmployeeDto u = (EmployeeDto) session.getAttribute("loginUser");
         if (u != null) dto.setEmployeeId(u.getEmployeeId());
-        dto.setContent(sanitize(dto.getContent()));
+        //dto.setContent(sanitize(dto.getContent()));
         boardMapper.insertNoticeDraft(dto); // status='대기'
         return "redirect:/board/notice";
     }
@@ -669,7 +670,7 @@ public class BoardController {
         Integer boardId = boardMapper.findBoardIdByType("free");
         dto.setBoardId(boardId);
         dto.setEmployeeId(loginUser.getEmployeeId());
-        dto.setContent(sanitize(dto.getContent()));
+        //dto.setContent(sanitize(dto.getContent()));
         dto.setCreatedAt(new Date());
         dto.setViewCount(0);
         dto.setLikeCount(0);
@@ -794,7 +795,8 @@ public class BoardController {
         BoardDTO dto = new BoardDTO();
         dto.setPostId(form.getPostId());
         dto.setTitle(form.getTitle());
-        dto.setContent(sanitize(form.getContent()));
+        dto.setContent(form.getContent());
+        //dto.setContent(sanitize(form.getContent()));
         dto.setEmployeeId(loginUser.getEmployeeId()); // 소유자 체크용
         boardMapper.modify(dto);
 
