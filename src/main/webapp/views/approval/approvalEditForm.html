@@ -11,8 +11,8 @@
 	<div style="padding-left: 50px; padding-right: 50px;">
 		<!-- 뷰어 상단 타이틀 -->
 		<h1 th:switch="${editData != null ? editData.docType : '-'}" style="text-align:center; margin-top:45px; margin-bottom:30px;">
-		    <span th:case="'연차'">연차 결재 문서</span>
-		    <span th:case="'근태'">근태 결재 문서</span>
+		    <span th:case="'연차'">연차 결재 수정</span>
+		    <span th:case="'근태'">근태 결재 수정</span>
 		</h1>
 		
 	    <form method="post" th:action="@{/approval/edit}" th:object="${editData}">
@@ -49,26 +49,42 @@
 	        </table>
 	        
 		    <!-- [연차] -->
+			<div style="margin-top: 30px; ">
+				<table>
+					<tr>
+						<th style="width: 186px;">결재 종류</th>
+						<td th:text="${editData == null ? '-' : editData.docType}"></td>
+						<th style="width: 186px;">결재 상태</th>
+						<td th:style="${editData != null and editData.status == '반려' ? 'color:red; width: 186px;' : 'width: 186px;'}"
+							th:text="${editData == null ? '-' : editData.status}" ></td>
+					</tr>
+					<tr>
+						<th>제목</th>
+						<td colspan="3" th:text="${editData == null ? '존재하지 않는 문서입니다.' : editData.title}"></td>
+					</tr>
+				</table>
+			</div>
+		    
 		    <table th:if="${editData.docType == '연차'}"
 		           style="margin-top:30px; border-collapse:collapse; width:100%;">
 		        <tr>
-		            <th>연차 발생일</th>
+		            <th style="width:186px;">연차 발생일</th>
 		            <td>
 		                <span th:text="${editData.leaveCreateDate != null ? #dates.format(editData.leaveCreateDate, 'yyyy-MM-dd') : '-'}"></span>
 		            </td>
-		        </tr>
-		        <tr>
-		        </tr>
-		        <tr>
-		            <th>연차 사용일</th>
-		            <td>
+		            <th style="width:186px;">연차 사용일</th>
+		            <td style="width:186px;">
 						<input type="date" name="leaveUsedDate"
 						       th:value="${editData.leaveUsedDate != null ? #dates.format(editData.leaveUsedDate, 'yyyy-MM-dd') : ''}" />
 		            </td>
 		        </tr>
 		        <tr>
-		            <th>연차 사유</th>
-		            <td>
+			        <th>연차 발생 사유</th>
+			        <td colspan="3" th:text="${editData.createReason == null or editData.createReason.isEmpty() ? '내용이 없습니다' : editData.createReason}"></td>
+			    </tr>
+		        <tr>
+		            <th>연차 신청 사유</th>
+		            <td colspan="3">
 		                <textarea name="content" rows="5" style="width:95%;" th:text="${editData.content}"></textarea>
 		            </td>
 		        </tr>
@@ -78,8 +94,15 @@
 			<table th:if="${editData.docType == '근태'}"
 			       style="margin-top:30px; border-collapse:collapse; width:100%;">
 			    <tr>
-			        <th>항목</th>
-			        <td>
+			       	<th style="width:186px;">출근 시간</th>
+			        <td><span th:text="${editData.checkInTime != null ? #dates.format(editData.checkInTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
+			        <th style="width:186px;">퇴근 시간</th>
+			        <td style="width:186px;"><span th:text="${editData.checkOutTime != null ? #dates.format(editData.checkOutTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
+			    </tr>
+			    <tr>
+			    <tr>
+			        <th>수정 항목</th>
+			        <td colspan="3">
 			            <div style="display:flex; gap:28px; align-items:center; flex-wrap:wrap; justify-content:flex-start;">
 			                <label style="display:flex; align-items:center; gap:8px; font-size:16px;">
 			                    <input class="action-one" type="checkbox" name="actions" value="IN"
@@ -95,16 +118,8 @@
 			        </td>
 			    </tr>
 			    <tr>
-			        <th>출근 시간</th>
-			        <td><span th:text="${editData.checkInTime != null ? #dates.format(editData.checkInTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
-			    </tr>
-			    <tr>
-			        <th>퇴근 시간</th>
-			        <td><span th:text="${editData.checkOutTime != null ? #dates.format(editData.checkOutTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></span></td>
-			    </tr>
-			    <tr>
 			        <th>수정 사유</th>
-			        <td>
+			        <td colspan="3">
 			            <textarea name="content" rows="5" style="width:95%;" th:text="${editData.content}"></textarea>
 			        </td>
 			    </tr>
@@ -112,11 +127,15 @@
 	
 	        
 			<!-- 저장, 취소 버튼 영역 -->
-			<button type="submit" class="save-btn">저장</button>
-			
-			<a th:href="@{'/approval/viewer'(docId=${editData.docId}, page=${page}, type=${type}, status=${status})}">
-			    <button type="button" class="back-btn">취소</button>
-			</a>
+			<div class="btn-container" style="margin-bottom: 30px; margin-top: 10px;">
+				<div class="right-btns">
+					<button type="submit" class="edit-btn">저장</button>
+					
+					<a th:href="@{'/approval/viewer'(docId=${editData.docId}, page=${page}, type=${type}, status=${status})}">
+					    <button type="button" class="delete-btn">취소</button>
+					</a>
+				</div>
+			</div>
 	    </form>
     </div>
     
