@@ -178,8 +178,10 @@ public class EmployeeController {
 
     /** 사원 수정 처리 */
     @PostMapping("/employee/update")
-    public String updateEmployee(EmployeeDto dto, HttpSession session
-			,Model model) {
+    public String updateEmployee(EmployeeDto dto
+    							, HttpSession session
+    							, Model model
+    							) {
     	
     	EmployeeDto user = (EmployeeDto) session.getAttribute("loginUser");
     	
@@ -190,6 +192,8 @@ public class EmployeeController {
         String hireStr  = dto.getHireDate() != null ? sdf.format(dto.getHireDate()) : null;
         String resignStr= dto.getResignDate() != null ? sdf.format(dto.getResignDate()) : null;
     	
+        //System.out.println("이름이 안넘어와 " + empNm);
+        
     	 System.out.println("아이디"+dto.getEmployeeId());
     	 System.out.println("비번"+dto.getPassword());
     	 System.out.println("생년월일"+birthStr);
