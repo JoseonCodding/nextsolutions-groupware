@@ -294,6 +294,7 @@ public class BoardController {
         BoardDTO submit = new BoardDTO();
         submit.setPostId(dto.getPostId());
         submit.setTitle(dto.getTitle());
+        submit.setContent(dto.getContent());
         //submit.setContent(sanitize(dto.getContent()));
         submit.setEmployeeId(loginUser.getEmployeeId()); // 소유자 체크용
         boardMapper.modify(submit);
@@ -794,6 +795,7 @@ public class BoardController {
         BoardDTO dto = new BoardDTO();
         dto.setPostId(form.getPostId());
         dto.setTitle(form.getTitle());
+        dto.setContent(form.getContent());
         //dto.setContent(sanitize(form.getContent()));
         dto.setEmployeeId(loginUser.getEmployeeId()); // 소유자 체크용
         boardMapper.modify(dto);
