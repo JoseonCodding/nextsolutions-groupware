@@ -12,27 +12,19 @@ td {
   display: flex;
   align-items: center;
   position: relative;
+  min-height: 60px;
 }
-
-.left-btns {
-  text-align: left;  /* 왼쪽 정렬만 */
-}
-
 .center-btn {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
-
 .right-btns {
-  margin-left: auto; /* 자동으로 오른쪽 끝으로 밀림 */
+  position: absolute;
+  right: 0;
 }
-
-.btn-container {
-  min-height: 60px;
-  display: flex;          /* 예시, 버튼 배치에 따라 조절 */
-  align-items: center;
-  justify-content: center; /* 목록만 있을 때 중앙 정렬 */
+.left-btns {
+  /* flex, float 없이 기본 */
+  position: absolute;
+  left: 0;
 }
-
-
