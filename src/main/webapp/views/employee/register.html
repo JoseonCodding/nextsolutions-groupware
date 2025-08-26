@@ -54,7 +54,7 @@ $("#idChkBtn").click(function(){
         data: { employeeId: employeeId },
         success: function(data, status) {
             if(data){
-				alert("중복된 아이디 이지롱")
+				alert("중복된 아이디 입니다.")
 				idChk  = false
             }else{
             	alert("사용가능 ID")
@@ -88,10 +88,10 @@ var phoneChk  = false
                 data: { phone: phone },
                 success: function(data, status) {
                     if(data){
-						alert("중복된 폰번호 이지롱")
+						alert("중복된 폰번호 입니다.")
 						phoneChk  = false
                     }else{
-                    	alert("사용가능 폰번")
+                    	alert("사용가능한 전화번호")
                     	$("#phone").prop("readonly",true)
                     	$("#phoneChkBtn").prop("disabled",true)
                     	phoneChk = true
