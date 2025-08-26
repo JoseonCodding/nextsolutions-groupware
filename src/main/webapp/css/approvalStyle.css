@@ -28,3 +28,9 @@ td {
   position: absolute;
   left: 0;
 }
+
+.left-btns, .right-btns {
+  display: flex;
+  gap: 10px;
+}
+
