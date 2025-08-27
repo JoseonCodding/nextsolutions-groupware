@@ -40,11 +40,11 @@ const Calendar = () => {
   const renderEventContent = ({ event }) => (
     <div className="font-medium text-gray-800">
       {event.extendedProps?.holiday === '휴무일' && (
-        <span className="inline-block mb-1 px-1 py-0.5 text-xs text-orange-600 rounded">
+        <span className="inline-block px-1 py-0 text-xs text-orange-600 rounded">
           휴무일
         </span>
       )}
-      <span className="block px-1 py-0.5 rounded">
+      <span className="block p-1 rounded leading-none">
         {event.title || '(제목 없음)'}
       </span>
     </div>

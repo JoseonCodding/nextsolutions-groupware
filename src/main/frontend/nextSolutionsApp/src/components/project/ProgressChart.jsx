@@ -3,9 +3,9 @@ import DoughnutChart from './DoughnutChart';
 
 // const COLORS = { progress: '#60a5fa', pending: '#fbbf24', complete: '#34d399' };
 const COLORS = {
-  progress: '#ffc619',
-  pending: '#fda300',
-  complete: '#fa841a',
+  progress: '#4fe7af',
+  pending: '#11c4d4',
+  complete: '#0c81e4',
 };
 
 const ProgressChart = () => {

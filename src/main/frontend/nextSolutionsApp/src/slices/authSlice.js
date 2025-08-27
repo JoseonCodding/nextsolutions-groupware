@@ -13,6 +13,9 @@ export const fetchUserAsync = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axios.get('/logInfo'); // 세션 기반 로그인 정보
+
+      console.log(res.data);
+
       return res.data;
     } catch (err) {
       const message =

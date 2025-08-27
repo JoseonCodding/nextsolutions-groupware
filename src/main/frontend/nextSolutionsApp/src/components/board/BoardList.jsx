@@ -36,7 +36,7 @@ const BoardList = () => {
       {
         accessorKey: 'order',
         header: 'NO',
-        cell: (info) => info.getValue(),
+        cell: (info) => <div className="text-center">{info.getValue()}</div>,
         enableSorting: false,
         size: 50,
         minSize: 40,
@@ -48,7 +48,6 @@ const BoardList = () => {
         cell: ({ row, getValue }) => {
           const id = row.original.id;
 
-          // 식별자 없으면 링크 만들지 않기
           if (id == null) {
             console.warn('식별자 없음 행(링크 미생성):', row.original);
             return <span className="text-gray-500">{getValue()}</span>;
@@ -59,7 +58,7 @@ const BoardList = () => {
               href={`/board/notice/detail?postId=${encodeURIComponent(
                 String(id)
               )}`}
-              className="underline underline-offset-2 hover:opacity-80"
+              className="underline underline-offset-4 decoration-1 decoration-gray-300 hover:opacity-80"
               title="상세 보기"
             >
               {getValue()}
@@ -73,7 +72,7 @@ const BoardList = () => {
       {
         accessorKey: 'author',
         header: '작성자',
-        cell: (info) => info.getValue(),
+        cell: (info) => <div className="text-center">{info.getValue()}</div>,
         size: 80,
         minSize: 60,
         maxSize: 100,
@@ -82,8 +81,13 @@ const BoardList = () => {
         accessorKey: 'regDate',
         header: '작성일',
         enableSorting: false, // 날짜 컬럼 정렬 비활성화
-        cell: (info) =>
-          info.getValue() ? dayjs(info.getValue()).format('YYYY-MM-DD') : '-',
+        cell: (info) => (
+          <div className="text-center">
+            {info.getValue()
+              ? dayjs(info.getValue()).format('YYYY-MM-DD')
+              : '-'}
+          </div>
+        ),
         size: 100,
         minSize: 80,
         maxSize: 120,
@@ -91,7 +95,7 @@ const BoardList = () => {
       {
         accessorKey: 'views',
         header: '조회수',
-        cell: (info) => <div className="text-right">{info.getValue()}</div>,
+        cell: (info) => <div className="text-center">{info.getValue()}</div>,
         size: 80,
         minSize: 60,
         maxSize: 100,
@@ -99,7 +103,7 @@ const BoardList = () => {
       {
         accessorKey: 'likes',
         header: '추천수',
-        cell: (info) => <div className="text-right">{info.getValue()}</div>,
+        cell: (info) => <div className="text-center">{info.getValue()}</div>,
         size: 80,
         minSize: 60,
         maxSize: 100,
@@ -131,7 +135,7 @@ const BoardList = () => {
                     key={header.id}
                     scope="col"
                     aria-sort="none"
-                    className="border-b border-gray-300 px-3 py-2 text-left select-none overflow-hidden whitespace-nowrap text-ellipsis"
+                    className="border-b border-gray-300 px-3 py-2 text-center font-medium text-cyan-800 select-none overflow-hidden whitespace-nowrap text-ellipsis"
                     style={{
                       width: `${w}px`,
                       minWidth: `${w}px`,

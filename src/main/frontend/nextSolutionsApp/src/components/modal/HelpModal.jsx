@@ -51,7 +51,7 @@ const HelpModal = ({ open, onClose }) => {
           <button
             ref={closeBtnRef}
             onClick={onClose}
-            className="rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            className="rounded-md px-3 py-2 text-sm font-medium text-gray-600 border-1 border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-gray-300 cursor-pointer"
             aria-label="도움말 닫기"
           >
             닫기
@@ -113,7 +113,7 @@ const HelpModal = ({ open, onClose }) => {
         <div className="mt-6 flex justify-end">
           <button
             onClick={onClose}
-            className="rounded-xl bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            className="rounded-xl bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300 cursor-pointer"
           >
             확인
           </button>

@@ -17,7 +17,7 @@ const MainPage = () => {
           <SectionWithMore
             icon={CalendarIcon}
             title="일정관리"
-            moreHref="/schedule"
+            moreHref="http://localhost:8080/schedule"
           />
           <Calendar />
         </div>
@@ -25,7 +25,7 @@ const MainPage = () => {
           <SectionWithMore
             icon={ProjectIcon}
             title="프로젝트"
-            moreHref="/pjtMng/getPjtList"
+            moreHref="http://localhost:8080/pjtMng/getPjtList"
           />
           <div className="mt-0.5">
             <ProgressChart />
@@ -45,7 +45,7 @@ const MainPage = () => {
           <SectionWithMore
             icon={TableIcon}
             title="공지사항"
-            moreHref="/board/notice"
+            moreHref="http://localhost:8080/board/notice"
           />
           <div className="mt-4">
             <BoardList />
@@ -55,7 +55,7 @@ const MainPage = () => {
           <SectionWithMore
             icon={TableIcon}
             title="전자결재"
-            moreHref="/approval/main"
+            moreHref="http://localhost:8080/approval/main"
           />
           <div className="mt-4">
             <ApprovalList />
