@@ -21,27 +21,27 @@ const Header = () => {
           <div className="grow">
             <ul className="flex p-4 text-base font-medium text-gray-600">
               <li className="pr-6">
-                <a href="http://localhost:8080/schedule">일정관리</a>
+                <a href="/schedule">일정관리</a>
               </li>
               <li className="pr-6">
-                <a href="http://localhost:8080/attend">근태관리</a>
+                <a href="/attend">근태관리</a>
               </li>
               <li className="pr-6">
-                <a href="http://localhost:8080/pjtMng/getPjtList">
+                <a href="/pjtMng/getPjtList">
                   프로젝트관리
                 </a>
               </li>
               <li className="pr-6">
-                <a href="http://localhost:8080/approval/main">전자결재</a>
+                <a href="/approval/main">전자결재</a>
               </li>
               <li className="pr-6">
-                <a href="http://localhost:8080/board/notice">게시판</a>
+                <a href="/board/notice">게시판</a>
               </li>
               <li className="pr-6">
-                <a href="http://localhost:8080/document/main">문서관리</a>
+                <a href="/document/main">문서관리</a>
               </li>
               <li className="pr-6">
-                <a href="http://localhost:8080/employee/list">사원관리</a>
+                <a href="/employee/list">사원관리</a>
               </li>
             </ul>
           </div>

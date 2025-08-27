@@ -1,5 +1,6 @@
 import useFetch from '../../hooks/useFetch';
 import Logo from '../common/Logo';
+import ProfileImage from '../common/ProfileImage';
 
 const EmployeeProfile = () => {
   const { data, loading, error } = useFetch('/employees'); // 필요 시 params 전달
@@ -15,8 +16,8 @@ const EmployeeProfile = () => {
 
   return (
     <div className="flex flex-col items-center">
-      {/* <ProfileImage src={user.photo} alt={user.empNm} size={128} /> */}
-      <div className="flex flex-col items-center gap-0.5 mb-6">
+     <ProfileImage src={user.photo} alt={user.empNm} size={128} /> 
+      {/*  <div className="flex flex-col items-center gap-0.5 mb-6">
         <div className="w-[60px] h-[60px] p-2 bg-gray-300 rounded-full">
           <Logo fillColor="fill-white" />
         </div>
@@ -24,6 +25,7 @@ const EmployeeProfile = () => {
           nextSolutions
         </h3>
       </div>
+      */}
       <div>
         <h3 className="text-center text-base font-medium text-gray-600">
           {user.empNm}
