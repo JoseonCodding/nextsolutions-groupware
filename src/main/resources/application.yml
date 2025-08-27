@@ -68,4 +68,4 @@ mybatis:
 # 파일 저장 루트 (우리 FileStorageHelper에서 @Value로 주입)
 file:
   storage:
-  root: upload/project	
+  root: upload/project   
