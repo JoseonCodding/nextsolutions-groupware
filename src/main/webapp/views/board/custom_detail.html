@@ -57,7 +57,7 @@
 	  </form>
   </div>
     <!-- 댓글 카운트 표시 -->
-  <div class="comment-icon">
+  <div class="comment-icon" th:if="${useComment}">
     <i class="fa-regular fa-comment"></i>
     <span class="label">댓글</span>
     <span class="count" th:text="${commentCount}">0</span>
