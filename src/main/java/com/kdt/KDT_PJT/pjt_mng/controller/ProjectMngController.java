@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.github.pagehelper.PageInfo;
@@ -782,5 +783,42 @@ public class ProjectMngController {
 
       return "redirect:/pjtMng/getPjtList";
 
+   }
+
+   // 칸반 보드 화면
+   @GetMapping("/kanban")
+   public String kanban(HttpSession session, Model model) {
+      EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+      boolean isAdmin = "프로젝트".equals(loginUser.getRole()) || "대표".equals(loginUser.getRole());
+      model.addAttribute("kanbanList", projectMngService.getKanbanList());
+      model.addAttribute("isAdmin", isAdmin);
+      model.addAttribute("mainUrl", "pjt_mng/pjt_kanban");
+      return "navTap";
+   }
+
+   // 칸반 상태 변경 (AJAX)
+   @PostMapping("/updateStatus")
+   @ResponseBody
+   public Map<String, Object> updateStatus(
+         @RequestParam int pjtSn,
+         @RequestParam String status,
+         HttpSession session) {
+      Map<String, Object> result = new HashMap<>();
+      EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+      boolean isAdmin = "프로젝트".equals(loginUser.getRole()) || "대표".equals(loginUser.getRole());
+      if (!isAdmin) {
+         result.put("success", false);
+         result.put("msg", "권한이 없습니다.");
+         return result;
+      }
+      List<String> allowed = List.of("대기", "진행중", "완료");
+      if (!allowed.contains(status)) {
+         result.put("success", false);
+         result.put("msg", "올바르지 않은 상태값입니다.");
+         return result;
+      }
+      int updated = projectMngService.updatePjtStatus(pjtSn, status);
+      result.put("success", updated > 0);
+      return result;
    }
 }

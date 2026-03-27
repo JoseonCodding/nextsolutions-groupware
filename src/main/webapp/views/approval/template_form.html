@@ -1,0 +1,35 @@
+<title>템플릿 편집</title>
+<link rel="stylesheet" href="/css/board.css">
+
+<div class="board-container" style="max-width:700px;">
+    <div class="board-controls">
+        <h2 class="board-title" th:text="${template.templateId != null} ? '템플릿 수정' : '새 템플릿'"></h2>
+    </div>
+
+    <form method="post" action="/approval/template/save">
+        <input type="hidden" name="templateId" th:value="${template.templateId}">
+        <table class="board-table">
+            <tr>
+                <th style="width:120px;">템플릿명</th>
+                <td>
+                    <input type="text" name="title" th:value="${template.title}"
+                           placeholder="템플릿 이름을 입력하세요" style="width:100%; padding:8px;"
+                           required maxlength="100">
+                </td>
+            </tr>
+            <tr>
+                <th>기본 내용</th>
+                <td>
+                    <textarea name="content" rows="12"
+                              style="width:100%; padding:8px; font-size:14px; resize:vertical;"
+                              placeholder="결재 문서의 기본 양식을 입력하세요"
+                              th:text="${template.content}"></textarea>
+                </td>
+            </tr>
+        </table>
+        <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+            <button type="submit" class="save-btn">저장</button>
+            <a href="/approval/template" class="back-btn">취소</a>
+        </div>
+    </form>
+</div>

@@ -136,6 +136,10 @@ public interface PjtMngMapper {
        """)
    List<CmmnMap> getEmployeeList(@Param("companyId") Integer companyId);
 
+   // 칸반 보드
+   List<CmmnMap> selectKanbanList(@Param("companyId") Integer companyId);
+   int updatePjtStatus(@Param("pjtSn") int pjtSn, @Param("status") String status, @Param("companyId") Integer companyId);
+
    // 파일 버전관리
    int findLatestVerByPjtSn(Long pjtSn);
    int insertNewVersion(Map<String, Object> param);

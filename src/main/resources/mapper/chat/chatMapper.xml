@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdt.KDT_PJT.chat.ChatMapper">
+
+    <insert id="insertMessage" parameterType="com.kdt.KDT_PJT.chat.ChatMessageDTO"
+            useGeneratedKeys="true" keyProperty="messageId">
+        INSERT INTO chat_message (room_id, sender_id, sender_name, content, sent_at, company_id,
+                                  message_type, file_url, file_name)
+        VALUES (#{roomId}, #{senderId}, #{senderName}, #{content}, NOW(), #{companyId},
+                COALESCE(#{messageType}, 'text'), #{fileUrl}, #{fileName})
+    </insert>
+
+    <!-- 특정 룸 최근 메시지 -->
+    <select id="selectRecentMessages" resultType="com.kdt.KDT_PJT.chat.ChatMessageDTO">
+        SELECT message_id, room_id, sender_id, sender_name, content, sent_at, company_id,
+               message_type, file_url, file_name, is_deleted, is_edited
+        FROM chat_message
+        WHERE room_id = #{roomId}
+          AND company_id = #{companyId}
+        ORDER BY sent_at DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 룸의 마지막 메시지 -->
+    <select id="selectLastMessage" resultType="com.kdt.KDT_PJT.chat.ChatMessageDTO">
+        SELECT message_id, room_id, sender_id, sender_name, content, sent_at, company_id,
+               message_type, file_url, file_name, is_deleted, is_edited
+        FROM chat_message
+        WHERE room_id = #{roomId}
+          AND company_id = #{companyId}
+        ORDER BY sent_at DESC
+        LIMIT 1
+    </select>
+
+    <!-- 메시지 삭제 (본인만) -->
+    <update id="softDeleteMessage">
+        UPDATE chat_message SET is_deleted = 1
+        WHERE message_id = #{messageId} AND sender_id = #{senderId}
+    </update>
+
+    <!-- 메시지 수정 (본인만) -->
+    <update id="editMessage">
+        UPDATE chat_message SET content = #{content}, is_edited = 1
+        WHERE message_id = #{messageId} AND sender_id = #{senderId} AND is_deleted = 0
+    </update>
+
+    <!-- 안 읽은 메시지 수 -->
+    <select id="selectUnreadCount" resultType="int">
+        SELECT COUNT(*)
+        FROM chat_message m
+        WHERE m.room_id = #{roomId}
+          AND m.company_id = #{companyId}
+          AND m.sender_id != #{employeeId}
+          AND m.sent_at > COALESCE(
+              (SELECT last_read_at FROM chat_read
+               WHERE room_id = #{roomId} AND employee_id = #{employeeId}),
+              '1970-01-01')
+    </select>
+
+    <!-- 특정 사용자의 마지막 읽음 시각 -->
+    <select id="selectLastReadAt" resultType="java.time.LocalDateTime">
+        SELECT last_read_at FROM chat_read
+        WHERE room_id = #{roomId} AND employee_id = #{employeeId}
+    </select>
+
+    <!-- 마지막 읽음 시각 갱신 -->
+    <insert id="upsertLastRead">
+        INSERT INTO chat_read (room_id, employee_id, last_read_at)
+        VALUES (#{roomId}, #{employeeId}, NOW())
+        ON DUPLICATE KEY UPDATE last_read_at = NOW()
+    </insert>
+
+    <!-- 채팅 목록용 사원 목록 (본인 제외, 활성 사원) -->
+    <select id="selectEmployeeListForChat" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+        SELECT employeeId, emp_nm, position, deptName
+        FROM employee
+        WHERE active = 1
+          AND company_id = #{companyId}
+          AND employeeId != #{myId}
+        ORDER BY emp_nm
+    </select>
+
+</mapper>

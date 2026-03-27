@@ -1,0 +1,93 @@
+<title>결재 문서</title>
+<link rel="stylesheet" href="/css/board.css">
+
+<div class="board-container" style="max-width:760px;">
+    <div class="board-controls">
+        <h2 class="board-title">결재 문서</h2>
+    </div>
+
+    <table class="board-table">
+        <tr>
+            <th style="width:120px;">템플릿</th>
+            <td th:text="${doc.templateTitle ?: '자유양식'}"></td>
+        </tr>
+        <tr>
+            <th>제목</th>
+            <td th:text="${doc.title}"></td>
+        </tr>
+        <tr>
+            <th>신청자</th>
+            <td th:text="${doc.writerName}"></td>
+        </tr>
+        <tr>
+            <th>결재자</th>
+            <td th:text="${doc.approverName ?: '-'}"></td>
+        </tr>
+        <tr>
+            <th>상태</th>
+            <td>
+                <span th:text="${doc.status}"
+                      th:style="${doc.status == '완료'} ? 'color:#2e7d32;font-weight:600'
+                               : (${doc.status == '반려'} ? 'color:#c62828;font-weight:600'
+                               : 'color:#0277bd;font-weight:600')">
+                </span>
+            </td>
+        </tr>
+        <tr th:if="${doc.rejectReason != null and !doc.rejectReason.isEmpty()}">
+            <th>반려 사유</th>
+            <td style="color:#c62828;" th:text="${doc.rejectReason}"></td>
+        </tr>
+        <tr>
+            <th>신청일</th>
+            <td th:text="${doc.createdAtStr}"></td>
+        </tr>
+        <tr th:if="${doc.firstSign != null}">
+            <th>결재일</th>
+            <td th:text="${doc.firstSignStr}"></td>
+        </tr>
+        <tr>
+            <th>내용</th>
+            <td style="white-space:pre-wrap; line-height:1.7;" th:text="${doc.content}"></td>
+        </tr>
+    </table>
+
+    <!-- 승인/반려 버튼 (결재자만) -->
+    <div th:if="${canApprove}" style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+        <form method="post" action="/approval/doc/approve">
+            <input type="hidden" name="docId" th:value="${doc.docId}">
+            <button type="submit" class="approval-btn"
+                    onclick="return confirm('승인하시겠습니까?')">승인</button>
+        </form>
+        <button class="delete-btn" onclick="showRejectForm()">반려</button>
+    </div>
+
+    <!-- 반려 사유 입력 폼 (숨김) -->
+    <form id="rejectForm" method="post" action="/approval/doc/reject"
+          style="display:none; margin-top:16px; text-align:center;">
+        <input type="hidden" name="docId" th:value="${doc.docId}">
+        <textarea name="rejectReason" rows="3" placeholder="반려 사유를 입력하세요"
+                  style="width:80%; padding:8px; font-size:14px;" required></textarea>
+        <div style="margin-top:10px; display:flex; gap:10px; justify-content:center;">
+            <button type="submit" class="delete-btn">반려 확인</button>
+            <button type="button" class="back-btn" onclick="hideRejectForm()">취소</button>
+        </div>
+    </form>
+
+    <!-- 삭제 버튼 (신청자, 대기 상태만) -->
+    <div th:if="${canDelete}" style="display:flex; justify-content:center; margin-top:20px;">
+        <form method="post" action="/approval/doc/delete">
+            <input type="hidden" name="docId" th:value="${doc.docId}">
+            <button type="submit" class="delete-btn"
+                    onclick="return confirm('삭제하시겠습니까?')">삭제</button>
+        </form>
+    </div>
+
+    <div style="text-align:center; margin-top:16px;">
+        <a href="/approval/doc/list" class="back-btn">목록</a>
+    </div>
+</div>
+
+<script>
+function showRejectForm() { document.getElementById('rejectForm').style.display = 'block'; }
+function hideRejectForm() { document.getElementById('rejectForm').style.display = 'none'; }
+</script>

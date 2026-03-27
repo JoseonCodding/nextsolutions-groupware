@@ -95,6 +95,9 @@ dependencies {
 	
 
 
+	// WebSocket (팀 채팅)
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 	// XSS(크로스 사이트 스크립팅) 공격 방지를 위해 추가
 	implementation 'org.jsoup:jsoup:1.17.2'
 

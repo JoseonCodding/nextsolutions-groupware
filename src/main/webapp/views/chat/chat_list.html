@@ -1,0 +1,126 @@
+<title>팀 채팅</title>
+<link rel="stylesheet" href="/css/common.css">
+
+<style>
+.chat-list-wrap {
+    max-width: 600px;
+    margin: 30px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+.chat-list-header {
+    background: #3949ab;
+    color: #fff;
+    padding: 16px 20px;
+    font-size: 16px;
+    font-weight: 700;
+}
+.chat-list-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.12s;
+}
+.chat-list-item:hover { background: #f5f6fa; }
+.chat-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #3949ab;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.chat-avatar.global { background: #546e7a; font-size: 20px; }
+.chat-item-info {
+    flex: 1;
+    margin-left: 14px;
+    min-width: 0;
+}
+.chat-item-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #222;
+}
+.chat-item-preview {
+    font-size: 12px;
+    color: #888;
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.chat-item-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+.chat-item-time {
+    font-size: 11px;
+    color: #aaa;
+}
+.chat-unread-badge {
+    background: #e53935;
+    color: #fff;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.chat-position {
+    font-size: 11px;
+    color: #999;
+    margin-top: 2px;
+}
+</style>
+
+<div class="chat-list-wrap">
+    <div class="chat-list-header">팀 채팅</div>
+
+    <!-- 전체 채팅 -->
+    <a class="chat-list-item" href="/chat/room?roomId=global">
+        <div class="chat-avatar global">💬</div>
+        <div class="chat-item-info">
+            <div class="chat-item-name">전체 채팅</div>
+            <div class="chat-item-preview">전체 팀원과 대화</div>
+        </div>
+        <div class="chat-item-meta">
+            <span th:if="${globalUnread > 0}" class="chat-unread-badge"
+                  th:text="${globalUnread}"></span>
+        </div>
+    </a>
+
+    <!-- 1:1 채팅 목록 -->
+    <th:block th:each="emp : ${employees}">
+        <a class="chat-list-item"
+           th:href="@{/chat/room(roomId=${emp['roomId']})}">
+            <div class="chat-avatar"
+                 th:text="${emp['emp_nm'] != null ? emp['emp_nm'].substring(0,1) : '?'}"></div>
+            <div class="chat-item-info">
+                <div class="chat-item-name" th:text="${emp['emp_nm']}"></div>
+                <div class="chat-position"
+                     th:text="${(emp['deptName'] ?: '') + ' ' + (emp['position'] ?: '')}"></div>
+                <div class="chat-item-preview"
+                     th:text="${emp['lastMsg'] ?: '대화를 시작해보세요'}"></div>
+            </div>
+            <div class="chat-item-meta">
+                <span class="chat-item-time" th:text="${emp['lastTime']}"></span>
+                <span th:if="${emp['unread'] > 0}" class="chat-unread-badge"
+                      th:text="${emp['unread']}"></span>
+            </div>
+        </a>
+    </th:block>
+</div>

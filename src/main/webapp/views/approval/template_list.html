@@ -1,0 +1,48 @@
+<title>결재 템플릿</title>
+<link rel="stylesheet" href="/css/board.css">
+
+<div class="board-container">
+    <div class="board-controls">
+        <h2 class="board-title">결재 템플릿</h2>
+        <div style="display:flex; gap:10px;">
+            <a href="/approval/doc/list" class="edit-btn">결재 신청 목록</a>
+            <a th:if="${isAdmin}" href="/approval/template/form" class="regist-btn">+ 새 템플릿</a>
+        </div>
+    </div>
+
+    <table class="board-table">
+        <thead>
+            <tr>
+                <th style="width:60px;">번호</th>
+                <th>템플릿명</th>
+                <th style="width:120px;">등록일</th>
+                <th style="width:160px;">액션</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(templateList)}">
+                <td colspan="4" style="text-align:center; color:#aaa; padding:30px;">
+                    등록된 템플릿이 없습니다.
+                </td>
+            </tr>
+            <tr th:each="t, i : ${templateList}">
+                <td th:text="${i.index + 1}"></td>
+                <td th:text="${t.title}"></td>
+                <td th:text="${#dates.format(t.createdAt, 'yyyy-MM-dd')}"></td>
+                <td>
+                    <a th:href="@{/approval/doc/new(templateId=${t.templateId})}"
+                       class="approval-btn">결재 신청</a>
+                    <a th:if="${isAdmin}"
+                       th:href="@{/approval/template/form(templateId=${t.templateId})}"
+                       class="edit-btn">수정</a>
+                    <form th:if="${isAdmin}" method="post" action="/approval/template/delete"
+                          style="display:inline;"
+                          onsubmit="return confirm('삭제하시겠습니까?')">
+                        <input type="hidden" name="templateId" th:value="${t.templateId}">
+                        <button type="submit" class="delete-btn">삭제</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

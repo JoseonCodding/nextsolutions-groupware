@@ -3,6 +3,7 @@ package com.kdt.KDT_PJT.approval.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -29,7 +30,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdt.KDT_PJT.approval.mapper.ApprovalMapper;
+import com.kdt.KDT_PJT.approval.mapper.ApprovalTemplateMapper;
 import com.kdt.KDT_PJT.approval.model.ApprovalDTO;
+import com.kdt.KDT_PJT.approval.model.ApprovalDocDTO;
 import com.kdt.KDT_PJT.approval.model.ApproverDTO;
 import com.kdt.KDT_PJT.attend.model.LeaveMapper;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
@@ -54,6 +57,8 @@ public class ApprovalController {
 
    @Autowired
    ApprovalMapper approvalMapper;
+   @Autowired
+   ApprovalTemplateMapper templateMapper;
    @Autowired
    LeaveMapper leaveMapper;
    @Autowired
@@ -103,20 +108,55 @@ public class ApprovalController {
            String role = loginUser.getRole();
            String employeeId = loginUser.getEmployeeId();
            int companyId = loginUser.getCompanyId();
-           int offset = (page - 1) * size;
+           boolean isAdmin = "대표".equals(role);
 
-           // count
-           int totalCount = approvalMapper.approvalCountByRole(role, type, status, employeeId, companyId);
-           totalPages = (int) Math.ceil((double) totalCount / size);
+           if ("자유양식".equals(type)) {
+               // 자유양식만 표시 (페이지네이션 없음)
+               approvalData = new ArrayList<>();
+               List<ApprovalDocDTO> freeDocs = templateMapper.selectDocList(companyId, employeeId, isAdmin);
+               for (ApprovalDocDTO fd : freeDocs) {
+                   if (status != null && !status.isEmpty() && !status.equals(fd.getStatus())) continue;
+                   ApprovalDTO dto = new ApprovalDTO();
+                   dto.setDocId("free-" + fd.getDocId());
+                   dto.setDocType("자유양식");
+                   dto.setTitle(fd.getTitle());
+                   dto.setStatus(fd.getStatus());
+                   dto.setWriter(fd.getWriterName());
+                   dto.setCreatedAt(fd.getCreatedAt());
+                   approvalData.add(dto);
+               }
+               totalPages = 0;
+               startPage = 1;
+               endPage = 1;
+           } else {
+               int offset = (page - 1) * size;
+               int totalCount = approvalMapper.approvalCountByRole(role, type, status, employeeId, companyId);
+               totalPages = (int) Math.ceil((double) totalCount / size);
+               startPage = Math.max(1, page - 2);
+               endPage = Math.min(totalPages, startPage + 4);
+               if ((endPage - startPage + 1) < 5 && (endPage == totalPages || startPage == 1)) {
+                   startPage = Math.max(1, endPage - 4);
+               }
+               if (totalPages == 0) endPage = 1;
+               approvalData = new ArrayList<>(
+                   approvalMapper.approvalDataByRole(offset, size, role, type, status, employeeId, companyId));
 
-           startPage = Math.max(1, page - 2);
-           endPage = Math.min(totalPages, startPage + 4);
-           if ((endPage - startPage + 1) < 5 && (endPage == totalPages || startPage == 1)) {
-               startPage = Math.max(1, endPage - 4);
+               // 타입 필터 없을 때 자유양식 문서도 함께 표시
+               if (type == null || type.isEmpty()) {
+                   List<ApprovalDocDTO> freeDocs = templateMapper.selectDocList(companyId, employeeId, isAdmin);
+                   for (ApprovalDocDTO fd : freeDocs) {
+                       if (status != null && !status.isEmpty() && !status.equals(fd.getStatus())) continue;
+                       ApprovalDTO dto = new ApprovalDTO();
+                       dto.setDocId("free-" + fd.getDocId());
+                       dto.setDocType("자유양식");
+                       dto.setTitle(fd.getTitle());
+                       dto.setStatus(fd.getStatus());
+                       dto.setWriter(fd.getWriterName());
+                       dto.setCreatedAt(fd.getCreatedAt());
+                       approvalData.add(dto);
+                   }
+               }
            }
-           if (totalPages == 0) endPage = 1;
-
-           approvalData = approvalMapper.approvalDataByRole(offset, size, role, type, status, employeeId, companyId);
        }
 
        model.addAttribute("approvalData", approvalData);
@@ -151,6 +191,12 @@ public class ApprovalController {
        // 1. 로그인 여부 체크
        if (loginUser == null) {
            return "redirect:/login?error=auth";
+       }
+
+       // 자유양식 결재 → doc_viewer로 위임
+       if (docId.startsWith("free-")) {
+           String actualId = docId.substring(5);
+           return "redirect:/approval/doc/view?docId=" + actualId;
        }
 
        // 2. 권한 필터 내장된 view() 호출

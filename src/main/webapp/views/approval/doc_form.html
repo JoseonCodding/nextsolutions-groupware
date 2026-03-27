@@ -1,0 +1,94 @@
+<title>결재 신청</title>
+<link rel="stylesheet" href="/css/board.css">
+
+<div class="board-container" style="max-width:760px;">
+    <div class="board-controls">
+        <h2 class="board-title">자유양식 결재 신청</h2>
+    </div>
+
+    <form method="post" action="/approval/doc/submit" onsubmit="return validateDoc()">
+        <table class="board-table">
+            <tr>
+                <th style="width:120px;">템플릿 선택</th>
+                <td>
+                    <select id="templateSelect" onchange="loadTemplate(this.value)"
+                            style="padding:8px; width:100%;">
+                        <option value="">-- 템플릿 없이 작성 --</option>
+                        <option th:each="t : ${templates}"
+                                th:value="${t.templateId}"
+                                th:text="${t.title}"
+                                th:selected="${selected != null and t.templateId == selected.templateId}">
+                        </option>
+                    </select>
+                    <input type="hidden" name="templateId" id="templateIdInput"
+                           th:value="${selected != null ? selected.templateId : ''}">
+                </td>
+            </tr>
+            <tr>
+                <th>제목</th>
+                <td>
+                    <input type="text" name="title" id="docTitle"
+                           th:value="${selected != null ? selected.title : ''}"
+                           placeholder="결재 문서 제목" style="width:100%; padding:8px;"
+                           required maxlength="200">
+                </td>
+            </tr>
+            <tr>
+                <th>내용</th>
+                <td>
+                    <textarea name="content" id="docContent" rows="14"
+                              style="width:100%; padding:8px; font-size:14px; resize:vertical;"
+                              placeholder="내용을 입력하세요"
+                              th:text="${selected != null ? selected.content : ''}"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <th>결재자</th>
+                <td>
+                    <select name="approverId" id="approverSelect"
+                            style="padding:8px; width:100%;" required>
+                        <option value="">-- 결재자 선택 --</option>
+                        <option th:each="emp : ${approvers}"
+                                th:value="${emp['employeeId']}"
+                                th:text="${emp['emp_nm'] + ' (' + (emp['position'] ?: '') + ')'}">
+                        </option>
+                    </select>
+                    <input type="hidden" name="approverName" id="approverName">
+                </td>
+            </tr>
+        </table>
+
+        <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+            <button type="submit" class="save-btn">결재 신청</button>
+            <a href="/approval/doc/list" class="back-btn">취소</a>
+        </div>
+    </form>
+</div>
+
+<script>
+function loadTemplate(id) {
+    document.getElementById('templateIdInput').value = id;
+    if (!id) return;
+    fetch('/approval/template/content?templateId=' + id)
+        .then(r => r.json())
+        .then(data => {
+            if (data && data.content) {
+                document.getElementById('docContent').value = data.content;
+            }
+        })
+        .catch(() => {});
+}
+
+document.getElementById('approverSelect').addEventListener('change', function() {
+    const opt = this.options[this.selectedIndex];
+    document.getElementById('approverName').value = opt.text.split(' (')[0];
+});
+
+function validateDoc() {
+    if (!document.getElementById('approverSelect').value) {
+        alert('결재자를 선택하세요.');
+        return false;
+    }
+    return true;
+}
+</script>

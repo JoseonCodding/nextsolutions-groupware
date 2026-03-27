@@ -1,0 +1,286 @@
+<title>칸반 보드</title>
+<link rel="stylesheet" href="/css/common.css">
+
+<style>
+.kanban-wrap {
+    padding: 30px 20px;
+}
+.kanban-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+.kanban-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a237e;
+}
+.kanban-board {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+.kanban-col {
+    flex: 1;
+    min-width: 0;
+    background: #f5f6fa;
+    border-radius: 10px;
+    padding: 16px;
+}
+.kanban-col-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-align: center;
+    color: #fff;
+}
+.col-pending  .kanban-col-title { background: #546e7a; }
+.col-progress .kanban-col-title { background: #0277bd; }
+.col-done     .kanban-col-title { background: #2e7d32; }
+
+.kanban-card-list {
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.kanban-card-list.drag-over {
+    background: #e8eaf6;
+    border-radius: 6px;
+}
+.kanban-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    cursor: grab;
+    transition: box-shadow 0.15s, opacity 0.15s;
+}
+.kanban-card:active { cursor: grabbing; }
+.kanban-card.dragging { opacity: 0.4; }
+.kanban-card.readonly { cursor: default; }
+
+.kanban-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a237e;
+    margin-bottom: 8px;
+    word-break: break-word;
+}
+.kanban-card-title a {
+    color: inherit;
+    text-decoration: none;
+}
+.kanban-card-title a:hover { text-decoration: underline; }
+.kanban-card-meta {
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.kanban-empty {
+    text-align: center;
+    color: #bbb;
+    font-size: 13px;
+    padding: 20px 0;
+}
+.kanban-count {
+    display: inline-block;
+    background: rgba(255,255,255,0.3);
+    border-radius: 12px;
+    padding: 1px 9px;
+    font-size: 13px;
+    margin-left: 6px;
+}
+.list-btn {
+    padding: 8px 18px;
+    background: #546e7a;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.list-btn:hover { filter: brightness(0.88); }
+</style>
+
+<div class="kanban-wrap">
+    <div class="kanban-header">
+        <h2>칸반 보드</h2>
+        <a href="/pjtMng/getPjtList" class="list-btn">목록 보기</a>
+    </div>
+
+    <div class="kanban-board">
+        <!-- 대기 -->
+        <div class="kanban-col col-pending">
+            <div class="kanban-col-title">
+                대기
+                <span class="kanban-count"
+                      th:text="${#lists.size(kanbanList.?[PJT_STTS_CD == '대기'])}">0</span>
+            </div>
+            <div class="kanban-card-list" data-status="대기">
+                <th:block th:each="p : ${kanbanList}" th:if="${p['PJT_STTS_CD'] == '대기'}">
+                    <div class="kanban-card"
+                         th:classappend="${isAdmin} ? '' : ' readonly'"
+                         th:draggable="${isAdmin} ? 'true' : 'false'"
+                         th:attr="data-pjtsn=${p['PJT_SN']}">
+                        <div class="kanban-card-title">
+                            <a th:href="@{/pjtMng/pjtDetail(pjtSn=${p['PJT_SN']})}"
+                               th:text="${p['PJT_NM']}">프로젝트명</a>
+                        </div>
+                        <div class="kanban-card-meta">
+                            <span th:text="'담당자: ' + ${p['reg_user'] ?: p['employeeId']}">담당자</span>
+                            <span th:if="${p['PJT_BGNG_DT'] != null}"
+                                  th:text="'기간: ' + ${#dates.format(p['PJT_BGNG_DT'],'yyyy-MM-dd')} + ' ~ ' + ${#dates.format(p['PJT_END_DT'],'yyyy-MM-dd')}">기간</span>
+                        </div>
+                    </div>
+                </th:block>
+                <div class="kanban-empty"
+                     th:if="${#lists.isEmpty(kanbanList.?[PJT_STTS_CD == '대기'])}">없음</div>
+            </div>
+        </div>
+
+        <!-- 진행중 -->
+        <div class="kanban-col col-progress">
+            <div class="kanban-col-title">
+                진행중
+                <span class="kanban-count"
+                      th:text="${#lists.size(kanbanList.?[PJT_STTS_CD == '진행중'])}">0</span>
+            </div>
+            <div class="kanban-card-list" data-status="진행중">
+                <th:block th:each="p : ${kanbanList}" th:if="${p['PJT_STTS_CD'] == '진행중'}">
+                    <div class="kanban-card"
+                         th:classappend="${isAdmin} ? '' : ' readonly'"
+                         th:draggable="${isAdmin} ? 'true' : 'false'"
+                         th:attr="data-pjtsn=${p['PJT_SN']}">
+                        <div class="kanban-card-title">
+                            <a th:href="@{/pjtMng/pjtDetail(pjtSn=${p['PJT_SN']})}"
+                               th:text="${p['PJT_NM']}">프로젝트명</a>
+                        </div>
+                        <div class="kanban-card-meta">
+                            <span th:text="'담당자: ' + ${p['reg_user'] ?: p['employeeId']}">담당자</span>
+                            <span th:if="${p['PJT_BGNG_DT'] != null}"
+                                  th:text="'기간: ' + ${#dates.format(p['PJT_BGNG_DT'],'yyyy-MM-dd')} + ' ~ ' + ${#dates.format(p['PJT_END_DT'],'yyyy-MM-dd')}">기간</span>
+                        </div>
+                    </div>
+                </th:block>
+                <div class="kanban-empty"
+                     th:if="${#lists.isEmpty(kanbanList.?[PJT_STTS_CD == '진행중'])}">없음</div>
+            </div>
+        </div>
+
+        <!-- 완료 -->
+        <div class="kanban-col col-done">
+            <div class="kanban-col-title">
+                완료
+                <span class="kanban-count"
+                      th:text="${#lists.size(kanbanList.?[PJT_STTS_CD == '완료'])}">0</span>
+            </div>
+            <div class="kanban-card-list" data-status="완료">
+                <th:block th:each="p : ${kanbanList}" th:if="${p['PJT_STTS_CD'] == '완료'}">
+                    <div class="kanban-card"
+                         th:classappend="${isAdmin} ? '' : ' readonly'"
+                         th:draggable="${isAdmin} ? 'true' : 'false'"
+                         th:attr="data-pjtsn=${p['PJT_SN']}">
+                        <div class="kanban-card-title">
+                            <a th:href="@{/pjtMng/pjtDetail(pjtSn=${p['PJT_SN']})}"
+                               th:text="${p['PJT_NM']}">프로젝트명</a>
+                        </div>
+                        <div class="kanban-card-meta">
+                            <span th:text="'담당자: ' + ${p['reg_user'] ?: p['employeeId']}">담당자</span>
+                            <span th:if="${p['PJT_BGNG_DT'] != null}"
+                                  th:text="'기간: ' + ${#dates.format(p['PJT_BGNG_DT'],'yyyy-MM-dd')} + ' ~ ' + ${#dates.format(p['PJT_END_DT'],'yyyy-MM-dd')}">기간</span>
+                        </div>
+                    </div>
+                </th:block>
+                <div class="kanban-empty"
+                     th:if="${#lists.isEmpty(kanbanList.?[PJT_STTS_CD == '완료'])}">없음</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:if="${isAdmin}">
+(function () {
+    let dragCard = null;
+
+    document.querySelectorAll('.kanban-card[draggable="true"]').forEach(card => {
+        card.addEventListener('dragstart', e => {
+            dragCard = card;
+            card.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+        card.addEventListener('dragend', () => {
+            card.classList.remove('dragging');
+            dragCard = null;
+        });
+    });
+
+    document.querySelectorAll('.kanban-card-list').forEach(col => {
+        col.addEventListener('dragover', e => {
+            e.preventDefault();
+            col.classList.add('drag-over');
+        });
+        col.addEventListener('dragleave', () => col.classList.remove('drag-over'));
+        col.addEventListener('drop', e => {
+            e.preventDefault();
+            col.classList.remove('drag-over');
+            if (!dragCard) return;
+
+            const newStatus = col.dataset.status;
+            const pjtSn = dragCard.dataset.pjtsn;
+
+            fetch('/pjtMng/updateStatus', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `pjtSn=${pjtSn}&status=${encodeURIComponent(newStatus)}`
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    col.insertBefore(dragCard, col.querySelector('.kanban-empty'));
+                    updateEmptyMsg(col);
+                    const oldCol = document.querySelector(
+                        `.kanban-card-list:not([data-status="${newStatus}"])`
+                    );
+                    // 원래 컬럼 empty 메시지 갱신
+                    document.querySelectorAll('.kanban-card-list').forEach(updateEmptyMsg);
+                    updateCounts();
+                } else {
+                    alert(data.msg || '상태 변경 실패');
+                }
+            })
+            .catch(() => alert('서버 오류'));
+        });
+    });
+
+    function updateEmptyMsg(col) {
+        const cards = col.querySelectorAll('.kanban-card');
+        let empty = col.querySelector('.kanban-empty');
+        if (cards.length === 0) {
+            if (!empty) {
+                empty = document.createElement('div');
+                empty.className = 'kanban-empty';
+                empty.textContent = '없음';
+                col.appendChild(empty);
+            }
+        } else {
+            if (empty) empty.remove();
+        }
+    }
+
+    function updateCounts() {
+        document.querySelectorAll('.kanban-card-list').forEach(col => {
+            const status = col.dataset.status;
+            const count = col.querySelectorAll('.kanban-card').length;
+            const badge = col.closest('.kanban-col').querySelector('.kanban-count');
+            if (badge) badge.textContent = count;
+        });
+    }
+})();
+</script>

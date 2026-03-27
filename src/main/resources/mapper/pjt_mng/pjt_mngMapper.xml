@@ -21,6 +21,25 @@
     </where>
   </select>
 
+  <!-- 칸반 보드 목록 조회 -->
+  <select id="selectKanbanList" resultType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
+    SELECT t.PJT_SN, t.PJT_NM, t.PJT_STTS_CD, t.employeeId,
+           t.PJT_BGNG_DT, t.PJT_END_DT,
+           e.emp_nm AS reg_user
+    FROM TB_PJT_BASC t
+    LEFT JOIN employee e ON t.employeeId = e.employeeId
+    WHERE t.company_id = #{companyId}
+    ORDER BY t.FRST_REG_DT DESC
+  </select>
+
+  <!-- 칸반 상태 변경 -->
+  <update id="updatePjtStatus">
+    UPDATE TB_PJT_BASC
+    SET PJT_STTS_CD = #{status}
+    WHERE PJT_SN = #{pjtSn}
+      AND company_id = #{companyId}
+  </update>
+
   <!-- 프로젝트 수정 -->
   <update id="updatePjtProc" parameterType="com.kdt.KDT_PJT.cmmn.map.CmmnMap">
     UPDATE TB_PJT_BASC

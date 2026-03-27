@@ -290,6 +290,16 @@ public class ProjectMngService {
 	    public List<CmmnMap> getEmployeeList() {
 	       return pjtMngMapper.getEmployeeList(CompanyContext.get());
 	    }
+
+	    // 칸반 보드 목록
+	    public List<CmmnMap> getKanbanList() {
+	       return pjtMngMapper.selectKanbanList(CompanyContext.get());
+	    }
+
+	    // 칸반 상태 변경
+	    public int updatePjtStatus(int pjtSn, String status) {
+	       return pjtMngMapper.updatePjtStatus(pjtSn, status, CompanyContext.get());
+	    }
 	}
 
 

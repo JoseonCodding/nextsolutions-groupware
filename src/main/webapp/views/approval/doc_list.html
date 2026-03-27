@@ -1,0 +1,54 @@
+<title>결재 신청 목록</title>
+<link rel="stylesheet" href="/css/board.css">
+
+<div class="board-container">
+    <div class="board-controls">
+        <h2 class="board-title">자유양식 결재</h2>
+        <div style="display:flex; gap:10px;">
+            <a href="/approval/template" class="edit-btn">템플릿 관리</a>
+            <a href="/approval/doc/new" class="regist-btn">+ 결재 신청</a>
+        </div>
+    </div>
+
+    <table class="board-table">
+        <thead>
+            <tr>
+                <th style="width:50px;">번호</th>
+                <th>제목</th>
+                <th style="width:100px;">템플릿</th>
+                <th style="width:90px;">신청자</th>
+                <th style="width:90px;">결재자</th>
+                <th style="width:80px;">상태</th>
+                <th style="width:100px;">신청일</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(docList)}">
+                <td colspan="7" style="text-align:center; color:#aaa; padding:30px;">
+                    결재 문서가 없습니다.
+                </td>
+            </tr>
+            <tr th:each="d, i : ${docList}" style="cursor:pointer;"
+                th:onclick="'location.href=\'/approval/doc/view?docId=\' + ' + ${d.docId}">
+                <td th:text="${i.index + 1}"></td>
+                <td th:text="${d.title}"></td>
+                <td th:text="${d.templateTitle ?: '-'}"></td>
+                <td th:text="${d.writerName}"></td>
+                <td th:text="${d.approverName ?: '-'}"></td>
+                <td>
+                    <span th:text="${d.status}"
+                          th:classappend="${d.status == '완료'} ? 'status-done'
+                                        : (${d.status == '반려'} ? 'status-reject' : 'status-wait')">
+                    </span>
+                </td>
+                <td th:text="${d.createdAtStr}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<style>
+.status-done   { color: #2e7d32; font-weight:600; }
+.status-reject { color: #c62828; font-weight:600; }
+.status-wait   { color: #0277bd; font-weight:600; }
+</style>

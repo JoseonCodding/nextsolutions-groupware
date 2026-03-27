@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdt.KDT_PJT.approval.mapper.ApprovalTemplateMapper">
+
+    <!-- 템플릿 목록 -->
+    <select id="selectTemplateList" resultType="com.kdt.KDT_PJT.approval.model.ApprovalTemplateDTO">
+        SELECT template_id, company_id, title, content, created_by, created_at
+        FROM approval_template
+        WHERE company_id = #{companyId}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 템플릿 단건 조회 -->
+    <select id="selectTemplateById" resultType="com.kdt.KDT_PJT.approval.model.ApprovalTemplateDTO">
+        SELECT template_id, company_id, title, content, created_by, created_at
+        FROM approval_template
+        WHERE template_id = #{templateId}
+    </select>
+
+    <!-- 템플릿 등록 -->
+    <insert id="insertTemplate" parameterType="com.kdt.KDT_PJT.approval.model.ApprovalTemplateDTO"
+            useGeneratedKeys="true" keyProperty="templateId">
+        INSERT INTO approval_template (company_id, title, content, created_by, created_at)
+        VALUES (#{companyId}, #{title}, #{content}, #{createdBy}, NOW())
+    </insert>
+
+    <!-- 템플릿 수정 -->
+    <update id="updateTemplate" parameterType="com.kdt.KDT_PJT.approval.model.ApprovalTemplateDTO">
+        UPDATE approval_template
+        SET title = #{title}, content = #{content}
+        WHERE template_id = #{templateId}
+          AND company_id = #{companyId}
+    </update>
+
+    <!-- 템플릿 삭제 -->
+    <delete id="deleteTemplate">
+        DELETE FROM approval_template
+        WHERE template_id = #{templateId}
+          AND company_id = #{companyId}
+    </delete>
+
+    <!-- 자유양식 결재 목록 (대표: 전체, 일반: 본인 + 결재자) -->
+    <select id="selectDocList" resultType="com.kdt.KDT_PJT.approval.model.ApprovalDocDTO">
+        SELECT d.doc_id, d.company_id, d.template_id, t.title AS templateTitle,
+               d.title, d.writer_id, d.writer_name,
+               d.approver_id, d.approver_name,
+               d.status, d.reject_reason, d.first_sign, d.created_at
+        FROM approval_doc d
+        LEFT JOIN approval_template t ON d.template_id = t.template_id
+        WHERE d.company_id = #{companyId}
+          AND d.is_deleted = 0
+          <if test="!isAdmin">
+            AND (d.writer_id = #{writerId} OR d.approver_id = #{writerId})
+          </if>
+        ORDER BY d.created_at DESC
+    </select>
+
+    <!-- 자유양식 결재 단건 조회 -->
+    <select id="selectDocById" resultType="com.kdt.KDT_PJT.approval.model.ApprovalDocDTO">
+        SELECT d.doc_id, d.company_id, d.template_id, t.title AS templateTitle,
+               d.title, d.content, d.writer_id, d.writer_name,
+               d.approver_id, d.approver_name,
+               d.status, d.reject_reason, d.first_sign, d.created_at
+        FROM approval_doc d
+        LEFT JOIN approval_template t ON d.template_id = t.template_id
+        WHERE d.doc_id = #{docId}
+          AND d.company_id = #{companyId}
+          AND d.is_deleted = 0
+    </select>
+
+    <!-- 자유양식 결재 등록 -->
+    <insert id="insertDoc" parameterType="com.kdt.KDT_PJT.approval.model.ApprovalDocDTO"
+            useGeneratedKeys="true" keyProperty="docId">
+        INSERT INTO approval_doc
+            (company_id, template_id, title, content, writer_id, writer_name,
+             approver_id, approver_name, status, created_at)
+        VALUES
+            (#{companyId}, #{templateId}, #{title}, #{content}, #{writerId}, #{writerName},
+             #{approverId}, #{approverName}, '대기', NOW())
+    </insert>
+
+    <!-- 결재 상태 변경 (승인/반려) -->
+    <update id="updateDocStatus">
+        UPDATE approval_doc
+        SET status       = #{status},
+            approver_id  = #{approverId},
+            approver_name= #{approverName},
+            reject_reason= #{rejectReason},
+            first_sign   = CASE WHEN #{status} = '완료' THEN NOW() ELSE first_sign END
+        WHERE doc_id = #{docId}
+    </update>
+
+    <!-- 소프트 삭제 (본인 + 대기 상태만) -->
+    <update id="softDeleteDoc">
+        UPDATE approval_doc
+        SET is_deleted = 1
+        WHERE doc_id = #{docId}
+          AND writer_id = #{writerId}
+          AND status = '대기'
+    </update>
+
+</mapper>
