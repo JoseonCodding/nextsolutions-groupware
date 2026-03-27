@@ -28,38 +28,38 @@
     ORDER BY emp_seq ASC
 </select> -->
 
-<select id="getUserList" parameterType="string" resultType="map">
-    SELECT 
+<select id="getUserList" resultType="com.kdt.KDT_PJT.cmmn.map.EmployeeDto">
+    SELECT
         emp_seq,
         employeeId,
         password,
         role,
         active,
-        emp_nm
+        emp_nm,
+        deptName,
+        position,
+        phone,
+        birth,
+        hireDate,
+        resignDate,
+        company_id AS companyId
     FROM employee
-    WHERE 1=1
+    WHERE company_id = #{companyId}
  	<if test="keyword != null and keyword != ''">
-        AND 
-          EMP_NM LIKE CONCAT('%', #{keyword}, '%')
-        
+        AND EMP_NM LIKE CONCAT('%', #{keyword}, '%')
       </if>
-    
     ORDER BY emp_seq ASC
     LIMIT #{offset}, #{size}
 </select>
 
 
-<select id="getUserListTotalCount" parameterType="string" resultType="Integer">
-    SELECT 
-        COUNT(*)
+<select id="getUserListTotalCount" resultType="Integer">
+    SELECT COUNT(*)
     FROM employee
-    WHERE 1=1
+    WHERE company_id = #{companyId}
  	<if test="keyword != null and keyword != ''">
-        AND 
-          EMP_NM LIKE CONCAT('%', #{keyword}, '%')
-        
+        AND EMP_NM LIKE CONCAT('%', #{keyword}, '%')
       </if>
-    ORDER BY emp_seq ASC
 </select>
 
 
@@ -85,6 +85,7 @@
 		, role
 		, hireDate
 		, resignDate
+		, company_id
 		) VALUES (
 		(SELECT seq FROM (
 		SELECT COALESCE(MAX(emp_seq), 0) + 1 AS seq
@@ -97,10 +98,11 @@
 		, #{phone}
 		, #{birth}
 		, #{deptName}
-		, #{position}   <!-- ★ 누락된 부분 추가 -->
+		, #{position}
 		, #{role}
 		, #{hireDate}
 		, #{resignDate}
+		, #{companyId}
 		)
 	</insert>
     
@@ -142,7 +144,7 @@
 	<select id="getEmployeeDetail" parameterType="employeeDto" resultType="employeeDto">
 	 SELECT * FROM employee where emp_seq= #{empSeq}
 	</select>
-    
+
 
 </mapper>
 

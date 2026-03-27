@@ -3,6 +3,7 @@ package com.kdt.KDT_PJT.boards.model;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -40,6 +41,9 @@ public class BoardDTO {
     private Integer offset;       // 내부 계산용
     private Integer limit;        // 내부 계산용
 
+    /* ===== 멀티테넌트 ===== */
+    private Integer companyId;    // 소속 회사 ID
+
     /* ===== 게시판 메타 ===== */
     private String boardName;     // 게시판명
     private String boardType;     // 게시판 타입 (notice/free/custom) - 비교는 ignoreCase
@@ -57,10 +61,7 @@ public class BoardDTO {
     public static final String ROLE_ADMIN           = "ADMIN";
     public static final String ROLE_NOTICE_MANAGER  = "NOTICE_MANAGER";
 
-    public static final String ADMIN_EMP_ID         = "20250004";
-    public static final String NOTICE_MANAGER_EMP_ID= "20250007";
-
-    /* ===== 편의 메서드 ===== */
+/* ===== 편의 메서드 ===== */
     public String getContentBr() {
         return content == null ? "" : content.replace("\n", "<br/>");
     }
@@ -114,20 +115,21 @@ public class BoardDTO {
     }
 
     /** 글쓰기 가능 여부 판단 (뷰/컨트롤러 양쪽에서 재사용) */
-    public boolean canWriteBy(String currentEmpId) {
+    public boolean canWriteBy(String currentEmpId, String currentRole) {
         final List<String> roles = getAccessRoles();
 
-        // 1) 공지 게시판: 공지담당자만 글쓰기 허용
+        // 대표는 항상 허용
+        if ("대표".equals(currentRole)) return true;
+
+        // 1) 공지 게시판: 공지 담당 역할만 글쓰기 허용
         if (isNotice()) {
-            return NOTICE_MANAGER_EMP_ID.equals(currentEmpId);
-            // 만약 "공지 게시판도 accessRole 설정을 따르게" 하려면 아래로 교체:
-            // return roles.contains(ROLE_NOTICE_MANAGER) && NOTICE_MANAGER_EMP_ID.equals(currentEmpId);
+            return "공지사항".equals(currentRole);
         }
 
-        // 2) 그 외 게시판: 멀티 권한 합집합
+        // 2) 그 외 게시판: accessRoles 설정 기반
         if (roles.contains(ROLE_USER)) return true; // 모두 허용
-        if (roles.contains(ROLE_ADMIN) && ADMIN_EMP_ID.equals(currentEmpId)) return true;
-        if (roles.contains(ROLE_NOTICE_MANAGER) && NOTICE_MANAGER_EMP_ID.equals(currentEmpId)) return true;
+        if (roles.contains(ROLE_ADMIN) && "게시판".equals(currentRole)) return true;
+        if (roles.contains(ROLE_NOTICE_MANAGER) && "공지사항".equals(currentRole)) return true;
 
         return false;
     }

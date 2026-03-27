@@ -26,23 +26,27 @@
         <th>날짜</th>
         <th>부서</th>
         <th>이름</th>
+        <th>직위</th>
         <th>출근시간</th>
         <th>퇴근시간</th>
         <th class="modify-per">승인자</th>
+        <th>직위</th>
         <th class="modify-day">승인일</th>
         <th class="modify-reason">변경사유</th>
       </tr>
     </thead>
 	<tbody>
 		<tr th:if="${#lists.isEmpty(mainData)}" >
-			        <td colspan="8" >조회된 근태 내역이 없습니다.</td></tr>
+			        <td colspan="10" >조회된 근태 내역이 없습니다.</td></tr>
 		<tr th:each="dto : ${mainData}">
 			<td th:text="${dto.workDate}"></td>
 			<td th:text="${dto.deptName}"></td>
-			<td th:text="|${dto.empNm} ${dto.position}|"></td>
+			<td th:text="${dto.empNm}"></td>
+			<td th:text="${dto.position ?: ''}"></td>
 			<td th:text="${dto.checkInHourMinute}"></td>
 			<td th:text="${dto.checkOutHourMinute}"></td>
-			<td th:text="${dto.status == '완료' ? dto.mbNm +' '+dto.mbPosition : ''}"></td>
+			<td th:text="${dto.status == '완료' ? dto.mbNm : ''}"></td>
+			<td th:text="${dto.status == '완료' ? dto.mbPosition : ''}"></td>
 			<td th:text="${dto.status == '완료' and dto.modifiedAt != null 
               ? #temporals.format(dto.modifiedAt, 'yyyy-MM-dd') : ''}"></td>
 			<td th:text="${dto.status == '완료' ? dto.modificationReason : ''}"></td>

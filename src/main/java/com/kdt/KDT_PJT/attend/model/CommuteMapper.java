@@ -15,7 +15,7 @@ public interface CommuteMapper {
 		        (employeeId, create_date, leave_type, create_reason) VALUES 
 		        (#{employeeId}, now() , '발생', #{reason})
 		    """)
-	 int insertAutoLeave(AttendDTO2 dto);
+	 int insertAutoLeave(AttendDTO dto);
 	 
 
 	 
@@ -41,7 +41,7 @@ public interface CommuteMapper {
     		+ "      AND holiday = '휴무일' "
     		+ ") AS expanded_dates "
     		+ "WHERE DAYOFWEEK(the_date) NOT IN (1,7) ")
-    int getHolidays(AttendDTO2 dto);
+    int getHolidays(AttendDTO dto);
 
 	// 해당 월 정상근무 목록
 	@Select("""
@@ -50,7 +50,7 @@ public interface CommuteMapper {
 	        and TIME(check_in_time) <= '09:00:00'  and TIME(check_out_time) >= '18:00:00'
 			group by employeeId
 	""")
-    List<AttendDTO2> getLastMonthTotalWorkDays(AttendDTO2 dto);
+    List<AttendDTO> getLastMonthTotalWorkDays(AttendDTO dto);
 
     // 전체 직원 목록 조회
     @Select("SELECT employeeId FROM employee")

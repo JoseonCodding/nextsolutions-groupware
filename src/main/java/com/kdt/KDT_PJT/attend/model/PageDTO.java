@@ -19,7 +19,6 @@ public class PageDTO {
  
 
    public void setPage(int page) {
-	  System.out.println("setPage 진입");
       this.page = page;
       start   = (page-1)*size;
       

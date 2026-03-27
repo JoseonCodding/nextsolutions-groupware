@@ -41,7 +41,7 @@ public class ApiApprovalController {
 
         // 3. 데이터 조회
         List<ApprovalDTO> approvalData =
-                approvalMapper.approvalDataByRole(offset, size, role, type, status, employeeId);
+                approvalMapper.approvalDataByRole(offset, size, role, type, status, employeeId, loginUser.getCompanyId());
 
         // 4. React에서 바로 받도록 데이터만 반환
         return approvalData;

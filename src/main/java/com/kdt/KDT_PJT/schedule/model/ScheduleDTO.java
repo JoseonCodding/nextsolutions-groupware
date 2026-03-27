@@ -18,7 +18,8 @@ public class ScheduleDTO {
 	int scheduleId, repeatCheck, pjtSn;
     String title, cate, alarm, holiday, msg;
     private String content = "";
-    
+    Integer companyId;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     Date startDate=new Date(), endDate=new Date(), createdAt=new Date(), updatedAt=new Date(), deleteDate=new Date(), curr=new Date();
     String employeeId;
@@ -87,16 +88,16 @@ public class ScheduleDTO {
 		try {
 			startDate = sdf.parse(ttt);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			// 파싱 실패 시 startDate는 null 유지
 		}
 	}
-    
+
     public void setEndDateStr(String ttt) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			endDate = sdf.parse(ttt);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			// 파싱 실패 시 endDate는 null 유지
 		}
 	}
     

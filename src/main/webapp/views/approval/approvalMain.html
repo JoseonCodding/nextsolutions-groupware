@@ -1,115 +1,112 @@
-<!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org" lang="ko">
-<head>
-<meta charset="UTF-8">
-<title>★전자 결재 메인</title>
-    
-</head>
-<body>
-	<h1 style="margin-top:45px;">전자결재</h1>
+<title>전자결재</title>
+<link rel="stylesheet" href="/css/board.css">
 
-		<!-- 필터 -->
-		<div class="filter">
-		    <form method="get" action="/approval/main">
-				<select name="type" class="filter-selector">
-				    <option value="" th:selected="${type == null or type == ''}">결재 종류</option>
-				    <option value="프로젝트" th:selected="${type == '프로젝트'}">프로젝트</option>
-				    <option value="연차" th:selected="${type == '연차'}">연차</option>
-				    <option value="근태" th:selected="${type == '근태'}">근태</option>
-				    <option value="공지사항" th:selected="${type == '공지사항'}">공지사항</option>
-				</select>
+<h1 style="margin-top:12px;">전자결재</h1>
 
-				<select name="status" class="filter-selector">
-				    <option value="" th:selected="${status == null or status == ''}">결재 상태</option>
-				    <option value="대기" th:selected="${status == '대기'}">대기</option>
-				    <option value="진행중" th:selected="${status == '진행중'}">진행중</option>
-				    <option value="완료" th:selected="${status == '완료'}">완료</option>
-				    <option value="반려" th:selected="${status == '반려'}">반려</option>
-				</select>
+<div class="board-container">
+  <div class="board-controls">
+    <div class="left-controls">
+      <!-- 필터 -->
+      <form method="get" action="/approval/main" class="search-form">
+        <div class="form-group">
+          <select name="type" onchange="this.form.submit()">
+            <option value="" th:selected="${type == null or type == ''}">결재 종류</option>
+            <option value="프로젝트" th:selected="${type == '프로젝트'}">프로젝트</option>
+            <option value="연차" th:selected="${type == '연차'}">연차</option>
+            <option value="근태" th:selected="${type == '근태'}">근태</option>
+            <option value="공지사항" th:selected="${type == '공지사항'}">공지사항</option>
+          </select>
+          <select name="status" onchange="this.form.submit()">
+            <option value="" th:selected="${status == null or status == ''}">결재 상태</option>
+            <option value="대기" th:selected="${status == '대기'}">대기</option>
+            <option value="진행중" th:selected="${status == '진행중'}">진행중</option>
+            <option value="완료" th:selected="${status == '완료'}">완료</option>
+            <option value="반려" th:selected="${status == '반려'}">반려</option>
+          </select>
+          <noscript><button type="submit"><i class="fa fa-search"></i> 검색</button></noscript>
+          <a href="/approval/main" class="filter-btn"><i class="fa fa-rotate-left"></i> 초기화</a>
+        </div>
+      </form>
+    </div>
+  </div>
 
-			    <button type="submit" class="filter-btn">
-			      <i class="fa fa-search"></i> 검색
-			    </button>
-			    <a href="/approval/main" class="filter-btn">
-			      <i class="fa fa-rotate-left"></i> 초기화
-			    </a>
-		    </form>
-		</div>
+  <!-- 목록 테이블 -->
+  <table class="board-table" style="width:100%; border-collapse:collapse;">
+    <thead style="background:#f5f5f5;">
+      <tr>
+        <th style="width:50px;">번호</th>
+        <th style="width:75px;">결재 종류</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th style="width:75px;">결재 상태</th>
+        <th style="width:85px;">작성일</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:if="${#lists.isEmpty(approvalData)}">
+        <td colspan="6" style="padding:90px; text-align:center; color:#999;">열람 가능한 결재 문서가 없습니다.</td>
+      </tr>
+      <tr th:each="dto, stat : ${approvalData}">
+        <td th:text="${(page - 1) * 10 + stat.index + 1}">1</td>
+        <td th:text="${dto.docType}"></td>
+        <td class="board-title">
+          <a style="width:400px;"
+             th:href="@{/approval/viewer(docId=${dto.docId}, page=${page}, type=${type}, status=${status})}"
+             th:text="${dto.title}">
+          </a>
+        </td>
+        <td>
+          <span th:text="${dto.writer}"></span>
+          <span th:text="${dto.writerPosition}"></span>
+        </td>
+        <td th:text="${dto.status}"></td>
+        <td th:text="${#dates.format(dto.createdAt, 'yyyy/MM/dd')}"></td>
+      </tr>
+    </tbody>
+  </table>
 
-        <!-- 게시판 -->
-        <table>
-            <thead>
-                <tr>
-                	<th style="width:50px;">번호</th>
-                    <th style="width:75px;">결재 종류</th>
-                    <th>제목</th>
-                    <th>작성자</th>
-                    <th style="width:75px;">결재 상태</th>
-                    <th style="width:85px;">작성일</th>
-                </tr>
-            </thead>
-            
-            <tbody>
-            	<tr th:if="${#lists.isEmpty(approvalData)}">
-            		<td colspan="7" class="list-empty">열람 가능한 결재 문서가 없습니다.</td>
-            	</tr>
-            	
-                <tr th:each="dto, stat : ${approvalData}">
-                	<td th:text="${(page - 1) * 10 + stat.index + 1}">1</td>
-            		<td th:text="${dto.docType}"></td>
-				    <td class="board-title">
-				    	<a style="width:588px;"
-				    		th:href="@{/approval/viewer(docId=${dto.docId}, page=${page}, type=${type}, status=${status})}" 
-				    		th:text="${dto.title}">
-				    	</a>
-				    </td>
-					<td style="width: 110px;">
-					  <span th:text="${dto.writer}"></span>
-					  <span th:text="${dto.writerPosition}"></span>
-					</td>
-				    <td th:text="${dto.status}"></td>
-				    <td th:text="${#dates.format(dto.createdAt, 'yyyy/MM/dd')}"></td>
-				</tr>
-            </tbody>
-        </table>
-        
-        <!-- 페이지네이션 -->
-		<nav class="pagination">
-		  <!-- Previous 버튼 -->
-		  <a th:if="${page > 1}" th:href="@{/approval/main(page=${page-5 > 1 ? page-5 : 1}, type=${type}, status=${status})}" class="prev">&#x2039; Previous</a>
-		
-		  <!-- 첫 페이지 -->
-		  <span th:if="${startPage > 1 and page == 1}" class="page-number now-page disabled" th:text="1"></span>
-		  <a th:if="${startPage > 1 and page != 1}" th:href="@{/approval/main(page=1, type=${type}, status=${status})}" th:text="1" class="page-number"></a>
-		
-		  <span th:if="${startPage > 2}" class="ellipsis">...</span>
-		
-		  <!-- 페이지 숫자들 -->
-		  <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
-		    <span th:if="${i == page}" class="page-number now-page disabled" th:text="${i}"></span>
-		    <a th:if="${i != page}" th:href="@{/approval/main(page=${i}, type=${type}, status=${status})}" th:text="${i}" class="page-number"></a>
-		  </span>
-		
-		  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
-		
-		  <!-- 마지막 페이지 -->
-		  <span th:if="${endPage < totalPages and page == totalPages}" class="page-number now-page disabled" th:text="${totalPages}"></span>
-		  <a th:if="${endPage < totalPages and page != totalPages}" th:href="@{/approval/main(page=${totalPages}, type=${type}, status=${status})}" th:text="${totalPages}" class="page-number"></a>
-		
-		  <!-- Next 버튼 -->
-		  <a th:if="${page < totalPages}" th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages}, type=${type}, status=${status})}">Next &#x203A;</a>
-		</nav>
-	
-	<!-- 게시판 리스트 호버링 적용 JS (다른 페이지 테이블과 CSS 충돌방지용) -->
-	<script>
-		document.querySelectorAll('td.board-title').forEach(td => {
-			  td.parentElement.addEventListener('mouseenter', () => {
-			    td.parentElement.classList.add('hover-row');
-			  });
-			  td.parentElement.addEventListener('mouseleave', () => {
-			    td.parentElement.classList.remove('hover-row');
-			  });
-			});
-	</script>
-</body>
-</html>
+  <!-- 페이지네이션 -->
+  <nav class="pagination" th:if="${page != null}">
+    <a class="prev"
+       th:if="${page > 1}"
+       th:href="@{/approval/main(page=${page-5 > 1 ? page-5 : 1}, type=${type}, status=${status})}">
+      &#x2039; Previous
+    </a>
+
+    <span th:if="${startPage > 1 and page == 1}" class="page-number now-page disabled" th:text="1"></span>
+    <a th:if="${startPage > 1 and page != 1}" class="page-number" th:text="1"
+       th:href="@{/approval/main(page=1, type=${type}, status=${status})}"></a>
+
+    <span th:if="${startPage > 2}" class="ellipsis">...</span>
+
+    <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
+      <span th:if="${i == page}" class="page-number now-page disabled" th:text="${i}"></span>
+      <a th:if="${i != page}" class="page-number" th:text="${i}"
+         th:href="@{/approval/main(page=${i}, type=${type}, status=${status})}"></a>
+    </span>
+
+    <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
+
+    <span th:if="${endPage < totalPages and page == totalPages}" class="page-number now-page disabled" th:text="${totalPages}"></span>
+    <a th:if="${endPage < totalPages and page != totalPages}" class="page-number" th:text="${totalPages}"
+       th:href="@{/approval/main(page=${totalPages}, type=${type}, status=${status})}"></a>
+
+    <a class="next"
+       th:if="${page < totalPages}"
+       th:href="@{/approval/main(page=${page+5 < totalPages ? page+5 : totalPages}, type=${type}, status=${status})}">
+      Next &#x203A;
+    </a>
+  </nav>
+</div>
+
+<!-- 게시판 리스트 호버링 적용 JS -->
+<script>
+  document.querySelectorAll('td.board-title').forEach(td => {
+    td.parentElement.addEventListener('mouseenter', () => {
+      td.parentElement.classList.add('hover-row');
+    });
+    td.parentElement.addEventListener('mouseleave', () => {
+      td.parentElement.classList.remove('hover-row');
+    });
+  });
+</script>

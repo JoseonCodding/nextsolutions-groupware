@@ -1,7 +1,5 @@
 package com.kdt.KDT_PJT.api_p;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,47 +7,39 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.schedule.model.ScheduleDTO;
-import com.kdt.KDT_PJT.schedule.model.ScheduleMapper;
+import com.kdt.KDT_PJT.schedule.service.ScheduleService;
 
 import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api")
 public class ApiScheduleController {
-	
+
 	@Autowired
-	ScheduleMapper mapper;
-	
+	ScheduleService scheduleService;
+
 	@GetMapping("logInfo")
-	Object get(HttpSession sesson) {
-		
-		System.out.println("/api/logInfo 진입");
-		return sesson.getAttribute("loginUser");
+	Object get(HttpSession session) {
+		return session.getAttribute("loginUser");
 	}
 
-	
 	@GetMapping("schedules")
-	Object schedules(HttpSession sesson) {
+	Object schedules(HttpSession session) {
 		ScheduleDTO schDto = new ScheduleDTO();
-		//schDto.monthDays();
-		
-		System.out.println("/api/schedules 진입");
-		
-		List<ScheduleDTO> scheduleList = mapper.getScheduleListRepeatEmpty();
-		scheduleList.addAll(mapper.getProjectListByMonth());
-		return scheduleList;
+		EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
+		if (loginUser != null) {
+		    schDto.setCompanyId(loginUser.getCompanyId());
+		}
+		return scheduleService.getScheduleListForApi(schDto);
 	}
 
-    @GetMapping("schedulealert")	
-    Object sendNotifications(HttpSession sesson) {
+    @GetMapping("schedulealert")
+    Object sendNotifications(HttpSession session) {
     	ScheduleDTO schDto = new ScheduleDTO();
-    	//schDto.setCurr(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-    	System.out.println("/api/schedulealert 진입 1 "+schDto);
-    	List<ScheduleDTO> res = mapper.getActiveAllDayNotifications(schDto);
-    	System.out.println("/api/schedulealert 진입 2 "+res);
-    	
+    	List<ScheduleDTO> res = scheduleService.getActiveNotifications(schDto);
         return res;
     }
-    
+
 }

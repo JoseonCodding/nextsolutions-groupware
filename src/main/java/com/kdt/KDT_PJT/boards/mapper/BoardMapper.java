@@ -16,12 +16,13 @@ public interface BoardMapper {
 	    SELECT board_id
 	      FROM board_board
 	     WHERE board_type = #{boardType}
+	       AND company_id = #{companyId}
 	       AND is_deleted = false
 	       AND is_active  = true
 	     ORDER BY board_id DESC
 	     LIMIT 1
 	""")
-	Integer findBoardIdByType(@Param("boardType") String boardType);
+	Integer findBoardIdByType(@Param("boardType") String boardType, @Param("companyId") Integer companyId);
 
     
     // 댓글/좋아요/글쓰기 차단할 때 필요
@@ -100,8 +101,9 @@ public interface BoardMapper {
         SELECT COUNT(*)
         FROM board_board
         WHERE is_deleted = FALSE
+          AND company_id = #{companyId}
     """)
-    int countBoards();
+    int countBoards(BoardDTO dto);
 
 
     
@@ -109,10 +111,10 @@ public interface BoardMapper {
     // 공지 목록 (완료만) - 페이징
     @Select("""
     		<script>
-    		SELECT p.*, e.emp_nm AS emp_nm, e.position AS position
+    		SELECT p.*, e.emp_nm AS empNm, e.position AS position
     		FROM board_post p
     		LEFT JOIN employee e ON e.employeeId = p.employee_id
-    		WHERE p.board_id = 1
+    		WHERE p.board_id = #{boardId}
     		  AND p.status = '완료'
     		  AND p.is_deleted = false
     		  <if test="keyword != null and keyword != ''">
@@ -143,7 +145,7 @@ public interface BoardMapper {
     		SELECT COUNT(*)
     		FROM board_post p
     		LEFT JOIN employee e ON e.employeeId = p.employee_id
-    		WHERE p.board_id = 1
+    		WHERE p.board_id = #{boardId}
     		  AND p.status = '완료'
     		  AND p.is_deleted = false
     		  <if test="keyword != null and keyword != ''">
@@ -175,7 +177,7 @@ public interface BoardMapper {
     		   FROM board_post p
     		   LEFT JOIN employee e ON e.employeeId = p.employee_id
     		   WHERE p.post_id = #{postId}
-    		     AND p.board_id = 1
+    		     AND p.board_id = #{boardId}
     		     AND p.status = '완료'
     		     AND p.is_deleted = false
     		""")
@@ -184,9 +186,9 @@ public interface BoardMapper {
     // 초안(대기) 저장
     @Insert("""
       INSERT INTO board_post
-        (board_id, employee_id, title, content, created_at, view_count, like_count, is_deleted, status, docType)
+        (board_id, employee_id, title, content, created_at, view_count, like_count, is_deleted, status, docType, company_id)
       VALUES
-        (1, #{employeeId}, #{title}, #{content}, NOW(), 0, 0, FALSE, '대기', '공지사항')
+        (#{boardId}, #{employeeId}, #{title}, #{content}, NOW(), 0, 0, FALSE, '대기', '공지사항', #{companyId})
     """)
     @Options(useGeneratedKeys = true, keyProperty = "postId", keyColumn = "post_id")
     int insertNoticeDraft(BoardDTO dto);
@@ -231,10 +233,10 @@ public interface BoardMapper {
     // 자유 목록
     @Select("""
     		<script>
-    		SELECT p.*, e.emp_nm AS emp_nm, e.position AS position
+    		SELECT p.*, e.emp_nm AS empNm, e.position AS position
     		FROM board_post p
     		LEFT JOIN employee e ON e.employeeId = p.employee_id
-    		WHERE p.board_id = 2
+    		WHERE p.board_id = #{boardId}
     		  AND p.is_deleted = false
     		  <if test="keyword != null and keyword != ''">
     		    AND (
@@ -264,7 +266,7 @@ public interface BoardMapper {
     		SELECT COUNT(*)
     		FROM board_post p
     		LEFT JOIN employee e ON e.employeeId = p.employee_id
-    		WHERE p.board_id = 2
+    		WHERE p.board_id = #{boardId}
     		  AND p.is_deleted = false
     		  <if test="keyword != null and keyword != ''">
     		    AND (
@@ -295,9 +297,9 @@ public interface BoardMapper {
     // 게시글 등록
     @Insert("""
            INSERT INTO board_post
-             (board_id, employee_id, title, content, created_at, view_count, like_count, is_deleted)
+             (board_id, employee_id, title, content, created_at, view_count, like_count, is_deleted, company_id)
            VALUES
-             (#{boardId}, #{employeeId}, #{title}, #{content}, NOW(), 0, 0, false)
+             (#{boardId}, #{employeeId}, #{title}, #{content}, NOW(), 0, 0, false, #{companyId})
          """)
          @Options(useGeneratedKeys = true, keyProperty = "postId", keyColumn = "post_id")
     int insert(BoardDTO dto);
@@ -361,9 +363,10 @@ public interface BoardMapper {
                use_comment, use_like, is_active, is_deleted, created_at, updated_at
         FROM board_board
         WHERE is_deleted = false
+          AND company_id = #{companyId}
         ORDER BY board_id ASC
     """)
-    List<BoardDTO> selectBoards();
+    List<BoardDTO> selectBoards(@Param("companyId") Integer companyId);
 
     // 활성 탭용
     @Select("""
@@ -371,9 +374,10 @@ public interface BoardMapper {
                use_comment, use_like, is_active, is_deleted, created_at, updated_at
         FROM board_board
         WHERE is_active = true AND is_deleted = false
+          AND company_id = #{companyId}
         ORDER BY board_id ASC
     """)
-    List<BoardDTO> selectActiveBoards();
+    List<BoardDTO> selectActiveBoards(@Param("companyId") Integer companyId);
 
     // 단건 조회
     @Select("""
@@ -387,9 +391,9 @@ public interface BoardMapper {
     // 생성: NOTICE/FREE는 미리 있으니 커스텀만 생성
     @Insert("""
         INSERT INTO board_board
-          (board_name, board_type, access_role, use_comment, use_like, is_active, is_deleted, created_at, updated_at)
+          (board_name, board_type, access_role, use_comment, use_like, is_active, is_deleted, created_at, updated_at, company_id)
         VALUES
-          (#{boardName}, 'CUSTOM', #{accessRole}, #{useComment}, #{useLike}, TRUE, FALSE, NOW(), NOW())
+          (#{boardName}, 'CUSTOM', #{accessRole}, #{useComment}, #{useLike}, TRUE, FALSE, NOW(), NOW(), #{companyId})
     """)
     @Options(useGeneratedKeys = true, keyProperty = "boardId")
     int insertBoard(BoardDTO b);
@@ -414,15 +418,16 @@ public interface BoardMapper {
                    access_role, use_comment, use_like, is_active, created_at, updated_at
             FROM board_board
             WHERE is_active = TRUE
+              AND company_id = #{companyId}
             ORDER BY CASE UPPER(COALESCE(board_type,'CUSTOM'))
                        WHEN 'NOTICE' THEN 0
                        WHEN 'FREE'   THEN 1
                        ELSE 2
                      END,
                      created_at ASC,
-    				 board_id ASC;
+    				 board_id ASC
           """)
-          List<BoardDTO> selectAllBoardsForTabs();
+          List<BoardDTO> selectAllBoardsForTabs(@Param("companyId") Integer companyId);
     
     // 게시판 활성/비활성
     @Update("UPDATE board_board SET is_active = #{active} WHERE board_id = #{boardId}")

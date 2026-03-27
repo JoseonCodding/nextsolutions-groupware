@@ -1,5 +1,6 @@
 package com.kdt.KDT_PJT.attend.model;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,35 +15,43 @@ import lombok.NoArgsConstructor;
 public class AttendDTO {
 
 	private Long id;
-	private String employeeId, service, empNm,mbNm, deptName, position,mbPosition, workingHours;
+	private Integer companyId;
+	private String employeeId, service, empNm, mbNm, deptName, position, mbPosition, workingHours;
 	private LocalDateTime checkInTime, checkOutTime;
 	int workCnt;
 
 	private String status;
 
-	private String modifiedBy;               // 수정자 ID
-	private LocalDateTime modifiedAt;        // 수정일시
-	private String modificationReason;      // 수정 사유
-	String startDay, endDay;	
-	
+	private String modifiedBy;
+	private LocalDateTime modifiedAt;
+	private String modificationReason;
+	String startDay, endDay;
 
-    // ✅ 페이징 파라미터 추가
+    // 페이징
     int limit = 0;
     int offset = 0;
-	
     int pageNum = 1;
     int pageSize = 10;
-    
-    String keyword;
-    
-    
-//	work_hours DECIMAL(4,1) NULL,           -- 근무시간 (예: 8.0)
-//	ADD COLUMN is_normal_work BOOLEAN DEFAULT FALSE,   -- 정상근무 여부
-//	ADD COLUMN modified_by VARCHAR(20) NULL,           -- 수정자 ID
-//	ADD COLUMN modified_at DATETIME NULL,              -- 수정일
-//	ADD COLUMN modification_reason VARCHAR(255) NULL;
 
-	 
+    String keyword;
+
+    // AttendDTO2 흡수 필드
+    private String reason;
+    private int month;
+    private String startDayStr;
+    private String yearMonth;
+    boolean nowIsHoliday = false;
+    boolean todayCheckIn = false;
+    boolean todayCheckOut = false;
+    Date usedDate;
+    String title;
+    
+
+    public String getUsedDateStr() {
+        if (usedDate == null) return "";
+        return new SimpleDateFormat("yyyy-MM-dd").format(usedDate);
+    }
+
     public String getWorkDate() {
         // checkInTime이 있을 때만 yyyy-MM-dd 반환
         return (checkInTime != null) ? checkInTime.toLocalDate().toString() : null;
@@ -64,7 +73,6 @@ public class AttendDTO {
 	    }
 	    // "yyyy-MM-dd"만 받아서 자정으로 세팅
 	    this.checkInTime = LocalDate.parse(workDate).atStartOfDay();
-	    System.out.println("setWorkDate 실행 : " + workDate);
 	}
 
     public String getCheckInHourMinute() {

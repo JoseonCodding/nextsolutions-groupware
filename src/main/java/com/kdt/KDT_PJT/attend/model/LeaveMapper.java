@@ -52,9 +52,10 @@ public interface LeaveMapper {
 	        GROUP BY employeeId
 	    ) t2 ON t1.employeeId = t2.employeeId
 	    JOIN employee e ON t1.employeeId = e.employeeId
+	    WHERE e.company_id = #{companyId}
 	    ORDER BY e.emp_nm
 	""")
-	List<LeaveDTO> mngLeaveList(); 
+	List<LeaveDTO> mngLeaveList(@Param("companyId") int companyId);
 	
 
 	// 관리자용 연차 조회 : 단일 사원의 연차 총합, 사용 연차, 이름을 한 번에 조회

@@ -39,3 +39,9 @@ out/
 
 ### React ###
 #/src/main/resources/static/
+
+### Secrets ###
+src/main/resources/application.yml
+
+### Eclipse Workspace ###
+.metadata/

@@ -31,7 +31,10 @@ public class EmployeeDto {
     // 조직 정보
     private String deptName;   // 부서명
     private String position;   // 직급
-    private String role;       // 권한 (ROLE_ADMIN, ROLE_USER 등)
+    private String role;       // 권한 (대표, 사원, 프로젝트, 근태, 게시판, 문서, 공지사항, 일정 등)
+
+    // 멀티테넌트
+    private Integer companyId; // 소속 회사 ID
 
     // 근무 이력
     @DateTimeFormat(pattern = "yyyy-MM-dd")  // 추가

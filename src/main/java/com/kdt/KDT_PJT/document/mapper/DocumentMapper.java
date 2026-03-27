@@ -15,17 +15,20 @@ public interface DocumentMapper {
     JOIN (
       SELECT gid, MAX(ver) AS max_ver
       FROM TB_PJT_BASC
+      WHERE company_id = #{companyId}
       GROUP BY gid
     ) m
       ON t.gid = m.gid AND t.ver = m.max_ver
     LEFT JOIN employee e ON e.employeeId = t.employeeId
     WHERE t.PJT_STTS_CD IN ('진행중','완료')
+      AND t.company_id = #{companyId}
       AND (t.employeeId = #{employeeId} OR #{isAdmin})
     ORDER BY t.FRST_REG_DT DESC
     LIMIT #{limit} OFFSET #{offset}
   """)
   List<DocumentDTO> findDocsForManage(@Param("employeeId") String employeeId,
                                       @Param("isAdmin") boolean isAdmin,
+                                      @Param("companyId") int companyId,
                                       @Param("limit") int limit,
                                       @Param("offset") int offset);
 
@@ -38,15 +41,18 @@ public interface DocumentMapper {
       JOIN (
         SELECT gid, MAX(ver) AS max_ver
         FROM TB_PJT_BASC
+        WHERE company_id = #{companyId}
         GROUP BY gid
       ) m
         ON t.gid = m.gid AND t.ver = m.max_ver
       WHERE t.PJT_STTS_CD IN ('진행중','완료')
+        AND t.company_id = #{companyId}
         AND (t.employeeId = #{employeeId} OR #{isAdmin})
     ) x
   """)
   int countDocsForManage(@Param("employeeId") String employeeId,
-                         @Param("isAdmin") boolean isAdmin);
+                         @Param("isAdmin") boolean isAdmin,
+                         @Param("companyId") int companyId);
 
   // B. 최신 상세
   @Select("""
@@ -55,13 +61,15 @@ public interface DocumentMapper {
     FROM TB_PJT_BASC t
     JOIN ( SELECT gid, MAX(ver) AS max_ver
            FROM TB_PJT_BASC
-           WHERE gid = #{gid} ) m
+           WHERE gid = #{gid} AND company_id = #{companyId} ) m
       ON t.gid = m.gid AND t.ver = m.max_ver
     LEFT JOIN employee e ON e.employeeId = t.employeeId
     WHERE t.PJT_STTS_CD IN ('진행중','완료')
+      AND t.company_id = #{companyId}
     LIMIT 1
   """)
-  DocumentDTO findLatestApprovedByGid(@Param("gid") String gid);
+  DocumentDTO findLatestApprovedByGid(@Param("gid") String gid,
+                                      @Param("companyId") int companyId);
 
   // C. 버전 목록
   @Select("""
@@ -70,9 +78,11 @@ public interface DocumentMapper {
     FROM TB_PJT_BASC t
     LEFT JOIN employee e ON e.employeeId = t.employeeId
     WHERE t.gid = #{gid}
+      AND t.company_id = #{companyId}
     ORDER BY t.ver DESC
   """)
-  List<DocumentDTO> findVersions(@Param("gid") String gid);
+  List<DocumentDTO> findVersions(@Param("gid") String gid,
+                                 @Param("companyId") int companyId);
 
   // D. 특정 버전 상세
   @Select("""
@@ -81,9 +91,12 @@ public interface DocumentMapper {
     FROM TB_PJT_BASC t
     LEFT JOIN employee e ON e.employeeId = t.employeeId
     WHERE t.gid = #{gid} AND t.ver = #{ver}
+      AND t.company_id = #{companyId}
     LIMIT 1
   """)
-  DocumentDTO findByGidAndVer(@Param("gid") String gid, @Param("ver") Integer ver);
+  DocumentDTO findByGidAndVer(@Param("gid") String gid,
+                              @Param("ver") Integer ver,
+                              @Param("companyId") int companyId);
 
   // E. 최신 ver 잠금
   @Select("""
@@ -137,10 +150,12 @@ public interface DocumentMapper {
    JOIN (
      SELECT gid, MAX(ver) AS max_ver
      FROM TB_PJT_BASC
+     WHERE company_id = #{companyId}
      GROUP BY gid
    ) m ON t.gid = m.gid AND t.ver = m.max_ver
    LEFT JOIN employee e ON e.employeeId = t.employeeId
    WHERE t.PJT_STTS_CD IN ('진행중','완료')
+     AND t.company_id = #{companyId}
    <if test="!isAdmin">
      AND t.employeeId = #{employeeId}
    </if>
@@ -165,9 +180,10 @@ public interface DocumentMapper {
  """)
  List<DocumentDTO> findDocsForManageWithSearch(@Param("employeeId") String employeeId,
                                                @Param("isAdmin") boolean isAdmin,
+                                               @Param("companyId") int companyId,
                                                @Param("keywordType") String keywordType,
                                                @Param("keyword") String keyword,
-                                               @Param("sort") String sort,      // 현재 newest만
+                                               @Param("sort") String sort,
                                                @Param("limit") int limit,
                                                @Param("offset") int offset);
 
@@ -180,10 +196,12 @@ public interface DocumentMapper {
 		      JOIN (
 		        SELECT gid, MAX(ver) AS max_ver
 		        FROM TB_PJT_BASC
+		        WHERE company_id = #{companyId}
 		        GROUP BY gid
 		      ) m ON t.gid = m.gid AND t.ver = m.max_ver
 		      LEFT JOIN employee e ON e.employeeId = t.employeeId
 		      WHERE t.PJT_STTS_CD IN ('진행중','완료')
+		        AND t.company_id = #{companyId}
 		      <if test="!isAdmin">
 		        AND t.employeeId = #{employeeId}
 		      </if>
@@ -206,6 +224,7 @@ public interface DocumentMapper {
 		  """)
 		  int countDocsForManageWithSearch(@Param("employeeId") String employeeId,
 		                                   @Param("isAdmin") boolean isAdmin,
+		                                   @Param("companyId") int companyId,
 		                                   @Param("keywordType") String keywordType,
 		                                   @Param("keyword") String keyword);
 

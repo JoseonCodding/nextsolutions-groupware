@@ -1,0 +1,306 @@
+<style>
+.dash-grid {
+  display: grid;
+  gap: 20px;
+}
+
+/* 상단 stat 카드 4개 */
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 22px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.stat-icon.blue   { background: #eef2ff; color: #3949ab; }
+.stat-icon.green  { background: #e8f5e9; color: #2e7d32; }
+.stat-icon.orange { background: #fff3e0; color: #e65100; }
+.stat-icon.purple { background: #f3e5f5; color: #6a1b9a; }
+.stat-label { font-size: 12px; color: #94a3b8; font-weight: 500; margin-bottom: 4px; }
+.stat-value { font-size: 22px; font-weight: 700; color: #1a202c; line-height: 1; }
+
+/* 콘텐츠 2열 */
+.dash-main {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+}
+
+.dash-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+.dash-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.dash-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a202c;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dash-card-title span.emoji { font-size: 16px; }
+.dash-card-more {
+  font-size: 12px;
+  color: #3949ab;
+  font-weight: 600;
+  text-decoration: none;
+}
+.dash-card-more:hover { text-decoration: underline; }
+
+/* 공지사항 테이블 */
+.notice-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.notice-table td {
+  padding: 11px 20px;
+  border-bottom: 1px solid #f8fafc;
+  font-size: 13px;
+  background: #fff;
+}
+.notice-table tr:last-child td { border-bottom: none; }
+.notice-table tr:hover td { background: #f8fafc; }
+.notice-title {
+  color: #1a202c;
+  text-decoration: none;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 420px;
+}
+.notice-title:hover { color: #3949ab; }
+.notice-date { color: #94a3b8; font-size: 12px; white-space: nowrap; text-align: right; }
+.notice-empty { padding: 32px 20px; text-align: center; color: #94a3b8; font-size: 13px; }
+
+/* 우측 패널 */
+.side-panels { display: flex; flex-direction: column; gap: 16px; }
+
+/* 환영 카드 */
+.welcome-card {
+  background: linear-gradient(135deg, #1a2250, #283593);
+  border-radius: 12px;
+  padding: 22px 22px 18px;
+  color: #fff;
+}
+.welcome-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.welcome-name { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+.welcome-sub { font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 14px; }
+.welcome-actions { display: flex; gap: 8px; }
+.welcome-btn {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: filter 0.15s;
+}
+.welcome-btn.primary { background: rgba(255,255,255,0.2); color: #fff; }
+.welcome-btn.primary:hover { filter: brightness(1.15); }
+.welcome-btn.secondary { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); }
+.welcome-btn.secondary:hover { filter: brightness(1.2); }
+
+/* 프로젝트 미니 카드 */
+.mini-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px; }
+.mini-stat {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mini-stat-label { font-size: 11px; color: #94a3b8; font-weight: 500; }
+.mini-stat-val   { font-size: 20px; font-weight: 700; color: #1a202c; }
+
+/* 일정 리스트 */
+.schedule-list { padding: 0 0 8px; }
+.schedule-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #f8fafc;
+  font-size: 13px;
+}
+.schedule-item:last-child { border-bottom: none; }
+.schedule-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3949ab;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.schedule-title { color: #1a202c; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.schedule-date { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+.schedule-empty { padding: 24px 20px; text-align: center; color: #94a3b8; font-size: 13px; }
+</style>
+
+<div class="dash-grid">
+
+  <!-- 상단 stat 카드 -->
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fa fa-diagram-project"></i></div>
+      <div>
+        <div class="stat-label">전체 프로젝트</div>
+        <div class="stat-value" th:text="${pjtTotal ?: 0}">0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fa fa-spinner"></i></div>
+      <div>
+        <div class="stat-label">진행중</div>
+        <div class="stat-value" th:text="${pjtProgress ?: 0}">0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange"><i class="fa fa-clock"></i></div>
+      <div>
+        <div class="stat-label">대기중</div>
+        <div class="stat-value" th:text="${pjtPending ?: 0}">0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple"><i class="fa fa-circle-check"></i></div>
+      <div>
+        <div class="stat-label">완료</div>
+        <div class="stat-value" th:text="${pjtComplete ?: 0}">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 메인 2열 -->
+  <div class="dash-main">
+
+    <!-- 왼쪽: 공지사항 -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title"><span class="emoji">📢</span> 공지사항</div>
+        <a href="/board/notice" class="dash-card-more">더보기 →</a>
+      </div>
+      <table class="notice-table" th:if="${notices != null and !notices.isEmpty()}">
+        <tbody>
+          <tr th:each="n : ${notices}">
+            <td>
+              <a th:href="@{/board/notice/detail(postId=${n.postId})}" class="notice-title" th:text="${n.title}">제목</a>
+            </td>
+            <td class="notice-date" th:text="${#strings.substring(n.createdAt != null ? n.createdAt.toString() : '', 0, 10)}">2026-01-01</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="notice-empty" th:if="${notices == null or notices.isEmpty()}">등록된 공지사항이 없습니다.</div>
+    </div>
+
+    <!-- 오른쪽 패널 -->
+    <div class="side-panels">
+
+      <!-- 환영 카드 -->
+      <div class="welcome-card">
+        <div class="welcome-avatar" th:text="${session.loginUser?.empNm?.substring(0,1) ?: 'U'}">관</div>
+        <div class="welcome-name" th:text="${session.loginUser?.empNm} + ' 님'">관리자 님</div>
+        <div class="welcome-sub" th:text="${session.loginUser?.deptName} + ' · ' + (${session.loginUser?.position} ?: '')">부서 · 직위</div>
+        <div class="welcome-actions">
+          <a href="/attend" class="welcome-btn primary"><i class="fa fa-clock"></i> 근태관리</a>
+          <a href="/mypage" class="welcome-btn secondary"><i class="fa fa-user"></i> 마이페이지</a>
+        </div>
+      </div>
+
+      <!-- 내 프로젝트 -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-title"><span class="emoji">📊</span> 내 프로젝트</div>
+          <a href="/pjtMng/getPjtList" class="dash-card-more">더보기 →</a>
+        </div>
+        <div class="mini-stats">
+          <div class="mini-stat">
+            <span class="mini-stat-label">참여 프로젝트</span>
+            <span class="mini-stat-val" th:text="${myPjtCount ?: 0}">0</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-label">결재 대기</span>
+            <span class="mini-stat-val" th:text="${myPending ?: 0}">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 이번달 일정 -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-title"><span class="emoji">📅</span> 이번달 일정</div>
+          <a href="/schedule" class="dash-card-more">더보기 →</a>
+        </div>
+        <div class="schedule-list" th:if="${schedules != null and !schedules.isEmpty()}">
+          <div class="schedule-item" th:each="s, i : ${schedules}" th:if="${i.index < 5}">
+            <div class="schedule-dot"></div>
+            <div>
+              <div class="schedule-title" th:text="${s.title}">일정 제목</div>
+              <div class="schedule-date" th:text="${s.startDateStr ?: ''}">날짜</div>
+            </div>
+          </div>
+        </div>
+        <div class="schedule-empty" th:if="${schedules == null or schedules.isEmpty()}">이번달 일정이 없습니다.</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// 현재 날짜 표시 (선택)
+document.addEventListener('DOMContentLoaded', function() {
+  var now = new Date();
+  var days = ['일','월','화','수','목','금','토'];
+  document.title = 'NEXTSOLUTIONS - 대시보드';
+});
+</script>

@@ -1,16 +1,7 @@
-<!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org" lang="ko">
+<title>전자결재 뷰어</title>
+<link rel="stylesheet" href="/css/approvalStyle.css">
 
-<head>
-	<meta charset="UTF-8">
-	<title>★전자 결재 뷰어</title>
-	
-	<link rel="stylesheet" href="/css/approvalStyle.css">
-
-</head>
-
-<body>
-	<div style="padding-left: 50px; padding-right: 50px;">
+<div style="padding-left: 50px; padding-right: 50px;">
 		<!-- 뷰어 상단 타이틀 -->
 		<h1 th:switch="${approvalData != null ? approvalData.docType : ''}" style="text-align:center; margin-top:45px; margin-bottom:30px;">
 		    <span th:case="'프로젝트'">프로젝트 결재 문서</span>
@@ -443,5 +434,3 @@
 
 		
 	</div>
-</body>
-</html>

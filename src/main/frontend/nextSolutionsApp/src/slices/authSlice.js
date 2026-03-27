@@ -3,7 +3,7 @@ import axios from '../lib/axios'; //axios 인스턴스
 
 const initialState = {
   user: null,
-  loading: false,
+  loading: true,
   error: null,
 };
 

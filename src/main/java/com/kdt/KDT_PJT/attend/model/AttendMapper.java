@@ -30,56 +30,38 @@ public interface AttendMapper {
    List<AttendDTO> userAttendList(EmployeeDto loginUser);
    
    
-   //사용자 본인의 출퇴근 기록 한달 기준 보기  //DTO2 - limit 없는 버전
-//   @Select("""
-//		    SELECT * FROM attendance
-//		    WHERE employeeId = #{employeeId}
-//		      AND DATE(check_in_time) BETWEEN #{startDay} AND #{endDay}
-//		    ORDER BY check_in_time
-//		""")
-   //출퇴근 버튼 추가로 달 인식 불필요
    @Select("""
 		    SELECT * FROM attendance
 		    WHERE employeeId = #{employeeId}
 		    ORDER BY check_in_time
 		""")
-   List<AttendDTO> userAttendMonthList( AttendDTO2 attendance);
+   List<AttendDTO> userAttendMonthList( AttendDTO attendance);
    
    
    
- //사용자 본인의 출퇴근 기록 한달 기준 보기  //DTO2 - limit 없는 버전
    @Select("""
 		    SELECT * FROM attendance
 		    WHERE employeeId = #{employeeId}
 		      AND DATE(check_in_time) BETWEEN #{startDay} AND #{endDay}
 		    ORDER BY check_in_time
 		""")
-   List<AttendDTO> userAttendMonthAppr( AttendDTO2 attendance);
+   List<AttendDTO> userAttendMonthAppr(AttendDTO attendance);
    
    
    //출퇴근 기록에 연차 날짜 가져오기
-//   @Select("""
-//   		select used_date from annual_leave where employeeId = #{employeeId}
-//   			and state_type ='완료' AND DATE(used_date) BETWEEN #{startDay} AND #{endDay}
-//		    ORDER BY used_date
-//   		""")
    @Select("""
 	   		select used_date from annual_leave where employeeId = #{employeeId}
 	   			and state_type ='완료'
 			    ORDER BY used_date
 	   		""")
-   List<LeaveDTO> searchLeaveDate(AttendDTO2 attendance);
+   List<LeaveDTO> searchLeaveDate(AttendDTO attendance);
    
-   //출퇴근 기록에 휴무일 가져오기      //date_add(end_date, INTERVAL 1 DAY) : fullcalender가 마지막 날 인지를 못해서 +1일 처리
-//   @Select("""
-//   		SELECT title, start_date,  date_add(end_date, INTERVAL 1 DAY) as end_date  FROM schedule 
-//   		WHERE holiday= '휴무일' and start_date <= #{endDay}  AND  end_date >= #{startDay}
-//   		""")
+   //출퇴근 기록에 휴무일 가져오기
    @Select("""
-	   		SELECT title, start_date,  date_add(end_date, INTERVAL 1 DAY) as end_date  FROM schedule 
-	   		WHERE holiday= '휴무일'
+	   		SELECT title, start_date, date_add(end_date, INTERVAL 1 DAY) as end_date FROM schedule
+	   		WHERE holiday = '휴무일' AND company_id = #{companyId}
 	   		""")
-   List<ScheduleDTO> searchHoliday(AttendDTO2 attendance);
+   List<ScheduleDTO> searchHoliday(AttendDTO attendance);
    
    //오늘 출근 조회용
    @Select("""
@@ -112,13 +94,14 @@ public interface AttendMapper {
    
    //근태 관리자 페이지-출퇴근 시간 조회페이지 검색기능 있는 버전
    @Select("""
-          SELECT a.*, e.emp_nm , e.position
+          SELECT a.*, e.emp_nm, e.position
           FROM attendance a
           JOIN employee e ON a.employeeId = e.employeeId
           WHERE DATE(a.check_in_time) = CURDATE()
+            AND e.company_id = #{companyId}
           ORDER BY a.check_in_time DESC
       """)
-   List<AttendDTO> getTodayAttendList();
+   List<AttendDTO> getTodayAttendList(@Param("companyId") int companyId);
 
     // 총 건수 (페이징용)
     @Select("""
@@ -126,7 +109,7 @@ public interface AttendMapper {
         SELECT COUNT(*)
         FROM attendance a
         JOIN employee e ON a.employeeId = e.employeeId
-        WHERE a.modified_at IS NOT NULL
+        WHERE a.modified_at IS NOT NULL AND e.company_id = #{companyId}
         <if test="fromDate != null and fromDate != ''">
           AND a.check_in_time &gt;= STR_TO_DATE(CONCAT(#{fromDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')
         </if>
@@ -148,8 +131,9 @@ public interface AttendMapper {
             @Param("fromDate") String fromDate,
             @Param("toDate") String toDate,
             @Param("empNm") String empNm,
-            @Param("modifiedBy") String modifiedBy, 
-            @Param("stateType") String stateType
+            @Param("modifiedBy") String modifiedBy,
+            @Param("stateType") String stateType,
+            @Param("companyId") int companyId
     );
     
     
@@ -186,46 +170,14 @@ public interface AttendMapper {
 	
 	
 
-
 	
-//	//근태 관리자 페이지-출퇴근 시간 조회페이지 검색기능 있는 버전
-//	@Select("""
-//		    SELECT a.*, e.emp_nm 
-//		    FROM attendance a
-//		    JOIN employee e ON a.employeeId = e.employeeId
-//		    WHERE DATE(a.check_in_time) = CURDATE()
-//		    ORDER BY a.check_in_time DESC
-//		""")
-//	List<AttendDTO> getTodayAttendList();
-//
-//	@Select("""
-//	    <script>
-//	    SELECT a.*, e.emp_nm 
-//	    FROM attendance a
-//	    JOIN employee e ON a.employeeId = e.employeeId
-//	    WHERE 1=1
-//	    <if test="workDate != null and workDate != ''">
-//	        AND DATE(a.check_in_time) = #{workDate}
-//	    </if>
-//	    <if test="empNm != null and empNm != ''">
-//	        AND e.emp_nm LIKE CONCAT('%', #{empNm}, '%')
-//	    </if>
-//	    <if test="modifiedBy != null and modifiedBy != ''">
-//	        AND a.modified_by LIKE CONCAT('%', #{modifiedBy}, '%')
-//	    </if>
-//	    ORDER BY a.check_in_time DESC
-//	    </script>
-//	""")
-//	List<AttendDTO> searchAttendList(@Param("workDate") String workDate,
-//	                                 @Param("empNm") String empNm,
-//	                                 @Param("modifiedBy") String modifiedBy);
 
    @Select("""
        <script>
-       SELECT a.*, e.emp_nm 
+       SELECT a.*, e.emp_nm
        FROM attendance a
        JOIN employee e ON a.employeeId = e.employeeId
-       WHERE 1=1
+       WHERE e.company_id = #{companyId}
        <if test="workDate != null and workDate != ''">
            AND DATE(a.check_in_time) = #{workDate}
        </if>
@@ -242,36 +194,18 @@ public interface AttendMapper {
    
    
    
- /*  @Select("""
-	       <script>
-	       SELECT a.*, e.emp_nm 
-	       FROM attendance a
-	       JOIN employee e ON a.employeeId = e.employeeId
-	       WHERE 1=1
-	       <if test="workDate != null and workDate != ''">
-	           AND DATE(a.check_in_time) = #{workDate}
-	       </if>
-	       <if test="empNm != null and empNm != ''">
-	           AND e.emp_nm LIKE CONCAT('%', #{empNm}, '%')
-	       </if>
-	       <if test="modifiedBy != null and modifiedBy != ''">
-	           AND a.modified_by LIKE CONCAT('%', #{modifiedBy}, '%')
-	       </if>
-	       ORDER BY a.check_in_time DESC
-	       </script>
-	   """)
-   PageInfo<AttendDTO> searchAttendListPage(AttendDTO dto);*/
+ 
    
 
    // 출퇴근 현황(관리자용)
    @Select("""
 	        <script>
-	        SELECT a.*, e.emp_nm, e.position, e.deptName, 
-	        mb.emp_nm as  mb_nm, mb.position as  mb_position    
+	        SELECT a.*, e.emp_nm, e.position, e.deptName,
+	        mb.emp_nm as mb_nm, mb.position as mb_position
 	        FROM attendance a
 	        JOIN employee e ON a.employeeId = e.employeeId
 	        left outer JOIN employee mb ON a.modified_by = mb.employeeId
-	        WHERE 1=1
+	        WHERE e.company_id = #{companyId}
 	        <if test="workDate != null and workDate != ''">
 	            AND a.check_in_time &gt;= STR_TO_DATE(CONCAT(#{workDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')
 	            AND a.check_in_time &lt;  DATE_ADD(STR_TO_DATE(CONCAT(#{workDate}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 DAY)

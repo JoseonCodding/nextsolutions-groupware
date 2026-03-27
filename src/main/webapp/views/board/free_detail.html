@@ -153,7 +153,8 @@
     <a class="btn btn-danger"
        th:if="${session.loginUser != null and (
                  #strings.equals(board.employeeId, session.loginUser.employeeId)
-                 or #strings.equals(session.loginUser.employeeId, '20250004')
+                 or session.loginUser.role == '대표'
+                 or session.loginUser.role == '게시판'
                )}"
        th:href="@{'/board/free/delete'(postId=${board.postId}, page=${page}, size=${size}, sort=${sort}, keyword=${keyword})}"
        th:onclick="|return confirm('게시글을 삭제하시겠습니까?');|">삭제</a>

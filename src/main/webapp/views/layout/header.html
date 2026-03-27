@@ -1,128 +1,122 @@
-<!-- 상단 네비게이션 바 (Topbar) -->
+<!-- 상단바 (Topbar) -->
+<header class="topbar">
 
-	    <link rel="stylesheet" href="/css/common.css">
-    <header class="topbar">
+  <!-- 모바일 햄버거 -->
+  <button class="hamburger-btn" onclick="openSidebar()" aria-label="메뉴">
+    <i class="fa fa-bars"></i>
+  </button>
 
-        <div class="logo">
-        
-        	<a th:href="@{/rc}">
-  <img th:src="@{/img/logo.png}" alt="NEXTSOLUTIONS" style="height:30px; margin-top: 5px;">
-</a>
+  <!-- 우측 빈 공간 -->
+  <div style="flex:1;"></div>
 
-        
-        </div>
-        <nav class="menu">
-			<a th:href="@{/schedule}" th:classappend="${httpServletRequest.requestURI.startsWith('/schedule/')} ? 'active' : ''">일정관리</a>
-			<a th:href="@{/attend}" th:classappend="${httpServletRequest.requestURI.startsWith('/attend')} ? 'active' : ''">근태관리</a>
-			<a th:href="@{/pjtMng/getPjtList}" th:classappend="${httpServletRequest.requestURI.startsWith('/pjtMng/')} ? 'active' : ''">프로젝트관리</a>
-			<a th:href="@{/approval/main}" th:classappend="${httpServletRequest.requestURI.startsWith('/approval/')} ? 'active' : ''">전자결재</a>
-			<a th:href="@{/board/notice}" th:classappend="${httpServletRequest.requestURI.startsWith('/board/')} ? 'active' : ''">게시판</a>
-			<a th:href="@{/document/main}" th:classappend="${httpServletRequest.requestURI.startsWith('/document/')} ? 'active' : ''">문서관리</a>
-			<a th:href="@{/employee/list}" th:classappend="${httpServletRequest.requestURI.startsWith('/employee/')} ? 'active' : ''">사원관리</a>
-			<a th:if="${session.loginUser != null}" th:href="@{/login/logout}" class="logout-btn">로그아웃</a>
+  <!-- 알림 벨 -->
+  <div class="notif-wrap" th:if="${session.loginUser != null}">
+    <button class="notif-bell" id="notifBtn" onclick="toggleNotif(event)" aria-label="알림">
+      <i class="fa fa-bell"></i>
+      <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+    </button>
+    <div class="notif-dropdown" id="notifDropdown">
+      <div class="notif-header">
+        <span>알림</span>
+        <button onclick="markAllRead()">모두 읽음</button>
+      </div>
+      <ul id="notifList">
+        <li class="notif-empty">알림이 없습니다.</li>
+      </ul>
+    </div>
+  </div>
 
-<!-- 	        <span class="help-icon" title="도움말">
-	            <i class="fa-solid fa-circle-question fa-2xl"></i>
-	        </span> -->
-	       <span th:text="${session.loginUser.empNm} + ' '+ ${session.loginUser.position} + '👤'"
-      			style="display: inline-block; margin-top: 15.5px; line-height: 1.8; color:#000080; font-weight:bold; ">
-			</span>
-	       
+  <!-- 마이페이지 -->
+  <a th:if="${session.loginUser != null}" th:href="@{/mypage}" class="topbar-user">
+    <div class="topbar-avatar"
+         th:text="${session.loginUser.empNm != null ? session.loginUser.empNm.substring(0,1) : 'U'}">
+    </div>
+    <div>
+      <div class="topbar-user-name" th:text="${session.loginUser.empNm}"></div>
+      <div class="topbar-user-pos"  th:text="${session.loginUser.position ?: ''}"></div>
+    </div>
+  </a>
 
-        </nav>
-    </header>
-    
-<!-- CJ 채용 사이트 마우스 따라오는 JS 건드리지 말기------ (동현) -->
-<style>
-  /* 중요: 라인 기준이 될 컨테이너를 relative */
-  .topbar .menu { position: relative; }
-</style>
+  <!-- 로그아웃 -->
+  <a th:if="${session.loginUser != null}" th:href="@{/login/logout}" class="logout-btn">
+    로그아웃
+  </a>
 
+</header>
+
+<!-- 알림 JS -->
 <script>
 (function () {
-  const menu = document.querySelector(".topbar .menu");
-  if (!menu) return;
+  window.toggleNotif = function (e) {
+    e.stopPropagation();
+    var dd = document.getElementById('notifDropdown');
+    if (!dd) return;
+    var isOpen = dd.classList.toggle('open');
+    if (isOpen) loadNotifs();
+  };
 
-  // underline 엘리먼트 준비
-  const line = document.createElement("div");
-  line.style.position = "absolute";
-  line.style.bottom = "0";
-  line.style.height = "3px";
-  line.style.background = "linear-gradient(90deg, #330d69, #30c9cd)";
-  line.style.transition = "left 0.5s ease, width 0.5s ease";
-  line.style.pointerEvents = "none";
-  line.style.left = "0";
-  line.style.width = "0";
-  line.style.willChange = "left, width";
-  menu.appendChild(line);
-
-  const anchors = Array.from(menu.querySelectorAll("a"));
-  // 활성 탭 결정: .active > aria-current="page" > 첫번째
-  let active =
-    menu.querySelector("a.active") ||
-    menu.querySelector('a[aria-current="page"]') ||
-    anchors[0] ||
-    null;
-
-  // 좌표 계산 (스크롤/고정툴바 대응)
-  function measure(el) {
-    const r = el.getBoundingClientRect();
-    const p = menu.getBoundingClientRect();
-    // 메뉴 내부 스크롤이 있으면 보정
-    const left = r.left - p.left + menu.scrollLeft;
-    return { left, width: r.width };
-  }
-
-  // 라인 이동
-  function setLineTo(el) {
-    if (!el) return;
-    const { left, width } = measure(el);
-    // rAF로 레이아웃 스로틀
-    cancelAnimationFrame(setLineTo._raf);
-    setLineTo._raf = requestAnimationFrame(() => {
-      line.style.left = left + "px";
-      line.style.width = width + "px";
-    });
-  }
-
-  // 활성 탭으로 복귀
-  function setLineToActive() {
-    setLineTo(active);
-  }
-
-  // 초기 위치
-  if (active) setLineToActive();
-
-  // 호버 시 라인 이동
-  anchors.forEach((a) => {
-    a.addEventListener("mouseenter", () => setLineTo(a));
-    // 키보드 접근성: 탭 이동 시에도 이동
-    a.addEventListener("focus", () => setLineTo(a));
-    // 활성 탭 갱신 로직(선택): 클릭 시 active 교체
-    a.addEventListener("click", () => {
-      active = a;
-      // 기존 active 클래스 관리(선택)
-      anchors.forEach(x => x.classList && x.classList.remove("active"));
-      a.classList && a.classList.add("active");
-    });
+  document.addEventListener('click', function (e) {
+    var wrap = document.querySelector('.notif-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+      var dd = document.getElementById('notifDropdown');
+      if (dd) dd.classList.remove('open');
+    }
   });
 
-  // 메뉴 밖으로 마우스가 나가면 원래 활성 탭으로 복귀
-  menu.addEventListener("mouseleave", setLineToActive);
-  // 포커스가 메뉴 바깥으로 나가면 복귀
-  menu.addEventListener("focusout", (e) => {
-    // 메뉴 내부에 포커스가 남아있지 않으면 복귀
-    if (!menu.contains(e.relatedTarget)) setLineToActive();
-  });
+  function loadNotifs() {
+    fetch('/notification/list')
+      .then(function (r) { return r.json(); })
+      .then(function (list) {
+        var ul = document.getElementById('notifList');
+        if (!ul) return;
+        if (!list || list.length === 0) {
+          ul.innerHTML = '<li class="notif-empty">알림이 없습니다.</li>';
+          return;
+        }
+        ul.innerHTML = list.map(function (n) {
+          var cls = n.isRead === 0 ? 'notif-unread' : '';
+          var url = n.refUrl || '#';
+          return '<li class="' + cls + '" onclick="location.href=\'' + url + '\'">'
+               + esc(n.message) + '</li>';
+        }).join('');
+      })
+      .catch(function () {});
+  }
 
-  // 리사이즈/스크롤 시 재계산
-  window.addEventListener("resize", setLineToActive, { passive: true });
-  // 상단 고정툴바 + 내부 스크롤이 있을 수 있으니 둘 다 대응
-  window.addEventListener("scroll", setLineToActive, { passive: true });
-  menu.addEventListener("scroll", setLineToActive, { passive: true });
+  function esc(s) {
+    if (!s) return '';
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
 
+  function updateBadge() {
+    fetch('/notification/unread')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var b = document.getElementById('notifBadge');
+        if (!b) return;
+        var cnt = d.count || 0;
+        b.textContent = cnt;
+        b.style.display = cnt > 0 ? 'flex' : 'none';
+      })
+      .catch(function () {});
+  }
+
+  window.markAllRead = function () {
+    fetch('/notification/readAll', { method: 'POST' })
+      .then(function () {
+        updateBadge();
+        var ul = document.getElementById('notifList');
+        if (ul) ul.querySelectorAll('li').forEach(function (li) {
+          li.classList.remove('notif-unread');
+        });
+      })
+      .catch(function () {});
+  };
+
+  if (document.querySelector('.notif-wrap')) {
+    updateBadge();
+    setInterval(updateBadge, 30000);
+  }
 })();
 </script>
-
-
-<!-- ============================================================================= -->

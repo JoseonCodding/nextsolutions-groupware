@@ -1,7 +1,7 @@
 <title th:text="${board != null ? board.boardName : '커스텀 게시판'}">커스텀 게시판</title>
 <link rel="stylesheet" href="/css/board.css">
 <!-- 본문 -->
-<h1 style="margin-top:12px;">게시판</h1>
+<h1 style="margin-top:12px;" th:text="${board != null ? board.boardName : '게시판'}">게시판</h1>
 <div class="board-container">
   <div class="board-controls">
   <div class="left-controls">
@@ -49,6 +49,7 @@
         <th>번호</th>
         <th>제목</th>
         <th>작성자</th>
+        <th>직위</th>
         <th>등록일</th>
         <th>조회수</th>
         <th>추천수</th>
@@ -66,14 +67,15 @@
                        )}"
              th:text="${b.title}">제목</a>
         </td>
-        <td th:text="|${b.empNm} ${b.position}|">작성자</td>
+        <td th:text="${b.empNm}">작성자</td>
+        <td th:text="${b.position ?: ''}"></td>
         <td th:text="${b.createdAt != null ? #dates.format(b.createdAt, 'yyyy-MM-dd') : ''}"></td>
         <td th:text="${b.viewCount ?: 0}"></td>
         <td th:text="${b.likeCount ?: 0}"></td>
       </tr>
 
       <tr th:if="${#lists.isEmpty(boards)}">
-  	  <td colspan="6" style="padding:90px; text-align:center; color:#999;"
+  	  <td colspan="7" style="padding:90px; text-align:center; color:#999;"
       	  th:text="${#strings.isEmpty(keyword) ? '등록된 게시글이 없습니다.' : '검색 조건에 맞는 게시글이 없습니다.'}">
   	  </td>
 	  </tr>

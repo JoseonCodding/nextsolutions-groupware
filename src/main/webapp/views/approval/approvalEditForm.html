@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>★전자 결재 문서 수정</title>   
-    
-	<link rel="stylesheet" href="/css/approvalStyle.css">
-    
-</head>
-<body>
-	<div style="padding-left: 50px; padding-right: 50px;">
+<title>전자결재 수정</title>
+<link rel="stylesheet" href="/css/approvalStyle.css">
+
+<div style="padding-left: 50px; padding-right: 50px;">
 		<!-- 뷰어 상단 타이틀 -->
 		<h1 th:switch="${editData != null ? editData.docType : '-'}" style="text-align:center; margin-top:45px; margin-bottom:30px;">
 		    <span th:case="'연차'">연차 결재 수정</span>
@@ -199,19 +192,3 @@
 	  });
 	</script>
 
-	
-	<script>
-	  document.getElementById("btnSave").addEventListener("click", function(e) {
-	    if (!confirm("저장 시 취소할 수 없습니다.\n진행하시겠습니까?")) {
-	      e.preventDefault();
-	    }
-	  });
-	
-	  document.getElementById("btnCancel").addEventListener("click", function(e) {
-	    if (!confirm("수정을 취소합니다.\n진행하시겠습니까?")) {
-	      e.preventDefault();
-	    }
-	  });
-	</script>
-</body>
-</html>

@@ -11,7 +11,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
 
@@ -77,10 +77,13 @@ dependencies {
 	// 페이징헬퍼
 	implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:1.4.7'
 	
-	// Spring Boot Security
-	// implementation 'org.springframework.boot:spring-boot-starter-security'
+	// BCrypt + CSRF 보호
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// AOP - CompanyContextAspect (컨트롤러 DTO에 companyId 자동 주입)
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	
 
 	    // === PDF 생성을 위한 OpenPDF 라이브러리 ===

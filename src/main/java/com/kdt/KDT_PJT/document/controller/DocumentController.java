@@ -1,5 +1,7 @@
 package com.kdt.KDT_PJT.document.controller;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -8,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +19,6 @@ import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 import com.kdt.KDT_PJT.document.mapper.DocumentMapper;
 import com.kdt.KDT_PJT.document.model.DocumentDTO;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +26,9 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/document")
 @RequiredArgsConstructor
 public class DocumentController {
+
+    @Value("${app.upload-dir}")
+    private String uploadDir;
 
     private final DocumentMapper documentMapper;
     
@@ -42,9 +47,9 @@ public class DocumentController {
                                @RequestParam(name = "keyword", required = false) String keyword,
                                @RequestParam(name = "sort", defaultValue = "newest") String sort) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser == null) return "redirect:/login";
         String me = loginUser.getEmployeeId();
-        boolean isAdmin = isAdmin(me);
+        int companyId = loginUser.getCompanyId();
+        boolean isAdmin = isAdmin(loginUser.getRole());
 
         int pageSafe = Math.max(1, page);
         int sizeSafe = Math.min(Math.max(1, size), 100);
@@ -55,12 +60,12 @@ public class DocumentController {
                           "status".equalsIgnoreCase(keywordType)) ? keywordType.toLowerCase() : null;
         String kw = (keyword == null) ? null : keyword.trim();
         boolean hasSearch = (typeKey != null && kw != null && !kw.isEmpty());
-        String sortKey = "newest"; // 확장 여지
-        
+        String sortKey = "newest";
+
         // 1) 전체 건수 먼저
         int total = hasSearch
-            ? documentMapper.countDocsForManageWithSearch(me, isAdmin, typeKey, kw)
-            : documentMapper.countDocsForManage(me, isAdmin);
+            ? documentMapper.countDocsForManageWithSearch(me, isAdmin, companyId, typeKey, kw)
+            : documentMapper.countDocsForManage(me, isAdmin, companyId);
 
         int totalPages = Math.max(1, (int)Math.ceil(total / (double)sizeSafe));
 
@@ -70,8 +75,8 @@ public class DocumentController {
 
         // 3) 리스트 조회 (정확한 offset/limit 사용)
         List<DocumentDTO> rows = hasSearch
-                ? documentMapper.findDocsForManageWithSearch(me, isAdmin, typeKey, kw, sortKey, sizeSafe, offset)
-                : documentMapper.findDocsForManage(me, isAdmin, sizeSafe, offset);
+                ? documentMapper.findDocsForManageWithSearch(me, isAdmin, companyId, typeKey, kw, sortKey, sizeSafe, offset)
+                : documentMapper.findDocsForManage(me, isAdmin, companyId, sizeSafe, offset);
 
         // 페이지 버튼(묶음 5개)
         int win = 5;
@@ -109,13 +114,13 @@ public class DocumentController {
                                  Model model, HttpSession session) {
 
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser == null) return "redirect:/login";
         String me = loginUser.getEmployeeId();
-        boolean isAdmin = isAdmin(me);
+        int companyId = loginUser.getCompanyId();
+        boolean isAdmin = isAdmin(loginUser.getRole());
 
         DocumentDTO doc = (ver != null)
-                ? documentMapper.findByGidAndVer(gid, ver)
-                : documentMapper.findLatestApprovedByGid(gid); // 진행중/완료 최신 1건
+                ? documentMapper.findByGidAndVer(gid, ver, companyId)
+                : documentMapper.findLatestApprovedByGid(gid, companyId); // 진행중/완료 최신 1건
         if (doc == null) return "redirect:/document/main";
      // 권한: 관리자 또는 소유자만
         if (!isAdmin && !me.equals(doc.getEmployeeId())) return "redirect:/document/main";
@@ -134,21 +139,21 @@ public class DocumentController {
     @GetMapping("/versions")
     public String versionList(@RequestParam("gid") String gid, Model model, HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser == null) return "redirect:/login";
 
         String me = loginUser.getEmployeeId();
-        boolean isAdmin = isAdmin(me);
+        int companyId = loginUser.getCompanyId();
+        boolean isAdmin = isAdmin(loginUser.getRole());
 
         // 최신 문서 기준 빠른 권한 체크
-        DocumentDTO latest = documentMapper.findLatestApprovedByGid(gid);
+        DocumentDTO latest = documentMapper.findLatestApprovedByGid(gid, companyId);
         if (latest != null && !isAdmin && !me.equals(latest.getEmployeeId())) {
             // 과거 버전에 내 소유가 있을 수 있으므로 전체 확인
-            List<DocumentDTO> versionsTmp = documentMapper.findVersions(gid);
+            List<DocumentDTO> versionsTmp = documentMapper.findVersions(gid, companyId);
             boolean allowedTmp = versionsTmp.stream().anyMatch(v -> me.equals(v.getEmployeeId()));
             if (!allowedTmp) return "redirect:/document/main";
         }
 
-        List<DocumentDTO> versions = documentMapper.findVersions(gid);
+        List<DocumentDTO> versions = documentMapper.findVersions(gid, companyId);
         boolean allowed = isAdmin || versions.stream().anyMatch(v -> me.equals(v.getEmployeeId()));
         if (!allowed) return "redirect:/document/main";
 
@@ -166,12 +171,12 @@ public class DocumentController {
                               HttpSession session) {
 
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser == null) return "redirect:/login";
 
         String me = loginUser.getEmployeeId();
-        boolean isAdmin = isAdmin(me);
+        int companyId = loginUser.getCompanyId();
+        boolean isAdmin = isAdmin(loginUser.getRole());
 
-        DocumentDTO doc = documentMapper.findByGidAndVer(gid, ver);
+        DocumentDTO doc = documentMapper.findByGidAndVer(gid, ver, companyId);
         if (doc == null) return "redirect:/document/main";
         if (!isAdmin && !me.equals(doc.getEmployeeId())) return "redirect:/document/main";
 
@@ -183,27 +188,33 @@ public class DocumentController {
     @GetMapping("/download")
     public ResponseEntity<Resource> downloadFile(
         @RequestParam("fileName") String fileName,
-        @RequestParam("orgName") String orgName,
-        HttpServletRequest request
-    ) throws Exception { 
-    	//파일 저장
-    			//String dirPath = request.getServletContext().getRealPath("fff")+"\\";
-    			
-    			String dirPath = "C:/upload/";
-    			Path fPath = Paths.get(dirPath+fileName).normalize();
-    			
-    			Resource source = new UrlResource(fPath.toUri());
-    			
-    			return ResponseEntity
-    					.ok()
-    					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName)
-    					.contentType(MediaType.APPLICATION_OCTET_STREAM)
-    					.body(source);
+        @RequestParam("orgName") String orgName
+    ) throws Exception {
+        Path uploadDirPath = Paths.get(uploadDir).normalize().toAbsolutePath();
+        Path fPath = uploadDirPath.resolve(fileName).normalize();
+
+        // Path Traversal 방어: 업로드 디렉토리 밖 접근 차단
+        if (!fPath.startsWith(uploadDirPath)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Resource source = new UrlResource(fPath.toUri());
+        if (!source.exists() || !source.isReadable()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 헤더 인젝션 방지: 원본 파일명 URL 인코딩
+        String encodedName = URLEncoder.encode(orgName, StandardCharsets.UTF_8).replace("+", "%20");
+
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedName)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(source);
     }
 
-    /** 관리자 사번 판별 (업무 규칙 반영) */
-    private boolean isAdmin(String employeeId) {
-        return "20250001".equals(employeeId)   // 대표
-            || "20250005".equals(employeeId); // 문서 관리자
+    /** 관리자 판별: 대표 또는 문서 담당 역할 */
+    private boolean isAdmin(String role) {
+        return "대표".equals(role) || "문서".equals(role);
     }
 }

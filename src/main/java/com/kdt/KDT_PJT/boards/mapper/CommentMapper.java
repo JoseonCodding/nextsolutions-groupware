@@ -51,7 +51,7 @@ public interface CommentMapper {
     		           WHERE r.parent_comment_id = c.comment_id
     		             AND (r.is_deleted = 0 OR r.is_deleted IS NULL)
     		         )                          AS has_child,
-    		         e.emp_nm                   AS emp_nm
+    		         e.emp_nm                   AS empNm
     		  FROM board_comment c
     		  LEFT JOIN employee e ON e.employeeId = c.employee_id
     		  WHERE c.post_id = #{postId}

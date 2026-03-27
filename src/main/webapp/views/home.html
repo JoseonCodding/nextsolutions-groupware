@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home</title>
     <!-- 버튼 스타링 -->
     <link rel="stylesheet" href="/css/common.css">
@@ -17,9 +18,12 @@
 	padding:0;
 }
 .wrapper{
-	width:1200px;
+	max-width:1200px;
+	width: 100%;
 	margin: 0 auto;
-	background-color: rgb(255, 255, 255); /*영역 확인용*/
+	background-color: rgb(255, 255, 255);
+	box-sizing: border-box;
+	padding: 0 16px;
 } 
 
 </style>

@@ -8,6 +8,7 @@
 			<thead >
 				<tr class="leave-priv" >
 					<th>이름</th>
+					<th>직위</th>
 					<th>총 연차</th>
 					<th>사용 연차</th>
 					<th>잔여 연차</th>
@@ -15,7 +16,8 @@
 			</thead>
 	    	<tbody>
 				<tr>
-				    <td th:text="${listData.empNm+ ' ' + listData.position}"></td>
+				    <td th:text="${listData.empNm}"></td>
+				    <td th:text="${listData.position ?: ''}"></td>
 				    <td th:text="${listData.total}"/>
 				    <td th:text="${listData.used}"/>
 				    <td th:text="${listData.getRest}"></td>

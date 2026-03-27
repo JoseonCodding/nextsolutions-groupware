@@ -47,6 +47,16 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/notification': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/mypage': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });

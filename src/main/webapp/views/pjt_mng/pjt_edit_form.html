@@ -1,29 +1,12 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
 <title>프로젝트 수정</title>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
 
-<div th:if="${errorMessage}" 
+<div th:if="${errorMessage}"
      style="color:red; font-weight:bold; margin-bottom:10px;">
   [[${errorMessage}]]
 </div>
 
-<!-- 썸머노트 CSS -->
-<link
-	href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css"
-	rel="stylesheet">
-
-
 <style>
-body {
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	margin: 50px;
-	margin-top: 45px;
-	background-color: #f5f7fa;
-	color: #333;
-}
-
 table {
 	width: 75%;
 	margin: 0 auto;
@@ -104,14 +87,11 @@ input[type="checkbox"] {
   width: auto;
   display: inline-block;
   vertical-align: middle;
-  margin-right: 6px; /* 체크박스와 글자 간격 */
+  margin-right: 6px;
 }
 </style>
-</head>
 
-<body>
-
-	<h1 class="detail-title" style="margin-top:45px;">프로젝트 수정</h1>
+<h1 class="detail-title" style="margin-top:45px;">프로젝트 수정</h1>
 	<!-- ✅ 프로젝트 수정 Form -->
 	<form method="post" action="/pjtMng/updatePjtProc"
 		enctype="multipart/form-data" onsubmit="return validateForm()">
@@ -491,150 +471,3 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 	
 	
-<!-- 	<!-- 기간: 종료일이 시작일 유효성 검사  	
-	<script>
-(function () {
-  const bg = document.querySelector('input[name="pjtBgngDt"]');
-  const ed = document.querySelector('input[name="pjtEndDt"]');
-  if (!bg || !ed) return;
-
-  // yyyy-MM-dd 포맷은 문자열 비교로 안전하게 검증 가능
-  const isValid = () => !(bg.value && ed.value && ed.value < bg.value);
-
-  // 변경 시 바로 검사 (앞서면 종료일 비우고 포커스)
-  const onChange = () => {
-    if (!isValid()) { ed.value = ""; ed.focus(); alert("종료일은 시작일보다 앞설 수 없습니다."); }
-  };
-  bg.addEventListener("change", onChange);
-  ed.addEventListener("change", onChange);
-
-  // 제출 시 최종 차단
-  const form = bg.closest("form");
-  if (form) {
-    form.addEventListener("submit", (e) => {
-      if (!isValid()) { e.preventDefault(); ed.focus(); alert("종료일은 시작일보다 앞설 수 없습니다."); }
-    });
-  }
-})();
-</script>	
-	
-	
-	// 파일 저장 용량 유효성 검사
-<script>
-function validateForm() {
-  const FILE_IDS = ['uploadFile1', 'uploadFile2', 'uploadFile3'];
-  const MAX_FILE_MB  = 5;   // 파일당 최대 5MB
-  const MAX_TOTAL_MB = 25;  // 전체 합계 최대 25MB
-  let totalBytes = 0;
-
-  for (const id of FILE_IDS) {
-    const input = document.getElementById(id);
-    if (!input || !input.files || input.files.length === 0) continue;
-
-    for (const f of input.files) {
-      if (f.size > MAX_FILE_MB * 1024 * 1024) {
-        alert(`'${f.name}' 파일은 ${MAX_FILE_MB}MB를 초과했습니다.`);
-        input.value = ""; // 잘못된 파일 초기화
-        return false; // 🚫 저장 중단
-      }
-      totalBytes += f.size;
-    }
-  }
-
-  if (totalBytes > MAX_TOTAL_MB * 1024 * 1024) {
-    alert(`총 업로드 용량이 ${MAX_TOTAL_MB}MB를 초과했습니다.`);
-    FILE_IDS.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = "";
-    });
-    return false;
-  }
-
-  return true;
-}
-</script>
-
-	<script>
-  
-//업로드 미리보기 + 간단 검증(확장자/용량)
-  (function () {
-    const ALLOWED = /\.(pdf|docx?|xlsx?|png|jpe?g)$/i;
-    const MAX_MB = 10;
-
-    const pairs = [
-      { input: 'uploadFile1', label: 'fileName1' },
-      { input: 'uploadFile2', label: 'fileName2' },
-      { input: 'uploadFile3', label: 'fileName3' },
-    ];
-
-    pairs.forEach(p => {
-      const $in = document.getElementById(p.input);
-      const $lb = document.getElementById(p.label);
-      if (!$in || !$lb) return;
-
-      $in.addEventListener('change', () => {
-        if (!$in.files || $in.files.length === 0) { $lb.textContent = ''; return; }
-        const f = $in.files[0];
-
-        if (!ALLOWED.test(f.name)) {
-          alert('허용되지 않은 파일 형식입니다. (pdf, doc/docx, xls/xlsx, png, jpg/jpeg)');
-          $in.value = ''; $lb.textContent = ''; return;
-        }
-        if (f.size > MAX_MB * 1024 * 1024) {
-          alert(`파일 용량은 최대 ${MAX_MB}MB입니다.`);
-          $in.value = ''; $lb.textContent = ''; return;
-        }
-
-        $lb.textContent = `선택한 파일: ${f.name}`;
-      });
-    });
-  })();
-  
-  
-// 결재자 선택에 대한부분 
-  const workflowContainer = document.getElementById('workflow-container');
-  let approverCount = 0;
-
-  function addApprover() {
-    approverCount++;
-
-    const div = document.createElement('div');
-    div.classList.add('workflow-step');
-
-    div.innerHTML = `
-      <input type="number" class="approver-order" min="1" style="width: 50px; margin-right: 10px;" placeholder="순서" />
-      <select class="approver-select" style="margin-right:10px;">
-        <option value="">-- 결재자 선택 --</option>
-        <option value="장대리">장대리</option>
-        <option value="최대리">최대리</option>
-        <option value="이주임">이주임</option>
-        <option value="정과장">정과장</option>
-        <option value="신과장">신과장</option>
-        <option value="김대표">김대표</option>
-      </select>
-      <button type="button" onclick="removeApprover(this)">X</button>
-    `;
-
-    workflowContainer.appendChild(div);
-  }
-
-  function removeApprover(btn) {
-    btn.parentElement.remove();
-  }
-
-  function prepareApprovers() {
-    const selects = document.querySelectorAll('.approver-select');
-    const names = [];
-
-    selects.forEach(select => {
-      if (select.value) names.push(select.value);
-    });
-
-    document.getElementById('approversInput').value = names.join(',');
-  }
-</script>
- -->
-
-
-</body>
-</html>

@@ -6,5 +6,5 @@ import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 @Mapper
 public interface LoginMapper {
-	EmployeeDto getUserByIdAndPassword(CmmnMap params);
+	EmployeeDto getUserById(String employeeId);
 }

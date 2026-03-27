@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LeaveDTO {
 
-	Integer leaveId, holidayCount ; 
+	Integer leaveId, holidayCount, companyId;
 	
 	boolean useChk;
     
@@ -51,8 +51,7 @@ public class LeaveDTO {
 		try {
 			usedDate = sdf.parse(ttt);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// 파싱 실패 시 usedDate는 null 유지
 		}
 	}
 	

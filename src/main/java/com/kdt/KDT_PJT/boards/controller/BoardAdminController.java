@@ -1,7 +1,8 @@
 package com.kdt.KDT_PJT.boards.controller;
 
-import com.kdt.KDT_PJT.boards.mapper.BoardMapper;
+import com.kdt.KDT_PJT.boards.service.BoardService;
 import com.kdt.KDT_PJT.boards.model.BoardDTO;
+import com.kdt.KDT_PJT.cmmn.context.CompanyContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +20,7 @@ import java.util.Map;
 public class BoardAdminController {
 
     @Autowired
-    private BoardMapper boardMapper;
+    private BoardService boardService;
 
     /* =========================
        1) 게시판 목록/상세/신규 폼
@@ -27,7 +28,6 @@ public class BoardAdminController {
     
     @ModelAttribute("navUrl")
 	String navUrl() {
-    	System.out.println("navUrl 진입");
 		return "board/boardNav";
 	}
 
@@ -35,7 +35,7 @@ public class BoardAdminController {
     @GetMapping
     public String list(Model model) {
         // 관리자용 보드 목록
-        List<BoardDTO> boards = boardMapper.selectBoards();
+        List<BoardDTO> boards = boardService.getAllBoards(CompanyContext.get());
         model.addAttribute("boards", boards);
 
         // 화면 우측/상단 KPI용: 각 보드의 "오늘 조회수/오늘 좋아요" 집계
@@ -45,9 +45,9 @@ public class BoardAdminController {
             Integer boardId = b.getBoardId();
             if (boardId == null) continue;
 
-            long views = boardMapper.selectTodayViews(boardId);
-            long likes = boardMapper.selectTodayLikes(boardId);
-            long posts = boardMapper.selectTodayPosts(boardId);
+            long views = boardService.getTodayViews(boardId);
+            long likes = boardService.getTodayLikes(boardId);
+            long posts = boardService.getTodayPosts(boardId);
 
             Map<String, Object> row = new HashMap<>(); 
             row.put("boardId", boardId);
@@ -98,24 +98,24 @@ public class BoardAdminController {
         }
         
         // ✅ 최대 6개 제한
-        int count = boardMapper.countBoards();
+        int count = boardService.countBoards(form);
         if (count >= 6) {
             redirect.addFlashAttribute("error", "게시판은 최대 6개까지만 생성할 수 있습니다.");
             return "redirect:/admin/boards";
         }
 
-        boardMapper.insertBoard(form);
+        boardService.createBoard(form);
         return "redirect:/admin/boards";
     }
 
     // 수정
     @PostMapping("/edit")
     public String update(@ModelAttribute BoardDTO form) {
-        BoardDTO origin = boardMapper.selectBoardById(form.getBoardId());
+        BoardDTO origin = boardService.getBoardById(form.getBoardId());
         if (origin == null) return "redirect:/admin/boards";
 
         normalizeBoardMeta(form);
-        boardMapper.updateBoard(form);
+        boardService.updateBoard(form);
         return "redirect:/admin/boards";
     }
 
@@ -124,16 +124,16 @@ public class BoardAdminController {
     public String toggleActive(@ModelAttribute BoardDTO dto) {
         if (dto.getBoardId() == null) return "redirect:/admin/boards";
         int active = Boolean.TRUE.equals(dto.getIsActive()) ? 1 : 0;
-        boardMapper.updateBoardActive(dto.getBoardId(), active);
+        boardService.setBoardActive(dto.getBoardId(), active);
         return "redirect:/admin/boards";
     }
 
     // 삭제(소프트): 관리자 목록에서도 사라지게
     @PostMapping("/delete")
     public String delete(@RequestParam("boardId") Integer boardId) {
-        BoardDTO dto = boardMapper.selectBoardById(boardId);
+        BoardDTO dto = boardService.getBoardById(boardId);
         if (dto == null) return "redirect:/admin/boards";
-        boardMapper.softDeleteBoard(boardId);
+        boardService.deleteBoard(boardId);
         return "redirect:/admin/boards";
     }
     
@@ -150,7 +150,7 @@ public class BoardAdminController {
     // 전체 게시판 조회수 통계
     @GetMapping("/stats")
     public String stats(Model model) {
-        List<BoardDTO> boards = boardMapper.selectBoards();
+        List<BoardDTO> boards = boardService.getAllBoards(CompanyContext.get());
         model.addAttribute("boardsForStats", boards);
 
         List<Map<String, Object>> todayStats = new ArrayList<>();
@@ -158,9 +158,9 @@ public class BoardAdminController {
             Integer boardId = b.getBoardId();
             if (boardId == null) continue;
 
-            long views = boardMapper.selectTodayViews(boardId);
-            long likes = boardMapper.selectTodayLikes(boardId);
-            long posts = boardMapper.selectTodayPosts(boardId);   
+            long views = boardService.getTodayViews(boardId);
+            long likes = boardService.getTodayLikes(boardId);
+            long posts = boardService.getTodayPosts(boardId);   
 
             Map<String, Object> row = new HashMap<>();
             row.put("boardId", boardId);
@@ -180,8 +180,8 @@ public class BoardAdminController {
     @GetMapping("/stats/today/{boardId}")
     @ResponseBody
     public Map<String, Object> todayStatsOne(@PathVariable("boardId") Integer boardId) {
-        long views = boardMapper.selectTodayViews(boardId);
-        long likes = boardMapper.selectTodayLikes(boardId);
+        long views = boardService.getTodayViews(boardId);
+        long likes = boardService.getTodayLikes(boardId);
 
         Map<String, Object> map = new HashMap<>();
         map.put("boardId", boardId);

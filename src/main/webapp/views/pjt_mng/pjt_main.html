@@ -125,75 +125,51 @@ tr:hover {
 	cursor: not-allowed;
 }
 
-/* 레이아웃 */
+/* 카드 그리드 */
 .cards-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-	gap: 16px;
-	margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
 }
- 
 
-
-/* 프로젝트 카드 공통 */
 .stat-card {
-	/* 포인트 색상: 인라인 style="--accent:#xxxxxx"로 들어온 값 사용 */
-	--accent: #1976d2; /* 보더 색 */
-	--bg: #f9fbfd;
-	background: var(--bg);
-	border-left: 6px solid var(--accent);
-	border-radius: 10px;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	transition: box-shadow .18s ease, transform .18s ease;
-	height: 16px;  
-	padding: 12px 14px;
-	 
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px 18px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: box-shadow 0.18s, transform 0.18s;
 }
-/* 1) meta를 가로 정렬로: 라벨 왼쪽 / 숫자 오른쪽 */
-.stat-card .meta{
-  display:flex;
-  flex-direction:row;
-  align-items:center;          /* 세로 가운데 정렬 */
-  justify-content:space-between; /* ← 라벨은 왼쪽, 숫자는 오른쪽 끝 */
-  width:100%;
-}
-
-/* 2) 숫자가 아래로 내려가지 않게 위 여백 제거 + 높이에 맞는 폰트 */
-.stat-card .value{
-  margin-top:0;                /* 기존 margin-top:4px 제거 */
-  font-size:18px;              /* height:50px이면 18~20px 권장 */
-  font-weight:800;
-  color:#222;}
-
-
-/* 내부 텍스트 -왼쪽*/
-.stat-card .label {
-	font-size: 13px;
-	font-weight: 700;
-	color: #666;
-	letter-spacing: .3px;
-}
-/*내부 텍스트 - 오른쪽*/
-.stat-card .value {
-	margin-top: 0;
-	font-size: 25px;
-	font-weight: 700;
-	color: #222;
-}
-/* 호버 효과 */
 .stat-card:hover {
-	transform: translateY(-3px);
-	box-shadow: 0 6px 16px rgba(0, 0, 0, .10);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.10);
 }
-
-/* 접근성: 키보드 포커스 */
-.stat-card:focus-visible {
-	outline: 3px solid var(--accent);
-	outline-offset: 2px;
-	border-radius: 10px;
+.stat-card .icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.stat-card .label {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.stat-card .value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a202c;
+  line-height: 1;
+  margin: 0;
 }
 </style>
 </head>
@@ -203,57 +179,40 @@ tr:hover {
 	<!-- 카드 요약 -->
 	<div class="cards-grid">
 
-		<!-- 전체 프로젝트 -->
-		<div class="stat-card" style="--accent: #90caf9;"
-			onclick="location.href='/pjtMng/getPjtList'">
-			<div class="meta">
-				<div class="label">전체 프로젝트</div>
-				<div class="value" th:text="${totalCount != null ? totalCount : 0}">0</div>
-			</div>
+		<div class="stat-card" onclick="location.href='/pjtMng/getPjtList'">
+			<div class="icon" style="background:#eef2ff;color:#3949ab;"><i class="fa fa-layer-group"></i></div>
+			<div class="label">전체 프로젝트</div>
+			<div class="value" th:text="${totalCount != null ? totalCount : 0}">0</div>
 		</div>
 
-		<!-- 내담당 프로젝트 -->
-		<div class="stat-card" style="--accent: #ce93d8;"
-			th:onclick="|location.href='@{/pjtMng/getPjtList(keywordType='my', keyword=${loginUser.empNm})}'|">
-			<div class="meta">
-				<div class="label">내담당 프로젝트</div>
-				<div class="value" th:text="${myProjectCount}">0</div>
-			</div>
+		<div class="stat-card" th:onclick="|location.href='@{/pjtMng/getPjtList(keywordType=''my'', keyword=${loginUser.empNm})}'|">
+			<div class="icon" style="background:#f3e5f5;color:#6a1b9a;"><i class="fa fa-user"></i></div>
+			<div class="label">내담당 프로젝트</div>
+			<div class="value" th:text="${myProjectCount}">0</div>
 		</div>
 
-		<!-- 내결재 프로젝트 -->
-		<div class="stat-card" style="--accent: #ffb3b3;"
-			onclick="location.href='/pjtMng/getPjtList?keywordType=myApproval'">
-			<div class="meta">
-				<div class="label">내결재 프로젝트</div>
-				<div class="value" th:text="${myApprovalTodoCount}">0</div>
-			</div>
+		<div class="stat-card" onclick="location.href='/pjtMng/getPjtList?keywordType=myApproval'">
+			<div class="icon" style="background:#fff3e0;color:#e65100;"><i class="fa fa-file-signature"></i></div>
+			<div class="label">내결재 프로젝트</div>
+			<div class="value" th:text="${myApprovalTodoCount}">0</div>
 		</div>
 
-		<!-- 진행중인 프로젝트 -->
-		<div class="stat-card" style="--accent: #ffe082;"
-			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=진행중'">
-			<div class="meta">
-				<div class="label">진행중인 프로젝트</div>
-				<div class="value" th:text="${progressCount}">0</div>
-			</div>
+		<div class="stat-card" onclick="location.href='/pjtMng/getPjtList?keywordType=status&amp;keyword=진행중'">
+			<div class="icon" style="background:#e3f2fd;color:#0277bd;"><i class="fa fa-spinner"></i></div>
+			<div class="label">진행중인 프로젝트</div>
+			<div class="value" th:text="${progressCount}">0</div>
 		</div>
 
-		<!-- 대기중인 프로젝트 -->
-		<div class="stat-card" style="--accent: #ef9a9a;"
-			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=대기'">
-			<div class="meta">
-				<div class="label">대기중인 프로젝트</div>
-				<div class="value" th:text="${pendingCount}">0</div>
-			</div>
+		<div class="stat-card" onclick="location.href='/pjtMng/getPjtList?keywordType=status&amp;keyword=대기'">
+			<div class="icon" style="background:#fce4ec;color:#c62828;"><i class="fa fa-clock"></i></div>
+			<div class="label">대기중인 프로젝트</div>
+			<div class="value" th:text="${pendingCount}">0</div>
 		</div>
-		<!-- 완료된 프로젝트 -->
-		<div class="stat-card" style="--accent: #81c784;"
-			onclick="location.href='/pjtMng/getPjtList?keywordType=status&keyword=완료'">
-			<div class="meta">
-				<div class="label">완료된 프로젝트</div>
-				<div class="value" th:text="${completeCount}">0</div>
-			</div>
+
+		<div class="stat-card" onclick="location.href='/pjtMng/getPjtList?keywordType=status&amp;keyword=완료'">
+			<div class="icon" style="background:#e8f5e9;color:#2e7d32;"><i class="fa fa-circle-check"></i></div>
+			<div class="label">완료된 프로젝트</div>
+			<div class="value" th:text="${completeCount}">0</div>
 		</div>
 	</div>
 
@@ -367,12 +326,9 @@ tr:hover {
 	
 	
 	<!-- 오른쪽하단: 프로젝트 등록 버튼 -->
-		<div style="margin-top: 20px; text-align: right;">
-   <button onclick="location.href='/pjtMng/getSavePjtForm'"
-           style="height: 40px; padding: 0 20px; border-radius: 6px; border: none; background-color: #2962ff; color: #fff; cursor: pointer;">
-        등록
-   </button>
-</div>
+	<div>
+		<button class="regist-btn" onclick="location.href='/pjtMng/getSavePjtForm'">등록</button>
+	</div>
 	<!-- 페이지네이션
 	<nav class="mt-4 text-center" th:if="${pageInfo != null}">
 		<ul class="pagination justify-content-center">

@@ -10,6 +10,7 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import com.kdt.KDT_PJT.boards.mapper.BoardMapper;
 import com.kdt.KDT_PJT.boards.model.BoardDTO;
+import com.kdt.KDT_PJT.cmmn.context.CompanyContext;
 
 import jakarta.servlet.http.HttpServletRequest; // ※ Spring Boot 2.x 사용 시 javax.servlet 로 변경
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,13 @@ public class BoardTabsAdvice {
     /** 상단 탭에 뿌릴 전체 활성 게시판(공지/자유/커스텀) */
     @ModelAttribute("allBoards")
     public List<BoardDTO> allBoards() {
-        return boardMapper.selectAllBoardsForTabs();
+        try {
+            Integer companyId = CompanyContext.get();
+            if (companyId == null) return List.of();
+            return boardMapper.selectAllBoardsForTabs(companyId);
+        } catch (Exception e) {
+            return List.of();
+        }
     }
 
     /**
@@ -49,11 +56,12 @@ public class BoardTabsAdvice {
 
         // 2) 고정 라우트: /board/notice, /board/free
         String uri = req.getRequestURI().toLowerCase(Locale.ROOT);
+        Integer companyId = CompanyContext.get();
         if (uri.startsWith("/board/notice")) {
-            return boardMapper.findBoardIdByType("notice");
+            try { return boardMapper.findBoardIdByType("notice", companyId); } catch (Exception e) { return null; }
         }
         if (uri.startsWith("/board/free")) {
-            return boardMapper.findBoardIdByType("free");
+            try { return boardMapper.findBoardIdByType("free", companyId); } catch (Exception e) { return null; }
         }
 
         // 3) 그 외(탭 하이라이트 없음)

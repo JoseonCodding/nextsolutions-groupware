@@ -1,274 +1,228 @@
 @charset "UTF-8";
 
 .sche-container {
-	
-	width:1200px;
+	width: 100%;
 	position: relative;
-	margin-top: 45px;
+	margin-top: 20px;
 	margin-bottom: 30px;
-	padding-bottom: 40px;
+	padding-bottom: 60px;
 }
 
 table[id=diary_title] {
-	margin: 0px;
+	margin: 0;
 	width: 100%;
-	background: red;   
 }
 .no-hover:hover > td{
-  background: initial;     
+  background: initial;
 }
 
 /*************달 이동 버튼**************/
-/*달 이동 버튼*/
-.search-btn:hover {
-    background: #ff0000;
+.month-nav {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 16px;
 }
 
-/* 연도와 달 표시*/
-.month-nav{
-	left: 0px;
-	position:relative;
-	float: left;
-
-}
-/*이전달 버튼*/
-.month-btn1 {
-    background:var(--search-btn);
+.month-btn1, .month-btn2 {
+    background: #3949ab;
     color: #fff;
-    padding: 10px 20px;
-    font-size: var(  --font-size-base );
-    font-weight: bold;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-	float: left;
-    position:relative;
-    
+    transition: filter 0.15s;
 }
-#month_title{
-	position:relative;
-	float: left;
-	width: 150px;
+.month-btn1:hover, .month-btn2:hover { filter: brightness(0.88); }
+
+#month_title {
+	font-size: 1.1em;
+	font-weight: 700;
+	color: #1a202c;
+	min-width: 120px;
 	text-align: center;
 }
-/*다음달 버튼*/
-.month-btn2 {
-    background:var(--search-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-size: var(  --font-size-base );
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-	float: left;
-	position:relative;
-   
-}
+
 /*************주 이동 버튼**************/
-/* 주 표시*/
-.week-nav{
-	left: 50px;
-	position:relative;
-	float: left;
-
+.week-nav {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 16px;
 }
-/*이전주 버튼*/
-.week-btn1 {
-    background:var(--search-btn);
+
+.week-btn1, .week-btn2 {
+    background: #3949ab;
     color: #fff;
-    padding: 10px 20px;
-    font-size: var(  --font-size-base );
-    font-weight: bold;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-	float: left;
-	position:relative;
-    
+    transition: filter 0.15s;
 }
-#week_title{
-	position:relative;
-	float: left;
-	width: 70px;
+.week-btn1:hover, .week-btn2:hover { filter: brightness(0.88); }
+
+#week_title {
+	font-size: 1em;
+	font-weight: 700;
+	min-width: 80px;
 	text-align: center;
 }
-/*다음주 버튼*/
-.week-btn2 {
-    background:var(--search-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-size: var(  --font-size-base );
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-	float: left;
-	position:relative;
-   
-}
+
 /*************일 이동 버튼**************/
-/*일 표시*/
-.day-nav{
-	left: 50px;
-	position:relative;
-	float: left;
-
+.day-nav {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 16px;
 }
 
-/*전날 버튼*/
-.day-btn1 {
-    background:var(--search-btn);
+.day-btn1, .day-btn2 {
+    background: #3949ab;
     color: #fff;
-    padding: 10px 20px;
-    font-size: var(  --font-size-base );
-    font-weight: bold;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-	float: left;
-	position:relative;
-    
+    transition: filter 0.15s;
 }
-#day_title{
-	position:relative;
-	float: left;
-	width: 70px;
+.day-btn1:hover, .day-btn2:hover { filter: brightness(0.88); }
+
+#day_title {
+	font-size: 1em;
+	font-weight: 700;
+	min-width: 80px;
 	text-align: center;
-}
-
-/*다음날 버튼*/
-.day-btn2 {
-    background:var(--search-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-size: var(  --font-size-base );
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-	float: left;
-	position:relative;
-   
 }
 
 /********달력 보기 방식 버튼*********/
-
-/* 검색 버튼 변형*/
 .view-select {
-
+	display: flex;
+	gap: 6px;
+	margin-bottom: 16px;
 }
 .view-select button {
-    background: var(--main-color);
+    background: #3949ab;
     color: #fff;
-    padding: 10px 20px;
-    font-size: var(  --font-size-base );
-    font-weight: bold;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    margin-left:10px;
-    margin-bottom:20px;
-    float: right;
+    transition: filter 0.15s;
 }
-.view-select button:hover {
-    background: var(--search-btn);
-}
+.view-select button:hover { filter: brightness(0.88); }
+
 /******** 달력(테이블) *************/
-/*월 보기 간격*/
-.mTH{
-	width:170px;
-}
-/*주별보기*/
-.wTH{
-	width:160px;
-}
-/*일별보기*/
-.dTH{
-	width:800px;
-}
-/*일별보기 시간 간격*/
-.dHH{
-	width:100px;
+.sche-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
-.sche-table-month {
-	
+.mTH, .wTH, .dTH {
+    background: #f8fafc;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 10px 6px;
+    border-bottom: 2px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    text-align: center;
+    letter-spacing: 0.3px;
 }
-.sche-table-week {
-	
+.dHH {
+    background: #f8fafc;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 10px 6px;
+    border-bottom: 2px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    color: #374151;
+    text-align: center;
+    width: 60px;
 }
-.sche-table-day {
-	
-}
+
 .monthgrid-day {
-	
-    height: 100px; /*달력 셀 높이 지정*/
+    height: 100px;
+    vertical-align: top;
+    padding: 6px;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 13px;
+    color: #374151;
+}
+.monthgrid-day:hover {
+    background: #f5f7ff;
+}
 
+/* 주별/일별 td 공통 */
+.sche-table td {
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 4px 6px;
+    vertical-align: top;
+    font-size: 13px;
+    min-height: 60px;
+}
+.sche-table th {
+    border-right: 1px solid #e2e8f0;
 }
 
 .sche-comm {
 	font-size: 12px;
-
 	color: white;
 	text-align: center;
     display: flex;
-    justify-content: center; /* 가로 중앙 */
+    justify-content: center;
     border-radius: 5px;
-    text-decoration: none; 
-    margin:0px;
+    text-decoration: none;
+    margin: 0px;
 }
 
-.leave {
-	
-	background: green;
-    
-}
-.normal-sche {
-	
-	background: #0080ff;
-   
-}
-.holiday-sche {
-	
-	background: #ff0000;
-                /* 셀 높이 채우기 */
-}
-.project-sche {
-	
-	background: #ff8000;
-    
-}
+.leave        { background: #2e7d32; }
+.normal-sche  { background: #0080ff; }
+.holiday-sche { background: #c62828; }
+.project-sche { background: #e65100; }
+
 /*일정등록 버튼*/
-.rrgg{
-    background: var(--regist-btn);
+.rrgg {
+    background: #3949ab;
     color: #fff;
-    display: block;
-    padding: 10px 20px;
-    font-size: var(  --font-size-base );
-    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     margin-top: 20px;
-	position: absolute;
-	right: 0px;
-	bottom:0px;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    transition: filter 0.15s;
+    text-decoration: none;
 }
+.rrgg:hover { filter: brightness(0.88); color: #fff; }
+
 /***********************************/
 /********** 일정 등록, 수정 ***********/
-
-.sche-table input, select {
+.sche-table input, .sche-table select {
 	padding: 8px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
-	
-}
-input, select {
-	padding: 8px;
-	border: 1px solid #ccc;
-	border-radius: 6px;
-	box-sizing: border-box;
 }
 
 .sche-detail-container {
@@ -276,76 +230,87 @@ input, select {
 	margin-bottom: 30px;
 	position: relative;
 }
+
 .sche-detail-btn {
-	font-size: var(--font-size-base);
-    background: var(--save-btn);
+	font-size: 13px;
+    background: #3949ab;
     color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
+    padding: 8px 18px;
+    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     margin-top: 20px;
-	position: absolute;
-	right: 0px;
-	bottom:0px;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    transition: filter 0.15s;
 }
+.sche-detail-btn:hover { filter: brightness(0.88); }
+
 .sche-back-btn {
-	font-size: var(--font-size-base);
-    background: var(--back-btn);
+	font-size: 13px;
+    background: #546e7a;
     color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
+    padding: 8px 18px;
+    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     margin-top: 20px;
-	position: absolute;
-	right: 132px;
-	bottom:0px;
+    position: absolute;
+    right: 132px;
+    bottom: 0px;
+    transition: filter 0.15s;
 }
+.sche-back-btn:hover { filter: brightness(0.88); }
+
 .sche-save-btn {
-	font-size: var(--font-size-base);
-    background: var(--save-btn);
+	font-size: 13px;
+    background: #3949ab;
     color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
+    padding: 8px 18px;
+    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     margin-top: 20px;
-	position: absolute;
-	right: 66px;
-	bottom:0px;
+    position: absolute;
+    right: 66px;
+    bottom: 0px;
+    transition: filter 0.15s;
 }
+.sche-save-btn:hover { filter: brightness(0.88); }
+
 .sche-delete-btn {
-	font-size: var(--font-size-base);
-    background: var(--back-btn);
+	font-size: 13px;
+    background: #c62828;
     color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
+    padding: 8px 18px;
+    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     margin-top: 20px;
-	position: absolute;
-	right: 0px;
-	bottom:0px;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    transition: filter 0.15s;
 }
-.sche-table-detail tr td:hover {
-	background:initial;
-}
-/*일정 옵션*/
+.sche-delete-btn:hover { filter: brightness(0.88); }
+
+.sche-table-detail tr td:hover { background: initial; }
+
 .sche-options {
-	position:relative;
+	position: relative;
 	right: 20px;
-	padding:10px;
-	margin-left:20px;
+	padding: 10px;
+	margin-left: 20px;
 }
 .sche-content {
-	width:98%; 
-	border-color:rgb(200, 200, 200); 
+	width: 98%;
+	border-color: rgb(200, 200, 200);
 	border-radius: 4px;
 	padding: 6px;
-	margin:10px 0px 10px 0px;
+	margin: 10px 0px 10px 0px;
 }

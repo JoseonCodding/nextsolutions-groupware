@@ -1,198 +1,43 @@
 @charset "UTF-8";
 
-:root {
-  --main-color: #3949ab;
-  --accent-color: #ffc107;
-  
-  --font-size-base: 16px;
-  --font-size-base: 14px;      /* 버튼 글자 크기*/
-  
-  --header-height: 60px;
-  
-  
-  --regist-btn : #8080c0;			/* 등록 버튼*/
-  --save-btn : #ff0000;		/* 저장 버튼*/
-  --edit-btn:#00ffff;			/* 수정 버튼*/
-  --approval-btn:#c5edfc;  	/* 승인 버튼*/
-  --reject-btn:#80ff00;  	/* 반려 버튼*/
-  --search-btn:#0080c0; 	/* 검색 버튼*/
-  --back-btn: #0080c0;	/* 목록, 뒤로가기 버튼*/
-  --detail-btn: #b062ff;	/* 상세 버튼*/
-  --delete-btn: #ffff00;	/* 삭제 버튼*/
-  /* --primary:#3949ab; */ /* 헤더 로고 스타일 */
-  /* --accent:#64b5f6; */ /* 헤더 로고 스타일 */
+/* ══════════════════════════════════════════
+   공통 버튼
+   (commonStyle.css의 CSS 변수 참조)
+══════════════════════════════════════════ */
+
+.edit-btn, .delete-btn, .save-btn, .regist-btn,
+.search-btn, .approval-btn, .reject-btn, .back-btn, .detail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: filter 0.15s;
+  text-decoration: none;
+  line-height: 1;
+  white-space: nowrap;
 }
 
-/* 수정 버튼 */ 
-.edit-btn:hover {
-    background:var(--edit-btn);
-}
-.edit-btn {
-	font-size: var(--font-size-base);
-    background:var(--edit-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    float: right;
-}
+.regist-btn  { background: #3949ab; }
+.save-btn    { background: #3949ab; }
+.search-btn  { background: #3949ab; }
+.edit-btn    { background: #0277bd; }
+.approval-btn{ background: #2e7d32; }
+.reject-btn  { background: #c62828; }
+.delete-btn  { background: #c62828; }
+.back-btn    { background: #546e7a; }
+.detail-btn  { background: #6a1b9a; }
 
-/* 삭제 버튼 */ 
-.delete-btn:hover {
-    background:var(--delete-btn);
+.edit-btn:hover, .delete-btn:hover, .save-btn:hover, .regist-btn:hover,
+.search-btn:hover, .approval-btn:hover, .reject-btn:hover,
+.back-btn:hover, .detail-btn:hover {
+  filter: brightness(0.88);
+  color: #fff;
 }
-.delete-btn {
-	font-size: var(--font-size-base);
-    background:var(--delete-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    float: right;
-}
-
-
-
-/* 저장 버튼*/
-.save-btn:hover {
-    background: var(--save-btn);
-}
-.save-btn {
-	font-size: var(--font-size-base);
-    background: var(--save-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    float: right;
-}
-/* 등록 버튼 */
-.regist-btn:hover {
-    background: #ff0000;
-}
-.regist-btn {
-	font-size: var(--font-size-base);
-    background:var(--regist-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    float: right;
-}
-/* 검색 버튼 */
-.search-btn:hover {
-    background: #ff0000;
-}
-.search-btn {
-	font-size: var(--font-size-base);
-    background:var(--search-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    float: right;
-}
-
-
-/* 승인 버튼 */
-.approval-btn:hover {
-    background: #ff0000;
-}
-.approval-btn {
-	font-size: var(--font-size-base);
-    background: var(--approval-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    float: right;
-}
-
-
-/* 반려 버튼 */
-.reject-btn:hover {
-    background:var(--reject-btn);
-}
-.reject-btn {
-	font-size: var(--font-size-base);
-    background: var(--reject-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    float: right;
-}
-
-
-/* 검색 버튼 */
-.search-btn:hover {
-    background:var(--search-btn);
-}
-.search-btn {
-	font-size: var(--font-size-base);
-    background: var(--search-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    float: right;
-}
-
-/* 뒤로가기 버튼 */
-.back-btn:hover {
-    background:var(--back-btn);
-}
-.back-btn {
-	font-size: var(--font-size-base);
-    background: var(--back-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    float: right;
-}
-
-/* 상세 버튼 */ 
-.detail-btn:hover {
-    background:var(--detail-btn);
-}
-.detail-btn {
-	font-size: var(--font-size-base);
-    background:var(--detail-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    float: right;
-}
-

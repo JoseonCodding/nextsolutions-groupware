@@ -32,6 +32,7 @@
       <th>번호</th>
       <th>프로젝트명</th>
       <th>담당자</th>
+      <th>직위</th>
       <th>등록일</th>
       <th>진행상태</th>
       <th>버전</th>
@@ -50,7 +51,8 @@
            th:text="${doc.pjtNm}"></a>
       </td>
 
-      <td th:text="|${doc.empNm} ${doc.position}|"></td>
+      <td th:text="${doc.empNm}"></td>
+      <td th:text="${doc.position ?: ''}"></td>
       <td th:text="${#dates.format(doc.frstRegDt, 'yyyy-MM-dd')}">-</td>
       <td th:text="${doc.pjtSttsCd}"></td>
 
@@ -79,7 +81,7 @@
 
     <tr th:if="${#lists.isEmpty(approvalData)}">
       <!-- 컬럼 수 = 6 -->
-      <td colspan="6" style="padding:90px; text-align:center; color:#999;"
+      <td colspan="7" style="padding:90px; text-align:center; color:#999;"
       	  th:text="${(#strings.isEmpty(keywordType) and #strings.isEmpty(keyword)) ? '등록된 문서가 없습니다.' : '검색 조건에 맞는 문서가 없습니다.'}"></td>
     </tr>
     </tbody>

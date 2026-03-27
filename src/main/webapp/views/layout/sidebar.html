@@ -1,0 +1,57 @@
+<!-- 사이드바 -->
+<aside class="sidebar" id="appSidebar">
+
+  <div class="sidebar-logo">
+    <a href="/dashboard">NEXTSOLUTIONS</a>
+  </div>
+
+  <nav class="sidebar-nav" id="sidebarNav">
+    <a href="/dashboard"><i class="fa fa-house"></i> 대시보드</a>
+    <a href="/schedule"><i class="fa fa-calendar-days"></i> 일정관리</a>
+    <a href="/attend"><i class="fa fa-clock"></i> 근태관리</a>
+    <a href="/pjtMng/getPjtList"><i class="fa fa-diagram-project"></i> 프로젝트관리</a>
+    <a href="/approval/main"><i class="fa fa-file-signature"></i> 전자결재</a>
+    <a href="/board/notice"><i class="fa fa-bullhorn"></i> 게시판</a>
+    <a href="/document/main"><i class="fa fa-folder-open"></i> 문서관리</a>
+    <a href="/employee/list"><i class="fa fa-users"></i> 사원관리</a>
+  </nav>
+
+  <!-- 하단 사용자 -->
+  <div class="sidebar-footer" th:if="${session.loginUser != null}">
+    <div class="sidebar-avatar"
+         th:text="${session.loginUser.empNm != null ? session.loginUser.empNm.substring(0,1) : 'U'}">
+    </div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name" th:text="${session.loginUser.empNm}"></div>
+      <div class="sidebar-user-pos"  th:text="${session.loginUser.position ?: ''}"></div>
+    </div>
+  </div>
+
+</aside>
+
+<!-- 모바일 오버레이 -->
+<div class="sidebar-overlay" id="sidebarOverlay" style="display:none;"
+     onclick="closeSidebar()"></div>
+
+<script>
+function openSidebar() {
+  document.getElementById('appSidebar').classList.add('sidebar-open');
+  document.getElementById('sidebarOverlay').style.display = 'block';
+}
+function closeSidebar() {
+  document.getElementById('appSidebar').classList.remove('sidebar-open');
+  document.getElementById('sidebarOverlay').style.display = 'none';
+}
+(function() {
+  var path = window.location.pathname;
+  var links = document.querySelectorAll('#sidebarNav a');
+  links.forEach(function(a) {
+    var href = a.getAttribute('href');
+    if (href === '/dashboard') {
+      if (path === '/dashboard') a.classList.add('active');
+    } else if (path.startsWith(href)) {
+      a.classList.add('active');
+    }
+  });
+})();
+</script>

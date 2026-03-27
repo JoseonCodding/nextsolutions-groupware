@@ -17,12 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.kdt.KDT_PJT.boards.mapper.BoardLikeMapper;
-import com.kdt.KDT_PJT.boards.mapper.BoardMapper;
-import com.kdt.KDT_PJT.boards.mapper.CommentMapper;
+import com.kdt.KDT_PJT.boards.service.BoardService;
 import com.kdt.KDT_PJT.boards.model.BoardDTO;
 import com.kdt.KDT_PJT.boards.model.BoardLikeDTO;
 import com.kdt.KDT_PJT.boards.model.CommentDTO;
+import com.kdt.KDT_PJT.cmmn.context.CompanyContext;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 
 import jakarta.servlet.http.HttpSession;
@@ -33,9 +32,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BoardController {
 
-    @Autowired BoardMapper boardMapper;
-    @Autowired CommentMapper commentMapper;
-    @Autowired BoardLikeMapper likeMapper;
+    @Autowired BoardService boardService;
 
     /* =================== 공통: Summernote HTML 세정 헬퍼 =================== */
     private static final Safelist SAFE = Safelist.basic()
@@ -89,7 +86,7 @@ public class BoardController {
     // /board/{boardId} → NOTICE/FREE는 기존 라우트로, 그 외는 커스텀으로만 보냄
     @GetMapping("/{boardId:\\d+}")
     public String routeByBoardId(@PathVariable("boardId") Integer boardId) {
-        String type = boardMapper.findBoardTypeById(boardId); // null이어도 에러 처리 안 함
+        String type = boardService.getBoardType(boardId); // null이어도 에러 처리 안 함
         if ("NOTICE".equalsIgnoreCase(type)) return "redirect:/board/notice";
         if ("FREE".equalsIgnoreCase(type))   return "redirect:/board/free";
         // 나머지는 전부 커스텀으로
@@ -123,26 +120,26 @@ public class BoardController {
         // 3) 매퍼 호출 직전에만 쿼리용 값을 세팅
         dto.setSort(sortForQuery);
 
-        List<BoardDTO> boards = boardMapper.selectCustomPosts(dto);
-        int total = boardMapper.customTotalCnt(dto);
+        List<BoardDTO> boards = boardService.getCustomPosts(dto);
+        int total = boardService.getCustomTotalCount(dto);
         int totalPages = Math.max(1, (int)Math.ceil(total/(double)size));
         int win = 5;
         int startPage = ((page-1)/win)*win + 1;
         int endPage = Math.min(startPage + win - 1, totalPages);
 
-        BoardDTO boardMeta = boardMapper.selectBoardById(boardId);
-        String me = null;
+        BoardDTO boardMeta = boardService.getBoardById(boardId);
+        String me = null; String myRole = null;
         var loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser != null) me = loginUser.getEmployeeId();
+        if (loginUser != null) { me = loginUser.getEmployeeId(); myRole = loginUser.getRole(); }
 
         model.addAttribute("offset", dto.getOffset());
         model.addAttribute("keyword", dto.getKeyword());
-        
-        // 4) 화면에는 원본(raw) sort를 내려보내 “선택”이 선택되도록 함
+
+        // 4) 화면에는 원본(raw) sort를 내려보내 "선택"이 선택되도록 함
         model.addAttribute("sort", rawSort == null ? "" : rawSort);
-        
+
         model.addAttribute("board", boardMeta); // 현재 보드 정보
-        model.addAttribute("canWrite", boardMeta != null && boardMeta.canWriteBy(me));
+        model.addAttribute("canWrite", boardMeta != null && boardMeta.canWriteBy(me, myRole));
         model.addAttribute("boards", boards);
         model.addAttribute("page", page);
         model.addAttribute("totalPages", totalPages);
@@ -174,29 +171,28 @@ public class BoardController {
             BoardDTO v = new BoardDTO();
             v.setPostId(postId);
             v.setEmployeeId(me);
-            int inserted = boardMapper.recordView(v); // UNIQUE(post_id, employee_id) 가정
-            if (inserted > 0) needIncrease = true; // 최초 1회만 +1
+            if (boardService.recordView(v) > 0) needIncrease = true;
         } else {
-            needIncrease = true; // 비로그인은 매번 +1
+            needIncrease = true;
         }
         if (needIncrease) {
             BoardDTO v = new BoardDTO();
             v.setPostId(postId);
-            boardMapper.increaseViewCount(v); // 게시글 view_count +1
-            boardMapper.upsertBoardDailyView(boardId); // 보드 일일 통계 +1
+            v.setBoardId(boardId);
+            boardService.increaseViewCount(v);
         }
 
         // 2) 본문/메타/댓글/좋아요 상태 조회
-        BoardDTO post = boardMapper.selectPostById(postId); // 증가 반영 후 재조회
+        BoardDTO post = boardService.getCustomPostById(postId); // 증가 반영 후 재조회
         model.addAttribute("board", post);
 
         likeDto.setPostId(postId.longValue());
         likeDto.setEmployeeId(me);
-        int likeCount = likeMapper.countByPostId(likeDto);
-        boolean likedByMe = (me != null) && likeMapper.exists(likeDto);
+        int likeCount = boardService.getLikeCount(likeDto);
+        boolean likedByMe = (me != null) && boardService.isLikedByMe(likeDto);
 
         // 게시판 메타에서 댓글/좋아요 사용 여부
-        BoardDTO boardMeta = boardMapper.selectBoardById(boardId);
+        BoardDTO boardMeta = boardService.getBoardById(boardId);
 
         // 상세보기 들어갔다와도 페이지 그대로
         int page = (q.getPage()==null || q.getPage()<1) ? 1 : q.getPage();
@@ -209,8 +205,8 @@ public class BoardController {
 
         model.addAttribute("useComment", boardMeta != null && boardMeta.useCommentOrFalse());
         model.addAttribute("useLike", boardMeta != null && boardMeta.useLikeOrFalse());
-        model.addAttribute("comments", commentMapper.selectCommentsByPostId(postId.longValue()));
-        int commentCount = commentMapper.countAliveByPostId(postId.longValue());
+        model.addAttribute("comments", boardService.getComments(postId.longValue()));
+        int commentCount = boardService.getCommentCount(postId.longValue());
         model.addAttribute("commentCount", commentCount);
         model.addAttribute("likeCount", likeCount);
         model.addAttribute("me", me);
@@ -223,7 +219,7 @@ public class BoardController {
     // 커스텀 작성 폼
     @GetMapping("/custom/{boardId:\\d+}/write")
     public String customWriteForm(@PathVariable("boardId") Integer boardId, Model model) {
-        model.addAttribute("board", boardMapper.selectBoardById(boardId)); // null이어도 그대로 내려감
+        model.addAttribute("board", boardService.getBoardById(boardId)); // null이어도 그대로 내려감
         model.addAttribute("boardDTO", new BoardDTO());
         model.addAttribute("mainUrl", "board/custom_writeform");// 폼 바인딩용
         return "navTap";// 템플릿 이름
@@ -235,7 +231,6 @@ public class BoardController {
                                  @ModelAttribute BoardDTO dto,
                                  HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser == null) return "redirect:/login";
 
         //dto.setContent(sanitize(dto.getContent()));
         dto.setBoardId(boardId);
@@ -244,7 +239,7 @@ public class BoardController {
         dto.setViewCount(0);
         dto.setLikeCount(0);
         dto.setDeleted(false);
-        boardMapper.insert(dto);
+        boardService.savePost(dto);
 
         return "redirect:/board/custom/" + boardId;
     }
@@ -257,7 +252,7 @@ public class BoardController {
                                    HttpSession session) {
         if (dto.getPostId() == null) return "redirect:/board/custom/" + boardId;
 
-        BoardDTO post = boardMapper.detail(dto); // detail(BoardDTO dto) 사용
+        BoardDTO post = boardService.getFreeDetail(dto);
         if (post == null || post.isDeleted() || !post.getBoardId().equals(boardId)) {
             return "redirect:/board/custom/" + boardId;
         }
@@ -289,7 +284,6 @@ public class BoardController {
                                      @ModelAttribute BoardDTO dto,
                                      HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser == null) return "redirect:/login";
 
         BoardDTO submit = new BoardDTO();
         submit.setPostId(dto.getPostId());
@@ -297,7 +291,7 @@ public class BoardController {
         submit.setContent(dto.getContent());
         //submit.setContent(sanitize(dto.getContent()));
         submit.setEmployeeId(loginUser.getEmployeeId()); // 소유자 체크용
-        boardMapper.modify(submit);
+        boardService.modifyPost(submit);
 
         return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId() + listQS(dto, true);
     }
@@ -305,19 +299,20 @@ public class BoardController {
     // 커스텀 게시판 삭제 (POST) → 리스트로 복귀
     @PostMapping("/custom/{boardId}/delete")
     public String deleteCustomPost(@PathVariable("boardId") Integer boardId,
-                                   @RequestParam("postId") Integer postId, // postId 확실히 받기
+                                   @RequestParam("postId") Integer postId,
                                    @ModelAttribute BoardDTO q,
                                    HttpSession session) {
         EmployeeDto u = (EmployeeDto) session.getAttribute("loginUser");
         String me = (u != null) ? u.getEmployeeId() : null;
+        String role = (u != null) ? u.getRole() : null;
 
-        if ("20250004".equals(me)) {
-            boardMapper.adminDelete(postId);
+        if ("대표".equals(role) || "게시판".equals(role)) {
+            boardService.adminDeletePost(postId);
         } else {
             BoardDTO dto = new BoardDTO();
             dto.setPostId(postId);
             dto.setEmployeeId(me);
-            boardMapper.delete(dto);
+            boardService.deletePost(dto);
         }
         return "redirect:/board/custom/" + boardId + listQS(q, false);
     }
@@ -339,7 +334,7 @@ public class BoardController {
                                     HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         dto.setEmployeeId(loginUser.getEmployeeId()); // VARCHAR
-        commentMapper.insertComment(dto);
+        boardService.insertComment(dto);
         return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
@@ -351,7 +346,7 @@ public class BoardController {
                                      HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         dto.setEmployeeId(loginUser.getEmployeeId()); // VARCHAR
-        commentMapper.insertComment(dto);
+        boardService.insertComment(dto);
         return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
@@ -363,9 +358,8 @@ public class BoardController {
                                       @ModelAttribute BoardDTO q,
                                       HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser == null) return "redirect:/login";
         String me = loginUser.getEmployeeId(); // ✅ 본인만 삭제 (소유자 불일치면 0건 업데이트)
-        int affected = commentMapper.deleteByOwner(commentId, me);
+        boardService.deleteComment(commentId, me);
         return "redirect:/board/custom/" + boardId + "/detail?postId=" + postId + listQS(q, true);
     }
 
@@ -378,13 +372,8 @@ public class BoardController {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         if (loginUser == null) { return "redirect:/login"; }
 
-        dto.setEmployeeId(loginUser.getEmployeeId()); // VARCHAR
-        if (likeMapper.exists(dto)) {
-            likeMapper.delete(dto);
-        } else {
-            likeMapper.insert(dto);
-        }
-        boardMapper.syncLikeCount(dto);
+        dto.setEmployeeId(loginUser.getEmployeeId());
+        boardService.toggleLike(dto);
         return "redirect:/board/custom/" + boardId + "/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
@@ -401,9 +390,12 @@ public class BoardController {
 
         // 2) 쿼리용 정렬값만 기본치 적용 (예: newest)
         String sortForQuery = (rawSort == null ? "newest" : rawSort);
-        
+
+        Integer noticeBoardId = boardService.findBoardIdByType("notice", CompanyContext.get());
+        dto.setBoardId(noticeBoardId);
+
         // ► 총 건수 먼저 구함 (정렬과 무관)
-        int total = boardMapper.noticeTotalCnt(dto);
+        int total = boardService.getNoticeTotalCount(dto);
 
         // ► 총 페이지: 최소 1 보장
         int totalPages = Math.max(1, (int)Math.ceil(total / (double) size));
@@ -419,22 +411,21 @@ public class BoardController {
         dto.setSort(sortForQuery);
 
         // ► 목록 조회
-        var boards = boardMapper.selectNoticePosts(dto);
+        var boards = boardService.getNoticePosts(dto);
         // ► 페이지네이션 계산
         int win = 5;
         int startPage = ((page - 1) / win) * win + 1;
         int endPage   = Math.min(startPage + win - 1, totalPages);
 
-        Integer noticeBoardId = boardMapper.findBoardIdByType("notice");
-        BoardDTO boardMeta = boardMapper.selectBoardById(noticeBoardId);
-        String me = null;
+        BoardDTO boardMeta = boardService.getBoardById(noticeBoardId);
+        String me = null; String myRole = null;
         var loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser != null) me = loginUser.getEmployeeId();
-        
-        // 4) 화면에는 원본(raw) sort를 내려보내 “선택”이 선택되도록 함
+        if (loginUser != null) { me = loginUser.getEmployeeId(); myRole = loginUser.getRole(); }
+
+        // 4) 화면에는 원본(raw) sort를 내려보내 "선택"이 선택되도록 함
         model.addAttribute("sort", rawSort == null ? "" : rawSort);
 
-        model.addAttribute("canWrite", boardMeta != null && boardMeta.canWriteBy(me));
+        model.addAttribute("canWrite", boardMeta != null && boardMeta.canWriteBy(me, myRole));
         model.addAttribute("boards", boards);
         model.addAttribute("page", page);
         model.addAttribute("totalPages", totalPages);
@@ -460,19 +451,18 @@ public class BoardController {
             BoardDTO v = new BoardDTO();
             v.setPostId(dto.getPostId());
             v.setEmployeeId(me);
-            int inserted = boardMapper.recordView(v);
-            if (inserted > 0) needIncrease = true;
+            if (boardService.recordView(v) > 0) needIncrease = true;
         } else if (dto.getPostId() != null) {
             needIncrease = true;
         }
+        Integer noticeBoardId = boardService.findBoardIdByType("notice", CompanyContext.get());
         if (needIncrease) {
-            boardMapper.increaseNoticeView(dto); // board_id=1, status='완료' 조건 포함
-            Integer noticeBoardId = boardMapper.findBoardIdByType("notice");
-            if (noticeBoardId != null) boardMapper.upsertBoardDailyView(noticeBoardId);
+            boardService.increaseNoticeView(dto, noticeBoardId);
         }
+        dto.setBoardId(noticeBoardId);
 
         // 2) 본문 재조회 (증가 반영)
-        BoardDTO board = boardMapper.findNoticeApprovedById(dto);
+        BoardDTO board = boardService.getNoticeDetail(dto);
         model.addAttribute("board", board);
 
         // 3) 좋아요 상태
@@ -481,13 +471,12 @@ public class BoardController {
             BoardLikeDTO likeDto = new BoardLikeDTO();
             likeDto.setPostId(dto.getPostId().longValue());
             likeDto.setEmployeeId(u.getEmployeeId());
-            likedByMe = likeMapper.exists(likeDto);
+            likedByMe = boardService.isLikedByMe(likeDto);
         }
         model.addAttribute("likedByMe", likedByMe);
 
         // 4) 메타 (없으면 true)
-        Integer noticeBoardId = boardMapper.findBoardIdByType("notice");
-        BoardDTO boardMeta = (noticeBoardId == null) ? null : boardMapper.selectBoardById(noticeBoardId);
+        BoardDTO boardMeta = (noticeBoardId == null) ? null : boardService.getBoardById(noticeBoardId);
         boolean useLike = (boardMeta != null) ? boardMeta.useLikeOrFalse() : true;
         boolean useComment = (boardMeta != null) ? boardMeta.useCommentOrFalse() : true;
         model.addAttribute("useLike", useLike);
@@ -498,7 +487,7 @@ public class BoardController {
         if (dto.getPostId() != null) {
             BoardLikeDTO countDto = new BoardLikeDTO();
             countDto.setPostId(dto.getPostId().longValue());
-            likeCount = likeMapper.countByPostId(countDto);
+            likeCount = boardService.getLikeCount(countDto);
         }
 
         // ✅ 목록 상태 유지용 파라미터
@@ -521,24 +510,17 @@ public class BoardController {
     							   @ModelAttribute BoardDTO q,
                                    HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser == null) return "redirect:/login";
 
         dto.setEmployeeId(loginUser.getEmployeeId());
 
-        Integer noticeBoardId = boardMapper.findBoardIdByType("notice");
-        BoardDTO meta = (noticeBoardId == null) ? null : boardMapper.selectBoardById(noticeBoardId);
+        Integer noticeBoardId = boardService.findBoardIdByType("notice", CompanyContext.get());
+        BoardDTO meta = (noticeBoardId == null) ? null : boardService.getBoardById(noticeBoardId);
         boolean likeEnabled = (meta != null) ? meta.useLikeOrFalse() : true; // 메타가 비어도 기본 허용
         if (!likeEnabled) {
         	return "redirect:/board/notice/detail?postId=" + dto.getPostId();
         }
 
-        if (likeMapper.exists(dto)) {
-            likeMapper.delete(dto);
-        } else {
-            likeMapper.insert(dto);
-        }
-        boardMapper.syncLikeCount(dto);
-
+        boardService.toggleLike(dto);
         return "redirect:/board/notice/detail?postId=" + dto.getPostId()+ listQS(q, true);
     }
 
@@ -558,21 +540,21 @@ public class BoardController {
         EmployeeDto u = (EmployeeDto) session.getAttribute("loginUser");
         if (u != null) dto.setEmployeeId(u.getEmployeeId());
         //dto.setContent(sanitize(dto.getContent()));
-        boardMapper.insertNoticeDraft(dto); // status='대기'
+        boardService.saveNoticeDraft(dto); // status='대기'
         return "redirect:/board/notice";
     }
 
     // 승인 → 완료
     @PostMapping("/notice/approve")
     public String approveNotice(@ModelAttribute BoardDTO dto) {
-        boardMapper.approveNotice(dto); // status='대기' → '완료', published_at=NOW()
+        boardService.approveNotice(dto); // status='대기' → '완료', published_at=NOW()
         return "redirect:/board/notice/detail?postId=" + dto.getPostId();
     }
 
     // 반려 → 반려
     @PostMapping("/notice/reject")
     public String rejectNotice(@ModelAttribute BoardDTO dto) {
-        boardMapper.rejectNotice(dto); // status='대기' → '반려'
+        boardService.rejectNotice(dto); // status='대기' → '반려'
         return "redirect:/board/notice";
     }
 
@@ -582,12 +564,10 @@ public class BoardController {
                                @ModelAttribute BoardDTO q,
                                HttpSession session) {
         EmployeeDto u = (EmployeeDto) session.getAttribute("loginUser");
-        String me = (u != null) ? u.getEmployeeId() : null;
+        String role = (u != null) ? u.getRole() : null;
 
-        if ("20250004".equals(me)) {
-            boardMapper.adminDelete(postId);
-        } else {
-            // 필요 시 일반 사용자 삭제 로직 추가
+        if ("대표".equals(role) || "게시판".equals(role) || "공지사항".equals(role)) {
+            boardService.adminDeletePost(postId);
         }
         return "redirect:/board/notice" + listQS(q, false);
     }
@@ -617,27 +597,29 @@ public class BoardController {
         // 2) 쿼리용 정렬값만 기본치 적용 (예: newest)
         String sortForQuery = (rawSort == null ? "newest" : rawSort);
 
+        Integer freeBoardId = boardService.findBoardIdByType("free", CompanyContext.get());
+        dto.setBoardId(freeBoardId);
+
         // 3) 매퍼 호출 직전에만 쿼리용 값을 세팅
         dto.setSort(sortForQuery);
 
-        List<BoardDTO> boards = boardMapper.selectFreePosts(dto);
-        int total = boardMapper.freeTotalCnt(dto);
+        List<BoardDTO> boards = boardService.getFreePosts(dto);
+        int total = boardService.getFreeTotalCount(dto);
         int totalPages = Math.max(1, (int)Math.ceil(total/(double)size));
         int win = 5;
         int startPage = ((page-1)/win)*win + 1;
         int endPage = Math.min(startPage + win - 1, totalPages);
 
-        Integer freeBoardId = boardMapper.findBoardIdByType("free");
-        BoardDTO boardMeta = boardMapper.selectBoardById(freeBoardId);
+        BoardDTO boardMeta = boardService.getBoardById(freeBoardId);
 
-        String me = null;
+        String me = null; String myRole = null;
         var loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser != null) me = loginUser.getEmployeeId();
-        
-        // 4) 화면에는 원본(raw) sort를 내려보내 “선택”이 선택되도록 함
+        if (loginUser != null) { me = loginUser.getEmployeeId(); myRole = loginUser.getRole(); }
+
+        // 4) 화면에는 원본(raw) sort를 내려보내 "선택"이 선택되도록 함
         model.addAttribute("sort", rawSort == null ? "" : rawSort);
 
-        model.addAttribute("canWrite", boardMeta != null && boardMeta.canWriteBy(me));
+        model.addAttribute("canWrite", boardMeta != null && boardMeta.canWriteBy(me, myRole));
         model.addAttribute("boards", boards);
         model.addAttribute("page", page);
         model.addAttribute("totalPages", totalPages);
@@ -665,9 +647,8 @@ public class BoardController {
     public String saveFreePost(@ModelAttribute BoardDTO dto,
                                HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser == null) return "redirect:/login";
 
-        Integer boardId = boardMapper.findBoardIdByType("free");
+        Integer boardId = boardService.findBoardIdByType("free", CompanyContext.get());
         dto.setBoardId(boardId);
         dto.setEmployeeId(loginUser.getEmployeeId());
         //dto.setContent(sanitize(dto.getContent()));
@@ -675,7 +656,7 @@ public class BoardController {
         dto.setViewCount(0);
         dto.setLikeCount(0);
         dto.setDeleted(false);
-        boardMapper.insert(dto);
+        boardService.savePost(dto);
 
         return "redirect:/board/free";
     }
@@ -698,39 +679,34 @@ public class BoardController {
         boolean needIncrease = false;
         if (me != null && !me.isBlank()) {
             dto.setEmployeeId(me);
-            int inserted = boardMapper.recordView(dto); // UNIQUE(post_id, employee_id) 가정
+            int inserted = boardService.recordView(dto);
             if (inserted > 0) needIncrease = true; // 최초 1회만 +1
         } else {
             needIncrease = true; // 비로그인
         }
 
         if (needIncrease) {
-            boardMapper.increaseViewCount(dto); // UPDATE board_post SET view_count = view_count + 1 WHERE post_id = #{postId}
-            // postId → boardId 얻어서 일일 통계 +1
-            Integer bid = null;
-            Long b = boardMapper.findBoardIdByPostId(dto.getPostId().longValue());
-            if (b != null) bid = b.intValue();
-            if (bid != null) boardMapper.upsertBoardDailyView(bid); // ✅ boardId만 받는 버전
+            boardService.increaseViewCount(dto);
         }
 
         // 3) 본문 재조회 (증가 반영)
-        BoardDTO board = boardMapper.detail(dto);
+        BoardDTO board = boardService.getFreeDetail(dto);
         if (board == null || board.isDeleted()) return "redirect:/board/free";
 
         // 4) 댓글
-        List<CommentDTO> comments = commentMapper.selectCommentsByPostId(dto.getPostId().longValue());
-        int commentCount = commentMapper.countAliveByPostId(dto.getPostId().longValue());
+        List<CommentDTO> comments = boardService.getComments(dto.getPostId().longValue());
+        int commentCount = boardService.getCommentCount(dto.getPostId().longValue());
         model.addAttribute("commentCount", commentCount);
 
         // 5) 좋아요 상태
         likeDto.setPostId(dto.getPostId().longValue());
         likeDto.setEmployeeId(me);
-        boolean likedByMe = (me != null) && likeMapper.exists(likeDto);
-        int likeCount = likeMapper.countByPostId(likeDto);
+        boolean likedByMe = (me != null) && boardService.isLikedByMe(likeDto);
+        int likeCount = boardService.getLikeCount(likeDto);
 
         // 6) 게시판 메타
-        Integer freeBoardId = boardMapper.findBoardIdByType("free");
-        BoardDTO boardMeta = (freeBoardId != null) ? boardMapper.selectBoardById(freeBoardId) : null;
+        Integer freeBoardId = boardService.findBoardIdByType("free", CompanyContext.get());
+        BoardDTO boardMeta = (freeBoardId != null) ? boardService.getBoardById(freeBoardId) : null;
         model.addAttribute("useComment", boardMeta != null && boardMeta.useCommentOrFalse());
         model.addAttribute("useLike", boardMeta != null && boardMeta.useLikeOrFalse());
 
@@ -758,7 +734,7 @@ public class BoardController {
     public String modifyFreeForm(BoardDTO dto, Model model, HttpSession session) {
         if (dto.getPostId() == null) return "redirect:/board/free";
 
-        BoardDTO board = boardMapper.detail(dto); // detail(BoardDTO dto) 시그니처 기준
+        BoardDTO board = boardService.getFreeDetail(dto); // detail(BoardDTO dto) 시그니처 기준
         if (board == null || board.isDeleted()) {
             return "redirect:/board/free";
         }
@@ -790,7 +766,6 @@ public class BoardController {
                                    HttpSession session,
                                    Model model) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser == null) return "redirect:/login";
 
         BoardDTO dto = new BoardDTO();
         dto.setPostId(form.getPostId());
@@ -798,7 +773,7 @@ public class BoardController {
         dto.setContent(form.getContent());
         //dto.setContent(sanitize(form.getContent()));
         dto.setEmployeeId(loginUser.getEmployeeId()); // 소유자 체크용
-        boardMapper.modify(dto);
+        boardService.modifyPost(dto);
 
         return "redirect:/board/free/detail?postId=" + form.getPostId() + listQS(form, true);
     }
@@ -810,16 +785,15 @@ public class BoardController {
                              HttpSession session) {
         EmployeeDto u = (EmployeeDto) session.getAttribute("loginUser");
         String me = (u != null) ? u.getEmployeeId() : null;
+        String role = (u != null) ? u.getRole() : null;
 
-        if ("20250004".equals(me)) {
-            // 관리자: postId만으로 삭제
-            boardMapper.adminDelete(postId);
+        if ("대표".equals(role) || "게시판".equals(role)) {
+            boardService.adminDeletePost(postId);
         } else {
-            // 본인 글만 삭제 (employee_id는 VARCHAR)
             BoardDTO dto = new BoardDTO();
             dto.setPostId(postId);
             dto.setEmployeeId(me);
-            boardMapper.delete(dto);
+            boardService.deletePost(dto);
         }
         return "redirect:/board/free" + listQS(q, false);
     }
@@ -839,7 +813,7 @@ public class BoardController {
                               HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         dto.setEmployeeId(loginUser.getEmployeeId());
-        commentMapper.insertComment(dto);
+        boardService.insertComment(dto);
         return "redirect:/board/free/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
@@ -850,7 +824,7 @@ public class BoardController {
                         HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
         dto.setEmployeeId(loginUser.getEmployeeId());
-        commentMapper.insertComment(dto);
+        boardService.insertComment(dto);
         return "redirect:/board/free/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
@@ -861,9 +835,8 @@ public class BoardController {
                                 Model model,
                                 HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser == null) return "redirect:/login";
         String me = loginUser.getEmployeeId();
-        int affected = commentMapper.deleteByOwner(dto.getCommentId(), me);
+        boardService.deleteComment(dto.getCommentId(), me);
         return "redirect:/board/free/detail?postId=" + dto.getPostId() + listQS(q, true);
     }
 
@@ -873,16 +846,11 @@ public class BoardController {
     					     @ModelAttribute BoardDTO q,
                              HttpSession session) {
         EmployeeDto loginUser = (EmployeeDto) session.getAttribute("loginUser");
-        if (loginUser == null) return "redirect:/login";
 
         dto.setEmployeeId(loginUser.getEmployeeId());
-        if (likeMapper.exists(dto)) {
-            likeMapper.delete(dto);
-        } else {
-            likeMapper.insert(dto);
-        }
+        boardService.toggleLike(dto);
         // ★ 항상 동기화(가장 안전)
-        boardMapper.syncLikeCount(dto);
+        boardService.syncLikeCount(dto);
 
         return "redirect:/board/free/detail?postId=" + dto.getPostId() + listQS(q, true);
     }

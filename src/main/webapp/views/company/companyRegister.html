@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NextSolutions - 회사 가입</title>
+<style>
+  :root {
+    --primary: #3949ab;
+    --primary-dark: #283593;
+    --accent: #64b5f6;
+    --ink: #1f2937;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --bg1: #eef2ff;
+    --bg2: #f5f7ff;
+    --error: #e53e3e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg2);
+  }
+
+  .register-container {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255,255,255,.9);
+    border: 1px solid rgba(57,73,171,.12);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    padding: 36px 32px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.1);
+    animation: pop 420ms cubic-bezier(.2,.8,.2,1);
+  }
+
+  @keyframes pop {
+    from { transform: translateY(8px) scale(.98); opacity: 0; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .logo {
+    display: block;
+    width: 42%;
+    margin: 0 auto 16px;
+  }
+
+  h1 {
+    text-align: center;
+    margin: 0 0 6px;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--ink);
+  }
+
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin: 0 0 24px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin: 20px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--bg1);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  label {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: .2px;
+  }
+
+  input {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid #c7cbe6;
+    background: #fff;
+    font-size: 15px;
+    transition: border-color .18s ease, box-shadow .18s ease;
+  }
+
+  input::placeholder { color: #9aa3b2; }
+
+  input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(57,73,171,.15);
+  }
+
+  input.error-input {
+    border-color: var(--error);
+  }
+
+  .error-msg {
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--error);
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .pw-mismatch {
+    font-size: 12px;
+    color: var(--error);
+    display: none;
+    margin-top: 2px;
+  }
+
+  button[type="submit"] {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    box-shadow: 0 8px 16px rgba(57,73,171,.25);
+    transition: transform .06s ease, box-shadow .18s ease, filter .18s ease;
+    margin-top: 20px;
+  }
+
+  button[type="submit"]:hover { filter: brightness(1.05); box-shadow: 0 12px 22px rgba(57,73,171,.3); }
+  button[type="submit"]:active { transform: translateY(1px); }
+
+  .login-link {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .login-link a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .login-link a:hover { text-decoration: underline; }
+
+  @media (max-width: 500px) {
+    .register-container { padding: 26px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="register-container">
+
+  <h1>회사 가입</h1>
+  <p class="subtitle">그룹웨어를 시작하세요. 관리자 계정이 자동 생성됩니다.</p>
+
+  <!-- 서버 에러 메시지 -->
+  <div class="error-msg" th:if="${errorMsg}" th:text="${errorMsg}"></div>
+
+  <form id="registerForm" th:action="@{/company/register}" method="post">
+
+    <div class="section-label">회사 정보</div>
+
+    <div class="form-group">
+      <label for="companyNm">회사명 *</label>
+      <input type="text" id="companyNm" name="companyNm"
+             th:value="${dto.companyNm}" placeholder="예) (주)넥스트솔루션" required maxlength="100">
+    </div>
+
+    <div class="form-group">
+      <label for="ownerEmail">대표 이메일 *</label>
+      <input type="email" id="ownerEmail" name="ownerEmail"
+             th:value="${dto.ownerEmail}" placeholder="admin@company.com" required maxlength="100">
+    </div>
+
+    <div class="section-label">관리자 계정</div>
+
+    <div class="form-group">
+      <label for="adminNm">관리자 이름 *</label>
+      <input type="text" id="adminNm" name="adminNm"
+             th:value="${dto.adminNm}" placeholder="홍길동" required maxlength="50">
+    </div>
+
+    <div class="form-group">
+      <label for="phone">연락처 *</label>
+      <input type="tel" id="phone" name="phone"
+             th:value="${dto.phone}" placeholder="010-0000-0000" required maxlength="20">
+    </div>
+
+    <div class="form-group">
+      <label for="password">비밀번호 *</label>
+      <input type="password" id="password" name="password"
+             placeholder="8자 이상" required minlength="8" autocomplete="new-password">
+    </div>
+
+    <div class="form-group">
+      <label for="passwordConfirm">비밀번호 확인 *</label>
+      <input type="password" id="passwordConfirm" name="passwordConfirm"
+             placeholder="비밀번호 재입력" required autocomplete="new-password">
+      <span class="pw-mismatch" id="pwMismatch">비밀번호가 일치하지 않습니다.</span>
+    </div>
+
+    <button type="submit">가입하기</button>
+  </form>
+
+  <div class="login-link">
+    이미 계정이 있으신가요? <a th:href="@{/login}">로그인</a>
+  </div>
+
+</div>
+
+<script>
+  const pwEl   = document.getElementById('password');
+  const cfmEl  = document.getElementById('passwordConfirm');
+  const hint   = document.getElementById('pwMismatch');
+  const form   = document.getElementById('registerForm');
+
+  function checkPw() {
+    const mismatch = cfmEl.value && pwEl.value !== cfmEl.value;
+    hint.style.display = mismatch ? 'block' : 'none';
+    cfmEl.classList.toggle('error-input', mismatch);
+  }
+
+  pwEl.addEventListener('input', checkPw);
+  cfmEl.addEventListener('input', checkPw);
+
+  form.addEventListener('submit', (e) => {
+    if (pwEl.value !== cfmEl.value) {
+      hint.style.display = 'block';
+      cfmEl.focus();
+      e.preventDefault();
+    }
+  });
+</script>
+
+</body>
+</html>

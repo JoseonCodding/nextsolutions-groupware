@@ -11,7 +11,16 @@ const LogoutButton = () => {
   return (
     <button
       onClick={handleLogout}
-      className="flex justify-center items-center px-3 py-1.5 text-sm text-emerald-600 border border-emerald-200 bg-emerald-50 rounded-lg cursor-pointer"
+      style={{
+        background: 'none',
+        border: '1px solid #3949ab',
+        color: '#3949ab',
+        padding: '6px 12px',
+        borderRadius: '6px',
+        fontSize: '0.9em',
+        cursor: 'pointer',
+        lineHeight: '1',
+      }}
     >
       로그아웃
     </button>

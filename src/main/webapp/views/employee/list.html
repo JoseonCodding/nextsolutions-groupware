@@ -1,149 +1,90 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>사원 관리</title>
 <style>
-    body { font-family: 'Noto Sans KR', sans-serif;  margin: 0; padding: 0px; }
-
-    .status-active { color: #28a745; font-weight: bold; }
-    .status-inactive { color: #dc3545; font-weight: bold; }
-    .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
-    .btn-active { background: #28a745; color: white; }
-    .btn-active:hover { background: #218838; }
-    .btn-inactive { background: #dc3545; color: white; }
-    .btn-inactive:hover { background: #c82333; }
-
-    
-    .pagination {
-  list-style: none;
-  padding-left: 0;
-  margin-bottom: 0;
-}
-.pagination li {
-  list-style: none;
-}
-
-
+    .emp-status-active  { color: #28a745; font-weight: 600; }
+    .emp-status-inactive { color: #dc3545; font-weight: 600; }
+    .btn-toggle-inactive { background: #dc3545; color: #fff; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
+    .btn-toggle-inactive:hover { background: #c82333; }
+    .btn-toggle-active   { background: #28a745; color: #fff; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
+    .btn-toggle-active:hover { background: #218838; }
 </style>
- <!-- CSS 불러오기 -->
-	<link rel="stylesheet" href="/css/commonStyle.css">
- 	<link rel="stylesheet" href="../css/common.css">
-</head>
-<body>
-<div class="container">
-<h1>사원 관리</h1>
-<div>
-  <!-- 검색 form -->
-<form action="/employee/list"  method="get" style="margin-bottom: 20px; display: flex;">
-  <input type="text" name="keyword"  th:value="${keyword}" placeholder="사원명 검색" class="form-control" 
-         style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;" />
-  <button type="submit" class="filter-btn"><i class="fa fa-search"></i>
-    검색
-  </button>
-   <a href="/employee/list" class="filter-btn"><i class="fa fa-rotate-left"></i> 초기화 </a>
- 
-			   
-</form>
+<div class="board-container">
+<h1 style="margin-top:12px;">사원 관리</h1>
+<div class="board-controls">
+  <div class="left-controls">
+    <form action="/employee/list" method="get" class="search-form">
+      <input type="text" name="keyword" th:value="${keyword}" placeholder="사원명 검색">
+      <button type="submit"><i class="fa fa-search"></i> 검색</button>
+      <a href="/employee/list" class="filter-btn"><i class="fa fa-rotate-left"></i> 초기화</a>
+    </form>
+  </div>
+  <div style="display:flex; gap:8px;">
+    <a href="/employee/register" class="btn">등록</a>
+    <button id="editSelected" class="btn" style="background:#546e7a;">수정</button>
+  </div>
 </div>
 
-	<table>
-		<thead>
-			<tr>
-				<th>선택</th>
-				<th>순번</th>
-				<th>사번</th>
-				<th>비밀번호</th>
-				<th>권한</th>
-				<th>상태</th>
-				<th>이름</th>
-				<th>활성/비활성</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr th:each="emp : ${employees}"
-				th:with="isActive=${emp['active'] == 1 or emp['active'] == '1' or emp['active'] == true}">
-				<td><input type="radio" name="empSelect" class="emp-check"
-					th:value="${emp['emp_seq']}"></td>
-				<td th:text="${emp['emp_seq']}"></td>
-				<td th:text="${emp['employeeId']}"></td>
-				<td th:text="${emp['password']}"></td>
-				<td th:text="${emp['role']} ?: '-'"></td>
-
-				<td class="status"
-					th:classappend="${isActive} ? ' status-active' : ' status-inactive'"
-					th:text="${isActive ? '활성' : '비활성'}"></td>
-
-				<td th:text="${emp['emp_nm']} ?: ''"></td>
-
-				<td>
-					<button th:if="${isActive}" class="btn btn-inactive"
-						th:attr="data-emp=${emp['emp_seq']}">비활성화</button>
-					<button th:if="${!isActive}" class="btn btn-active"
-						th:attr="data-emp=${emp['emp_seq']}">활성화</button>
-				</td>
-			</tr>
-		</tbody>
-
-		
-	</table>
-</div>
-	
-    <button class="regist-btn" onclick="location.href='/employee/register'"> 등록 </button> 
-    <button id="editSelected" class="edit-btn">수정</button>
-
+<table class="board-table" style="width:100%; border-collapse:collapse;">
+  <thead style="background:#f5f5f5;">
+    <tr>
+      <th>선택</th>
+      <th>순번</th>
+      <th>사번</th>
+      <th>이름</th>
+      <th>권한</th>
+      <th>상태</th>
+      <th>활성/비활성</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:each="emp : ${employees}"
+        th:with="isActive=${emp.active == 1 or emp.active == true}">
+      <td><input type="radio" name="empSelect" class="emp-check" th:value="${emp.empSeq}"></td>
+      <td th:text="${emp.empSeq}"></td>
+      <td th:text="${emp.employeeId}"></td>
+      <td th:text="${emp.empNm} ?: ''"></td>
+      <td th:text="${emp.role} ?: '-'"></td>
+      <td class="status"
+          th:classappend="${isActive} ? ' emp-status-active' : ' emp-status-inactive'"
+          th:text="${isActive ? '활성' : '비활성'}"></td>
+      <td>
+        <button th:if="${isActive}"  class="btn-toggle-inactive" th:attr="data-emp=${emp.empSeq}">비활성화</button>
+        <button th:if="${!isActive}" class="btn-toggle-active"   th:attr="data-emp=${emp.empSeq}">활성화</button>
+      </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(employees)}">
+      <td colspan="7" style="padding:60px; text-align:center; color:#999;">
+        등록된 사원이 없습니다.
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 <div>
-       <!-- 페이지네이션 -->
-	<nav class="pagination">
-	  <!-- Previous 버튼 -->
-	  <a th:if="${page > 1}" 
-	  th:href="@{/employee/list(page=${page-5 > 1 ? page-5 : 1}, keyword=${keyword})}"
-	  class="prev">&#x2039; Previous</a>
-	
-	  <!-- 첫 페이지 -->
-	  <span 
-	  th:if="${startPage > 1 and page == 1}" 
-	  class="page-number now-page disabled" 
-	  th:text="1">
-	  </span>
-	  
-	  <a 
-	  th:if="${startPage > 1 and page != 1}" 
-	  th:href="@{/employee/list(page=1, keyword=${keyword})}" 
-	  th:text="1" 
-	  class="page-number"></a>
-	
-	  <span 
-	  th:if="${startPage > 2}" 
-	  class="ellipsis">...</span>
-	
-	  <!-- 페이지 숫자들 -->
-	  <span 
-	  th:each="i : ${#numbers.sequence(startPage, endPage)}">
-	    <span th:if="${i == page}" class="page-number now-page disabled" th:text="${i}"></span>
-	    <a th:if="${i != page}" th:href="@{/employee/list(page=${i}, keyword=${keyword})}" th:text="${i}" class="page-number"></a>
-	  </span>
-	
-	  <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
-	
-	  <!-- 마지막 페이지 -->
-	  <span th:if="${endPage < totalPages and page == totalPages}" class="page-number now-page disabled" th:text="${totalPages}"></span>
-	  <a th:if="${endPage < totalPages and page != totalPages}" 
-	  th:href="@{/employee/list(page=${totalPages}, keyword=${keyword})}" th:text="${totalPages}" class="page-number"></a>
-	
-	  <!-- Next 버튼 -->
-	  <a th:if="${page < totalPages}" th:href="@{/employee/list(page=${page+5 < totalPages ? page+5 : totalPages}, keyword=${keyword})}">Next &#x203A;</a>
-	</nav>
+  <nav class="pagination">
+    <a th:if="${page > 1}"
+       th:href="@{/employee/list(page=${page-5 > 1 ? page-5 : 1}, keyword=${keyword})}"
+       class="prev">&#x2039; Previous</a>
+
+    <span th:if="${startPage > 1 and page == 1}" class="page-number now-page disabled" th:text="1"></span>
+    <a th:if="${startPage > 1 and page != 1}" th:href="@{/employee/list(page=1, keyword=${keyword})}" th:text="1" class="page-number"></a>
+    <span th:if="${startPage > 2}" class="ellipsis">...</span>
+
+    <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
+      <span th:if="${i == page}" class="page-number now-page disabled" th:text="${i}"></span>
+      <a th:if="${i != page}" th:href="@{/employee/list(page=${i}, keyword=${keyword})}" th:text="${i}" class="page-number"></a>
+    </span>
+
+    <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
+    <span th:if="${endPage < totalPages and page == totalPages}" class="page-number now-page disabled" th:text="${totalPages}"></span>
+    <a th:if="${endPage < totalPages and page != totalPages}"
+       th:href="@{/employee/list(page=${totalPages}, keyword=${keyword})}" th:text="${totalPages}" class="page-number"></a>
+
+    <a th:if="${page < totalPages}"
+       th:href="@{/employee/list(page=${page+5 < totalPages ? page+5 : totalPages}, keyword=${keyword})}">Next &#x203A;</a>
+  </nav>
 </div>
-
-
-
-
-
 
 <script>
-document.querySelectorAll("button.btn-active, button.btn-inactive").forEach(btn => {
+document.querySelectorAll(".btn-toggle-active, .btn-toggle-inactive").forEach(btn => {
     btn.addEventListener("click", function() {
         const empSeq = this.dataset.emp;
         const row = this.closest("tr");
@@ -158,18 +99,18 @@ document.querySelectorAll("button.btn-active, button.btn-inactive").forEach(btn 
               if (data === "OK") {
                   if (statusCell.textContent.trim() === "활성") {
                       statusCell.textContent = "비활성";
-                      statusCell.classList.remove("status-active");
-                      statusCell.classList.add("status-inactive");
+                      statusCell.classList.remove("emp-status-active");
+                      statusCell.classList.add("emp-status-inactive");
                       this.textContent = "활성화";
-                      this.classList.remove("btn-inactive");
-                      this.classList.add("btn-active");
+                      this.classList.remove("btn-toggle-inactive");
+                      this.classList.add("btn-toggle-active");
                   } else {
                       statusCell.textContent = "활성";
-                      statusCell.classList.remove("status-inactive");
-                      statusCell.classList.add("status-active");
+                      statusCell.classList.remove("emp-status-inactive");
+                      statusCell.classList.add("emp-status-active");
                       this.textContent = "비활성화";
-                      this.classList.remove("btn-active");
-                      this.classList.add("btn-inactive");
+                      this.classList.remove("btn-toggle-active");
+                      this.classList.add("btn-toggle-inactive");
                   }
               }
           });
@@ -186,7 +127,3 @@ document.getElementById("editSelected").addEventListener("click", function() {
     window.location.href = `/employee/edit?empSeq=${empSeq}`;
 });
 </script>
-</body>
-</html>
-
-

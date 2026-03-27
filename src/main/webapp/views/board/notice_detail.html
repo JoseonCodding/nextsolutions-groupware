@@ -42,7 +42,11 @@
 
       <!-- 삭제: 관리자만 / 현재 페이지 상태 유지 -->
       <a class="btn btn-danger"
-         th:if="${session.loginUser != null and (#strings.equals(session.loginUser.employeeId, '20250004'))}"
+         th:if="${session.loginUser != null and (
+                   session.loginUser.role == '대표'
+                   or session.loginUser.role == '게시판'
+                   or session.loginUser.role == '공지사항'
+                 )}"
          th:href="@{'/board/notice/delete'(postId=${board.postId}, page=${page}, size=${size}, sort=${sort}, keyword=${keyword})}"
          th:onclick="|return confirm('게시글을 삭제하시겠습니까?');|">삭제</a>
     </div>

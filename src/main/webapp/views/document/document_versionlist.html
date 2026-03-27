@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<title>버전 목록</title>
 <div class="document-versions">
   <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
     <h2 style="margin:0;">버전 목록</h2>
@@ -17,6 +11,7 @@
       <th style="width:80px;">버전</th>
       	<th>제목</th>
         <th style="width:120px;">담당자</th>
+        <th style="width:120px;">직위</th>
         <th style="width:160px;">등록일</th>
         <th style="width:120px;">보기</th>
       </tr>
@@ -31,7 +26,8 @@
           </span>
         </td>
         <td th:text="${v.pjtNm}">프로젝트명</td>
-        <td th:text="|${v.empNm} ${v.position}|">홍길동</td>
+        <td th:text="${v.empNm}">홍길동</td>
+        <td th:text="${v.position ?: ''}"></td>
         <td th:text="${#dates.format(v.frstRegDt, 'yyyy-MM-dd')}">-</td>
         
         
@@ -41,7 +37,7 @@
         </td>
       </tr>
       <tr th:if="${#lists.isEmpty(versions)}">
-        <td colspan="7" class="text-center">버전이 없습니다.</td>
+        <td colspan="6" class="text-center">버전이 없습니다.</td>
       </tr>
     </tbody>
   </table>
@@ -54,6 +50,3 @@
     </a>
   </div>
 </div>
-
-</body>
-</html>

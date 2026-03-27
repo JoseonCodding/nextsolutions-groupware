@@ -24,7 +24,6 @@ public class Attendance {
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
         //loginUser.getEmpNm(); // 이름 가져오기
 
-    	System.out.println("recordCheckIn 되고있냐아");
     	AttendDTO attend = new AttendDTO();
     	
         //attend.setEmployeeId("test_user"); // 로그인 미구현
@@ -38,7 +37,6 @@ public class Attendance {
     	//세션에서 loginUser 꺼내기
     	EmployeeDto loginUser =(EmployeeDto)session.getAttribute("loginUser");
 
-    	System.out.println("recordCheckOut :퇴근");
     	AttendDTO attend = new AttendDTO();
     	
         attend.setCheckOutTime(LocalDateTime.now());

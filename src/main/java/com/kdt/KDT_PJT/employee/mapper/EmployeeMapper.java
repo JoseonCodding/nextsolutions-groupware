@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.kdt.KDT_PJT.cmmn.map.CmmnMap;
 import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
@@ -12,13 +13,10 @@ import com.kdt.KDT_PJT.cmmn.map.EmployeeDto;
 @Mapper
 public interface EmployeeMapper {
 
-    List<CmmnMap> getUserList();
-
-   // List<CmmnMap> getUserList(int pageNum, int pageSize, @Param("keyword") String keyword);
-
     List<EmployeeDto> getUserList(@Param("offset") Integer offset
     							, @Param("size") Integer size
-    							, @Param("keyword") String keyword);
+    							, @Param("keyword") String keyword
+    							, @Param("companyId") Integer companyId);
     
     void toggleActive(CmmnMap params);
     void insertEmployee(CmmnMap params);
@@ -42,15 +40,23 @@ public interface EmployeeMapper {
 
     int update(EmployeeDto dto);
 
-	static String selectEmpNameById(String employeeId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Select("SELECT emp_nm FROM employee WHERE employeeId = #{employeeId} AND use_yn = 'Y' LIMIT 1")
+    String selectEmpNameById(@Param("employeeId") String employeeId);
 
-	int getUserListTotalCount(String keyword);
+	int getUserListTotalCount(@Param("keyword") String keyword, @Param("companyId") Integer companyId);
 
-	List<EmployeeDto> selectAllEmployees();
-	
+    @Select("SELECT * FROM employee WHERE employeeId = #{employeeId}")
+    EmployeeDto findByEmployeeId(@Param("employeeId") String employeeId);
+
+    @Update("UPDATE employee SET phone = #{phone} WHERE employeeId = #{employeeId}")
+    int updatePhone(@Param("employeeId") String employeeId, @Param("phone") String phone);
+
+    @Update("UPDATE employee SET password = #{password} WHERE employeeId = #{employeeId}")
+    int updatePassword(@Param("employeeId") String employeeId, @Param("password") String password);
+
+    @Select("SELECT employeeId FROM employee WHERE company_id = #{companyId} AND (role = '근태' OR role = '대표')")
+    List<String> findApproverIds(@Param("companyId") int companyId);
+
 }
  
 

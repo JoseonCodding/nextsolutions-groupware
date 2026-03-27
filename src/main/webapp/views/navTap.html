@@ -1,44 +1,50 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <title>Home</title>
-    
-    <!-- 폰트어썸 아이콘 스타일시트 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- 공통 스타일시트 -->
-    <link rel="stylesheet" href="/css/common.css">
-    <link rel="stylesheet" href="/css/commonStyle.css">
-    
-    <!-- 근태관리 스타일시트 -->
-    <link rel="stylesheet" href="/css/attend.css">
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet"/>
-    
-    <!-- 연차관리 스타일시트 -->
-    <link rel="stylesheet" href="/css/leave.css">
-<style>
-/*초기화*/
-*{
-	margin:0;
-	padding:0;
-}
-.wrapper{
-	width:1200px;
-	margin: 0 auto;
-	background-color: rgb(255, 255, 255); /*영역 확인용*/
-} 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXTSOLUTIONS</title>
 
-</style>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- 공통 스타일 -->
+  <link rel="stylesheet" href="/css/commonStyle.css">
+  <link rel="stylesheet" href="/css/common.css">
+
+  <!-- 페이지별 스타일 -->
+  <link rel="stylesheet" href="/css/attend.css">
+  <link rel="stylesheet" href="/css/leave.css">
+  <link rel="stylesheet" href="/css/approvalStyle.css">
+  <link rel="stylesheet" href="/css/board.css">
+  <link rel="stylesheet" href="/css/board_detail.css">
+  <link rel="stylesheet" href="/css/schedule.css">
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet"/>
 </head>
 <body>
 
-<div class="wrapper">
+<div class="app-layout">
 
-	<th:block th:replace="@{/layout/header}"/>
-	<th:block th:replace="@{${navUrl}}" />
-	<th:block th:replace="@{${mainUrl}}" />	
-	<th:block th:replace="@{/layout/footer}"/>
+  <!-- 사이드바 -->
+  <th:block th:replace="~{/layout/sidebar}"/>
+
+  <!-- 메인 영역 -->
+  <div class="main-area">
+
+    <!-- 상단바 -->
+    <th:block th:replace="~{/layout/header}"/>
+
+    <!-- 컨텐츠 -->
+    <main class="content-area">
+      <th:block th:if="${navUrl != null and !#strings.isEmpty(navUrl)}">
+        <th:block th:replace="~{__${navUrl}__}"/>
+      </th:block>
+      <th:block th:replace="~{${mainUrl}}"/>
+    </main>
+
+    <th:block th:replace="~{/layout/footer}"/>
+  </div>
 </div>
+
 </body>
 </html>

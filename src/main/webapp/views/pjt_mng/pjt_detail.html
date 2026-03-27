@@ -1,26 +1,11 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>프로젝트 상세</title>
-  <!-- 공통 CSS만 사용 (예: .table, .btn 등) -->
-  <link rel="stylesheet" th:href="@{/css/common.css}">
-  <style>
-    /* 버튼만 색상 맞춤 (스샷 톤) — 공통 CSS에 버튼 컬러가 있다면 삭제해도 OK */
-    .btn-primary{ background:#1976d2; border:none; }
-    .btn-primary:hover{ filter:brightness(0.95); }
-    .btn-pink{ background:#f06292; color:#fff; border:none; }
-    .btn-pink:hover{ filter:brightness(0.95); }
-    .actions{ text-align:right; margin-top:16px; }
-    .muted{ color:#777; }
-   
-   td {
-   	text-align: left;
-   }
-    
-  </style>
-</head>
-<body>
+<title>프로젝트 상세</title>
+<link rel="stylesheet" th:href="@{/css/common.css}">
+<style>
+  .actions{ text-align:right; margin-top:16px; }
+  .muted{ color:#777; }
+  td { text-align: left; }
+</style>
+
 <div class="wrap">
 
   <h1 style="text-align: center; margin-top:45px;">프로젝트 정보</h1>
@@ -117,5 +102,4 @@
     
     
 </div>
-</body>
-</html>
+</div>

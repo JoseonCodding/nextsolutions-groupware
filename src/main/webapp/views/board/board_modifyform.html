@@ -94,13 +94,7 @@ $(document).ready(function () {
   });
 
   // ===== 제목/내용 유효성 검사 =====
-  $('#summernote').summernote({
-	    lang: 'ko-KR',
-	    height: 300,
-	    placeholder: '내용을 입력하세요'
-	  });
-
-	  $('#modifyForm').on('submit', function (e) {
+  $('#modifyForm').on('submit', function (e) {
 	    // 🔹 제목
 	    const $title = $('#title'); // ← 방법 B를 택하면 $('input[name="title"]') 로
 	    const rawTitle = ($title.val() || '').trim();
@@ -133,6 +127,3 @@ $(document).ready(function () {
 	  });
 	});
 </script>
-
-</body>
-</html>

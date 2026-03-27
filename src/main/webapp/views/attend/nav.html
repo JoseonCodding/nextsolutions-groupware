@@ -1,81 +1,17 @@
-<!-- 
-<style>
-    .board-nav { background-color:#f7f9fc; padding:10px 20px; border-bottom:1px solid #dcdcdc; }
-    .board-nav ul { list-style:none; padding:0; margin:0; display:flex; }
-    .board-nav ul li { margin-right:30px; }
-    .board-nav ul li a { text-decoration:none; font-weight:bold; color:#666; padding:8px 12px; border-bottom:2px solid transparent; transition:all .2s; }
-    .board-nav ul li.active a { color:#000; border-bottom:2px solid #2c3e50; }
-    .board-nav ul { display:flex; }
-    .board-nav ul li.admin { margin-left:auto; }
-    .board-nav ul li.admin a { color:#6b7280; font-weight:700; }
-    .board-nav ul li.admin a:hover { color:#111827; }
-    .ico-gear { width:16px; height:16px; vertical-align:-2px; fill:currentColor; }
-  </style>
- -->
-<style>
-    .board-nav { background-color:#f7f9fc; padding:10px 20px; border-bottom:1px solid #dcdcdc; }
-    .board-nav ul { list-style:none; padding:0; margin:0; display:flex; }
-    .board-nav ul li { margin-right:30px; }
-/*내비게이션 밑줄 애니매이션 적용 효과 코드---- 동현 건드리지 말기 제발*/
-    .board-nav ul li a {
-  position: relative;
-  text-decoration: none;
-  font-weight: bold;
-  color: #666;
-  padding: 8px 12px;
-  transition: color 0.3s ease;
-}
-/* 가상요소: 밑줄 */
-.board-nav ul li a::after {
-  content: "";
-  position: absolute;
-  bottom: 0;  
-  left: 50%;
-  transform: translateX(-50%) scaleX(0); /* 중앙에서 시작 */
-  transform-origin: center;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, #330d69, #30c9cd); /* 색상 변화 가능 */
-  opacity: 0;
-  transition: transform 0.4s ease, opacity 0.3s ease;
-}
-
-/* hover 시 애니메이션 실행 */
-.board-nav ul li a:hover::after {
-  transform: translateX(-50%) scaleX(1); /* 중앙 → 양쪽으로 퍼짐 */
-  opacity: 1;
-}
-
-.board-nav ul li.active a::after {
-  transform: translateX(-50%) scaleX(1);
-  opacity: 1;
-}
-</style>
-
-<div class="board-nav">
-	<ul>
-		<li >
-			<a th:href="@{/attend}">출퇴근 기록</a>
-		</li>
-		<li >
-			<a th:href="@{/attend/leaveList}">내 연차</a>
-		</li>
-		<li>
-			<a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
-		   th:href="@{/attend/attendList}">출퇴근 현황</a>
-		</li>
-		<li >
-			<a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
-		   th:href="@{/attend/leaveListMng}">연차 관리</a>
-		</li>
-   </ul>
-</div>
- <script>
+<nav class="tab-nav" id="attendNav">
+  <a th:href="@{/attend}">출퇴근 기록</a>
+  <a th:href="@{/attend/leaveList}">내 연차</a>
+  <a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
+     th:href="@{/attend/attendList}">출퇴근 현황</a>
+  <a th:if="${session.loginUser.role == '근태' or session.loginUser.role == '대표'}"
+     th:href="@{/attend/leaveListMng}">연차 관리</a>
+</nav>
+<script>
 (function(){
   var path = location.pathname;
-  document.querySelectorAll('.board-nav a').forEach(function(a){
+  document.querySelectorAll('#attendNav a').forEach(function(a){
     var href = new URL(a.getAttribute('href'), location.origin).pathname;
-    if (path === href) a.parentElement.classList.add('active');
+    if (path === href) a.classList.add('active');
   });
 })();
 </script>

@@ -19,42 +19,42 @@
 /* select & input 기본 스타일 */
 .search-form select,
 .search-form input[type="text"] {
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #d1d5db;
+  padding: 7px 10px;
+  font-size: 13px;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   background: #fff;
+  font-family: inherit;
 }
 
 /* 버튼 공통 스타일 (검색 버튼 + 글쓰기 버튼) */
 .search-form button,
 .board-controls .btn,
 .filter-btn {
-  background: #2563eb;
+  background: #3949ab;
   color: #fff;
   border: none;
-  margin-left: 12px;
-  padding: 10px 18px;
+  padding: 7px 14px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.05s ease;
-  text-decoration: none; /* a 태그도 버튼처럼 */
+  transition: filter 0.15s, transform 0.05s;
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-weight: 500;
+  gap: 5px;
+  font-weight: 600;
+  font-family: inherit;
+  white-space: nowrap;
 }
 
 .filter-btn {
-	height: 21px;
+  background: #546e7a;
 }
 
 .search-form button:hover,
-.board-controls .btn:hover,
-.filter-btn:hover {
-  background: #1d4ed8;
-}
+.board-controls .btn:hover { filter: brightness(1.08); }
+.filter-btn:hover { filter: brightness(1.08); }
 
 .search-form button:active,
 .board-controls .btn:active {

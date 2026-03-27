@@ -42,7 +42,7 @@ public interface ApprovalMapper {
 	    "     NULL AS timeInout",
 	    "   FROM board_post b",
 	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
-	    "   WHERE b.board_id = 1 AND b.is_deleted = 0",
+	    "   WHERE b.board_id = 1 AND b.is_deleted = 0 AND e.company_id = #{companyId}",
 
 	    "   UNION ALL",
 
@@ -70,7 +70,7 @@ public interface ApprovalMapper {
 	    "     NULL AS timeInout",
 	    "   FROM annual_leave l",
 	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
-	    "   WHERE l.state_type IS NOT NULL",
+	    "   WHERE l.state_type IS NOT NULL AND e.company_id = #{companyId}",
 
 	    "   UNION ALL",
 
@@ -99,10 +99,11 @@ public interface ApprovalMapper {
 	    "   FROM TB_PJT_BASC p",
 	    "   JOIN (",
 	    "       SELECT gid, MAX(ver) AS max_ver",
-	    "       FROM TB_PJT_BASC",
+	    "       FROM TB_PJT_BASC WHERE company_id = #{companyId}",
 	    "       GROUP BY gid",
 	    "   ) pv ON p.gid = pv.gid AND p.ver = pv.max_ver",
 	    "   LEFT JOIN employee e ON p.employeeId = e.employeeId",
+	    "   WHERE p.company_id = #{companyId}",
 
 	    "   UNION ALL",
 
@@ -130,7 +131,7 @@ public interface ApprovalMapper {
 	    "     a.time_inout AS timeInout",
 	    "   FROM attendance a",
 	    "   LEFT JOIN employee e ON a.employeeId = e.employeeId",
-	    "   WHERE a.status IS NOT NULL",
+	    "   WHERE a.status IS NOT NULL AND e.company_id = #{companyId}",
 	    ") AS all_data",
 	    "WHERE 1=1",
 
@@ -177,7 +178,8 @@ public interface ApprovalMapper {
 	        @Param("role") String role,
 	        @Param("type") String type,
 	        @Param("status") String status,
-	        @Param("employeeId") String employeeId
+	        @Param("employeeId") String employeeId,
+	        @Param("companyId") int companyId
 	);
 
 	
@@ -255,7 +257,8 @@ public interface ApprovalMapper {
 	    @Param("role") String role,
 	    @Param("type") String type,
 	    @Param("status") String status,
-	    @Param("employeeId") String employeeId
+	    @Param("employeeId") String employeeId,
+	    @Param("companyId") int companyId
 	);
 
 
@@ -296,7 +299,7 @@ public interface ApprovalMapper {
 	    "     (SELECT position FROM employee WHERE employeeId = b.approvedBy LIMIT 1) AS approvedByPosition",
 	    "   FROM board_post b",
 	    "   LEFT JOIN employee e ON b.employee_id = e.employeeId",
-	    "   WHERE b.board_id = 1 AND b.is_deleted = 0",
+	    "   WHERE b.board_id = 1 AND b.is_deleted = 0 AND e.company_id = #{companyId}",
 
 	    "   UNION ALL",
 
@@ -311,7 +314,7 @@ public interface ApprovalMapper {
 	    "     e.emp_nm AS writer,",
 	    "     e.employeeId AS writerId,",
 	    "     l.approval_date AS createdAt,",
-	    "     l.create_reason AS createReason,",
+	    "     l.used_reason AS createReason,",
 	    "     NULL AS attachFileUuid1, NULL AS attachFileOrgName1,",
 	    "     NULL AS attachFileUuid2, NULL AS attachFileOrgName2,",
 	    "     NULL AS attachFileUuid3, NULL AS attachFileOrgName3,",
@@ -332,7 +335,7 @@ public interface ApprovalMapper {
 	    "     (SELECT position FROM employee WHERE employeeId = l.approvedBy LIMIT 1) AS approvedByPosition",
 	    "   FROM annual_leave l",
 	    "   LEFT JOIN employee e ON l.employeeId = e.employeeId",
-	    "   WHERE l.state_type IS NOT NULL",
+	    "   WHERE l.state_type IS NOT NULL AND e.company_id = #{companyId}",
 
 	    "   UNION ALL",
 
@@ -447,7 +450,8 @@ public interface ApprovalMapper {
 	    @Param("role") String role,
 	    @Param("employeeId") String employeeId,
 	    @Param("type") String type,
-	    @Param("status") String status
+	    @Param("status") String status,
+	    @Param("companyId") int companyId
 	);
 
 

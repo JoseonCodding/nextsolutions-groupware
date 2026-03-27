@@ -1,244 +1,123 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>사원 정보 수정</title>
-    <style>
-body {
-	font-family: 'Noto Sans KR', sans-serif;
-	justify-content: center;
-	padding: 0px;
+<style>
+.emp-form-table { width: 100%; border-collapse: collapse; }
+.emp-form-table th { width: 130px; padding: 12px; background: #f5f5f5; border: 1px solid #ddd; text-align: left; font-weight: 600; font-size: 14px; }
+.emp-form-table td { padding: 10px; border: 1px solid #ddd; }
+.emp-form-table input[type="text"],
+.emp-form-table input[type="password"],
+.emp-form-table input[type="date"],
+.emp-form-table select {
+    width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;
 }
-
-.container {
-	margin-top: 45px;
+.emp-form-table input:focus, .emp-form-table select:focus {
+    border-color: #3949ab; outline: none; box-shadow: 0 0 0 2px rgba(57,73,171,.15);
 }
-
-input, select {
-	width: 95%;
-	padding: 8px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
+.emp-form-table input[readonly], .emp-form-table select[disabled] {
+    background: #f9f9f9; color: #6b7280;
 }
-
-input, select {
-	padding: 8px;
-	width: 100%;
-	border: 1px solid #ccc;
-	border-radius: 6px;
-	box-sizing: border-box;
-}
-
-
 </style>
-    <!-- CSS 불러오기 -->
-	<link rel="stylesheet" href="/css/commonStyle.css">
-    <link rel="stylesheet" href="../css/common.css">
-    <script src="/js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
-<div class="container">
-    <h1 class="detail-title">사원 정보 수정</h1>
-    
-    <form id="employeeUpdateForm" action="/employee/update" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="empSeq" th:value="${employee.empSeq}" />
 
-        
-<table>
-    <tr>
+<div class="board-container" style="max-width:860px;">
+  <h1 style="margin-top:12px;">사원 정보 수정</h1>
+
+  <form id="employeeUpdateForm" action="/employee/update" method="post">
+    <input type="hidden" name="empSeq" th:value="${employee.empSeq}" />
+
+    <table class="emp-form-table">
+      <tr>
         <th>사번</th>
-        <td>
-            <input type="text" name="employeeId" th:value="${employee.employeeId}" readonly>
-        </td>
+        <td><input type="text" name="employeeId" th:value="${employee.employeeId}" readonly></td>
         <th>이름</th>
         <td>
-            <input type="text" name="empNm" th:value="${employee.empNm}"
-                   th:readonly="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+          <input type="text" name="empNm" th:value="${employee.empNm}"
+                 th:readonly="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
         </td>
-    </tr>
-    <tr>
+      </tr>
+      <tr>
         <th>휴대폰 번호</th>
-        <td>
-            <input type="text" name="phone" th:value="${employee.phone}" readonly>
-        </td>
+        <td><input type="text" name="phone" th:value="${employee.phone}" readonly></td>
         <th>생년월일</th>
         <td>
-            <input type="date" name="birth"
-                   th:value="${employee.birth != null ? #dates.format(employee.birth, 'yyyy-MM-dd') : null}">
+          <input type="date" name="birth"
+                 th:value="${employee.birth != null ? #dates.format(employee.birth, 'yyyy-MM-dd') : ''}">
         </td>
-    </tr>
-    <tr>
+      </tr>
+      <tr>
         <th>입사일</th>
         <td>
-            <input type="date" name="hireDate"
-                   th:value="${employee.hireDate != null ? #dates.format(employee.hireDate, 'yyyy-MM-dd') : null}"
-                   th:readonly="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+          <input type="date" name="hireDate"
+                 th:value="${employee.hireDate != null ? #dates.format(employee.hireDate, 'yyyy-MM-dd') : ''}"
+                 th:readonly="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
         </td>
         <th>퇴사일</th>
         <td>
-            <input type="date" name="resignDate"
-                   th:value="${employee.resignDate != null ? #dates.format(employee.resignDate, 'yyyy-MM-dd') : null}"
-                   th:readonly="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+          <input type="date" name="resignDate"
+                 th:value="${employee.resignDate != null ? #dates.format(employee.resignDate, 'yyyy-MM-dd') : ''}"
+                 th:readonly="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
         </td>
-    </tr>
-    <tr>
+      </tr>
+      <tr>
         <th>부서명</th>
-        <td colspan="1">
-        	<select name="deptName" th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
-                <option value="경영지원팀">경영지원팀</option>
-                <option value="기획팀">기획팀</option>
-                <option value="유통사업팀">유통사업팀</option>
-                <option value="디자인팀">디자인팀</option>
-                <option value="총무팀">총무팀</option>
-                <option value="사원관리팀">사원관리팀</option>
-                <option value="재무관리팀">재무관리팀</option>
-            </select>
+        <td>
+          <select name="deptName"
+                  th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+            <option value="경영지원팀" th:selected="${employee.deptName == '경영지원팀'}">경영지원팀</option>
+            <option value="기획팀"     th:selected="${employee.deptName == '기획팀'}">기획팀</option>
+            <option value="유통사업팀" th:selected="${employee.deptName == '유통사업팀'}">유통사업팀</option>
+            <option value="디자인팀"   th:selected="${employee.deptName == '디자인팀'}">디자인팀</option>
+            <option value="총무팀"     th:selected="${employee.deptName == '총무팀'}">총무팀</option>
+            <option value="사원관리팀" th:selected="${employee.deptName == '사원관리팀'}">사원관리팀</option>
+            <option value="재무관리팀" th:selected="${employee.deptName == '재무관리팀'}">재무관리팀</option>
+          </select>
         </td>
         <th>직위</th>
         <td>
-        	<select name="position" th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
-                <option value="대표">대표</option>
-                <option value="부장">부장</option>
-                <option value="차장">차장</option>
-                <option value="과장">과장</option>
-                <option value="대리">대리</option>
-                <option value="주임">주임</option>
-                <option value="사원">사원</option>
-            </select>
+          <select name="position"
+                  th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+            <option value="대표" th:selected="${employee.position == '대표'}">대표</option>
+            <option value="부장" th:selected="${employee.position == '부장'}">부장</option>
+            <option value="차장" th:selected="${employee.position == '차장'}">차장</option>
+            <option value="과장" th:selected="${employee.position == '과장'}">과장</option>
+            <option value="대리" th:selected="${employee.position == '대리'}">대리</option>
+            <option value="주임" th:selected="${employee.position == '주임'}">주임</option>
+            <option value="사원" th:selected="${employee.position == '사원'}">사원</option>
+          </select>
         </td>
-    </tr>
-    <tr>
+      </tr>
+      <tr>
         <th>권한</th>
         <td colspan="3">
-            <select name="role" th:value="${employee.role}"
-                    th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
-                <option value="대표" th:selected="${employee.role == '대표'}">대표</option>
-                <option value="프로젝트" th:selected="${employee.role == '프로젝트'}">프로젝트</option>
-                <option value="근태" th:selected="${employee.role == '근태'}">근태/연차</option>
-                <option value="게시판" th:selected="${employee.role == '게시판'}">게시판</option>
-                <option value="문서관리" th:selected="${employee.role == '문서관리'}">문서관리</option>
-                <option value="사원" th:selected="${employee.role == '사원'}">사원</option>
-                <option value="공지사항" th:selected="${employee.role == '공지사항'}">공지사항</option>
-                <option value="일정관리" th:selected="${employee.role == '일정관리'}">일정관리</option>
-                <option value="" th:selected="${employee.role == null}">일반</option>
-            </select>
+          <select name="role"
+                  th:disabled="${!(session.loginUser.role == '대표' or session.loginUser.role == '사원')}">
+            <option value="대표"      th:selected="${employee.role == '대표'}">대표</option>
+            <option value="프로젝트"  th:selected="${employee.role == '프로젝트'}">프로젝트</option>
+            <option value="근태"      th:selected="${employee.role == '근태'}">근태/연차</option>
+            <option value="게시판"    th:selected="${employee.role == '게시판'}">게시판</option>
+            <option value="문서"      th:selected="${employee.role == '문서' or employee.role == '문서관리'}">문서관리</option>
+            <option value="사원"      th:selected="${employee.role == '사원'}">사원관리</option>
+            <option value="공지사항"  th:selected="${employee.role == '공지사항'}">공지사항</option>
+            <option value="일정"      th:selected="${employee.role == '일정' or employee.role == '일정관리'}">일정관리</option>
+            <option value=""          th:selected="${employee.role == null}">일반</option>
+          </select>
         </td>
-    </tr>
-    <tr>
+      </tr>
+      <tr>
         <th>비밀번호 변경</th>
         <td colspan="3">
-            <input type="password" name="password" th:value="${employee.password}" placeholder="새 비밀번호 입력">
+          <input type="password" name="password" placeholder="변경할 비밀번호 입력 (빈칸이면 유지)">
         </td>
-    </tr>
-    
-</table>
+      </tr>
+    </table>
 
-		<button type="button" class="back-btn" onclick="history.back()">뒤로가기</button>
-    	<button type="button" class="edit-btn" onclick="validateAndSubmit()">수정</button>
-    	
-		<input type="hidden" name="active" th:value="${employee.active}" />
-	
-    </form>
+    <input type="hidden" name="active" th:value="${employee.active}" />
+
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+      <button type="button" class="btn" style="background:#546e7a;" onclick="history.back()">뒤로가기</button>
+      <button type="button" class="btn" onclick="validateAndSubmit()">수정</button>
+    </div>
+  </form>
 </div>
 
-<!-- <script>
-
-// 검증 및 제출 함수
-function validateAndSubmit() {
-    const f = document.getElementById('employeeUpdateForm');
-    const pw = f.password.value.trim();
-    const name = f.empNm.value.trim();
-    const birth = f.birth.value;
-    const hireDate = f.hireDate.value;
-    const resignDate = f.resignDate.value;
-    
-   
-    //  비밀번호(필수): 아이디 체크 완료 후 무조건 검증
-    //    최소 8자, 대문자/소문자/숫자/특수문자 각각 1개 이상
-    if (!pw) {
-        alert('비밀번호를 입력해주세요.');
-        f.password.focus();
-        return;
-    }
-    
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/]).{8,}$/.test(pw)) {
-       alert('비밀번호는 8자 이상이며 대문자/소문자/숫자/특수문자를 모두 포함해야 합니다.');
-       f.password.focus();
-       return;
-    }
-    
- 	// 이름: 2글자 이상, 한글만
-    if (!/^[가-힣]{2,}$/.test(name)) {
-        alert("이름은 한글 2글자 이상 입력하세요.");
-        f.empNm.focus();
-        return;
-    } 
-    
-    // 날짜 필수 입력 검증
-    if (!birth) {
-        alert("생년월일을 입력해주세요.");
-        f.birth.focus();
-        return;
-    }
-    
-    if (!hireDate) {
-        alert("입사일을 입력해주세요.");
-        f.hireDate.focus();
-        return;
-    }
-    
-    // 생년월일과 입사일 비교 검증
-    if (birth && hireDate) {
-        const birthDate = new Date(birth);
-        const hireDateObj = new Date(hireDate);
-        
-        if (birthDate >= hireDateObj) {
-            alert("입사일은 생년월일보다 이후여야 합니다.");
-            f.birth.focus();
-            return;
-        }
-       
-        
-        // 나이 계산 (입사일 기준)
-        const ageAtHire = hireDateObj.getFullYear() - birthDate.getFullYear();
-        const monthDiff = hireDateObj.getMonth() - birthDate.getMonth();
-        
-        if (monthDiff < 0 || (monthDiff === 0 && hireDateObj.getDate() < birthDate.getDate())) {
-            ageAtHire--;
-        }
-        
-        if (ageAtHire < 16) {
-            alert("입사일 기준으로 만 16세 이상이어야 합니다.");
-            f.birth.focus();
-            return;
-        }
-    }
-
-    
-    // 입사일과 퇴사일 비교 검증
-    if (hireDate && resignDate) {
-        
-        if (hireDate >= resignDate) {
-            alert("퇴사일은 입사일보다 이후여야 합니다.");
-            f.hireDate.focus();
-            return;
-    		}
-    }
-    // 모든 검증 통과 시 폼 제출
-    f.submit();
-}
-
-// Enter 키 이벤트
-document.getElementById('employeeUpdateForm').addEventListener('keydown', function(e) {
-	if (e.key === 'Enter') {
-		e.preventDefault();
-		validateAndSubmit();
-	}
-});
-</script> -->
-
 <script>
-// 검증 및 제출 함수
 function validateAndSubmit() {
   const f = document.getElementById('employeeUpdateForm');
   const pw = f.password.value.trim();
@@ -246,98 +125,37 @@ function validateAndSubmit() {
   const birth = f.birth.value;
   const hireDate = f.hireDate.value;
   const resignDate = f.resignDate.value;
-
-  // 오늘 00:00 (미래/과거 비교 안정화)
   const today = new Date(); today.setHours(0,0,0,0);
 
-  // ===== 비밀번호 검증 =====
-  if (!pw) {
-    alert('비밀번호를 입력해주세요.');
-    f.password.focus();
-    return;
-  }
-  if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/]).{8,}$/.test(pw)) {
+  if (pw && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/]).{8,}$/.test(pw)) {
     alert('비밀번호는 8자 이상이며 대문자/소문자/숫자/특수문자를 모두 포함해야 합니다.');
-    f.password.focus();
-    return;
+    f.password.focus(); return;
   }
+  if (!/^[가-힣]{2,}$/.test(name)) { alert("이름은 한글 2글자 이상 입력하세요."); f.empNm.focus(); return; }
+  if (!birth)     { alert("생년월일을 입력해주세요."); f.birth.focus(); return; }
+  if (!hireDate)  { alert("입사일을 입력해주세요."); f.hireDate.focus(); return; }
 
-  // ===== 이름 검증 (한글 2자 이상) =====
-  if (!/^[가-힣]{2,}$/.test(name)) {
-    alert("이름은 한글 2글자 이상 입력하세요.");
-    f.empNm.focus();
-    return;
-  }
+  const birthDate = new Date(birth);
+  const hireDateObj = new Date(hireDate);
 
-  // ===== 날짜 필수 입력 =====
-  if (!birth) { alert("생년월일을 입력해주세요."); f.birth.focus(); return; }
-  if (!hireDate) { alert("입사일을 입력해주세요."); f.hireDate.focus(); return; }
+  if (birthDate > today) { alert("생년월일은 오늘 이전 날짜여야 합니다."); f.birth.focus(); return; }
+  if (birthDate >= hireDateObj) { alert("입사일은 생년월일보다 이후여야 합니다."); f.hireDate.focus(); return; }
+  if (hireDateObj > today) { alert("입사일은 오늘 이전 날짜여야 합니다."); f.hireDate.focus(); return; }
 
-  // ===== 생년월일/입사일 검증 =====
-  if (birth && hireDate) {
-    // valueAsDate 우선 사용(타임존 이슈 최소화), 없으면 new Date
-    const birthDate = (f.birth.valueAsDate) ? new Date(f.birth.valueAsDate) : new Date(birth);
-    const hireDateObj = (f.hireDate.valueAsDate) ? new Date(f.hireDate.valueAsDate) : new Date(hireDate);
+  let ageAtHire = hireDateObj.getFullYear() - birthDate.getFullYear();
+  const md = hireDateObj.getMonth() - birthDate.getMonth();
+  if (md < 0 || (md === 0 && hireDateObj.getDate() < birthDate.getDate())) ageAtHire--;
+  if (ageAtHire < 16) { alert("입사일 기준으로 만 16세 이상이어야 합니다."); f.birth.focus(); return; }
 
-    // 생년월일 미래 불가
-    if (birthDate > today) {
-      alert("생년월일은 오늘 이전 날짜여야 합니다.");
-      f.birth.focus();
-      return;
-    }
-
-    // 입사일은 생년월일보다 이후
-    if (birthDate >= hireDateObj) {
-      alert("입사일은 생년월일보다 이후여야 합니다.");
-      f.hireDate.focus();
-      return;
-    }
-
-    // 🚫 입사일 미래 불가 (요청사항)
-    if (hireDateObj > today) {
-      alert("입사일은 오늘 이전 날짜여야 합니다.");
-      f.hireDate.focus();
-      return;
-    }
-
-    // 만 16세(입사일 기준)
-    let ageAtHire = hireDateObj.getFullYear() - birthDate.getFullYear();
-    const monthDiff = hireDateObj.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && hireDateObj.getDate() < birthDate.getDate())) {
-      ageAtHire--;
-    }
-    if (ageAtHire < 16) {
-      alert("입사일 기준으로 만 16세 이상이어야 합니다.");
-      f.birth.focus();
-      return;
-    }
-  }
-
-  // ===== 입사일/퇴사일 비교 =====
   if (hireDate && resignDate) {
-    const hireDateObj = (f.hireDate.valueAsDate) ? new Date(f.hireDate.valueAsDate) : new Date(hireDate);
-    const resignDateObj = (f.resignDate.valueAsDate) ? new Date(f.resignDate.valueAsDate) : new Date(resignDate);
-
-    if (hireDateObj >= resignDateObj) {
-      alert("퇴사일은 입사일보다 이후여야 합니다.");
-      f.hireDate.focus();
-      return;
-    }
+    const resignDateObj = new Date(resignDate);
+    if (hireDateObj >= resignDateObj) { alert("퇴사일은 입사일보다 이후여야 합니다."); f.hireDate.focus(); return; }
   }
 
-  // 모든 검증 통과 시 폼 제출
   f.submit();
 }
 
-// Enter 키 제출 방지 + 검증 실행
 document.getElementById('employeeUpdateForm').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    validateAndSubmit();
-  }
+  if (e.key === 'Enter') { e.preventDefault(); validateAndSubmit(); }
 });
 </script>
-
-
-</body>
-</html>
