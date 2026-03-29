@@ -2,7 +2,7 @@
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
 
 <div th:if="${errorMessage}"
-     style="color:red; font-weight:bold; margin-bottom:10px;">
+     style="color:var(--danger); font-weight:bold; margin-bottom:10px;">
   [[${errorMessage}]]
 </div>
 
@@ -11,8 +11,8 @@ table {
 	width: 75%;
 	margin: 0 auto;
 	border-collapse: collapse;
-	background-color: #ffffff;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	background-color: var(--surface);
+	box-shadow: var(--shadow-md);
 	border-radius: 10px;
 	overflow: hidden;
 }
@@ -20,14 +20,13 @@ table {
 th, td {
 	padding: 16px 20px;
 	text-align: left;
-	border-bottom: 1px solid #e0e0e0;
+	border-bottom: 1px solid var(--border);
 }
 
 th {
 	width: 20%;
-	background-color: #f0f0f0;
+	background-color: var(--surface-alt);
 	font-weight: bold;
-	/* color: #333; */
 	text-align: center;
 }
 
@@ -41,47 +40,6 @@ input, select {
 	box-sizing: border-box;
 }
 
-/* .button-row {
-	display: flex;
-	justify-content: center;
-	gap: 10px;
-	margin-top: 30px;
-}
-
-.button-row button {
-	width: 200px;
-	height: 45px;
-	font-size: 16px;
-	border: none;
-	border-radius: 6px;
-	cursor: pointer;
-	transition: background-color 0.2s;
-}
-
-.save-btn {
-	background-color: #28a745;
-	color: white;
-}
-
-.save-btn:hover {
-	background-color: #218838;
-}
-
-.back-btn {
-	background-color: #4a90e2;
-	color: white;
-}
-
-.back-btn:hover {
-	background-color: #357abd;
-}
-
-.save-btn:disabled {
-	background-color: #ccc !important; /* 회색 
-	color: #666 !important; /* 글자도 연한 회색 
-	cursor: not-allowed; /* 마우스 커서 X 모양 
-}
- */
 /* 체크박스는 가로 100% 강제 적용에서 제외 */
 input[type="checkbox"] {
   width: auto;
@@ -184,7 +142,7 @@ input[type="checkbox"] {
   <th rowspan="3">파일업로드</th>
   <!-- ⭕ 기존 파일이 있는 경우: 파일명 + 삭제 체크박스만 노출 (업로드 필드 비활성/숨김) -->
   <td th:if="${pjt['ATCH_FILE_SN1'] != null and pjt['ATCH_FILE_SN1'] != ''}">
-    <div style="margin-top:8px; background:#f0f0f0; padding:6px 10px; border-radius:4px; border:1px solid #ccc;">
+    <div style="margin-top:8px; background:var(--surface-alt); padding:6px 10px; border-radius:4px; border:1px solid var(--border);">
       현재 파일: <span th:text="${pjt['ORG_FILE_NM1']}">첨부된 파일</span>
     </div>
     <label style="display:inline-block; margin-top:6px;">
@@ -203,7 +161,7 @@ input[type="checkbox"] {
 <!-- 파일 2 -->
 <tr>
   <td th:if="${pjt['ATCH_FILE_SN2'] != null && pjt['ATCH_FILE_SN2'] != ''}">
-    <div style="margin-top:8px; background:#f0f0f0; padding:6px 10px; border-radius:4px; border:1px solid #ccc;">
+    <div style="margin-top:8px; background:var(--surface-alt); padding:6px 10px; border-radius:4px; border:1px solid var(--border);">
       현재 파일: <span th:text="${pjt['ORG_FILE_NM2']}">첨부된 파일</span>
     </div>
     <label style="display:inline-block; margin-top:6px;">
@@ -219,7 +177,7 @@ input[type="checkbox"] {
 <!-- 파일 3 -->
 <tr>
   <td th:if="${pjt['ATCH_FILE_SN3'] != null && pjt['ATCH_FILE_SN3'] != ''}">
-    <div style="margin-top:8px; background:#f0f0f0; padding:6px 10px; border-radius:4px; border:1px solid #ccc;">
+    <div style="margin-top:8px; background:var(--surface-alt); padding:6px 10px; border-radius:4px; border:1px solid var(--border);">
       현재 파일: <span th:text="${pjt['ORG_FILE_NM3']}">첨부된 파일</span>
     </div>
     <label style="display:inline-block; margin-top:6px;">

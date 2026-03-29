@@ -1,0 +1,199 @@
+<div class="check-list-container">
+  <h1>근태 월별 통계</h1>
+
+  <style>
+  .stats-nav { display:flex; align-items:center; gap:12px; margin:16px 0; }
+  .stats-nav input[type="month"] {
+    width:160px; padding:7px 10px; border:1.5px solid var(--border);
+    border-radius:8px; background:var(--surface-alt); color:var(--text-1);
+    font-family:var(--font); font-size:13px; outline:none;
+  }
+  .stats-nav-label { color:var(--text-3); font-size:0.9rem; }
+
+  .stats-cards { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:24px; }
+  .stats-card {
+    padding:20px; border-radius:10px; text-align:center;
+    border-left:4px solid; background:var(--surface);
+    border-top:1px solid var(--border); border-right:1px solid var(--border); border-bottom:1px solid var(--border);
+    transition:box-shadow 0.15s;
+  }
+  .stats-card:hover { box-shadow:var(--shadow-md); }
+  .stats-card-val { font-size:2rem; font-weight:700; }
+  .stats-card-lbl { color:var(--text-3); margin-top:4px; font-size:13px; }
+
+  .stats-card-blue   { border-left-color:#1565c0; }
+  .stats-card-blue   .stats-card-val { color:#1565c0; }
+  .stats-card-orange { border-left-color:#f57f17; }
+  .stats-card-orange .stats-card-val { color:#f57f17; }
+  .stats-card-purple { border-left-color:#7b1fa2; }
+  .stats-card-purple .stats-card-val { color:#7b1fa2; }
+  .stats-card-red    { border-left-color:#c62828; }
+  .stats-card-red    .stats-card-val { color:#c62828; }
+  .stats-card-green  { border-left-color:#2e7d32; }
+  .stats-card-green  .stats-card-val { color:#2e7d32; }
+
+  html[data-theme="dark"] .stats-card-blue   { background:#0d1f3c; }
+  html[data-theme="dark"] .stats-card-orange { background:#2a1a00; }
+  html[data-theme="dark"] .stats-card-purple { background:#1e0a2e; }
+  html[data-theme="dark"] .stats-card-red    { background:#2a0a0a; }
+  html[data-theme="dark"] .stats-card-green  { background:#0a2010; }
+
+  .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .stats-panel {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:10px; padding:20px;
+  }
+  .stats-panel h3 { margin:0 0 14px; font-size:15px; font-weight:700; color:var(--text-1); }
+  .stats-panel-scroll { overflow-y:auto; max-height:340px; }
+
+  .stats-table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+  .stats-table thead tr { background:var(--surface-alt); }
+  .stats-table th {
+    padding:8px; text-align:left; border-bottom:2px solid var(--border);
+    color:var(--text-2); font-weight:600; font-size:12px;
+  }
+  .stats-table th:not(:first-child) { text-align:center; }
+  .stats-table td { padding:7px 8px; border-bottom:1px solid var(--border-light); color:var(--text-1); }
+  .stats-table td:not(:first-child) { text-align:center; }
+  .stats-empty { text-align:center; padding:24px; color:var(--text-3); }
+
+  /* 상태 뱃지 */
+  .stat-badge {
+    display:inline-block; border-radius:12px;
+    padding:2px 10px; font-size:0.8rem; font-weight:500;
+  }
+  .stat-badge-normal  { background:#e8f5e9; color:#2e7d32; }
+  .stat-badge-late    { background:#fff8e1; color:#f57f17; }
+  .stat-badge-early   { background:#f3e5f5; color:#7b1fa2; }
+  .stat-badge-both    { background:#fce4ec; color:#c62828; }
+  .stat-badge-working { background:#e3f2fd; color:#1565c0; }
+  .stat-badge-none    { background:#eeeeee; color:#757575; }
+
+  html[data-theme="dark"] .stat-badge-normal  { background:#0a2010; color:#66bb6a; }
+  html[data-theme="dark"] .stat-badge-late    { background:#2a1a00; color:#ffb74d; }
+  html[data-theme="dark"] .stat-badge-early   { background:#1e0a2e; color:#ce93d8; }
+  html[data-theme="dark"] .stat-badge-both    { background:#2a0a0a; color:#ef9a9a; }
+  html[data-theme="dark"] .stat-badge-working { background:#0d1f3c; color:#90caf9; }
+  html[data-theme="dark"] .stat-badge-none    { background:#2d2d2d; color:#9e9e9e; }
+  </style>
+
+  <!-- 월 선택 -->
+  <div class="stats-nav">
+    <button onclick="moveMonth(-1)" class="filter-btn" style="padding:6px 14px;">&#8249;</button>
+    <input type="month" id="monthPicker" th:value="${yearMonth}"
+           onchange="location.href='/attend/stats?yearMonth='+this.value"/>
+    <button onclick="moveMonth(1)" class="filter-btn" style="padding:6px 14px;">&#8250;</button>
+    <span class="stats-nav-label" th:text="${yearMonth} + ' 근태 현황'"></span>
+  </div>
+
+  <!-- 요약 카드 -->
+  <div class="stats-cards">
+    <div class="stats-card stats-card-blue">
+      <div class="stats-card-val" th:text="${onTime}">0</div>
+      <div class="stats-card-lbl">정상 출근</div>
+    </div>
+    <div class="stats-card stats-card-orange">
+      <div class="stats-card-val" th:text="${late}">0</div>
+      <div class="stats-card-lbl">지각</div>
+    </div>
+    <div class="stats-card stats-card-purple">
+      <div class="stats-card-val" th:text="${earlyLeave}">0</div>
+      <div class="stats-card-lbl">조퇴</div>
+    </div>
+    <div class="stats-card stats-card-red">
+      <div class="stats-card-val">
+        <span th:if="${onTime + late == 0}">0%</span>
+        <span th:if="${onTime + late > 0}"
+              th:text="${#numbers.formatDecimal(late * 100.0 / (onTime + late), 1, 1) + '%'}"></span>
+      </div>
+      <div class="stats-card-lbl">지각률</div>
+    </div>
+    <div class="stats-card stats-card-green">
+      <div class="stats-card-val" th:text="${leaveUsed}">0</div>
+      <div class="stats-card-lbl">연차 사용</div>
+    </div>
+  </div>
+
+  <!-- 차트 + 테이블 -->
+  <div class="stats-grid">
+    <div class="stats-panel">
+      <h3>최근 6개월 추이</h3>
+      <canvas id="trendChart" height="200"></canvas>
+    </div>
+    <div class="stats-panel stats-panel-scroll">
+      <h3 th:text="${yearMonth} + ' 일별 상세'"></h3>
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th>날짜</th>
+            <th>출근</th>
+            <th>퇴근</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:if="${#lists.isEmpty(detail)}">
+            <td colspan="4" class="stats-empty">출근 기록이 없습니다.</td>
+          </tr>
+          <tr th:each="d : ${detail}">
+            <td th:text="${d['workDate']}"></td>
+            <td th:text="${d['inTime'] ?: '-'}"></td>
+            <td th:text="${d['outTime'] ?: '-'}"></td>
+            <td>
+              <span th:if="${d['status'] == '정상'}"   class="stat-badge stat-badge-normal">정상</span>
+              <span th:if="${d['status'] == '지각'}"   class="stat-badge stat-badge-late">지각</span>
+              <span th:if="${d['status'] == '조퇴'}"   class="stat-badge stat-badge-early">조퇴</span>
+              <span th:if="${d['status'] == '지각+조퇴'}" class="stat-badge stat-badge-both">지각+조퇴</span>
+              <span th:if="${d['status'] == '재직중'}" class="stat-badge stat-badge-working">🟢 재직중</span>
+              <span th:if="${d['status'] == '미기록'}" class="stat-badge stat-badge-none">미기록</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+function moveMonth(delta) {
+  var val = document.getElementById('monthPicker').value;
+  var parts = val.split('-');
+  var year = parseInt(parts[0]);
+  var month = parseInt(parts[1]) + delta;
+  if (month < 1)  { month = 12; year--; }
+  if (month > 12) { month = 1;  year++; }
+  location.href = '/attend/stats?yearMonth=' + year + '-' + String(month).padStart(2, '0');
+}
+
+var trend = /*[[${trend}]]*/ [];
+var labels      = trend.map(function(t) { return String(t.yearMonth   || t.YEARMONTH   || ''); });
+var onTimes     = trend.map(function(t) { return Number(t.onTime     || t.ONTIME     || 0); });
+var lates       = trend.map(function(t) { return Number(t.late       || t.LATE       || 0); });
+var earlyLeaves = trend.map(function(t) { return Number(t.earlyLeave || t.EARLYLEAVE || 0); });
+
+if (labels.length > 0) {
+  new Chart(document.getElementById('trendChart'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label:'정상 출근', data:onTimes,     backgroundColor:'rgba(21,101,192,0.7)',  borderColor:'#1565c0', borderWidth:1, borderRadius:4 },
+        { label:'지각',     data:lates,       backgroundColor:'rgba(245,127,23,0.7)',  borderColor:'#f57f17', borderWidth:1, borderRadius:4 },
+        { label:'조퇴',     data:earlyLeaves, backgroundColor:'rgba(123,31,162,0.7)',  borderColor:'#7b1fa2', borderWidth:1, borderRadius:4 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+  });
+} else {
+  document.getElementById('trendChart').parentElement.innerHTML +=
+    '<p style="text-align:center;color:var(--text-3);margin-top:16px;">출근 데이터가 없습니다.</p>';
+  document.getElementById('trendChart').style.display = 'none';
+}
+/*]]>*/
+</script>

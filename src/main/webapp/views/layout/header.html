@@ -9,6 +9,28 @@
   <!-- 우측 빈 공간 -->
   <div style="flex:1;"></div>
 
+  <!-- 다크모드 토글 -->
+  <button id="themeToggle" onclick="toggleTheme()" title="다크모드 전환"
+          style="background:none; border:none; cursor:pointer; width:36px; height:36px;
+                 border-radius:6px; display:flex; align-items:center; justify-content:center;
+                 color:var(--text-2); font-size:1rem; transition:background 0.15s, color 0.15s;">
+    <i id="themeIcon" class="fa fa-moon"></i>
+  </button>
+
+  <!-- 빠른 실행 -->
+  <div class="quick-wrap" th:if="${session.loginUser != null}">
+    <button class="quick-btn" id="quickBtn" onclick="toggleQuick(event)" title="빠른 실행">
+      <i class="fa fa-plus"></i>
+    </button>
+    <div class="quick-dropdown" id="quickDropdown">
+      <a href="/approval/main"><i class="fa fa-file-signature"></i> 결재 기안</a>
+      <a href="/schedule"><i class="fa fa-calendar-plus"></i> 일정 등록</a>
+      <a href="/board/free"><i class="fa fa-pen"></i> 게시글 작성</a>
+      <div class="quick-dropdown-divider"></div>
+      <a href="/ai"><i class="fa fa-robot"></i> AI 어시스턴트</a>
+    </div>
+  </div>
+
   <!-- 알림 벨 -->
   <div class="notif-wrap" th:if="${session.loginUser != null}">
     <button class="notif-bell" id="notifBtn" onclick="toggleNotif(event)" aria-label="알림">
@@ -18,7 +40,15 @@
     <div class="notif-dropdown" id="notifDropdown">
       <div class="notif-header">
         <span>알림</span>
-        <button onclick="markAllRead()">모두 읽음</button>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button id="smartFilterBtn" onclick="toggleSmartFilter()"
+                  title="AI 스마트 필터" style="background:none; border:1px solid #546e7a;
+                  border-radius:12px; padding:2px 8px; font-size:0.75rem; cursor:pointer;
+                  color:#546e7a; transition:all 0.2s;">
+            <i class="fa fa-robot"></i> AI필터
+          </button>
+          <button onclick="markAllRead()">모두 읽음</button>
+        </div>
       </div>
       <ul id="notifList">
         <li class="notif-empty">알림이 없습니다.</li>
@@ -44,9 +74,23 @@
 
 </header>
 
-<!-- 알림 JS -->
+<!-- 빠른 실행 / 알림 JS -->
 <script>
 (function () {
+  window.toggleQuick = function (e) {
+    e.stopPropagation();
+    var dd = document.getElementById('quickDropdown');
+    if (dd) dd.classList.toggle('open');
+  };
+
+  document.addEventListener('click', function (e) {
+    var wrap = document.querySelector('.quick-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+      var dd = document.getElementById('quickDropdown');
+      if (dd) dd.classList.remove('open');
+    }
+  });
+
   window.toggleNotif = function (e) {
     e.stopPropagation();
     var dd = document.getElementById('notifDropdown');
@@ -63,24 +107,107 @@
     }
   });
 
+  var smartFilterOn = false;
+  var cachedNotifList = null;
+
+  window.toggleSmartFilter = function () {
+    smartFilterOn = !smartFilterOn;
+    var btn = document.getElementById('smartFilterBtn');
+    if (smartFilterOn) {
+      btn.style.background = '#3949ab';
+      btn.style.color = '#fff';
+      btn.style.borderColor = '#3949ab';
+    } else {
+      btn.style.background = 'none';
+      btn.style.color = '#546e7a';
+      btn.style.borderColor = '#546e7a';
+    }
+    // 캐시된 목록이 있으면 즉시 재렌더, 없으면 새로 로드
+    if (cachedNotifList) {
+      renderNotifs(document.getElementById('notifList'), cachedNotifList, null);
+      if (smartFilterOn) applyAiFilter(cachedNotifList);
+    } else {
+      loadNotifs();
+    }
+  };
+
   function loadNotifs() {
+    var ul = document.getElementById('notifList');
+    if (!ul) return;
+
     fetch('/notification/list')
-      .then(function (r) { return r.json(); })
+      .then(function (r) { return r.ok ? r.json() : Promise.resolve([]); })
       .then(function (list) {
-        var ul = document.getElementById('notifList');
-        if (!ul) return;
-        if (!list || list.length === 0) {
+        cachedNotifList = list || [];
+        if (cachedNotifList.length === 0) {
           ul.innerHTML = '<li class="notif-empty">알림이 없습니다.</li>';
           return;
         }
-        ul.innerHTML = list.map(function (n) {
-          var cls = n.isRead === 0 ? 'notif-unread' : '';
-          var url = n.refUrl || '#';
-          return '<li class="' + cls + '" onclick="location.href=\'' + url + '\'">'
-               + esc(n.message) + '</li>';
-        }).join('');
+        // 알림 즉시 표시
+        renderNotifs(ul, cachedNotifList, null);
+        // AI 필터 ON이면 백그라운드에서 비동기 적용
+        if (smartFilterOn) applyAiFilter(cachedNotifList);
       })
-      .catch(function () {});
+      .catch(function () {
+        ul.innerHTML = '<li class="notif-empty">알림이 없습니다.</li>';
+      });
+  }
+
+  function applyAiFilter(list) {
+    var ul = document.getElementById('notifList');
+    if (!ul) return;
+    // AI 분석 중 표시 (기존 목록 유지하면서 상단에 표시)
+    var indicator = document.createElement('li');
+    indicator.id = 'aiFilterIndicator';
+    indicator.style.cssText = 'color:#3949ab; font-size:0.8rem; padding:4px 12px; background:#e8eaf6;';
+    indicator.innerHTML = '<i class="fa fa-spinner fa-spin"></i> AI 중요 알림 분석 중...';
+    ul.insertBefore(indicator, ul.firstChild);
+
+    var simplified = list.map(function(n) {
+      return { type: n.type || '', message: n.message || '' };
+    });
+
+    fetch('/ai/notifications/smart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ notifications: simplified })
+    })
+    .then(function(r) { return r.ok ? r.json() : Promise.resolve({}); })
+    .then(function(data) {
+      var ind = document.getElementById('aiFilterIndicator');
+      if (ind) ind.remove();
+      if (!data.result) return;
+      try {
+        var result = JSON.parse(data.result);
+        var filtered = result.filtered || [];
+        var highIndices = filtered.map(function(f) { return f.index; });
+        renderNotifs(ul, list, highIndices);
+      } catch(e) { /* AI 실패 시 현재 목록 유지 */ }
+    })
+    .catch(function() {
+      var ind = document.getElementById('aiFilterIndicator');
+      if (ind) ind.remove();
+    });
+  }
+
+  function renderNotifs(ul, list, highIndices) {
+    ul.innerHTML = list.map(function (n, i) {
+      var cls = n.isRead === 0 ? 'notif-unread' : '';
+      var url = n.refUrl || '#';
+      var badge = '';
+      if (highIndices !== null) {
+        if (highIndices.includes(i)) {
+          badge = '<span style="font-size:0.7rem; background:#c62828; color:#fff; border-radius:10px; padding:1px 6px; margin-right:4px;">중요</span>';
+        } else {
+          return '';
+        }
+      }
+      return '<li class="' + cls + '" onclick="location.href=\'' + url + '\'">'
+           + badge + esc(n.message) + '</li>';
+    }).join('');
+    if (!ul.innerHTML.trim()) {
+      ul.innerHTML = '<li class="notif-empty">중요 알림이 없습니다.</li>';
+    }
   }
 
   function esc(s) {
@@ -118,5 +245,27 @@
     updateBadge();
     setInterval(updateBadge, 30000);
   }
+})();
+
+// 다크모드 토글
+window.toggleTheme = function() {
+  var html = document.documentElement;
+  var isDark = html.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    html.removeAttribute('data-theme');
+    localStorage.setItem('nxTheme', 'light');
+    document.getElementById('themeIcon').className = 'fa fa-moon';
+  } else {
+    html.setAttribute('data-theme', 'dark');
+    localStorage.setItem('nxTheme', 'dark');
+    document.getElementById('themeIcon').className = 'fa fa-sun';
+  }
+};
+// 페이지 로드 시 아이콘 동기화
+(function() {
+  var icon = document.getElementById('themeIcon');
+  if (!icon) return;
+  icon.className = document.documentElement.getAttribute('data-theme') === 'dark'
+    ? 'fa fa-sun' : 'fa fa-moon';
 })();
 </script>

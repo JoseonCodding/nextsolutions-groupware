@@ -27,14 +27,13 @@
   font-family: inherit;
 }
 
-/* 버튼 공통 스타일 (검색 버튼 + 글쓰기 버튼) */
+/* 버튼 공통 스타일 */
 .search-form button,
-.board-controls .btn,
-.filter-btn {
-  background: #3949ab;
+.board-controls .btn {
+  background: var(--primary);
   color: #fff;
   border: none;
-  padding: 7px 14px;
+  padding: 8px 16px;
   border-radius: 8px;
   font-size: 13px;
   cursor: pointer;
@@ -42,24 +41,41 @@
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-weight: 600;
-  font-family: inherit;
+  font-family: var(--font);
   white-space: nowrap;
 }
 
+/* 초기화/리셋 버튼 — 고스트 스타일 */
 .filter-btn {
-  background: #546e7a;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  color: var(--text-2);
+  border: 1.5px solid var(--border);
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  text-decoration: none;
+  font-family: var(--font);
+  white-space: nowrap;
+}
+.filter-btn:hover {
+  background: var(--surface-alt);
+  color: var(--text-1);
+  border-color: var(--text-3);
 }
 
 .search-form button:hover,
 .board-controls .btn:hover { filter: brightness(1.08); }
-.filter-btn:hover { filter: brightness(1.08); }
 
 .search-form button:active,
-.board-controls .btn:active {
-  transform: translateY(1px);
-}
+.board-controls .btn:active { transform: translateY(1px); }
 
 /* ===============================
    글쓰기/수정 폼 공통

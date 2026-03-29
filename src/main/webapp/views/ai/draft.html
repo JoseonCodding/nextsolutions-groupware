@@ -1,0 +1,107 @@
+<div class="check-list-container">
+  <h1>문서 자동 초안</h1>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:16px;">
+    <!-- 입력 -->
+    <div>
+      <h3>문서 정보</h3>
+      <label>문서 유형
+        <select id="docType" class="form-select mt-1">
+          <option value="업무보고서">업무보고서</option>
+          <option value="프로젝트 제안서">프로젝트 제안서</option>
+          <option value="회의 안건서">회의 안건서</option>
+          <option value="결재 품의서">결재 품의서</option>
+          <option value="업무 이메일">업무 이메일</option>
+          <option value="공지사항">공지사항</option>
+          <option value="보도자료">보도자료</option>
+        </select>
+      </label>
+      <label style="margin-top:12px; display:block;">문서 제목
+        <input type="text" id="docTitle" class="form-control mt-1"
+               placeholder="예: 2분기 마케팅 전략 제안"/>
+      </label>
+      <label style="margin-top:12px; display:block;">문체
+        <select id="tone" class="form-select mt-1">
+          <option value="공식적">공식적</option>
+          <option value="친근한">친근한</option>
+          <option value="간결한">간결한</option>
+        </select>
+      </label>
+      <label style="margin-top:12px; display:block;">핵심 내용 (키포인트를 줄바꿈으로 입력)
+        <textarea id="keyPoints" class="form-control mt-1" rows="12"
+                  placeholder="예)&#10;- 목표: 2분기 매출 20% 성장&#10;- 주요 전략: SNS 마케팅 강화, 신규 고객 유치&#10;- 예산: 500만원&#10;- 기간: 4월~6월&#10;- 담당: 마케팅팀 전원"></textarea>
+      </label>
+      <button id="generateBtn" class="filter-btn" style="margin-top:12px; width:100%;">
+        <i class="fa fa-pen-to-square"></i> 초안 생성
+      </button>
+    </div>
+
+    <!-- 결과 -->
+    <div>
+      <h3>생성된 초안</h3>
+      <div id="loadingArea" style="display:none; text-align:center; padding:40px;">
+        <i class="fa fa-spinner fa-spin fa-2x"></i>
+        <p style="margin-top:12px; color:#666;">초안을 작성하고 있습니다...</p>
+      </div>
+      <div id="errorArea" style="display:none; color:#c62828; padding:16px; background:#ffebee; border-radius:8px;"></div>
+      <div id="resultArea" style="display:none;">
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:8px;">
+          <button id="copyBtn" class="filter-btn" style="padding:6px 14px; font-size:0.85rem;">
+            <i class="fa fa-copy"></i> 복사
+          </button>
+        </div>
+        <textarea id="draftOutput" class="form-control" rows="24"
+                  style="font-family: 'Malgun Gothic', sans-serif; font-size:0.9rem; line-height:1.7;"></textarea>
+      </div>
+      <div id="emptyMsg" style="color:#999; padding:40px; text-align:center;">
+        왼쪽에 내용을 입력하고 초안 생성 버튼을 클릭하세요.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('generateBtn').addEventListener('click', function() {
+  const keyPoints = document.getElementById('keyPoints').value.trim();
+  if (!keyPoints) { alert('핵심 내용을 입력하세요.'); return; }
+
+  document.getElementById('resultArea').style.display = 'none';
+  document.getElementById('errorArea').style.display = 'none';
+  document.getElementById('emptyMsg').style.display = 'none';
+  document.getElementById('loadingArea').style.display = 'block';
+
+  fetch('/ai/draft', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      docType:   document.getElementById('docType').value,
+      title:     document.getElementById('docTitle').value,
+      tone:      document.getElementById('tone').value,
+      keyPoints: keyPoints
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('loadingArea').style.display = 'none';
+    if (data.error) {
+      document.getElementById('errorArea').textContent = data.error;
+      document.getElementById('errorArea').style.display = 'block';
+      return;
+    }
+    document.getElementById('draftOutput').value = data.draft || '';
+    document.getElementById('resultArea').style.display = 'block';
+  })
+  .catch(e => {
+    document.getElementById('loadingArea').style.display = 'none';
+    document.getElementById('errorArea').textContent = '오류: ' + e.message;
+    document.getElementById('errorArea').style.display = 'block';
+  });
+});
+
+document.getElementById('copyBtn').addEventListener('click', function() {
+  const ta = document.getElementById('draftOutput');
+  ta.select();
+  document.execCommand('copy');
+  alert('클립보드에 복사됐습니다.');
+});
+</script>

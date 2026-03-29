@@ -1,0 +1,128 @@
+<div class="check-list-container">
+  <h1>스마트 일정 조율</h1>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:16px;">
+    <!-- 입력 -->
+    <div>
+      <h3>회의 조건 입력</h3>
+      <label>회의 주제
+        <input type="text" id="topic" class="form-control mt-1"
+               placeholder="예: 3분기 전략 회의"/>
+      </label>
+      <label style="margin-top:12px; display:block;">소요 시간
+        <select id="duration" class="form-select mt-1">
+          <option value="30">30분</option>
+          <option value="60" selected>1시간</option>
+          <option value="90">1시간 30분</option>
+          <option value="120">2시간</option>
+        </select>
+      </label>
+      <label style="margin-top:12px; display:block;">참여자 선택
+        <div id="participantList" style="margin-top:8px; border:1px solid #ced4da; border-radius:4px;
+             padding:8px; max-height:200px; overflow-y:auto; background:#fff;">
+          <div th:each="emp : ${employeeList}" style="padding:4px 0;">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0;">
+              <input type="checkbox" class="participant-check"
+                     th:value="${emp['employeeId']}"
+                     th:data-name="${emp['emp_nm']}"/>
+              <span th:text="${emp['emp_nm'] + ' (' + emp['deptName'] + ' / ' + emp['position'] + ')'}"></span>
+            </label>
+          </div>
+        </div>
+      </label>
+      <button id="suggestBtn" class="filter-btn" style="margin-top:16px; width:100%;">
+        <i class="fa fa-calendar-check"></i> 최적 시간 추천받기
+      </button>
+    </div>
+
+    <!-- 결과 -->
+    <div>
+      <h3>추천 일정</h3>
+      <div id="loadingArea" style="display:none; text-align:center; padding:40px;">
+        <i class="fa fa-spinner fa-spin fa-2x"></i>
+        <p style="margin-top:12px; color:#666;">최적 시간을 찾고 있습니다...</p>
+      </div>
+      <div id="errorArea" style="display:none; color:#c62828; padding:16px; background:#ffebee; border-radius:8px;"></div>
+      <div id="resultArea" style="display:none;">
+        <div id="suggestions"></div>
+      </div>
+      <div id="emptyMsg" style="color:#999; padding:40px; text-align:center;">
+        참여자를 선택하고 추천받기를 클릭하세요.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('suggestBtn').addEventListener('click', function() {
+  const topic = document.getElementById('topic').value.trim();
+  if (!topic) { alert('회의 주제를 입력하세요.'); return; }
+
+  const participants = Array.from(document.querySelectorAll('.participant-check:checked'))
+                            .map(cb => cb.value);
+  if (participants.length === 0) { alert('참여자를 1명 이상 선택하세요.'); return; }
+
+  document.getElementById('resultArea').style.display = 'none';
+  document.getElementById('errorArea').style.display = 'none';
+  document.getElementById('emptyMsg').style.display = 'none';
+  document.getElementById('loadingArea').style.display = 'block';
+
+  fetch('/ai/schedule-suggest', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      topic:        topic,
+      duration:     document.getElementById('duration').value,
+      participants: participants
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('loadingArea').style.display = 'none';
+    if (data.error) {
+      document.getElementById('errorArea').textContent = data.error;
+      document.getElementById('errorArea').style.display = 'block';
+      return;
+    }
+    try {
+      const result = JSON.parse(data.result);
+      const container = document.getElementById('suggestions');
+      container.innerHTML = '';
+
+      (result.suggestions || []).forEach((s, i) => {
+        container.innerHTML += `
+          <div style="padding:16px; margin-bottom:12px; background:#e3f2fd;
+               border-radius:8px; border-left:4px solid #1565c0;">
+            <div style="font-weight:bold; font-size:1.05rem; color:#1565c0;">
+              ${i+1}안: ${s.date} ${s.time} ~ ${s.endTime}
+            </div>
+            <div style="margin-top:6px; color:#555; font-size:0.9rem;">${s.reason}</div>
+            <button class="filter-btn create-btn" style="margin-top:10px; padding:6px 16px; font-size:0.85rem;"
+                    data-date="${s.date}" data-time="${s.time}" data-end="${s.endTime}">
+              <i class="fa fa-plus"></i> 일정 등록
+            </button>
+          </div>`;
+      });
+
+      document.getElementById('resultArea').style.display = 'block';
+
+      // 일정 등록 버튼
+      document.querySelectorAll('.create-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const d = this.dataset.date;
+          const t = this.dataset.time;
+          alert(`일정 등록: ${d} ${t}\n일정 페이지에서 직접 등록해주세요.\n(/schedule)`);
+        });
+      });
+    } catch(e) {
+      document.getElementById('errorArea').textContent = '결과 파싱 오류: ' + data.result;
+      document.getElementById('errorArea').style.display = 'block';
+    }
+  })
+  .catch(e => {
+    document.getElementById('loadingArea').style.display = 'none';
+    document.getElementById('errorArea').textContent = '오류: ' + e.message;
+    document.getElementById('errorArea').style.display = 'block';
+  });
+});
+</script>

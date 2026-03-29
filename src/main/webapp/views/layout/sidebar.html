@@ -9,13 +9,50 @@
     <a href="/dashboard"><i class="fa fa-house"></i> 대시보드</a>
     <a href="/schedule"><i class="fa fa-calendar-days"></i> 일정관리</a>
     <a href="/attend"><i class="fa fa-clock"></i> 근태관리</a>
+    <a th:if="${session.loginUser?.role == '대표'}" href="/payroll/main">
+      <i class="fa fa-money-bill-wave"></i> 급여관리
+    </a>
+    <a th:unless="${session.loginUser?.role == '대표'}" href="/payroll/my">
+      <i class="fa fa-money-bill-wave"></i> 급여명세서
+    </a>
     <a href="/pjtMng/getPjtList"><i class="fa fa-diagram-project"></i> 프로젝트관리</a>
     <a href="/approval/main"><i class="fa fa-file-signature"></i> 전자결재</a>
     <a href="/board/notice"><i class="fa fa-bullhorn"></i> 게시판</a>
     <a href="/document/main"><i class="fa fa-folder-open"></i> 문서관리</a>
     <a href="/employee/list"><i class="fa fa-users"></i> 사원관리</a>
+    <a href="/employee/orgChart"><i class="fa fa-sitemap"></i> 조직도</a>
+    <a th:if="${session.loginUser?.role == '대표'}" href="/company/admin">
+      <i class="fa fa-building"></i> 회사 관리
+    </a>
     <a href="/chat"><i class="fa fa-comments"></i> 팀 채팅</a>
+    <div class="sidebar-group">
+      <div class="sidebar-group-header" onclick="toggleAiMenu(this)">
+        <span><i class="fa fa-robot"></i> AI 어시스턴트</span>
+        <i class="fa fa-chevron-down sidebar-arrow"></i>
+      </div>
+      <div class="sidebar-group-body">
+        <a href="/ai"><i class="fa fa-comment-dots"></i> AI 채팅</a>
+        <a href="/ai/meeting"><i class="fa fa-file-lines"></i> 회의록 자동생성</a>
+        <a href="/ai/draft"><i class="fa fa-pen-to-square"></i> 문서 자동 초안</a>
+        <a href="/ai/workload"><i class="fa fa-chart-line"></i> 업무 부하 감지</a>
+        <a href="/ai/schedule-suggest"><i class="fa fa-calendar-check"></i> 스마트 일정 조율</a>
+      </div>
+    </div>
   </nav>
+
+  <style>
+  .sidebar-group-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 16px; cursor: pointer; color: #cfd8dc; font-size: 0.95rem;
+    border-radius: 6px; transition: background 0.15s;
+  }
+  .sidebar-group-header:hover { background: rgba(255,255,255,0.08); }
+  .sidebar-group-body { display: none; }
+  .sidebar-group-body.open { display: block; }
+  .sidebar-group-body a { padding-left: 36px !important; font-size: 0.88rem; }
+  .sidebar-arrow { transition: transform 0.2s; font-size: 0.75rem; }
+  .sidebar-arrow.open { transform: rotate(180deg); }
+  </style>
 
   <!-- 하단 사용자 -->
   <div class="sidebar-footer" th:if="${session.loginUser != null}">
@@ -43,6 +80,13 @@ function closeSidebar() {
   document.getElementById('appSidebar').classList.remove('sidebar-open');
   document.getElementById('sidebarOverlay').style.display = 'none';
 }
+function toggleAiMenu(header) {
+  var body = header.nextElementSibling;
+  var arrow = header.querySelector('.sidebar-arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
 (function() {
   var path = window.location.pathname;
   var links = document.querySelectorAll('#sidebarNav a');
@@ -54,5 +98,12 @@ function closeSidebar() {
       a.classList.add('active');
     }
   });
+  // AI 서브메뉴: /ai 경로면 자동 펼침
+  if (path.startsWith('/ai')) {
+    var body = document.querySelector('.sidebar-group-body');
+    var arrow = document.querySelector('.sidebar-arrow');
+    if (body) body.classList.add('open');
+    if (arrow) arrow.classList.add('open');
+  }
 })();
 </script>

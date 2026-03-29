@@ -1,0 +1,267 @@
+<title>AI 어시스턴트</title>
+<link rel="stylesheet" href="/css/common.css">
+
+<style>
+.ai-wrap {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 120px);
+    max-width: 800px;
+    margin: 20px auto;
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+.ai-header {
+    background: var(--primary);
+    color: #fff;
+    padding: 14px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.ai-header-icon { font-size: 20px; }
+.ai-header-sub {
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.8;
+    margin-left: auto;
+}
+.ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--bg);
+}
+.ai-msg { display: flex; flex-direction: column; max-width: 75%; }
+.ai-msg.user  { align-self: flex-end;  align-items: flex-end; }
+.ai-msg.ai    { align-self: flex-start; align-items: flex-start; }
+.ai-msg-label { font-size: 11px; color: var(--text-3); margin-bottom: 3px; }
+.ai-msg-bubble {
+    padding: 10px 15px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+.ai-msg.user .ai-msg-bubble {
+    background: var(--primary); color: #fff; border-bottom-right-radius: 4px;
+}
+.ai-msg.ai .ai-msg-bubble {
+    background: var(--surface); color: var(--text-1); border-bottom-left-radius: 4px;
+    box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+}
+.ai-msg-time { font-size: 10px; color: var(--text-3); margin-top: 3px; }
+.ai-typing .ai-msg-bubble { color: var(--text-3); font-style: italic; }
+.ai-input-area {
+    display: flex;
+    gap: 10px;
+    padding: 14px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+}
+.ai-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    font-size: 14px;
+    outline: none;
+    resize: none;
+    height: 42px;
+    max-height: 120px;
+    overflow-y: auto;
+    font-family: var(--font);
+    background: var(--surface-alt);
+    color: var(--text-1);
+    transition: border-color 0.15s;
+}
+.ai-input:focus { border-color: var(--primary); }
+.ai-input::placeholder { color: var(--text-3); }
+.ai-send-btn {
+    padding: 0 20px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    height: 42px;
+    white-space: nowrap;
+    font-family: var(--font);
+    transition: filter 0.15s;
+}
+.ai-send-btn:hover { filter: brightness(1.1); }
+.ai-send-btn:disabled { background: var(--text-3); cursor: default; }
+.ai-clear-btn {
+    padding: 0 14px;
+    background: none;
+    color: var(--text-2);
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    font-size: 13px;
+    cursor: pointer;
+    height: 42px;
+    white-space: nowrap;
+    font-family: var(--font);
+    transition: background 0.15s, color 0.15s;
+}
+.ai-clear-btn:hover { background: var(--surface-alt); color: var(--text-1); }
+.ai-welcome {
+    align-self: center;
+    text-align: center;
+    color: var(--text-3);
+    font-size: 13px;
+    margin-top: 20px;
+}
+.ai-welcome-icon { font-size: 40px; margin-bottom: 8px; }
+</style>
+
+<div class="ai-wrap">
+    <div class="ai-header">
+        <span class="ai-header-icon">🤖</span>
+        <span>AI 어시스턴트</span>
+        <span class="ai-header-sub">claude-haiku</span>
+    </div>
+
+    <div class="ai-messages" id="aiMessages">
+        <div class="ai-welcome" id="aiWelcome">
+            <div class="ai-welcome-icon">🤖</div>
+            <div>무엇이든 물어보세요!</div>
+            <div style="margin-top:4px;font-size:12px;">업무, 일정, 문서 작성 등 도와드립니다.</div>
+        </div>
+    </div>
+
+    <div class="ai-input-area">
+        <button class="ai-clear-btn" onclick="clearChat()">대화 초기화</button>
+        <textarea id="aiInput" class="ai-input" placeholder="메시지를 입력하세요..." rows="1"
+                  onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="ai-send-btn" id="aiSendBtn" onclick="sendMessage()">전송</button>
+    </div>
+</div>
+
+<script>
+(function () {
+    // 대화 히스토리 (Claude API messages 형식)
+    const history = [];
+
+    const messagesEl = document.getElementById('aiMessages');
+    const inputEl    = document.getElementById('aiInput');
+    const sendBtn    = document.getElementById('aiSendBtn');
+    const welcomeEl  = document.getElementById('aiWelcome');
+
+    function handleKey(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    }
+
+    function autoResize(el) {
+        el.style.height = '42px';
+        el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    function now() {
+        const d = new Date();
+        return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+    }
+
+    function appendMsg(role, text) {
+        if (welcomeEl) welcomeEl.remove();
+        const div = document.createElement('div');
+        div.className = 'ai-msg ' + (role === 'user' ? 'user' : 'ai');
+        div.innerHTML = `
+            <div class="ai-msg-label">${role === 'user' ? '나' : 'AI'}</div>
+            <div class="ai-msg-bubble">${esc(text)}</div>
+            <div class="ai-msg-time">${now()}</div>`;
+        messagesEl.appendChild(div);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        return div;
+    }
+
+    function appendTyping() {
+        if (welcomeEl) welcomeEl.remove();
+        const div = document.createElement('div');
+        div.className = 'ai-msg ai ai-typing';
+        div.id = 'aiTyping';
+        div.innerHTML = `
+            <div class="ai-msg-label">AI</div>
+            <div class="ai-msg-bubble">답변을 작성 중입니다...</div>`;
+        messagesEl.appendChild(div);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function removeTyping() {
+        const el = document.getElementById('aiTyping');
+        if (el) el.remove();
+    }
+
+    function sendMessage() {
+        const content = inputEl.value.trim();
+        if (!content || sendBtn.disabled) return;
+
+        appendMsg('user', content);
+        history.push({ role: 'user', content: content });
+
+        inputEl.value = '';
+        inputEl.style.height = '42px';
+        sendBtn.disabled = true;
+        appendTyping();
+
+        fetch('/ai/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: history })
+        })
+        .then(r => r.json())
+        .then(data => {
+            removeTyping();
+            if (data.error) {
+                appendMsg('ai', '오류: ' + data.error);
+            } else {
+                appendMsg('ai', data.content);
+                history.push({ role: 'assistant', content: data.content });
+            }
+        })
+        .catch(() => {
+            removeTyping();
+            appendMsg('ai', '요청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        })
+        .finally(() => {
+            sendBtn.disabled = false;
+            inputEl.focus();
+        });
+    }
+
+    function clearChat() {
+        history.length = 0;
+        messagesEl.innerHTML = `
+            <div class="ai-welcome" id="aiWelcome">
+                <div class="ai-welcome-icon">🤖</div>
+                <div>무엇이든 물어보세요!</div>
+                <div style="margin-top:4px;font-size:12px;">업무, 일정, 문서 작성 등 도와드립니다.</div>
+            </div>`;
+    }
+
+    function esc(s) {
+        return String(s)
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    window.sendMessage = sendMessage;
+    window.clearChat = clearChat;
+    window.handleKey = handleKey;
+    window.autoResize = autoResize;
+})();
+</script>

@@ -16,140 +16,134 @@ table[id=diary_title] {
   background: initial;
 }
 
-/*************달 이동 버튼**************/
-.month-nav {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	margin-bottom: 16px;
+/*************상단 툴바**************/
+.sche-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
 }
 
-.month-btn1, .month-btn2 {
-    background: #3949ab;
-    color: #fff;
-    padding: 7px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: filter 0.15s;
-}
-.month-btn1:hover, .month-btn2:hover { filter: brightness(0.88); }
-
-#month_title {
-	font-size: 1.1em;
-	font-weight: 700;
-	color: #1a202c;
-	min-width: 120px;
-	text-align: center;
-}
-
-/*************주 이동 버튼**************/
-.week-nav {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	margin-bottom: 16px;
-}
-
-.week-btn1, .week-btn2 {
-    background: #3949ab;
-    color: #fff;
-    padding: 7px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: filter 0.15s;
-}
-.week-btn1:hover, .week-btn2:hover { filter: brightness(0.88); }
-
-#week_title {
-	font-size: 1em;
-	font-weight: 700;
-	min-width: 80px;
-	text-align: center;
-}
-
-/*************일 이동 버튼**************/
-.day-nav {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	margin-bottom: 16px;
-}
-
-.day-btn1, .day-btn2 {
-    background: #3949ab;
-    color: #fff;
-    padding: 7px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: filter 0.15s;
-}
-.day-btn1:hover, .day-btn2:hover { filter: brightness(0.88); }
-
-#day_title {
-	font-size: 1em;
-	font-weight: 700;
-	min-width: 80px;
-	text-align: center;
-}
-
-/********달력 보기 방식 버튼*********/
+/********달력 보기 방식 버튼 (세그먼트)*********/
 .view-select {
-	display: flex;
-	gap: 6px;
-	margin-bottom: 16px;
+    display: flex;
+    gap: 0;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
 }
 .view-select button {
-    background: #3949ab;
-    color: #fff;
-    padding: 7px 16px;
+    background: none;
+    color: var(--text-2);
+    padding: 6px 16px;
     font-size: 13px;
     font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: filter 0.15s;
+    transition: background 0.15s, color 0.15s;
+    font-family: var(--font);
 }
-.view-select button:hover { filter: brightness(0.88); }
+.view-select button:hover { background: var(--border); color: var(--text-1); }
+.view-select button.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 1px 4px rgba(57,73,171,0.25);
+}
+
+/*************달/주/일 이동 버튼**************/
+.month-nav, .week-nav, .day-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* 공통 이전/다음 nav 버튼 */
+.month-btn1, .month-btn2,
+.week-btn1, .week-btn2,
+.day-btn1, .day-btn2 {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: none;
+    color: var(--text-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    font-family: var(--font);
+    padding: 0;
+}
+.month-btn1:hover, .month-btn2:hover,
+.week-btn1:hover, .week-btn2:hover,
+.day-btn1:hover, .day-btn2:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+/* 버튼 텍스트를 화살표 아이콘으로 대체 (schedule 전용 — button 태그에만 적용) */
+button.month-btn1::before, button.week-btn1::before, button.day-btn1::before { content: '‹'; font-size: 18px; line-height: 1; }
+button.month-btn2::before, button.week-btn2::before, button.day-btn2::before { content: '›'; font-size: 18px; line-height: 1; }
+button.month-btn1, button.week-btn1, button.day-btn1,
+button.month-btn2, button.week-btn2, button.day-btn2 { font-size: 0; } /* 원본 텍스트 숨김 */
+
+#month_title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-1);
+    min-width: 110px;
+    text-align: center;
+    padding: 0 6px;
+}
+#week_title, #day_title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-2);
+    min-width: 50px;
+    text-align: center;
+    padding: 0 4px;
+}
 
 /******** 달력(테이블) *************/
 .sche-table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border);
     border-radius: 8px;
     overflow: hidden;
-    background: #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
 }
 
 .mTH, .wTH, .dTH {
-    background: #f8fafc;
-    color: #374151;
+    background: var(--surface-alt);
+    color: var(--text-2);
     font-size: 12px;
     font-weight: 600;
     padding: 10px 6px;
-    border-bottom: 2px solid #e2e8f0;
-    border-right: 1px solid #e2e8f0;
+    border-bottom: 2px solid var(--border);
+    border-right: 1px solid var(--border);
     text-align: center;
     letter-spacing: 0.3px;
 }
 .dHH {
-    background: #f8fafc;
+    background: var(--surface-alt);
     font-size: 12px;
     font-weight: 600;
     padding: 10px 6px;
-    border-bottom: 2px solid #e2e8f0;
-    border-right: 1px solid #e2e8f0;
-    color: #374151;
+    border-bottom: 2px solid var(--border);
+    border-right: 1px solid var(--border);
+    color: var(--text-2);
     text-align: center;
     width: 60px;
 }
@@ -158,26 +152,26 @@ table[id=diary_title] {
     height: 100px;
     vertical-align: top;
     padding: 6px;
-    border-right: 1px solid #e2e8f0;
-    border-bottom: 1px solid #e2e8f0;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
     font-size: 13px;
-    color: #374151;
+    color: var(--text-1);
 }
 .monthgrid-day:hover {
-    background: #f5f7ff;
+    background: var(--primary-light);
 }
 
 /* 주별/일별 td 공통 */
 .sche-table td {
-    border-right: 1px solid #e2e8f0;
-    border-bottom: 1px solid #e2e8f0;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
     padding: 4px 6px;
     vertical-align: top;
     font-size: 13px;
     min-height: 60px;
 }
 .sche-table th {
-    border-right: 1px solid #e2e8f0;
+    border-right: 1px solid var(--border);
 }
 
 .sche-comm {
@@ -198,106 +192,93 @@ table[id=diary_title] {
 
 /*일정등록 버튼*/
 .rrgg {
-    background: #3949ab;
+    background: var(--primary);
     color: #fff;
     display: inline-flex;
     align-items: center;
-    padding: 8px 18px;
+    gap: 6px;
+    padding: 9px 20px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     margin-top: 20px;
     position: absolute;
     right: 0px;
     bottom: 0px;
-    transition: filter 0.15s;
+    transition: filter 0.15s, box-shadow 0.15s;
     text-decoration: none;
+    box-shadow: 0 2px 8px rgba(57,73,171,0.25);
+    letter-spacing: 0.2px;
 }
-.rrgg:hover { filter: brightness(0.88); color: #fff; }
+.rrgg::before { content: '+'; font-size: 16px; font-weight: 700; line-height: 1; }
+.rrgg:hover { filter: brightness(1.08); color: #fff; box-shadow: 0 4px 12px rgba(57,73,171,0.35); }
 
 /***********************************/
 /********** 일정 등록, 수정 ***********/
 .sche-table input, .sche-table select {
-	padding: 8px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--text-1);
 }
 
 .sche-detail-container {
-	padding-bottom: 70px;
-	margin-bottom: 30px;
-	position: relative;
+    padding-bottom: 70px;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+/* 상세/등록/수정/삭제 공통 버튼 베이스 */
+.sche-detail-btn, .sche-back-btn, .sche-save-btn, .sche-delete-btn {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    position: absolute;
+    bottom: 0px;
+    transition: filter 0.15s, box-shadow 0.15s;
+    font-family: var(--font);
+    letter-spacing: 0.2px;
 }
 
 .sche-detail-btn {
-	font-size: 13px;
-    background: #3949ab;
+    background: var(--primary);
     color: #fff;
-    padding: 8px 18px;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    position: absolute;
     right: 0px;
-    bottom: 0px;
-    transition: filter 0.15s;
+    box-shadow: 0 2px 6px rgba(57,73,171,0.2);
 }
-.sche-detail-btn:hover { filter: brightness(0.88); }
+.sche-detail-btn:hover { filter: brightness(1.08); }
 
 .sche-back-btn {
-	font-size: 13px;
-    background: #546e7a;
-    color: #fff;
-    padding: 8px 18px;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    position: absolute;
+    background: var(--surface-alt);
+    color: var(--text-2);
+    border: 1px solid var(--border);
     right: 132px;
-    bottom: 0px;
-    transition: filter 0.15s;
+    box-shadow: none;
 }
-.sche-back-btn:hover { filter: brightness(0.88); }
+.sche-back-btn:hover { background: var(--border); color: var(--text-1); }
 
 .sche-save-btn {
-	font-size: 13px;
-    background: #3949ab;
+    background: var(--primary);
     color: #fff;
-    padding: 8px 18px;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    position: absolute;
     right: 66px;
-    bottom: 0px;
-    transition: filter 0.15s;
+    box-shadow: 0 2px 6px rgba(57,73,171,0.2);
 }
-.sche-save-btn:hover { filter: brightness(0.88); }
+.sche-save-btn:hover { filter: brightness(1.08); }
 
 .sche-delete-btn {
-	font-size: 13px;
-    background: #c62828;
+    background: var(--danger);
     color: #fff;
-    padding: 8px 18px;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    position: absolute;
     right: 0px;
-    bottom: 0px;
-    transition: filter 0.15s;
+    box-shadow: 0 2px 6px rgba(198,40,40,0.2);
 }
-.sche-delete-btn:hover { filter: brightness(0.88); }
+.sche-delete-btn:hover { filter: brightness(1.08); }
 
 .sche-table-detail tr td:hover { background: initial; }
 

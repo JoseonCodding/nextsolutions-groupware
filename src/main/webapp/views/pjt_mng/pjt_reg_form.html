@@ -6,8 +6,8 @@ table {
 	width: 75%;
 	margin: 0 auto;
 	border-collapse: collapse;
-	background-color: #ffffff;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	background-color: var(--surface);
+	box-shadow: var(--shadow-md);
 	border-radius: 10px;
 	overflow: hidden;
 }
@@ -15,14 +15,13 @@ table {
 th, td {
 	padding: 16px 20px;
 	text-align: left;
-	border-bottom: 1px solid #e0e0e0;
+	border-bottom: 1px solid var(--border);
 }
 
 th {
 	width: 20%;
-	background-color: #f0f0f0;
+	background-color: var(--surface-alt);
 	font-weight: bold;
-	/* color: #333; */
 	text-align: center;
 }
 
@@ -53,7 +52,7 @@ input, select {
 	margin-left: 10px;
 	padding: 4px 10px;
 	font-size: 14px;
-	background-color: #007bff;
+	background-color: var(--primary);
 	color: white;
 	border: none;
 	border-radius: 4px;
@@ -62,7 +61,7 @@ input, select {
 }
 
 .workflow-step button:hover {
-	background-color: #0056b3;
+	background-color: var(--primary-dark);
 }
 
 /* 결재자 추가 버튼 */
@@ -70,7 +69,7 @@ input, select {
 	margin-top: 10px;
 	padding: 8px 16px;
 	font-size: 14px;
-	background-color: #007bff;
+	background-color: var(--primary);
 	color: white;
 	border: none;
 	border-radius: 6px;
@@ -79,20 +78,8 @@ input, select {
 }
 
 .btn-add-approver:hover {
-	background-color: #0056b3;
+	background-color: var(--primary-dark);
 }
-
-/* /*  버튼 묶음: 가운데 정렬 
-.button-row {
-	display: flex;
-	justify-content: center; /* 가로 가운데 정렬 
-	align-items: center; /* 세로 가운데 맞춤 
-	gap: 12px; /* 버튼 사이 간격 
-	margin-top: 30px;
-	width: 100%;
-} 
-*/
-
 </style>
 
 
@@ -186,19 +173,19 @@ input, select {
 				<th rowspan="3">파일업로드</th>
 				<td><input type="file" name="uploadFile1" id="uploadFile1" />
 					<div id="fileName"
-						style="margin-top: 8px; color: #333; font-size: 14px; background-color: #f0f0f0; padding: 6px 10px; height: 20px; border-radius: 4px; border: 1px solid #ccc; ">
+						style="margin-top: 8px; color: var(--text-1); font-size: 14px; background-color: var(--surface-alt); padding: 6px 10px; height: 20px; border-radius: 4px; border: 1px solid var(--border);">
 					</div></td>
 			</tr>
 			<tr>
 				<td><input type="file" name="uploadFile2" id="uploadFile2" />
 					<div id="fileName"
-						style="margin-top: 8px; color: #333; font-size: 14px; background-color: #f0f0f0; padding: 6px 10px; height: 20px; border-radius: 4px; border: 1px solid #ccc; ">
+						style="margin-top: 8px; color: var(--text-1); font-size: 14px; background-color: var(--surface-alt); padding: 6px 10px; height: 20px; border-radius: 4px; border: 1px solid var(--border);">
 					</div></td>
 			</tr>
 			<tr>
 				<td><input type="file" name="uploadFile3" id="uploadFile3" />
 					<div id="fileName"
-						style="margin-top: 8px; color: #333; font-size: 14px; background-color: #f0f0f0; padding: 6px 10px; height: 20px; border-radius: 4px; border: 1px solid #ccc; ">
+						style="margin-top: 8px; color: var(--text-1); font-size: 14px; background-color: var(--surface-alt); padding: 6px 10px; height: 20px; border-radius: 4px; border: 1px solid var(--border);">
 					</div></td>
 			</tr>
 		</table>

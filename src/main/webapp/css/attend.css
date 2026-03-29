@@ -11,85 +11,93 @@ h1[class=detail-title]{
 	text-align: center;
 }
 
-/*출퇴근 버튼 - 위치변경을 위해 등록버튼 변형*/
-/* 등록 버튼 */
-
-.attend-btn:hover {
-    background: #ff0000;
-}
-/*출근 버튼*/
-.attend-btn1 {
-	width:150px;
-    /*background:var(--regist-btn);*/
-    background: #3788d8;
-    font-size: var(  --font-size-base );
-    color: #fff;
-    float:left;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-	position: relative;
-}
-.attend-btn2 {
-	width:150px;
-    /*background:var(--regist-btn);*/
-    background:#d8573c;
-    font-size: var(  --font-size-base );
-    color: #fff;
-    float:left;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-	position: relative;
-}
 /* 출퇴근 달력 영역 호버 제외 */
-
 tr:hover:not(.no-hover tr) td {
-  background: initial;     
+  background: initial;
 }
 
-/* 연도와 달 표시*/
-.attend-nav{
-	left: 0px;
-	position:relative;
-	float: left;
-	
-	width:100%;
+/* 근태관리 상단 네비 */
+.attend-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
 }
-.btn-nav{
-	float: right;
-}
-/*이전달 버튼*/
-.month-btn1 {
-	float: left;
-	position:relative;
-}
-.month-title{
-	position:relative;
-	float: left;
-	width: 150px;
-	text-align: center;
-}
-/*다음달 버튼*/
-.month-btn2 {
-	float: left;
-	position:relative;
-}
-.month-custom {
-    background:var(--search-btn);
-    color: #fff;
-	padding: 10px 20px;
-    font-weight: bold;
+
+/* 출근/퇴근 버튼 */
+.btn-nav { display: contents; }
+
+.attend-btn1, .attend-btn2 {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 110px;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 700;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
-	float: left;
-	position:relative;
+    transition: filter 0.15s, box-shadow 0.15s, transform 0.06s;
+    font-family: var(--font);
+    letter-spacing: 0.2px;
 }
+.attend-btn1:active, .attend-btn2:active { transform: translateY(1px); }
+
+/* 출근 버튼 */
+.attend-btn1 {
+    background: #1976d2;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(25,118,210,0.3);
+}
+.attend-btn1::before { content: '▶'; font-size: 11px; }
+.attend-btn1:hover { filter: brightness(1.1); box-shadow: 0 4px 12px rgba(25,118,210,0.4); }
+
+/* 퇴근 버튼 */
+.attend-btn2 {
+    background: #e53935;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(229,57,53,0.3);
+}
+.attend-btn2::before { content: '■'; font-size: 10px; }
+.attend-btn2:hover { filter: brightness(1.1); box-shadow: 0 4px 12px rgba(229,57,53,0.4); }
+
+/* 이전달/다음달 폼 래퍼 */
+.attend-month-form { display: contents; }
+
+.month-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-1);
+    min-width: 120px;
+    text-align: center;
+}
+
+/* 이전달/다음달 버튼 공통 */
+.attend-nav-prev, .attend-nav-next {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: none;
+    color: var(--text-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    font-family: var(--font);
+    padding: 0;
+}
+.attend-nav-prev:hover, .attend-nav-next:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+.attend-nav-prev::before { content: '‹'; font-size: 18px; line-height: 1; }
+.attend-nav-next::before { content: '›'; font-size: 18px; line-height: 1; }
 
 /*******************************************/
 /*fullcalender 스타일 적용 - 출퇴근 기록 달력*/
@@ -147,20 +155,30 @@ tr:hover:not(.no-hover tr) td {
 }
 
 /* 출퇴근 기록 수정 신청 버튼 */
-.insert-btn{
-    background: var(--regist-btn);
+.insert-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--primary);
     color: #fff;
-	font-size: var(  --font-size-base );
-    padding: 10px 20px;
-    font-weight: bold;
+    font-size: 13px;
+    padding: 9px 20px;
+    font-weight: 700;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     margin-top: 20px;
-	position: absolute;
-	right: 0px;
-	bottom:0px;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    transition: filter 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(57,73,171,0.25);
+    font-family: var(--font);
+    letter-spacing: 0.2px;
 }
+.insert-btn::before { content: '✎'; font-size: 13px; }
+.insert-btn:hover { filter: brightness(1.08); box-shadow: 0 4px 12px rgba(57,73,171,0.35); color: #fff; }
 
 /***********************/
 /* 출퇴근 기록 수정 신청 */
@@ -234,31 +252,37 @@ input, select {
 	left: -300px;
 	float:right;
 }
-.attbb{
-	font-size: var(--font-size-base);
-    background: var(--back-btn);
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
+.attbb {
+    font-size: 13px;
+    background: var(--surface-alt);
+    color: var(--text-2);
+    border: 1px solid var(--border);
+    padding: 9px 20px;
+    font-weight: 600;
+    border-radius: 8px;
     cursor: pointer;
     margin-top: 20px;
-	position: relative;
-	float:right;
-
+    position: relative;
+    float: right;
+    font-family: var(--font);
+    transition: background 0.15s, color 0.15s;
 }
-.insert-attbb{
-	position: relative;
-	float:right;
-	font-size: var(--font-size-base);
-    background: var(--save-btn);
+.attbb:hover { background: var(--border); color: var(--text-1); }
+
+.insert-attbb {
+    position: relative;
+    float: right;
+    font-size: 13px;
+    background: var(--primary);
     color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
+    padding: 9px 20px;
+    font-weight: 700;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     margin-top: 20px;
-
+    font-family: var(--font);
+    box-shadow: 0 2px 6px rgba(57,73,171,0.2);
+    transition: filter 0.15s;
 }
+.insert-attbb:hover { filter: brightness(1.08); }

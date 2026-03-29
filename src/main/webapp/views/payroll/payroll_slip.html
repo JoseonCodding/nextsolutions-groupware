@@ -1,0 +1,163 @@
+<title>내 급여명세서</title>
+
+<style>
+.slip-list { display: flex; flex-direction: column; gap: 20px; max-width: 720px; margin: 0 auto; }
+
+.slip-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.slip-card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 22px; background: var(--primary); color: #fff;
+}
+.slip-ym    { font-size: 18px; font-weight: 700; }
+.slip-net   { font-size: 22px; font-weight: 800; }
+.slip-net-label { font-size: 11px; opacity: .8; margin-bottom: 2px; }
+.slip-status {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+  background: rgba(255,255,255,.2); color: #fff;
+}
+
+.slip-body { padding: 20px 22px; }
+.slip-section-title {
+  font-size: 12px; font-weight: 700; color: var(--text-3);
+  letter-spacing: .6px; text-transform: uppercase;
+  margin-bottom: 10px; margin-top: 16px;
+}
+.slip-section-title:first-child { margin-top: 0; }
+
+.slip-rows { display: flex; flex-direction: column; gap: 6px; }
+.slip-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 4px 0; border-bottom: 1px solid var(--border-light);
+}
+.slip-row:last-child { border-bottom: none; }
+.slip-row-label { font-size: 13px; color: var(--text-2); }
+.slip-row-val   { font-size: 13px; font-weight: 600; color: var(--text-1); }
+.slip-row-val.deduct { color: var(--danger); }
+
+.slip-divider { border: none; border-top: 2px solid var(--border); margin: 14px 0; }
+
+.slip-total-row {
+  display: flex; justify-content: space-between; align-items: center; padding: 6px 0;
+}
+.slip-total-label { font-size: 14px; font-weight: 700; color: var(--text-1); }
+.slip-total-val   { font-size: 16px; font-weight: 800; color: var(--primary); }
+
+.slip-attend {
+  display: flex; gap: 24px; margin-top: 14px;
+  padding: 12px 16px; background: var(--surface-alt);
+  border-radius: 8px; font-size: 12px; color: var(--text-2);
+}
+.slip-attend span { font-weight: 700; color: var(--text-1); }
+</style>
+
+<h2 class="detail-title" style="max-width:720px; margin:0 auto 20px;">내 급여명세서</h2>
+
+<div class="slip-list">
+
+  <div th:if="${payrollList.isEmpty()}"
+       style="text-align:center; padding:60px 20px; color:var(--text-3); font-size:14px;">
+    아직 발급된 급여명세서가 없습니다.
+  </div>
+
+  <div class="slip-card" th:each="p : ${payrollList}">
+
+    <div class="slip-card-header">
+      <div>
+        <div class="slip-ym" th:text="${p.yearMonth} + ' 급여명세서'">2026-03 급여명세서</div>
+        <div style="margin-top:6px;">
+          <span class="slip-status" th:text="${p.status}">대기</span>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div class="slip-net-label">실수령액</div>
+        <div class="slip-net" th:text="${#numbers.formatInteger(p.netPay,1,'COMMA')} + '원'">0원</div>
+      </div>
+    </div>
+
+    <div class="slip-body">
+
+      <!-- 지급 -->
+      <div class="slip-section-title">지급 항목</div>
+      <div class="slip-rows">
+        <div class="slip-row">
+          <span class="slip-row-label">기본급</span>
+          <span class="slip-row-val" th:text="${#numbers.formatInteger(p.baseSalary,1,'COMMA')} + '원'">0원</span>
+        </div>
+        <div class="slip-row">
+          <span class="slip-row-label">식대</span>
+          <span class="slip-row-val" th:text="${#numbers.formatInteger(p.mealAllowance,1,'COMMA')} + '원'">0원</span>
+        </div>
+        <div class="slip-row">
+          <span class="slip-row-label">교통비</span>
+          <span class="slip-row-val" th:text="${#numbers.formatInteger(p.transportAllowance,1,'COMMA')} + '원'">0원</span>
+        </div>
+        <div class="slip-row" th:if="${p.overtimePay > 0}">
+          <span class="slip-row-label">초과근무수당</span>
+          <span class="slip-row-val" th:text="${#numbers.formatInteger(p.overtimePay,1,'COMMA')} + '원'">0원</span>
+        </div>
+      </div>
+      <div class="slip-total-row">
+        <span class="slip-total-label">총 지급액</span>
+        <span class="slip-total-val" th:text="${#numbers.formatInteger(p.totalPay,1,'COMMA')} + '원'">0원</span>
+      </div>
+
+      <hr class="slip-divider">
+
+      <!-- 공제 -->
+      <div class="slip-section-title">공제 항목</div>
+      <div class="slip-rows">
+        <div class="slip-row">
+          <span class="slip-row-label">국민연금 (4.5%)</span>
+          <span class="slip-row-val deduct" th:text="'- ' + ${#numbers.formatInteger(p.deductPension,1,'COMMA')} + '원'">0원</span>
+        </div>
+        <div class="slip-row">
+          <span class="slip-row-label">건강보험 (3.545%)</span>
+          <span class="slip-row-val deduct" th:text="'- ' + ${#numbers.formatInteger(p.deductHealth,1,'COMMA')} + '원'">0원</span>
+        </div>
+        <div class="slip-row">
+          <span class="slip-row-label">장기요양보험</span>
+          <span class="slip-row-val deduct" th:text="'- ' + ${#numbers.formatInteger(p.deductCare,1,'COMMA')} + '원'">0원</span>
+        </div>
+        <div class="slip-row">
+          <span class="slip-row-label">고용보험 (0.9%)</span>
+          <span class="slip-row-val deduct" th:text="'- ' + ${#numbers.formatInteger(p.deductEmploy,1,'COMMA')} + '원'">0원</span>
+        </div>
+        <div class="slip-row">
+          <span class="slip-row-label">소득세</span>
+          <span class="slip-row-val deduct" th:text="'- ' + ${#numbers.formatInteger(p.deductTax,1,'COMMA')} + '원'">0원</span>
+        </div>
+        <div class="slip-row">
+          <span class="slip-row-label">지방소득세</span>
+          <span class="slip-row-val deduct" th:text="'- ' + ${#numbers.formatInteger(p.deductLocalTax,1,'COMMA')} + '원'">0원</span>
+        </div>
+      </div>
+      <div class="slip-total-row">
+        <span class="slip-total-label">총 공제액</span>
+        <span class="slip-total-val" style="color:var(--danger);"
+              th:text="'- ' + ${#numbers.formatInteger(p.totalDeduct,1,'COMMA')} + '원'">0원</span>
+      </div>
+
+      <hr class="slip-divider">
+
+      <!-- 실수령 -->
+      <div class="slip-total-row" style="background:var(--primary-light); border-radius:8px; padding:10px 14px;">
+        <span style="font-size:15px; font-weight:700; color:var(--primary);">실수령액</span>
+        <span style="font-size:20px; font-weight:800; color:var(--primary);"
+              th:text="${#numbers.formatInteger(p.netPay,1,'COMMA')} + '원'">0원</span>
+      </div>
+
+      <!-- 근태 요약 -->
+      <div class="slip-attend">
+        <div>근무일수 <span th:text="${p.workDays}">0</span>일</div>
+        <div>결근 <span th:text="${p.absenceDays}">0</span>일</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

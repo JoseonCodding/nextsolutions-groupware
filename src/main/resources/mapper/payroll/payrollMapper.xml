@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kdt.KDT_PJT.payroll.mapper.PayrollMapper">
+
+    <!-- ── 기본급 설정 ──────────────────────────────────────── -->
+
+    <!-- 회사 전체 직원 + 최신 기본급 (LEFT JOIN) -->
+    <select id="selectSalaryList" resultType="com.kdt.KDT_PJT.payroll.dto.SalarySettingDTO">
+        SELECT
+            e.employeeId,
+            e.emp_nm       AS empNm,
+            e.deptName,
+            e.position,
+            e.company_id   AS companyId,
+            COALESCE(s.salary_id, 0)            AS salaryId,
+            COALESCE(s.base_salary, 0)          AS baseSalary,
+            COALESCE(s.meal_allowance, 100000)  AS mealAllowance,
+            COALESCE(s.transport_allowance, 50000) AS transportAllowance,
+            s.effective_from                    AS effectiveFrom
+        FROM employee e
+        LEFT JOIN employee_salary s
+            ON s.employee_id = e.employeeId
+            AND s.effective_from = (
+                SELECT MAX(s2.effective_from)
+                FROM employee_salary s2
+                WHERE s2.employee_id = e.employeeId
+            )
+        WHERE e.company_id = #{companyId}
+          AND e.active = 1
+        ORDER BY e.deptName, e.emp_nm
+    </select>
+
+    <!-- 특정 직원 최신 기본급 -->
+    <select id="selectLatestSalary" resultType="com.kdt.KDT_PJT.payroll.dto.SalarySettingDTO">
+        SELECT
+            salary_id           AS salaryId,
+            employee_id         AS employeeId,
+            company_id          AS companyId,
+            base_salary         AS baseSalary,
+            meal_allowance      AS mealAllowance,
+            transport_allowance AS transportAllowance,
+            effective_from      AS effectiveFrom
+        FROM employee_salary
+        WHERE employee_id = #{employeeId}
+        ORDER BY effective_from DESC
+        LIMIT 1
+    </select>
+
+    <!-- 기본급 upsert -->
+    <insert id="upsertSalary">
+        INSERT INTO employee_salary
+            (employee_id, company_id, base_salary, meal_allowance, transport_allowance, effective_from)
+        VALUES
+            (#{employeeId}, #{companyId}, #{baseSalary}, #{mealAllowance}, #{transportAllowance}, #{effectiveFrom})
+        ON DUPLICATE KEY UPDATE
+            base_salary         = VALUES(base_salary),
+            meal_allowance      = VALUES(meal_allowance),
+            transport_allowance = VALUES(transport_allowance)
+    </insert>
+
+    <!-- ── 근태 집계 ──────────────────────────────────────── -->
+
+    <!-- 특정 월 실 근무일수 -->
+    <select id="countWorkDays" resultType="int">
+        SELECT COUNT(DISTINCT DATE(check_in_time))
+        FROM attendance
+        WHERE employeeId  = #{employeeId}
+          AND DATE_FORMAT(check_in_time, '%Y-%m') = #{yearMonth}
+    </select>
+
+    <!-- 해당 월 영업일수: 토일 제외 (공휴일 미반영 단순 버전) -->
+    <select id="countBizDays" resultType="int">
+        SELECT COUNT(*) FROM (
+            SELECT ADDDATE(CONCAT(#{yearMonth}, '-01'), t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) AS d
+            FROM
+                (SELECT 0 i UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+                 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) t0,
+                (SELECT 0 i UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+                 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) t1,
+                (SELECT 0 i) t2, (SELECT 0 i) t3, (SELECT 0 i) t4
+        ) v
+        WHERE DATE_FORMAT(d, '%Y-%m') = #{yearMonth}
+          AND DAYOFWEEK(d) NOT IN (1, 7)
+    </select>
+
+    <!-- ── 급여명세서 ──────────────────────────────────────── -->
+
+    <!-- 급여명세서 upsert -->
+    <insert id="upsertPayroll">
+        INSERT INTO payroll (
+            employee_id, company_id, year_month,
+            base_salary, meal_allowance, transport_allowance, overtime_pay, total_pay,
+            deduct_pension, deduct_health, deduct_care, deduct_employ,
+            deduct_tax, deduct_local_tax, total_deduct,
+            net_pay, work_days, absence_days, status, note
+        ) VALUES (
+            #{employeeId}, #{companyId}, #{yearMonth},
+            #{baseSalary}, #{mealAllowance}, #{transportAllowance}, #{overtimePay}, #{totalPay},
+            #{deductPension}, #{deductHealth}, #{deductCare}, #{deductEmploy},
+            #{deductTax}, #{deductLocalTax}, #{totalDeduct},
+            #{netPay}, #{workDays}, #{absenceDays}, #{status}, #{note}
+        )
+        ON DUPLICATE KEY UPDATE
+            base_salary         = VALUES(base_salary),
+            meal_allowance      = VALUES(meal_allowance),
+            transport_allowance = VALUES(transport_allowance),
+            overtime_pay        = VALUES(overtime_pay),
+            total_pay           = VALUES(total_pay),
+            deduct_pension      = VALUES(deduct_pension),
+            deduct_health       = VALUES(deduct_health),
+            deduct_care         = VALUES(deduct_care),
+            deduct_employ       = VALUES(deduct_employ),
+            deduct_tax          = VALUES(deduct_tax),
+            deduct_local_tax    = VALUES(deduct_local_tax),
+            total_deduct        = VALUES(total_deduct),
+            net_pay             = VALUES(net_pay),
+            work_days           = VALUES(work_days),
+            absence_days        = VALUES(absence_days),
+            note                = VALUES(note),
+            updated_at          = CURRENT_TIMESTAMP
+    </insert>
+
+    <!-- 월별 전체 급여 목록 (관리자) -->
+    <select id="selectPayrollList" resultType="com.kdt.KDT_PJT.payroll.dto.PayrollDTO">
+        SELECT
+            p.*,
+            p.employee_id       AS employeeId,
+            p.year_month        AS yearMonth,
+            p.payroll_id        AS payrollId,
+            p.base_salary       AS baseSalary,
+            p.meal_allowance    AS mealAllowance,
+            p.transport_allowance AS transportAllowance,
+            p.overtime_pay      AS overtimePay,
+            p.total_pay         AS totalPay,
+            p.deduct_pension    AS deductPension,
+            p.deduct_health     AS deductHealth,
+            p.deduct_care       AS deductCare,
+            p.deduct_employ     AS deductEmploy,
+            p.deduct_tax        AS deductTax,
+            p.deduct_local_tax  AS deductLocalTax,
+            p.total_deduct      AS totalDeduct,
+            p.net_pay           AS netPay,
+            p.work_days         AS workDays,
+            p.absence_days      AS absenceDays,
+            e.emp_nm            AS empNm,
+            e.deptName,
+            e.position
+        FROM payroll p
+        JOIN employee e ON e.employeeId = p.employee_id
+        WHERE p.year_month  = #{yearMonth}
+          AND p.company_id  = #{companyId}
+        ORDER BY e.deptName, e.emp_nm
+    </select>
+
+    <!-- 직원 본인 급여 이력 (최근 12개월) -->
+    <select id="selectMyPayrollList" resultType="com.kdt.KDT_PJT.payroll.dto.PayrollDTO">
+        SELECT
+            p.payroll_id        AS payrollId,
+            p.employee_id       AS employeeId,
+            p.year_month        AS yearMonth,
+            p.base_salary       AS baseSalary,
+            p.meal_allowance    AS mealAllowance,
+            p.transport_allowance AS transportAllowance,
+            p.overtime_pay      AS overtimePay,
+            p.total_pay         AS totalPay,
+            p.deduct_pension    AS deductPension,
+            p.deduct_health     AS deductHealth,
+            p.deduct_care       AS deductCare,
+            p.deduct_employ     AS deductEmploy,
+            p.deduct_tax        AS deductTax,
+            p.deduct_local_tax  AS deductLocalTax,
+            p.total_deduct      AS totalDeduct,
+            p.net_pay           AS netPay,
+            p.work_days         AS workDays,
+            p.absence_days      AS absenceDays,
+            p.status,
+            e.emp_nm            AS empNm,
+            e.deptName,
+            e.position
+        FROM payroll p
+        JOIN employee e ON e.employeeId = p.employee_id
+        WHERE p.employee_id = #{employeeId}
+          AND p.company_id  = #{companyId}
+        ORDER BY p.year_month DESC
+        LIMIT 12
+    </select>
+
+    <!-- 단건 조회 -->
+    <select id="selectPayroll" resultType="com.kdt.KDT_PJT.payroll.dto.PayrollDTO">
+        SELECT
+            p.payroll_id        AS payrollId,
+            p.employee_id       AS employeeId,
+            p.year_month        AS yearMonth,
+            p.base_salary       AS baseSalary,
+            p.meal_allowance    AS mealAllowance,
+            p.transport_allowance AS transportAllowance,
+            p.overtime_pay      AS overtimePay,
+            p.total_pay         AS totalPay,
+            p.deduct_pension    AS deductPension,
+            p.deduct_health     AS deductHealth,
+            p.deduct_care       AS deductCare,
+            p.deduct_employ     AS deductEmploy,
+            p.deduct_tax        AS deductTax,
+            p.deduct_local_tax  AS deductLocalTax,
+            p.total_deduct      AS totalDeduct,
+            p.net_pay           AS netPay,
+            p.work_days         AS workDays,
+            p.absence_days      AS absenceDays,
+            p.status,
+            p.note,
+            e.emp_nm            AS empNm,
+            e.deptName,
+            e.position
+        FROM payroll p
+        JOIN employee e ON e.employeeId = p.employee_id
+        WHERE p.employee_id = #{employeeId}
+          AND p.year_month  = #{yearMonth}
+        LIMIT 1
+    </select>
+
+    <!-- 상태 변경 -->
+    <update id="updatePayrollStatus">
+        UPDATE payroll
+        SET status = #{status}
+        WHERE payroll_id = #{payrollId}
+    </update>
+
+</mapper>

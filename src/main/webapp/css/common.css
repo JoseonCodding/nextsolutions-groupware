@@ -1,43 +1,76 @@
 @charset "UTF-8";
 
 /* ══════════════════════════════════════════
-   공통 버튼
+   공통 버튼 시스템
    (commonStyle.css의 CSS 변수 참조)
 ══════════════════════════════════════════ */
 
+/* 베이스 */
 .edit-btn, .delete-btn, .save-btn, .regist-btn,
-.search-btn, .approval-btn, .reject-btn, .back-btn, .detail-btn {
+.search-btn, .approval-btn, .reject-btn, .back-btn,
+.detail-btn, .pdf-btn, .reset-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  font-family: inherit;
+  gap: 6px;
+  font-family: var(--font);
   font-size: 13px;
   font-weight: 600;
-  color: #fff;
-  padding: 8px 16px;
+  padding: 8px 18px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: filter 0.15s;
+  transition: filter 0.15s, box-shadow 0.15s, transform 0.06s;
   text-decoration: none;
   line-height: 1;
   white-space: nowrap;
+  color: #fff;
+  letter-spacing: 0.1px;
 }
 
-.regist-btn  { background: #3949ab; }
-.save-btn    { background: #3949ab; }
-.search-btn  { background: #3949ab; }
-.edit-btn    { background: #0277bd; }
-.approval-btn{ background: #2e7d32; }
-.reject-btn  { background: #c62828; }
-.delete-btn  { background: #c62828; }
-.back-btn    { background: #546e7a; }
-.detail-btn  { background: #6a1b9a; }
+/* 클릭 피드백 */
+.edit-btn:active, .delete-btn:active, .save-btn:active, .regist-btn:active,
+.search-btn:active, .approval-btn:active, .reject-btn:active,
+.detail-btn:active, .pdf-btn:active { transform: translateY(1px); }
 
+/* ── 컬러 ── */
+.regist-btn  { background: var(--primary); box-shadow: 0 2px 8px rgba(57,73,171,0.22); }
+.save-btn    { background: var(--primary); box-shadow: 0 2px 8px rgba(57,73,171,0.22); }
+.search-btn  { background: var(--primary); }
+.edit-btn    { background: var(--info);    box-shadow: 0 2px 6px rgba(2,119,189,0.2); }
+.approval-btn{ background: var(--success); box-shadow: 0 2px 6px rgba(46,125,50,0.2); }
+.reject-btn  { background: var(--danger);  box-shadow: 0 2px 6px rgba(198,40,40,0.2); }
+.delete-btn  { background: var(--danger);  box-shadow: 0 2px 6px rgba(198,40,40,0.2); }
+.detail-btn  { background: var(--purple);  box-shadow: 0 2px 6px rgba(106,27,154,0.2); }
+.pdf-btn     { background: var(--warning); box-shadow: 0 2px 6px rgba(230,81,0,0.2); }
+
+/* back-btn / reset-btn — 고스트 스타일 */
+.back-btn, .reset-btn {
+  background: none;
+  border: 1.5px solid var(--border);
+  color: var(--text-2);
+  box-shadow: none;
+}
+.back-btn:hover, .reset-btn:hover {
+  background: var(--surface-alt) !important;
+  border-color: var(--border) !important;
+  color: var(--text-1) !important;
+  filter: none !important;
+}
+
+/* 호버 */
 .edit-btn:hover, .delete-btn:hover, .save-btn:hover, .regist-btn:hover,
 .search-btn:hover, .approval-btn:hover, .reject-btn:hover,
-.back-btn:hover, .detail-btn:hover {
-  filter: brightness(0.88);
+.detail-btn:hover, .pdf-btn:hover {
+  filter: brightness(1.1);
   color: #fff;
+}
+
+/* 비활성 버튼 */
+.btn-disabled {
+  background: #cbd5e0 !important;
+  color: #94a3b8 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
 }

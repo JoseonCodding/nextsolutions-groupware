@@ -1,11 +1,23 @@
 <style>
-    .emp-status-active  { color: #28a745; font-weight: 600; }
-    .emp-status-inactive { color: #dc3545; font-weight: 600; }
-    .btn-toggle-inactive { background: #dc3545; color: #fff; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
-    .btn-toggle-inactive:hover { background: #c82333; }
-    .btn-toggle-active   { background: #28a745; color: #fff; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
-    .btn-toggle-active:hover { background: #218838; }
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge-active   { background:#e8f5e9; color:#2e7d32; }
+  .badge-resigned { background:#fce4ec; color:#c62828; }
+  .btn-resign     { background:#e53935; color:#fff; padding:4px 12px; border:none; border-radius:4px; cursor:pointer; font-size:12px; font-weight:600; }
+  .btn-resign:hover { background:#b71c1c; }
+  .btn-reinstate  { background:#43a047; color:#fff; padding:4px 12px; border:none; border-radius:4px; cursor:pointer; font-size:12px; font-weight:600; }
+  .btn-reinstate:hover { background:#2e7d32; }
+  .row-resigned td { color: #aaa !important; }
+  .filter-tabs { display:flex; gap:6px; margin-bottom:14px; }
+  .filter-tab { padding:5px 16px; border:1px solid #ddd; border-radius:20px; font-size:13px; cursor:pointer; background:#fff; }
+  .filter-tab.active { background:#37474f; color:#fff; border-color:#37474f; }
 </style>
+
 <div class="board-container">
 <h1 style="margin-top:12px;">사원 관리</h1>
 <div class="board-controls">
@@ -22,6 +34,13 @@
   </div>
 </div>
 
+<!-- 상태 필터 탭 -->
+<div class="filter-tabs">
+  <button class="filter-tab active" onclick="filterRows('all', this)">전체</button>
+  <button class="filter-tab" onclick="filterRows('active', this)">재직중</button>
+  <button class="filter-tab" onclick="filterRows('resigned', this)">퇴직</button>
+</div>
+
 <table class="board-table" style="width:100%; border-collapse:collapse;">
   <thead style="background:#f5f5f5;">
     <tr>
@@ -29,29 +48,45 @@
       <th>순번</th>
       <th>사번</th>
       <th>이름</th>
+      <th>부서 / 직급</th>
       <th>권한</th>
       <th>상태</th>
-      <th>활성/비활성</th>
+      <th>퇴사일</th>
+      <th>처리</th>
     </tr>
   </thead>
   <tbody>
     <tr th:each="emp : ${employees}"
-        th:with="isActive=${emp.active == 1 or emp.active == true}">
+        th:with="isActive=${emp.active == 1 or emp.active == true}"
+        th:classappend="${!(emp.active == 1 or emp.active == true)} ? 'row-resigned' : ''"
+        th:attr="data-status=${(emp.active == 1 or emp.active == true) ? 'active' : 'resigned'}">
       <td><input type="radio" name="empSelect" class="emp-check" th:value="${emp.empSeq}"></td>
       <td th:text="${emp.empSeq}"></td>
       <td th:text="${emp.employeeId}"></td>
       <td th:text="${emp.empNm} ?: ''"></td>
+      <td th:text="${(emp.deptName ?: '-') + ' / ' + (emp.position ?: '-')}"></td>
       <td th:text="${emp.role} ?: '-'"></td>
-      <td class="status"
-          th:classappend="${isActive} ? ' emp-status-active' : ' emp-status-inactive'"
-          th:text="${isActive ? '활성' : '비활성'}"></td>
       <td>
-        <button th:if="${isActive}"  class="btn-toggle-inactive" th:attr="data-emp=${emp.empSeq}">비활성화</button>
-        <button th:if="${!isActive}" class="btn-toggle-active"   th:attr="data-emp=${emp.empSeq}">활성화</button>
+        <span class="status-badge"
+              th:classappend="${isActive} ? ' badge-active' : ' badge-resigned'"
+              th:text="${isActive ? '재직중' : '퇴직'}"></span>
+      </td>
+      <td th:text="${emp.resignDate != null ? emp.resignDate.toString().substring(0,10) : '-'}"></td>
+      <td>
+        <button th:if="${isActive}" type="button" class="btn-resign"
+                th:attr="data-seq=${emp.empSeq},data-nm=${emp.empNm}"
+                onclick="confirmResign(this)">
+          <i class="fa fa-user-xmark"></i> 퇴사처리
+        </button>
+        <button th:if="${!isActive}" type="button" class="btn-reinstate"
+                th:attr="data-seq=${emp.empSeq},data-nm=${emp.empNm}"
+                onclick="confirmReinstate(this)">
+          <i class="fa fa-user-check"></i> 복직
+        </button>
       </td>
     </tr>
     <tr th:if="${#lists.isEmpty(employees)}">
-      <td colspan="7" style="padding:60px; text-align:center; color:#999;">
+      <td colspan="9" style="padding:60px; text-align:center; color:#999;">
         등록된 사원이 없습니다.
       </td>
     </tr>
@@ -63,67 +98,162 @@
     <a th:if="${page > 1}"
        th:href="@{/employee/list(page=${page-5 > 1 ? page-5 : 1}, keyword=${keyword})}"
        class="prev">&#x2039; Previous</a>
-
     <span th:if="${startPage > 1 and page == 1}" class="page-number now-page disabled" th:text="1"></span>
     <a th:if="${startPage > 1 and page != 1}" th:href="@{/employee/list(page=1, keyword=${keyword})}" th:text="1" class="page-number"></a>
     <span th:if="${startPage > 2}" class="ellipsis">...</span>
-
     <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
       <span th:if="${i == page}" class="page-number now-page disabled" th:text="${i}"></span>
       <a th:if="${i != page}" th:href="@{/employee/list(page=${i}, keyword=${keyword})}" th:text="${i}" class="page-number"></a>
     </span>
-
     <span th:if="${endPage < totalPages - 1}" class="ellipsis">...</span>
     <span th:if="${endPage < totalPages and page == totalPages}" class="page-number now-page disabled" th:text="${totalPages}"></span>
     <a th:if="${endPage < totalPages and page != totalPages}"
        th:href="@{/employee/list(page=${totalPages}, keyword=${keyword})}" th:text="${totalPages}" class="page-number"></a>
-
     <a th:if="${page < totalPages}"
        th:href="@{/employee/list(page=${page+5 < totalPages ? page+5 : totalPages}, keyword=${keyword})}">Next &#x203A;</a>
   </nav>
 </div>
 
-<script>
-document.querySelectorAll(".btn-toggle-active, .btn-toggle-inactive").forEach(btn => {
-    btn.addEventListener("click", function() {
-        const empSeq = this.dataset.emp;
-        const row = this.closest("tr");
-        const statusCell = row.querySelector(".status");
+<!-- 공통 알림 모달 -->
+<div id="alertModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:10000; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:28px 32px; max-width:340px; width:90%; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+    <div style="font-size:2rem; margin-bottom:10px;" id="alertIcon">ℹ️</div>
+    <p style="color:#333; font-size:0.95rem; margin:0 0 20px; line-height:1.5;" id="alertMsg"></p>
+    <button onclick="document.getElementById('alertModal').style.display='none'"
+            style="padding:8px 28px; border:none; border-radius:6px; background:#37474f; color:#fff; font-weight:600; cursor:pointer;">확인</button>
+  </div>
+</div>
 
-        fetch("/employee/toggle", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `emp_seq=${empSeq}`
-        }).then(res => res.text())
-          .then(data => {
-              if (data === "OK") {
-                  if (statusCell.textContent.trim() === "활성") {
-                      statusCell.textContent = "비활성";
-                      statusCell.classList.remove("emp-status-active");
-                      statusCell.classList.add("emp-status-inactive");
-                      this.textContent = "활성화";
-                      this.classList.remove("btn-toggle-inactive");
-                      this.classList.add("btn-toggle-active");
-                  } else {
-                      statusCell.textContent = "활성";
-                      statusCell.classList.remove("emp-status-inactive");
-                      statusCell.classList.add("emp-status-active");
-                      this.textContent = "비활성화";
-                      this.classList.remove("btn-toggle-active");
-                      this.classList.add("btn-toggle-inactive");
-                  }
-              }
-          });
-    });
+<!-- 퇴사 확인 모달 -->
+<div id="resignModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:28px 32px; max-width:360px; width:90%; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+    <div style="font-size:2.5rem; margin-bottom:12px;">⚠️</div>
+    <h3 style="margin:0 0 8px; font-size:1.1rem;">퇴사 처리</h3>
+    <p style="color:#555; font-size:0.9rem; margin:0 0 20px;" id="resignModalMsg"></p>
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <button onclick="closeResignModal()" style="padding:8px 20px; border:1px solid #ddd; border-radius:6px; background:#fff; cursor:pointer;">취소</button>
+      <button id="resignConfirmBtn" style="padding:8px 20px; border:none; border-radius:6px; background:#e53935; color:#fff; font-weight:600; cursor:pointer;">퇴사처리</button>
+    </div>
+  </div>
+</div>
+
+<!-- 복직 확인 모달 -->
+<div id="reinstateModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:28px 32px; max-width:360px; width:90%; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+    <div style="font-size:2.5rem; margin-bottom:12px;">✅</div>
+    <h3 style="margin:0 0 8px; font-size:1.1rem;">복직 처리</h3>
+    <p style="color:#555; font-size:0.9rem; margin:0 0 20px;" id="reinstateModalMsg"></p>
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <button onclick="document.getElementById('reinstateModal').style.display='none'"
+              style="padding:8px 20px; border:1px solid #ddd; border-radius:6px; background:#fff; cursor:pointer;">취소</button>
+      <button id="reinstateConfirmBtn" style="padding:8px 20px; border:none; border-radius:6px; background:#43a047; color:#fff; font-weight:600; cursor:pointer;">복직처리</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 공통 알림
+function showAlert(msg, icon) {
+  document.getElementById('alertMsg').textContent = msg;
+  document.getElementById('alertIcon').textContent = icon || 'ℹ️';
+  document.getElementById('alertModal').style.display = 'flex';
+}
+
+// 상태 필터
+function filterRows(status, tab) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.querySelectorAll('tbody tr[data-status]').forEach(row => {
+    row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
+  });
+}
+
+// 퇴사 처리 확인
+function confirmResign(btn) {
+  const seq = btn.dataset.seq;
+  const nm  = btn.dataset.nm;
+  document.getElementById('resignModalMsg').textContent =
+    nm + ' 사원을 퇴사 처리하시겠습니까? 즉시 로그인이 차단됩니다.';
+  document.getElementById('resignConfirmBtn').onclick = function() {
+    closeResignModal();
+    doResign(seq, btn);
+  };
+  document.getElementById('resignModal').style.display = 'flex';
+}
+function closeResignModal() {
+  document.getElementById('resignModal').style.display = 'none';
+}
+document.getElementById('resignModal').addEventListener('click', function(e) {
+  if (e.target === this) closeResignModal();
 });
 
-document.getElementById("editSelected").addEventListener("click", function() {
-    const selected = document.querySelectorAll(".emp-check:checked");
-    if (selected.length !== 1) {
-        alert("사원 1명만 선택해주세요.");
-        return;
+function doResign(seq, btn) {
+  fetch('/employee/resign', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'emp_seq=' + seq
+  }).then(r => r.text()).then(res => {
+    if (res === 'OK') {
+      const row = btn.closest('tr');
+      row.dataset.status = 'resigned';
+      row.classList.add('row-resigned');
+      row.querySelector('.status-badge').textContent = '퇴직';
+      row.querySelector('.status-badge').classList.replace('badge-active', 'badge-resigned');
+      row.querySelector('td:nth-child(8)').textContent = new Date().toISOString().slice(0,10);
+      btn.outerHTML = '<button type="button" class="btn-reinstate" ' +
+        'data-seq="' + seq + '" data-nm="' + btn.dataset.nm + '" ' +
+        'onclick="confirmReinstate(this)"><i class="fa fa-user-check"></i> 복직</button>';
+    } else {
+      showAlert('처리에 실패했습니다.', '❌');
     }
-    const empSeq = selected[0].value;
-    window.location.href = `/employee/edit?empSeq=${empSeq}`;
+  });
+}
+
+// 복직 처리 확인
+function confirmReinstate(btn) {
+  const seq = btn.dataset.seq;
+  const nm  = btn.dataset.nm;
+  document.getElementById('reinstateModalMsg').textContent =
+    nm + ' 사원을 복직 처리하시겠습니까?';
+  document.getElementById('reinstateConfirmBtn').onclick = function() {
+    document.getElementById('reinstateModal').style.display = 'none';
+    doReinstate(seq, btn);
+  };
+  document.getElementById('reinstateModal').style.display = 'flex';
+}
+document.getElementById('reinstateModal').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
+});
+
+function doReinstate(seq, btn) {
+  fetch('/employee/reinstate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'emp_seq=' + seq
+  }).then(r => r.text()).then(res => {
+    if (res === 'OK') {
+      const row = btn.closest('tr');
+      row.dataset.status = 'active';
+      row.classList.remove('row-resigned');
+      row.querySelector('.status-badge').textContent = '재직중';
+      row.querySelector('.status-badge').classList.replace('badge-resigned', 'badge-active');
+      row.querySelector('td:nth-child(8)').textContent = '-';
+      btn.outerHTML = '<button type="button" class="btn-resign" ' +
+        'data-seq="' + seq + '" data-nm="' + btn.dataset.nm + '" ' +
+        'onclick="confirmResign(this)"><i class="fa fa-user-xmark"></i> 퇴사처리</button>';
+    } else {
+      showAlert('처리에 실패했습니다.', '❌');
+    }
+  });
+}
+
+// 수정 버튼
+document.getElementById("editSelected").addEventListener("click", function() {
+  const selected = document.querySelectorAll(".emp-check:checked");
+  if (selected.length !== 1) {
+    showAlert('사원 1명만 선택해주세요.', '⚠️');
+    return;
+  }
+  window.location.href = '/employee/edit?empSeq=' + selected[0].value;
 });
 </script>

@@ -19,19 +19,19 @@
 	
 	
 
-		<form method="get" th:action="@{/attend}" class="month-btn1">
+		<form method="get" th:action="@{/attend}" class="attend-month-form">
 		    <input type="hidden" name="startDay" th:value="${prevMonthStartDay}"/>
 		    <input type="hidden" name="endDay" th:value="${prevMonthEndDay}"/>
-		    <button type="submit" class="month-custom">이전달</button>
+		    <button type="submit" class="attend-nav-prev">이전달</button>
 		</form>
 	
 		   <h2 id="monthTitle" class="month-title"></h2>
 		
 	
-		<form method="get" th:action="@{/attend}" class="month-btn2">
+		<form method="get" th:action="@{/attend}" class="attend-month-form">
 		    <input type="hidden" name="startDay" th:value="${nextMonthStartDay}"/>
 		    <input type="hidden" name="endDay" th:value="${nextMonthEndDay}"/>
-		    <button type="submit" class="month-custom">다음달</button>
+		    <button type="submit" class="attend-nav-next">다음달</button>
 		</form>
 	</div>
 <!-- 

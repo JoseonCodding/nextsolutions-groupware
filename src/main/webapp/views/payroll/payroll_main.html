@@ -1,0 +1,218 @@
+<title>급여 관리</title>
+
+<style>
+.payroll-toolbar {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.payroll-toolbar input[type="month"] {
+  padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 14px; background: var(--surface); color: var(--text-1);
+}
+.payroll-section { margin-bottom: 40px; }
+.payroll-section-title {
+  font-size: 15px; font-weight: 700; color: var(--text-1);
+  margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--primary);
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* 기본급 그리드 */
+.salary-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px;
+}
+.salary-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 18px;
+}
+.salary-card-header {
+  display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;
+}
+.salary-name { font-weight: 700; color: var(--text-1); font-size: 15px; }
+.salary-dept { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.salary-field { display: flex; flex-direction: column; gap: 8px; }
+.salary-row { display: flex; align-items: center; gap: 8px; }
+.salary-row label { width: 80px; font-size: 12px; color: var(--text-2); flex-shrink: 0; }
+.salary-row input {
+  flex: 1; padding: 6px 10px; border: 1.5px solid var(--border); border-radius: 6px;
+  font-size: 13px; background: var(--surface); color: var(--text-1); text-align: right;
+}
+.salary-save-btn {
+  margin-top: 10px; width: 100%; padding: 8px; background: var(--primary); color: #fff;
+  border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.salary-save-btn:hover { filter: brightness(1.08); }
+
+/* 급여 테이블 */
+.payroll-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.payroll-table th {
+  padding: 10px 12px; background: var(--surface-alt); color: var(--text-2);
+  font-weight: 600; text-align: right; border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+.payroll-table th:first-child, .payroll-table th:nth-child(2) { text-align: left; }
+.payroll-table td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border-light);
+  color: var(--text-1); text-align: right;
+}
+.payroll-table td:first-child, .payroll-table td:nth-child(2) { text-align: left; }
+.payroll-table tr:hover td { background: var(--surface-alt); }
+.status-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+}
+.status-대기    { background: #fff3e0; color: #e65100; }
+.status-확정    { background: #e8f5e9; color: #2e7d32; }
+.status-지급완료 { background: #e3f2fd; color: #0277bd; }
+</style>
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+  <h2 class="detail-title" style="margin:0;">급여 관리</h2>
+</div>
+
+<!-- 월 선택 + 일괄계산 -->
+<div class="payroll-toolbar">
+  <input type="month" id="ymPicker" th:value="${yearMonth}"
+         onchange="location.href='/payroll/main?yearMonth='+this.value">
+  <button class="save-btn" onclick="runCalculate()">
+    <i class="fa fa-calculator"></i> [[${yearMonth}]] 급여 일괄 계산
+  </button>
+  <span id="calcMsg" style="font-size:13px; color:var(--success);"></span>
+</div>
+
+<!-- 기본급 설정 -->
+<div class="payroll-section">
+  <div class="payroll-section-title"><i class="fa fa-sliders"></i> 직원 기본급 설정</div>
+  <div class="salary-grid">
+    <div class="salary-card" th:each="s : ${salaryList}">
+      <div class="salary-card-header">
+        <div>
+          <div class="salary-name" th:text="${s.empNm}">이름</div>
+          <div class="salary-dept" th:text="${s.deptName + ' · ' + (s.position ?: '')}">부서</div>
+        </div>
+      </div>
+      <div class="salary-field">
+        <div class="salary-row">
+          <label>기본급</label>
+          <input type="number" class="f-base" th:value="${s.baseSalary}" step="10000" min="0">
+        </div>
+        <div class="salary-row">
+          <label>식대</label>
+          <input type="number" class="f-meal" th:value="${s.mealAllowance}" step="10000" min="0">
+        </div>
+        <div class="salary-row">
+          <label>교통비</label>
+          <input type="number" class="f-trans" th:value="${s.transportAllowance}" step="10000" min="0">
+        </div>
+      </div>
+      <button class="salary-save-btn"
+              th:data-id="${s.employeeId}"
+              onclick="saveSalary(this)">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 급여명세서 목록 -->
+<div class="payroll-section">
+  <div class="payroll-section-title">
+    <i class="fa fa-list"></i>
+    [[${yearMonth}]] 급여명세서
+    <span style="font-size:12px; font-weight:400; color:var(--text-3); margin-left:8px;"
+          th:text="${payrollList.size()} + '명'"></span>
+  </div>
+
+  <div th:if="${payrollList.isEmpty()}"
+       style="text-align:center; padding:40px; color:var(--text-3); font-size:14px;">
+    계산된 급여가 없습니다. 위에서 "일괄 계산" 버튼을 눌러주세요.
+  </div>
+
+  <div th:unless="${payrollList.isEmpty()}" style="overflow-x:auto;">
+    <table class="payroll-table">
+      <thead>
+        <tr>
+          <th>이름</th>
+          <th>부서</th>
+          <th>기본급</th>
+          <th>수당</th>
+          <th>총 지급</th>
+          <th>총 공제</th>
+          <th>실수령액</th>
+          <th>근무일</th>
+          <th>상태</th>
+          <th>변경</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="p : ${payrollList}">
+          <td th:text="${p.empNm}">이름</td>
+          <td th:text="${p.deptName}">부서</td>
+          <td th:text="${#numbers.formatInteger(p.baseSalary,1,'COMMA')}">0</td>
+          <td th:text="${#numbers.formatInteger(p.mealAllowance + p.transportAllowance, 1,'COMMA')}">0</td>
+          <td style="font-weight:600;" th:text="${#numbers.formatInteger(p.totalPay,1,'COMMA')}">0</td>
+          <td style="color:var(--danger);" th:text="${#numbers.formatInteger(p.totalDeduct,1,'COMMA')}">0</td>
+          <td style="font-weight:700; color:var(--primary);" th:text="${#numbers.formatInteger(p.netPay,1,'COMMA')}">0</td>
+          <td th:text="${p.workDays + '/' + (p.workDays + p.absenceDays)}">0/0</td>
+          <td>
+            <span class="status-badge"
+                  th:classappend="'status-' + ${p.status}"
+                  th:text="${p.status}">대기</span>
+          </td>
+          <td>
+            <select style="font-size:12px; padding:4px 6px; border-radius:6px; border:1px solid var(--border);"
+                    th:data-id="${p.payrollId}"
+                    onchange="changeStatus(this)">
+              <option th:selected="${p.status == '대기'}">대기</option>
+              <option th:selected="${p.status == '확정'}">확정</option>
+              <option th:selected="${p.status == '지급완료'}">지급완료</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+async function runCalculate() {
+  const ym = document.getElementById('ymPicker').value;
+  const msg = document.getElementById('calcMsg');
+  msg.textContent = '계산 중...';
+  const res = await fetch('/payroll/calculate', {
+    method: 'POST',
+    headers: {'Content-Type':'application/x-www-form-urlencoded'},
+    body: 'yearMonth=' + encodeURIComponent(ym)
+  });
+  const data = await res.json();
+  if (data.ok) {
+    msg.textContent = data.count + '명 계산 완료!';
+    setTimeout(() => location.reload(), 800);
+  } else {
+    msg.style.color = 'var(--danger)';
+    msg.textContent = '오류: ' + data.msg;
+  }
+}
+
+async function saveSalary(btn) {
+  const card   = btn.closest('.salary-card');
+  const empId  = btn.dataset.id;
+  const base   = card.querySelector('.f-base').value;
+  const meal   = card.querySelector('.f-meal').value;
+  const trans  = card.querySelector('.f-trans').value;
+
+  const params = new URLSearchParams({
+    employeeId: empId, baseSalary: base,
+    mealAllowance: meal, transportAllowance: trans
+  });
+  const res  = await fetch('/payroll/salary/save', { method:'POST', body: params });
+  const data = await res.json();
+  btn.textContent = data.ok ? '✓ 저장됨' : '오류';
+  setTimeout(() => btn.textContent = '저장', 1500);
+}
+
+async function changeStatus(sel) {
+  const payrollId = sel.dataset.id;
+  const status    = sel.value;
+  const params    = new URLSearchParams({ payrollId, status });
+  const res  = await fetch('/payroll/status', { method:'POST', body: params });
+  const data = await res.json();
+  if (!data.ok) alert('상태 변경 실패: ' + data.msg);
+  else location.reload();
+}
+</script>

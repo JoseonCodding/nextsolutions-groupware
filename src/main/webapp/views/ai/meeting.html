@@ -1,0 +1,330 @@
+<div class="check-list-container">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+    <h1 style="margin:0;">회의록 자동생성</h1>
+    <a href="/ai/meeting/list" class="filter-btn" style="font-size:0.85rem; padding:6px 14px;">
+      <i class="fa fa-list"></i> 저장된 회의록
+    </a>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:16px;">
+    <!-- 입력 -->
+    <div>
+      <h3>회의 정보 입력</h3>
+      <label>회의 일시
+        <input type="date" id="meetDate" class="form-control mt-1"
+               th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
+      </label>
+      <label style="margin-top:12px; display:block;">참석자
+        <input type="text" id="participants" class="form-control mt-1"
+               placeholder="예: 김철수 팀장, 이영희 대리, 박민준 사원"/>
+      </label>
+      <label style="margin-top:12px; display:block;">회의 안건
+        <input type="text" id="agenda" class="form-control mt-1"
+               placeholder="예: 3월 프로젝트 진행 현황 공유 및 4월 계획 수립"/>
+      </label>
+
+      <!-- 2단계: 음성 입력 -->
+      <div style="margin-top:16px; padding:12px; background:#f3e5f5; border-radius:8px; border:1px solid #ce93d8;">
+        <div style="font-weight:600; color:#6a1b9a; margin-bottom:8px;">
+          <i class="fa fa-microphone"></i> 음성 녹음 / 파일 업로드 (STT)
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button id="recordBtn" class="filter-btn"
+                  style="background:#7b1fa2; border-color:#7b1fa2; font-size:0.85rem; padding:6px 12px;">
+            <i class="fa fa-circle" id="recordIcon" style="color:#ff5252;"></i> 녹음 시작
+          </button>
+          <label class="filter-btn"
+                 style="background:#4a148c; border-color:#4a148c; font-size:0.85rem; padding:6px 12px; cursor:pointer; margin:0;">
+            <i class="fa fa-upload"></i> 파일 업로드
+            <input type="file" id="audioFile" accept="audio/*,video/webm" style="display:none;"/>
+          </label>
+          <span id="sttStatus" style="font-size:0.8rem; color:#555; align-self:center;"></span>
+        </div>
+        <audio id="audioPreview" style="display:none; margin-top:8px; width:100%;" controls></audio>
+      </div>
+
+      <label style="margin-top:12px; display:block;">회의 내용
+        <textarea id="rawNotes" class="form-control mt-1" rows="10"
+                  placeholder="회의에서 나온 내용을 자유롭게 입력하세요. (또는 위에서 음성을 녹음하면 자동으로 채워집니다)&#10;&#10;예)&#10;- 김팀장: 3월 개발 80% 완료, 테스트 미흡&#10;- 이대리: 디자인 수정 필요, 주말 작업 가능&#10;- 박사원: API 연동 완료, 문서화 필요&#10;- 다음주 금요일까지 배포 목표&#10;- 김팀장이 최종 검토 담당"></textarea>
+      </label>
+      <button id="generateBtn" class="filter-btn" style="margin-top:12px; width:100%;">
+        <i class="fa fa-magic"></i> 회의록 생성
+      </button>
+    </div>
+
+    <!-- 결과 -->
+    <div>
+      <h3>생성 결과</h3>
+      <div id="loadingArea" style="display:none; text-align:center; padding:40px;">
+        <i class="fa fa-spinner fa-spin fa-2x"></i>
+        <p style="margin-top:12px; color:#666;">회의록을 생성하고 있습니다...</p>
+      </div>
+      <div id="errorArea" style="display:none; color:#c62828; padding:16px; background:#ffebee; border-radius:8px;"></div>
+      <div id="resultArea" style="display:none;">
+        <!-- 요약 -->
+        <div style="padding:16px; background:#f8f9fa; border-radius:8px; border:1px solid #dee2e6; margin-bottom:12px;">
+          <strong>📋 회의 요약</strong>
+          <p id="summaryText" style="margin:8px 0 0; white-space:pre-line;"></p>
+        </div>
+        <!-- 결정사항 -->
+        <div style="padding:16px; background:#e8f5e9; border-radius:8px; border:1px solid #c8e6c9; margin-bottom:12px;">
+          <strong>✅ 결정사항</strong>
+          <ul id="decisionList" style="margin:8px 0 0; padding-left:20px;"></ul>
+        </div>
+        <!-- 액션아이템 (3단계: 담당자 매핑 상태 포함) -->
+        <div style="padding:16px; background:#e3f2fd; border-radius:8px; border:1px solid #bbdefb; margin-bottom:12px;">
+          <strong>⚡ 액션아이템</strong>
+          <table style="width:100%; margin-top:8px; border-collapse:collapse; font-size:0.9rem;">
+            <thead>
+              <tr style="background:#1565c0; color:#fff;">
+                <th style="padding:6px 8px; text-align:left;">업무</th>
+                <th style="padding:6px 8px; text-align:left;">담당자</th>
+                <th style="padding:6px 8px; text-align:left;">마감</th>
+                <th style="padding:6px 8px; text-align:center;">매핑</th>
+              </tr>
+            </thead>
+            <tbody id="actionTable"></tbody>
+          </table>
+        </div>
+        <!-- 저장 버튼 (1단계) -->
+        <button id="saveBtn" class="filter-btn"
+                style="width:100%; background:#2e7d32; border-color:#2e7d32; margin-bottom:12px;">
+          <i class="fa fa-floppy-disk"></i> 회의록 저장 & 액션아이템 등록
+        </button>
+        <div id="saveResult" style="display:none;"></div>
+        <!-- 전문 -->
+        <div style="padding:16px; background:#fff; border-radius:8px; border:1px solid #dee2e6;">
+          <strong>📄 회의록 전문</strong>
+          <div id="minutesText" style="margin:8px 0 0; white-space:pre-line; font-size:0.9rem; line-height:1.6;"></div>
+        </div>
+      </div>
+      <div id="emptyMsg" style="color:#999; padding:40px; text-align:center;">
+        회의 내용을 입력하고 생성 버튼을 클릭하세요.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 현재 생성된 결과 보관 ──
+let currentResult = null;
+
+// ── 회의록 생성 ──
+document.getElementById('generateBtn').addEventListener('click', function() {
+  const notes = document.getElementById('rawNotes').value.trim();
+  if (!notes) { alert('회의 내용을 입력하세요.'); return; }
+
+  document.getElementById('resultArea').style.display = 'none';
+  document.getElementById('errorArea').style.display = 'none';
+  document.getElementById('emptyMsg').style.display = 'none';
+  document.getElementById('saveResult').style.display = 'none';
+  document.getElementById('loadingArea').style.display = 'block';
+
+  fetch('/ai/meeting', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      date:         document.getElementById('meetDate').value,
+      participants: document.getElementById('participants').value,
+      agenda:       document.getElementById('agenda').value,
+      notes:        notes
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('loadingArea').style.display = 'none';
+    if (data.error) {
+      document.getElementById('errorArea').textContent = data.error;
+      document.getElementById('errorArea').style.display = 'block';
+      return;
+    }
+    try {
+      currentResult = JSON.parse(data.result);
+      renderResult(currentResult);
+      document.getElementById('resultArea').style.display = 'block';
+    } catch(e) {
+      document.getElementById('errorArea').textContent = '결과 파싱 오류: ' + data.result;
+      document.getElementById('errorArea').style.display = 'block';
+    }
+  })
+  .catch(e => {
+    document.getElementById('loadingArea').style.display = 'none';
+    document.getElementById('errorArea').textContent = '오류: ' + e.message;
+    document.getElementById('errorArea').style.display = 'block';
+  });
+});
+
+function renderResult(result) {
+  document.getElementById('summaryText').textContent = result.summary || '';
+
+  const decList = document.getElementById('decisionList');
+  decList.innerHTML = '';
+  (result.decisions || []).forEach(d => {
+    const li = document.createElement('li'); li.textContent = d; decList.appendChild(li);
+  });
+
+  const tbody = document.getElementById('actionTable');
+  tbody.innerHTML = '';
+  (result.actions || []).forEach(a => {
+    tbody.innerHTML += `<tr style="border-bottom:1px solid #e3f2fd;">
+      <td style="padding:6px 8px;">${esc(a.task)}</td>
+      <td style="padding:6px 8px;">${esc(a.owner)}</td>
+      <td style="padding:6px 8px;">${esc(a.due)}</td>
+      <td style="padding:6px 8px; text-align:center; color:#9e9e9e; font-size:0.8rem;">저장 후 확인</td>
+    </tr>`;
+  });
+
+  document.getElementById('minutesText').textContent = result.minutes || '';
+}
+
+// ── 1단계: 저장 & 액션아이템 등록 ──
+document.getElementById('saveBtn').addEventListener('click', function() {
+  if (!currentResult) return;
+  const btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> 저장 중...';
+
+  fetch('/ai/meeting/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      date:         document.getElementById('meetDate').value,
+      participants: document.getElementById('participants').value,
+      agenda:       document.getElementById('agenda').value,
+      notes:        document.getElementById('rawNotes').value,
+      summary:      currentResult.summary,
+      decisions:    currentResult.decisions || [],
+      actions:      currentResult.actions   || [],
+      minutes:      currentResult.minutes
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa fa-check"></i> 저장 완료!';
+    btn.style.background = '#1565c0';
+
+    if (data.error) {
+      showSaveResult('error', data.error);
+      return;
+    }
+
+    // 담당자 매핑 결과 반영
+    const actions = data.actions || [];
+    const tbody = document.getElementById('actionTable');
+    const rows = tbody.querySelectorAll('tr');
+    actions.forEach((a, i) => {
+      if (rows[i]) {
+        const cell = rows[i].querySelectorAll('td')[3];
+        if (cell) {
+          if (a.matched) {
+            cell.innerHTML = '<span style="color:#2e7d32; font-weight:600;"><i class="fa fa-check-circle"></i> 알림 발송</span>';
+          } else {
+            cell.innerHTML = '<span style="color:#ef6c00;"><i class="fa fa-triangle-exclamation"></i> 미매핑</span>';
+          }
+        }
+      }
+    });
+
+    const mapped = actions.filter(a => a.matched).length;
+    showSaveResult('success',
+      `저장 완료 (회의록 #${data.minutesSn}) · 액션아이템 ${actions.length}건 · 담당자 매핑 ${mapped}/${actions.length}명 알림 발송`);
+  })
+  .catch(e => {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa fa-floppy-disk"></i> 회의록 저장 & 액션아이템 등록';
+    showSaveResult('error', '저장 오류: ' + e.message);
+  });
+});
+
+function showSaveResult(type, msg) {
+  const el = document.getElementById('saveResult');
+  el.style.display = 'block';
+  el.style.padding = '10px 14px';
+  el.style.borderRadius = '6px';
+  el.style.marginBottom = '8px';
+  if (type === 'success') {
+    el.style.background = '#e8f5e9';
+    el.style.color = '#2e7d32';
+    el.style.border = '1px solid #a5d6a7';
+    el.innerHTML = '<i class="fa fa-check-circle"></i> ' + esc(msg);
+  } else {
+    el.style.background = '#ffebee';
+    el.style.color = '#c62828';
+    el.style.border = '1px solid #ef9a9a';
+    el.innerHTML = '<i class="fa fa-circle-exclamation"></i> ' + esc(msg);
+  }
+}
+
+// ── 2단계: 음성 녹음 ──
+let mediaRecorder = null;
+let audioChunks = [];
+let isRecording = false;
+
+document.getElementById('recordBtn').addEventListener('click', async function() {
+  if (!isRecording) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunks = [];
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+        const url = URL.createObjectURL(blob);
+        const preview = document.getElementById('audioPreview');
+        preview.src = url;
+        preview.style.display = 'block';
+        sendStt(blob, 'recording.webm');
+      };
+      mediaRecorder.start();
+      isRecording = true;
+      this.innerHTML = '<i class="fa fa-stop" style="color:#ff5252;"></i> 녹음 중지';
+      this.style.background = '#c62828';
+      document.getElementById('sttStatus').textContent = '🔴 녹음 중...';
+    } catch(e) {
+      alert('마이크 접근 권한이 필요합니다: ' + e.message);
+    }
+  } else {
+    mediaRecorder.stop();
+    isRecording = false;
+    this.innerHTML = '<i class="fa fa-circle" style="color:#ff5252;"></i> 녹음 시작';
+    this.style.background = '#7b1fa2';
+    document.getElementById('sttStatus').textContent = '변환 중...';
+  }
+});
+
+document.getElementById('audioFile').addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+  const preview = document.getElementById('audioPreview');
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+  document.getElementById('sttStatus').textContent = '변환 중...';
+  sendStt(file, file.name);
+});
+
+function sendStt(blob, filename) {
+  const formData = new FormData();
+  formData.append('audio', blob, filename);
+
+  fetch('/ai/meeting/stt', { method: 'POST', body: formData })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById('sttStatus').textContent = '오류: ' + data.error;
+        return;
+      }
+      document.getElementById('rawNotes').value = data.text || '';
+      document.getElementById('sttStatus').textContent = '✅ 변환 완료 (' + (data.text || '').length + '자)';
+    })
+    .catch(e => {
+      document.getElementById('sttStatus').textContent = '오류: ' + e.message;
+    });
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>

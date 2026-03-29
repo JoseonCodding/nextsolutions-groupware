@@ -1,0 +1,141 @@
+<div class="check-list-container">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+    <h1 style="margin:0;">저장된 회의록</h1>
+    <a href="/ai/meeting" class="filter-btn" style="font-size:0.85rem; padding:6px 14px;">
+      <i class="fa fa-plus"></i> 새 회의록
+    </a>
+  </div>
+
+  <div th:if="${#lists.isEmpty(minutesList)}"
+       style="text-align:center; padding:60px; color:#999;">
+    <i class="fa fa-file-lines fa-3x" style="margin-bottom:16px; display:block;"></i>
+    저장된 회의록이 없습니다.
+  </div>
+
+  <div th:each="m : ${minutesList}"
+       style="padding:16px; margin-bottom:12px; background:#fff; border-radius:8px;
+              border:1px solid #dee2e6; cursor:pointer; transition:box-shadow 0.2s;"
+       onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'"
+       onmouseout="this.style.boxShadow='none'"
+       th:onclick="|openMinutes(${m['minutes_sn']})|">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <div style="font-weight:600; font-size:1rem; color:#1565c0;"
+             th:text="${m['agenda'] ?: '(안건 없음)'}"></div>
+        <div style="margin-top:4px; color:#555; font-size:0.9rem;">
+          <i class="fa fa-calendar"></i>
+          <span th:text="${m['meet_date']}"></span>
+          &nbsp;|&nbsp;
+          <i class="fa fa-users"></i>
+          <span th:text="${m['participants']}"></span>
+        </div>
+        <div style="margin-top:6px; color:#777; font-size:0.85rem; line-height:1.4;"
+             th:text="${m['ai_summary']}"></div>
+      </div>
+      <div style="font-size:0.75rem; color:#aaa; white-space:nowrap; margin-left:12px;"
+           th:text="${#strings.substring(m['created_at'].toString(), 0, 16)}"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 상세 모달 -->
+<div id="detailModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; overflow-y:auto;">
+  <div style="max-width:700px; margin:40px auto; background:#fff; border-radius:12px; padding:24px; position:relative;">
+    <button onclick="closeModal()"
+            style="position:absolute; top:12px; right:12px; background:none; border:none; font-size:1.4rem; cursor:pointer; color:#555;">
+      <i class="fa fa-xmark"></i>
+    </button>
+    <div id="modalContent">
+      <div style="text-align:center; padding:30px;">
+        <i class="fa fa-spinner fa-spin fa-2x"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function openMinutes(sn) {
+  document.getElementById('detailModal').style.display = 'block';
+  document.getElementById('modalContent').innerHTML =
+    '<div style="text-align:center;padding:30px;"><i class="fa fa-spinner fa-spin fa-2x"></i></div>';
+
+  fetch('/ai/meeting/detail/' + sn)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById('modalContent').innerHTML = '<p style="color:red;">' + data.error + '</p>';
+        return;
+      }
+      const m = data.minutes || {};
+      const actions = data.actions || [];
+
+      let decisionsHtml = '';
+      try {
+        const decs = JSON.parse(m.ai_decisions || '[]');
+        decisionsHtml = (decs || []).map(d => '<li>' + esc(d) + '</li>').join('');
+      } catch(e) { decisionsHtml = '<li>' + esc(m.ai_decisions || '') + '</li>'; }
+
+      let actionsHtml = actions.map(a => `
+        <tr>
+          <td style="padding:6px 8px;">${esc(a.task)}</td>
+          <td style="padding:6px 8px;">${esc(a.owner_name)}
+            ${a.owner_employee_id ? '<span style="font-size:0.75rem;color:#2e7d32;"> ✓ 매핑</span>' : ''}
+          </td>
+          <td style="padding:6px 8px;">${esc(a.due_date)}</td>
+        </tr>`).join('');
+
+      document.getElementById('modalContent').innerHTML = `
+        <h2 style="margin:0 0 4px; color:#1565c0;">${esc(m.agenda || '(안건 없음)')}</h2>
+        <div style="color:#777; font-size:0.85rem; margin-bottom:16px;">
+          ${esc(m.meet_date)} | ${esc(m.participants)}
+        </div>
+
+        <div style="padding:12px; background:#f8f9fa; border-radius:6px; margin-bottom:12px;">
+          <strong>📋 요약</strong>
+          <p style="margin:6px 0 0; white-space:pre-line; font-size:0.9rem;">${esc(m.ai_summary)}</p>
+        </div>
+
+        <div style="padding:12px; background:#e8f5e9; border-radius:6px; margin-bottom:12px;">
+          <strong>✅ 결정사항</strong>
+          <ul style="margin:6px 0 0; padding-left:20px;">${decisionsHtml}</ul>
+        </div>
+
+        ${actionsHtml ? `
+        <div style="padding:12px; background:#e3f2fd; border-radius:6px; margin-bottom:12px;">
+          <strong>⚡ 액션아이템</strong>
+          <table style="width:100%; margin-top:8px; border-collapse:collapse; font-size:0.9rem;">
+            <thead>
+              <tr style="background:#1565c0; color:#fff;">
+                <th style="padding:6px 8px; text-align:left;">업무</th>
+                <th style="padding:6px 8px; text-align:left;">담당자</th>
+                <th style="padding:6px 8px; text-align:left;">마감</th>
+              </tr>
+            </thead>
+            <tbody>${actionsHtml}</tbody>
+          </table>
+        </div>` : ''}
+
+        <div style="padding:12px; background:#fff; border-radius:6px; border:1px solid #dee2e6;">
+          <strong>📄 회의록 전문</strong>
+          <div style="margin:6px 0 0; white-space:pre-line; font-size:0.85rem; line-height:1.6;">${esc(m.ai_minutes)}</div>
+        </div>
+      `;
+    })
+    .catch(e => {
+      document.getElementById('modalContent').innerHTML = '<p style="color:red;">불러오기 실패: ' + e.message + '</p>';
+    });
+}
+
+function closeModal() {
+  document.getElementById('detailModal').style.display = 'none';
+}
+
+document.getElementById('detailModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>

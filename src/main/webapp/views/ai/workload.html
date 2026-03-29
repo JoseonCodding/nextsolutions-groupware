@@ -1,0 +1,108 @@
+<div class="check-list-container">
+  <h1>업무 부하 감지</h1>
+
+  <div style="text-align:center; margin:24px 0;">
+    <button id="analyzeBtn" class="filter-btn" style="padding:12px 32px; font-size:1rem;">
+      <i class="fa fa-chart-line"></i> 내 업무 부하 분석하기
+    </button>
+  </div>
+
+  <div id="loadingArea" style="display:none; text-align:center; padding:40px;">
+    <i class="fa fa-spinner fa-spin fa-2x"></i>
+    <p style="margin-top:12px; color:#666;">업무 현황을 분석하고 있습니다...</p>
+  </div>
+  <div id="errorArea" style="display:none; color:#c62828; padding:16px; background:#ffebee; border-radius:8px;"></div>
+
+  <div id="resultArea" style="display:none;">
+    <!-- 부하 게이지 -->
+    <div style="text-align:center; margin-bottom:32px;">
+      <div id="scoreCircle" style="display:inline-flex; align-items:center; justify-content:center;
+           width:120px; height:120px; border-radius:50%; font-size:2.5rem; font-weight:bold;
+           color:#fff; margin-bottom:12px;">
+        <span id="scoreText">0</span>
+      </div>
+      <div id="levelBadge" style="display:inline-block; padding:4px 16px; border-radius:20px;
+           font-size:1rem; font-weight:bold; margin-left:12px;"></div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+      <!-- 요약 -->
+      <div style="padding:20px; background:#f8f9fa; border-radius:8px; border:1px solid #dee2e6;">
+        <h3 style="margin:0 0 12px;">📊 현황 요약</h3>
+        <p id="summaryText" style="white-space:pre-line; line-height:1.7;"></p>
+      </div>
+
+      <!-- 위험 요소 -->
+      <div style="padding:20px; background:#fff3e0; border-radius:8px; border:1px solid #ffe0b2;">
+        <h3 style="margin:0 0 12px;">⚠️ 위험 요소</h3>
+        <ul id="riskList" style="padding-left:20px; line-height:1.9;"></ul>
+      </div>
+
+      <!-- 권고사항 -->
+      <div style="padding:20px; background:#e8f5e9; border-radius:8px; border:1px solid #c8e6c9; grid-column:1/-1;">
+        <h3 style="margin:0 0 12px;">💡 AI 권고사항</h3>
+        <ul id="recommendList" style="padding-left:20px; line-height:1.9;"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const levelColors = { '낮음': '#2e7d32', '보통': '#1565c0', '높음': '#e65100', '위험': '#c62828' };
+
+document.getElementById('analyzeBtn').addEventListener('click', function() {
+  document.getElementById('resultArea').style.display = 'none';
+  document.getElementById('errorArea').style.display = 'none';
+  document.getElementById('loadingArea').style.display = 'block';
+
+  fetch('/ai/workload', { method: 'POST' })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('loadingArea').style.display = 'none';
+    if (data.error) {
+      document.getElementById('errorArea').textContent = data.error;
+      document.getElementById('errorArea').style.display = 'block';
+      return;
+    }
+    try {
+      const result = JSON.parse(data.result);
+      const score = result.score || 0;
+      const level = result.level || '보통';
+      const color = levelColors[level] || '#1565c0';
+
+      const circle = document.getElementById('scoreCircle');
+      circle.style.background = color;
+      circle.querySelector('#scoreText').textContent = score;
+
+      const badge = document.getElementById('levelBadge');
+      badge.textContent = level;
+      badge.style.background = color;
+      badge.style.color = '#fff';
+
+      document.getElementById('summaryText').textContent = result.summary || '';
+
+      const riskList = document.getElementById('riskList');
+      riskList.innerHTML = '';
+      (result.risks || []).forEach(r => {
+        const li = document.createElement('li'); li.textContent = r; riskList.appendChild(li);
+      });
+
+      const recList = document.getElementById('recommendList');
+      recList.innerHTML = '';
+      (result.recommendations || []).forEach(r => {
+        const li = document.createElement('li'); li.textContent = r; recList.appendChild(li);
+      });
+
+      document.getElementById('resultArea').style.display = 'block';
+    } catch(e) {
+      document.getElementById('errorArea').textContent = '결과 파싱 오류: ' + data.result;
+      document.getElementById('errorArea').style.display = 'block';
+    }
+  })
+  .catch(e => {
+    document.getElementById('loadingArea').style.display = 'none';
+    document.getElementById('errorArea').textContent = '오류: ' + e.message;
+    document.getElementById('errorArea').style.display = 'block';
+  });
+});
+</script>

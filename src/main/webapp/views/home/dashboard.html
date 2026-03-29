@@ -160,6 +160,7 @@
 }
 .mini-stat-label { font-size: 11px; color: #94a3b8; font-weight: 500; }
 .mini-stat-val   { font-size: 20px; font-weight: 700; color: #1a202c; }
+.mini-stat-val.text-danger { color: #c62828; }
 
 /* 일정 리스트 */
 .schedule-list { padding: 0 0 8px; }
@@ -183,6 +184,55 @@
 .schedule-title { color: #1a202c; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .schedule-date { font-size: 11px; color: #94a3b8; margin-top: 2px; }
 .schedule-empty { padding: 24px 20px; text-align: center; color: #94a3b8; font-size: 13px; }
+
+/* 할 일 */
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #f8fafc;
+  font-size: 13px;
+}
+.task-item:last-child { border-bottom: none; }
+.task-badge {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  background: #eef2ff;
+  color: #3949ab;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.task-badge.overdue { background: #fce4ec; color: #c62828; }
+.task-title-text { flex: 1; color: #1a202c; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.task-due { font-size: 11px; color: #94a3b8; white-space: nowrap; }
+.task-due.overdue { color: #c62828; }
+
+/* 알림 */
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #f8fafc;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover { background: #f8fafc; }
+.notif-item.unread { background: #f0f4ff; }
+.notif-item.unread:hover { background: #e8eeff; }
+.notif-icon {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0;
+  background: #e3f2fd; color: #1565c0;
+}
+.notif-msg { color: #1a202c; line-height: 1.4; }
+.notif-time { font-size: 11px; color: #94a3b8; margin-top: 2px; }
 </style>
 
 <div class="dash-grid">
@@ -222,23 +272,41 @@
   <!-- 메인 2열 -->
   <div class="dash-main">
 
-    <!-- 왼쪽: 공지사항 -->
-    <div class="dash-card">
-      <div class="dash-card-header">
-        <div class="dash-card-title"><span class="emoji">📢</span> 공지사항</div>
-        <a href="/board/notice" class="dash-card-more">더보기 →</a>
+    <!-- 왼쪽: 공지사항 + 내 할 일 -->
+    <div style="display:flex; flex-direction:column; gap:20px;">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-title"><span class="emoji">📢</span> 공지사항</div>
+          <a href="/board/notice" class="dash-card-more">더보기 →</a>
+        </div>
+        <table class="notice-table" th:if="${notices != null and !notices.isEmpty()}">
+          <tbody>
+            <tr th:each="n : ${notices}">
+              <td>
+                <a th:href="@{/board/notice/detail(postId=${n.postId})}" class="notice-title" th:text="${n.title}">제목</a>
+              </td>
+              <td class="notice-date" th:text="${#strings.substring(n.createdAt != null ? n.createdAt.toString() : '', 0, 10)}">2026-01-01</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="notice-empty" th:if="${notices == null or notices.isEmpty()}">등록된 공지사항이 없습니다.</div>
       </div>
-      <table class="notice-table" th:if="${notices != null and !notices.isEmpty()}">
-        <tbody>
-          <tr th:each="n : ${notices}">
-            <td>
-              <a th:href="@{/board/notice/detail(postId=${n.postId})}" class="notice-title" th:text="${n.title}">제목</a>
-            </td>
-            <td class="notice-date" th:text="${#strings.substring(n.createdAt != null ? n.createdAt.toString() : '', 0, 10)}">2026-01-01</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="notice-empty" th:if="${notices == null or notices.isEmpty()}">등록된 공지사항이 없습니다.</div>
+
+      <!-- 내 할 일 -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-title"><span class="emoji">✅</span> 내 할 일</div>
+          <a href="/pjtMng/getPjtList" class="dash-card-more">프로젝트 →</a>
+        </div>
+        <div th:if="${myTasks != null and !myTasks.isEmpty()}">
+          <div class="task-item" th:each="t : ${myTasks}">
+            <span class="task-badge" th:text="${t['pjtNm'] ?: '미배정'}">프로젝트명</span>
+            <span class="task-title-text" th:text="${t['title']}">태스크</span>
+            <span class="task-due" th:if="${t['due_date'] != null}" th:text="${t['due_date']}">기한</span>
+          </div>
+        </div>
+        <div class="schedule-empty" th:if="${myTasks == null or myTasks.isEmpty()}">완료되지 않은 태스크가 없습니다.</div>
+      </div>
     </div>
 
     <!-- 오른쪽 패널 -->
@@ -255,10 +323,30 @@
         </div>
       </div>
 
-      <!-- 내 프로젝트 -->
+      <!-- 오늘 출근 현황 -->
       <div class="dash-card">
         <div class="dash-card-header">
-          <div class="dash-card-title"><span class="emoji">📊</span> 내 프로젝트</div>
+          <div class="dash-card-title"><span class="emoji">🕐</span> 오늘 출근 현황</div>
+          <a href="/attend" class="dash-card-more">근태관리 →</a>
+        </div>
+        <div class="mini-stats">
+          <div class="mini-stat">
+            <span class="mini-stat-label">출근 시각</span>
+            <span class="mini-stat-val" style="font-size:16px;"
+                  th:text="${todayAttend != null ? todayAttend.checkInHourMinute : '-'}">-</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-label">퇴근 시각</span>
+            <span class="mini-stat-val" style="font-size:16px;"
+                  th:text="${todayAttend != null and todayAttend.checkOutTime != null ? todayAttend.checkOutHourMinute : (todayAttend != null ? '재직중' : '-')}">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 내 프로젝트 + 미결재 -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-title"><span class="emoji">📊</span> 내 현황</div>
           <a href="/pjtMng/getPjtList" class="dash-card-more">더보기 →</a>
         </div>
         <div class="mini-stats">
@@ -267,8 +355,35 @@
             <span class="mini-stat-val" th:text="${myPjtCount ?: 0}">0</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-label">결재 대기</span>
-            <span class="mini-stat-val" th:text="${myPending ?: 0}">0</span>
+            <span class="mini-stat-label">미결재 문서</span>
+            <span class="mini-stat-val"
+                  th:classappend="${(pendingApprovals ?: 0) > 0} ? 'text-danger' : ''"
+                  th:text="${pendingApprovals ?: 0}">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 최근 알림 -->
+      <div class="dash-card" th:if="${notifications != null and !notifications.isEmpty()}">
+        <div class="dash-card-header">
+          <div class="dash-card-title">
+            <span class="emoji">🔔</span> 알림
+            <span th:if="${unreadCount > 0}"
+                  style="background:#c62828; color:#fff; border-radius:20px; padding:1px 7px; font-size:11px; font-weight:700;"
+                  th:text="${unreadCount}">0</span>
+          </div>
+          <button onclick="markAllRead()" style="font-size:11px; color:#94a3b8; background:none; border:none; cursor:pointer; padding:0;">모두 읽음</button>
+        </div>
+        <div th:each="n, i : ${notifications}" th:if="${i.index < 5}">
+          <div class="notif-item" th:classappend="${n.isRead == 0} ? 'unread' : ''"
+               th:attr="data-url=${n.refUrl}"
+               onclick="if(this.dataset.url) location.href=this.dataset.url">
+            <div class="notif-icon"><i class="fa fa-bell"></i></div>
+            <div style="flex:1; min-width:0;">
+              <div class="notif-msg" th:text="${n.message}">알림 내용</div>
+              <div class="notif-time"
+                   th:text="${n.createdAt != null ? #strings.substring(n.createdAt.toString(), 5, 16) : ''}">시간</div>
+            </div>
           </div>
         </div>
       </div>
@@ -296,11 +411,182 @@
 
 </div>
 
+<!-- ── 온보딩 Wizard ─────────────────────────────────────── -->
+<div th:if="${onboarding}" id="onboarding-overlay">
+  <style>
+    #onboarding-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      animation: obFadeIn .3s ease;
+    }
+    @keyframes obFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .ob-card {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 40px 44px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+      position: relative;
+      animation: obPop .35s cubic-bezier(.2,.8,.2,1);
+    }
+    @keyframes obPop {
+      from { transform: translateY(16px) scale(.97); opacity: 0; }
+      to   { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    /* 단계 표시 */
+    .ob-steps {
+      display: flex; gap: 6px; justify-content: center; margin-bottom: 32px;
+    }
+    .ob-step-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border); transition: background .3s, width .3s;
+    }
+    .ob-step-dot.active {
+      background: var(--primary); width: 24px; border-radius: 4px;
+    }
+
+    /* 콘텐츠 */
+    .ob-icon {
+      font-size: 48px; text-align: center; margin-bottom: 16px; line-height: 1;
+    }
+    .ob-title {
+      font-size: 20px; font-weight: 700; color: var(--text-1);
+      text-align: center; margin-bottom: 8px;
+    }
+    .ob-desc {
+      font-size: 14px; color: var(--text-2); text-align: center;
+      line-height: 1.7; margin-bottom: 28px;
+    }
+    .ob-info-box {
+      background: var(--primary-light); border-radius: 10px;
+      padding: 14px 18px; margin-bottom: 28px;
+      font-size: 13px; color: var(--primary); font-weight: 600;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    /* 버튼 */
+    .ob-btn-row {
+      display: flex; gap: 10px;
+    }
+    .ob-btn {
+      flex: 1; padding: 13px; border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: filter .15s, transform .06s;
+    }
+    .ob-btn:active { transform: translateY(1px); }
+    .ob-btn.primary {
+      background: var(--primary); color: #fff;
+      box-shadow: 0 6px 16px rgba(57,73,171,.25);
+    }
+    .ob-btn.primary:hover { filter: brightness(1.08); }
+    .ob-btn.ghost {
+      background: transparent; color: var(--text-2);
+      border: 1.5px solid var(--border);
+    }
+    .ob-btn.ghost:hover { background: var(--bg); }
+
+    /* 단계별 슬라이드 */
+    .ob-step { display: none; }
+    .ob-step.active { display: block; }
+  </style>
+
+  <div class="ob-card">
+    <div class="ob-steps">
+      <div class="ob-step-dot active" id="dot0"></div>
+      <div class="ob-step-dot" id="dot1"></div>
+      <div class="ob-step-dot" id="dot2"></div>
+    </div>
+
+    <!-- Step 1: 환영 -->
+    <div class="ob-step active" id="ob-step-0">
+      <div class="ob-icon">🎉</div>
+      <div class="ob-title">가입을 축하드립니다!</div>
+      <div class="ob-desc">
+        <strong th:text="${session.loginUser?.empNm}">관리자</strong> 님,<br>
+        NextSolutions 그룹웨어에 오신 것을 환영합니다.<br>
+        몇 가지 기본 설정을 안내해드릴게요.
+      </div>
+      <div class="ob-info-box">
+        <i class="fa fa-id-badge"></i>
+        관리자 사번: <span th:text="${session.loginUser?.employeeId}" style="letter-spacing:2px;">00000001</span>
+      </div>
+      <div class="ob-btn-row">
+        <button class="ob-btn primary" onclick="obNext()">다음 <i class="fa fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- Step 2: 직원 등록 -->
+    <div class="ob-step" id="ob-step-1">
+      <div class="ob-icon">👥</div>
+      <div class="ob-title">직원을 등록해보세요</div>
+      <div class="ob-desc">
+        직원 등록 메뉴에서 팀원을 추가하면<br>
+        근태관리, 전자결재, 프로젝트 협업을<br>
+        바로 시작할 수 있습니다.
+      </div>
+      <div class="ob-btn-row">
+        <button class="ob-btn ghost" onclick="obNext()">나중에</button>
+        <button class="ob-btn primary" onclick="location.href='/employee/register'">
+          <i class="fa fa-user-plus"></i> 직원 등록하기
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: 시작 -->
+    <div class="ob-step" id="ob-step-2">
+      <div class="ob-icon">🚀</div>
+      <div class="ob-title">준비 완료!</div>
+      <div class="ob-desc">
+        이제 모든 준비가 끝났습니다.<br>
+        대시보드에서 업무를 시작하세요.
+      </div>
+      <div class="ob-btn-row">
+        <button class="ob-btn primary" onclick="obClose()">대시보드 시작하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-// 현재 날짜 표시 (선택)
 document.addEventListener('DOMContentLoaded', function() {
-  var now = new Date();
-  var days = ['일','월','화','수','목','금','토'];
   document.title = 'NEXTSOLUTIONS - 대시보드';
 });
+
+function markAllRead() {
+  fetch('/notification/readAll', { method: 'POST' })
+    .then(() => location.reload());
+}
+
+/* 온보딩 wizard */
+let obCurrent = 0;
+const obTotal  = 3;
+
+function obNext() {
+  const cur = document.getElementById('ob-step-' + obCurrent);
+  const dot = document.getElementById('dot' + obCurrent);
+  if (cur) cur.classList.remove('active');
+  if (dot) dot.classList.remove('active');
+
+  obCurrent++;
+  if (obCurrent >= obTotal) { obClose(); return; }
+
+  const next = document.getElementById('ob-step-' + obCurrent);
+  const nextDot = document.getElementById('dot' + obCurrent);
+  if (next) next.classList.add('active');
+  if (nextDot) nextDot.classList.add('active');
+}
+
+function obClose() {
+  const overlay = document.getElementById('onboarding-overlay');
+  if (overlay) {
+    overlay.style.transition = 'opacity .25s';
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), 250);
+  }
+}
 </script>
